@@ -17,14 +17,14 @@ class QueryStringTest {
     }
 
     @Test
-    void query_string의_단일_key_value가_파싱된다() {
+    void query_string의_단일_query_parameter가_파싱된다() {
         QueryString actual = new QueryString("name=jinyoung");
-        assertThat(actual.getQueryString()).isEqualTo(Map.of("name", "jinyoung"));
+        assertThat(actual.getQueryParameters()).isEqualTo(Map.of("name", "jinyoung"));
     }
 
     @Test
-    void 여러_query_string을_파싱한다() {
+    void 여러_query_parameter를_파싱한다() {
         QueryString actual = new QueryString("name=jinyoung&password=1234");
-        assertThat(actual.getQueryString()).isEqualTo(Map.of("name", "jinyoung", "password", "1234"));
+        assertThat(actual.getQueryParameters()).isEqualTo(Map.of("name", "jinyoung", "password", "1234"));
     }
 }

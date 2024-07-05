@@ -6,26 +6,26 @@ import java.util.stream.Collectors;
 
 public class QueryString {
 
-    private final Map<String, String> queryString;
+    private final Map<String, String> queryParameters;
 
-    public QueryString(String queryStrings) {
-        this.queryString = Arrays.stream(queryStrings.split("&"))
-                .map(QueryString::splitQueryString)
+    public QueryString(String queryString) {
+        this.queryParameters = Arrays.stream(queryString.split("&"))
+                .map(QueryString::splitQueryParameter)
                 .collect(Collectors.toMap(
-                        value -> value[0],
-                        value -> value[1]
+                        queryParameter -> queryParameter[0],
+                        queryParameter -> queryParameter[1]
                 ));
     }
 
-    private static String[] splitQueryString(String queryString) {
-        String[] splitQueryString = queryString.split("=");
-        if (splitQueryString.length != 2) {
-            throw new IllegalArgumentException("QueryString값이 정상적으로 입력되지 않았습니다 - " + queryString);
+    private static String[] splitQueryParameter(String queryParameter) {
+        String[] splitQueryParameter = queryParameter.split("=");
+        if (splitQueryParameter.length != 2) {
+            throw new IllegalArgumentException("QueryParameter값이 정상적으로 입력되지 않았습니다 - " + queryParameter);
         }
-        return splitQueryString;
+        return splitQueryParameter;
     }
 
-    public Map<String, String> getQueryString() {
-        return queryString;
+    public Map<String, String> getQueryParameters() {
+        return queryParameters;
     }
 }
