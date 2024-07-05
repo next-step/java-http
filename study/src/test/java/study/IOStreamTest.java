@@ -59,24 +59,20 @@ class IOStreamTest {
             outputStream.close();
         }
 
-        /**
-         * 효율적인 전송을 위해 스트림에서 버퍼(buffer)를 사용 할 수 있다.
-         * BufferedOutputStream 필터를 연결하면 버퍼링이 가능하다.
-         * 
-         * 버퍼링을 사용하면 OutputStream을 사용할 때 flush를 사용하자.
-         * flush() 메서드는 버퍼가 아직 가득 차지 않은 상황에서 강제로 버퍼의 내용을 전송한다.
-         * Stream은 동기(synchronous)로 동작하기 때문에 버퍼가 찰 때까지 기다리면
-         * 데드락(deadlock) 상태가 되기 때문에 flush로 해제해야 한다.
-         */
         @Test
         void BufferedOutputStream을_사용하면_버퍼링이_가능하다() throws IOException {
             final OutputStream outputStream = mock(BufferedOutputStream.class);
 
             /**
-             * todo
              * flush를 사용해서 테스트를 통과시킨다.
              * ByteArrayOutputStream과 어떤 차이가 있을까?
+             * ByteArrayOutputStream과 다르게 BufferedOutputStream는 버퍼를 이용하여 특정 양에 대해서 버퍼링이 가능하다.
+             * 단, 버퍼가 다 채워지지 않은 경우 출력이 되지 않을 수 있으므로 flush를 통해 비워줘야하며 시스템 자원을 버퍼를 다 사용하기 전에
+             * 묶고 있기 때문에 파일 leak가 발생할 수 있으므로 항상 close를 통해 자원을 해제해주어야한다.
+             * ByteArrayOutputStream는 메모리에서 모두 올려두고 관리하기 때문에 자원해제할 것이 없어 close에서
+             * 별도의 구현이 없는 것을 확인할 수 있다.
              */
+            outputStream.flush();
 
             verify(outputStream, atLeastOnce()).flush();
             outputStream.close();
