@@ -2,6 +2,8 @@ package camp.nextstep.domain.http;
 
 import org.junit.jupiter.api.Test;
 
+import java.util.Map;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertThrowsExactly;
@@ -20,9 +22,12 @@ class RequestLineTest {
     }
 
     @Test
-    void RequestLine에서_http_url을_파싱한다() {
-        RequestLine actual = new RequestLine("GET /docs/index.html HTTP/1.1");
-        assertThat(actual.getHttpUrl()).isEqualTo("/docs/index.html");
+    void RequestLine에서_http_path을_파싱한다() {
+        RequestLine actual = new RequestLine("GET /docs/index.html?name=jinyoung&password=123 HTTP/1.1");
+        assertAll(
+                () -> assertThat(actual.getHttpPath()).isEqualTo("/docs/index.html"),
+                () -> assertThat(actual.getQueryString()).isEqualTo(Map.of("name", "jinyoung", "password", "123"))
+        );
     }
 
     @Test

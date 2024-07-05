@@ -1,5 +1,7 @@
 package camp.nextstep.domain.http;
 
+import java.util.Map;
+
 public class RequestLine {
 
     private static final String REQUEST_LINE_FORMAT_SPLIT_REGEX = " ";
@@ -10,13 +12,13 @@ public class RequestLine {
     private static final int HTTP_PROTOCOL_INDEX = 2;
 
     private final HttpMethod httpMethod;
-    private final String httpUrl;
+    private final HttpPath httpPath;
     private final HttpProtocol httpProtocol;
 
     public RequestLine(String requestLine) {
         String[] splitRequestLine = parseRequestLine(requestLine);
         this.httpMethod = HttpMethod.from(splitRequestLine[HTTP_METHOD_INDEX]);
-        this.httpUrl = splitRequestLine[HTTP_URL_INDEX];
+        this.httpPath = new HttpPath(splitRequestLine[HTTP_URL_INDEX]);
         this.httpProtocol = new HttpProtocol(splitRequestLine[HTTP_PROTOCOL_INDEX]);
     }
 
@@ -32,8 +34,12 @@ public class RequestLine {
         return httpMethod;
     }
 
-    public String getHttpUrl() {
-        return httpUrl;
+    public String getHttpPath() {
+        return httpPath.getPath();
+    }
+
+    public Map<String, String> getQueryString() {
+        return httpPath.getQueryString();
     }
 
     public String getProtocol() {
