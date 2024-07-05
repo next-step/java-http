@@ -13,4 +13,8 @@ public class QueryString {
         }
         this.queryString = Map.of(splitQueryString[0], splitQueryString[1]);
     }
+
+    public Map<String, String> getQueryString() {
+        return queryString;
+    }
 }
