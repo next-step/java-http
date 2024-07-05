@@ -10,7 +10,8 @@ public class RequestLine {
         String[] splitRequestLine = parseRequestLine(requestLine);
         httpMethod = parseHttpMethod(splitRequestLine);
         httpUrl = splitRequestLine[1];
-        this.protocol = parseProtocol(splitRequestLine[2].split("/"));
+        String[] httpProtocol = parseHttpProtocol(splitRequestLine);
+        this.protocol = httpProtocol[0];
     }
 
     private String[] parseRequestLine(String requestLine) {
@@ -29,12 +30,12 @@ public class RequestLine {
         return httpMethod;
     }
 
-    private String parseProtocol(String[] splitHttpProtocol) {
-        String protocol = splitHttpProtocol[0];
-        if (protocol.isEmpty()) {
-            throw new IllegalArgumentException("protocol값이 존재하지 않습니다.");
+    private String[] parseHttpProtocol(String[] splitRequestLine) {
+        String[] httpProtocol = splitRequestLine[2].split("/");
+        if (httpProtocol.length != 2) {
+            throw new IllegalArgumentException("HttpProtocol값이 정상적으로 입력되지 않았습니다 - "+ splitRequestLine[2]);
         }
-        return protocol;
+        return httpProtocol;
     }
 
     public String getHttpMethod() {

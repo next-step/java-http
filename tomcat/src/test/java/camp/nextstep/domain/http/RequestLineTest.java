@@ -30,8 +30,8 @@ class RequestLineTest {
     }
 
     @Test
-    void RequestLine에서_protocol이_없는_경우_예외가_발생한다() {
-        assertThrowsExactly(IllegalArgumentException.class, () -> new RequestLine("GET /docs/index.html /1.1"));
+    void RequestLine에서_protocol과_version이_없는_경우_예외가_발생한다() {
+        assertThrowsExactly(IllegalArgumentException.class, () -> new RequestLine("GET /docs/index.html HTTP"));
     }
 
     @Test
