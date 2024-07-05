@@ -28,13 +28,13 @@
 
 ### Mission 1
 
-- [ ] Request Line 파싱
-    - [ ] HTTP GET 또는 POST 요청에 대한 RequestLine 파싱
-        - [ ] method 파싱
-        - [ ] path 파싱
-        - [ ] protocol 파싱
-        - [ ] version 파싱
+- [x] Request Line 파싱
+    - [x] HTTP GET 또는 POST 요청에 대한 RequestLine 파싱
+        - [x] method 파싱
+        - [x] path 파싱
+        - [x] protocol 파싱
+        - [x] version 파싱
     - [ ] Query String 파싱
         - [ ] HTTP GET 요청시 path의 Query String 파싱
-    - [ ] Enum 적용
-        - [ ] GET, POST를 enum으로 구현
+    - [x] Enum 적용
+        - [x] GET, POST를 enum으로 구현
