@@ -21,4 +21,10 @@ class QueryStringTest {
         QueryString actual = new QueryString("name=jinyoung");
         assertThat(actual.getQueryString()).isEqualTo(Map.of("name", "jinyoung"));
     }
+
+    @Test
+    void 여러_query_string을_파싱한다() {
+        QueryString actual = new QueryString("name=jinyoung&password=1234");
+        assertThat(actual.getQueryString()).isEqualTo(Map.of("name", "jinyoung", "password", "1234"));
+    }
 }
