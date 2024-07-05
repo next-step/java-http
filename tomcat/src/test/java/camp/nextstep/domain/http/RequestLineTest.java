@@ -14,14 +14,9 @@ class RequestLineTest {
     }
 
     @Test
-    void RequestLine에_status_GET이_없으면_예외가_발생한다() {
-        assertThrowsExactly(IllegalArgumentException.class, () -> new RequestLine("ERROR /docs/index.html HTTP/1.1"));
-    }
-
-    @Test
-    void RequestLine에서_status_GET을_파싱한다() {
+    void RequestLine에서_HttpMethod를_파싱한다() {
         RequestLine actual = new RequestLine("GET /docs/index.html HTTP/1.1");
-        assertThat(actual.getHttpMethod()).isEqualTo("GET");
+        assertThat(actual.getHttpMethod()).isEqualTo(HttpMethod.GET);
     }
 
     @Test

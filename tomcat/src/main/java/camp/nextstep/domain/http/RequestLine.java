@@ -9,13 +9,13 @@ public class RequestLine {
     private static final int HTTP_URL_INDEX = 1;
     private static final int HTTP_PROTOCOL_INDEX = 2;
 
-    private final String httpMethod;
+    private final HttpMethod httpMethod;
     private final String httpUrl;
     private final HttpProtocol httpProtocol;
 
     public RequestLine(String requestLine) {
         String[] splitRequestLine = parseRequestLine(requestLine);
-        this.httpMethod = parseHttpMethod(splitRequestLine);
+        this.httpMethod = HttpMethod.from(splitRequestLine[HTTP_METHOD_INDEX]);
         this.httpUrl = splitRequestLine[HTTP_URL_INDEX];
         this.httpProtocol = new HttpProtocol(splitRequestLine[HTTP_PROTOCOL_INDEX]);
     }
@@ -28,15 +28,7 @@ public class RequestLine {
         return splitRequestLine;
     }
 
-    private String parseHttpMethod(String[] splitRequestLine) {
-        String httpMethod = splitRequestLine[HTTP_METHOD_INDEX];
-        if (!httpMethod.equals("GET")) {
-            throw new IllegalArgumentException("HttpStatus값이 존재하지 않습니다.");
-        }
-        return httpMethod;
-    }
-
-    public String getHttpMethod() {
+    public HttpMethod getHttpMethod() {
         return httpMethod;
     }
 
