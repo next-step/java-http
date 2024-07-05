@@ -19,3 +19,24 @@
 1. [File, I/O Stream](study/src/test/java/study)
 2. [HTTP Cache](study/src/test/java/cache)
 3. [Thread](study/src/test/java/thread)
+
+## 1단계 - TDD 실습
+- request example
+```http request
+GET /docs/index.html HTTP/1.1
+Host: www.nowhere123.com
+Accept: image/gif, image/jpeg, */*
+Accept-Language: en-us
+Accept-Encoding: gzip, deflate
+User-Agent: Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1)
+(blank line)
+```
+
+- RequestLine
+  - HttpMethod인 GET을 파싱할 수 있다.
+    - index 0에 GET이 없으면 예외가 발생한다.
+  - path을 파싱할 수 있다.
+    - index 1에 path 값이 없으면 예외가 발생한다.
+  - protocol과 버전을 파싱할 수 있다.
+    - index 2에 값이 없으면 예외가 발생한다.
+    - protocol 값과 version이 없으면 예외가 발생한다.
