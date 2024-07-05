@@ -34,7 +34,7 @@
         - [x] path 파싱
         - [x] protocol 파싱
         - [x] version 파싱
-    - [ ] Query String 파싱
-        - [ ] HTTP GET 요청시 path의 Query String 파싱
+    - [X] Query String 파싱
+        - [X] HTTP GET 요청시 path의 Query String 파싱
     - [x] Enum 적용
         - [x] GET, POST를 enum으로 구현
