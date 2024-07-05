@@ -6,13 +6,17 @@ import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 class HttpPathTest {
 
     @Test
     void query_string이_없는_경우_path만_파싱한다() {
         HttpPath actual = new HttpPath("/docs/index.html");
-        assertThat(actual.getPath()).isEqualTo("/docs/index.html");
+        assertAll(
+                () -> assertThat(actual.getPath()).isEqualTo("/docs/index.html"),
+                () -> assertThat(actual.getQueryString()).isEmpty()
+        );
     }
 
     @Test
