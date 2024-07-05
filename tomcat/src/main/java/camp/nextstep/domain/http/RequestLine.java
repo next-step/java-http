@@ -6,10 +6,15 @@ public class RequestLine {
 
     public RequestLine(String requestLine) {
         String[] splitRequestLine = requestLine.split(" ");
-        if (!splitRequestLine[0].equals("GET")) {
+        httpMethod = parseHttpMethod(splitRequestLine);
+    }
+
+    private String parseHttpMethod(String[] splitRequestLine) {
+        String httpMethod = splitRequestLine[0];
+        if (!httpMethod.equals("GET")) {
             throw new IllegalArgumentException("HttpStatus값이 존재하지 않습니다.");
         }
-        httpMethod = splitRequestLine[0];
+        return httpMethod;
     }
 
     public String getHttpMethod() {
