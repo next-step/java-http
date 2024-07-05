@@ -40,3 +40,6 @@ User-Agent: Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1)
   - path을 파싱할 수 있다.
   - protocol과 버전을 파싱할 수 있다.
     - protocol 값과 version이 없으면 예외가 발생한다.
+- HttpProtocol
+  - HttpProtocol 스펙(protocol, version)을 관리한다. 
+  - protocol값과 version이 없으면 예외가 발생한다.
