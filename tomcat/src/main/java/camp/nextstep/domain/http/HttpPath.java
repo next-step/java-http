@@ -1,6 +1,8 @@
 package camp.nextstep.domain.http;
 
+import java.util.Arrays;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class HttpPath {
 
@@ -11,8 +13,13 @@ public class HttpPath {
         String[] splitHttpPath = httpPath.split("\\?");
         this.path = splitHttpPath[0];
         if (splitHttpPath.length == 2) {
-            String[] queryString = splitHttpPath[1].split("=");
-            this.queryString = Map.of(queryString[0], queryString[1]);
+            String[] queryStrings = splitHttpPath[1].split("&");
+            this.queryString = Arrays.stream(queryStrings)
+                    .map(queryString -> queryString.split("="))
+                    .collect(Collectors.toMap(
+                            value -> value[0],
+                            value -> value[1]
+                    ));
         }
         else if (splitHttpPath.length == 1) {
             this.queryString = Map.of();

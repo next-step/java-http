@@ -27,4 +27,10 @@ class HttpPathTest {
         HttpPath actual = new HttpPath("/docs/index.html?name=jinyoung");
         assertThat(actual.getQueryString()).isEqualTo(Map.of("name", "jinyoung"));
     }
+
+    @Test
+    void query_string_값이_여러개인_경우_각_값을_파싱한다() {
+        HttpPath actual = new HttpPath("/docs/index.html?name=jinyoung&password=1234");
+        assertThat(actual.getQueryString()).isEqualTo(Map.of("name", "jinyoung", "password", "1234"));
+    }
 }
