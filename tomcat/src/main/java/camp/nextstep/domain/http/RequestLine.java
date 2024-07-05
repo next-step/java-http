@@ -5,10 +5,11 @@ public class RequestLine {
     private final String httpMethod;
 
     public RequestLine(String requestLine) {
-        if (!requestLine.equals("GET")) {
+        String[] splitRequestLine = requestLine.split(" ");
+        if (!splitRequestLine[0].equals("GET")) {
             throw new IllegalArgumentException("HttpStatus값이 존재하지 않습니다.");
         }
-        httpMethod = requestLine;
+        httpMethod = splitRequestLine[0];
     }
 
     public String getHttpMethod() {

@@ -14,7 +14,7 @@ class RequestLineTest {
 
     @Test
     void RequestLine에서_status_GET을_파싱한다() {
-        RequestLine actual = new RequestLine("GET");
+        RequestLine actual = new RequestLine("GET /docs/index.html HTTP/1.1");
         assertThat(actual.getHttpMethod()).isEqualTo("GET");
     }
 }
