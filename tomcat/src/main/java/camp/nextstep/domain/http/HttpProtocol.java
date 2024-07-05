@@ -5,13 +5,16 @@ public class HttpProtocol {
     private static final String HTTP_PROTOCOL_FORMAT_SPLIT_REGEX = "/";
     private static final int HTTP_PROTOCOL_FORMAT_LENGTH = 2;
 
+    private static final int PROTOCOL_INDEX = 0;
+    private static final int VERSION_INDEX = 1;
+
     private final String protocol;
     private final String version;
 
     public HttpProtocol(String httpProtocol) {
         String[] splitHttpProtocol = splitHttpProtocol(httpProtocol);
-        this.protocol = splitHttpProtocol[0];
-        this.version = splitHttpProtocol[1];
+        this.protocol = splitHttpProtocol[PROTOCOL_INDEX];
+        this.version = splitHttpProtocol[VERSION_INDEX];
     }
 
     private static String[] splitHttpProtocol(String httpProtocol) {
