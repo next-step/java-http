@@ -1,32 +1,26 @@
 package camp.nextstep.domain.http;
 
-import java.util.Arrays;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 public class HttpPath {
 
     private final String path;
-    private final Map<String, String> queryString;
+    private final QueryString queryString;
 
     public HttpPath(String httpPath) {
         String[] splitHttpPath = httpPath.split("\\?");
         this.path = splitHttpPath[0];
+        this.queryString = parseQueryString(httpPath, splitHttpPath);
+    }
+
+    private QueryString parseQueryString(String httpPath, String[] splitHttpPath) {
         if (splitHttpPath.length == 2) {
-            String[] queryStrings = splitHttpPath[1].split("&");
-            this.queryString = Arrays.stream(queryStrings)
-                    .map(queryString -> queryString.split("="))
-                    .collect(Collectors.toMap(
-                            value -> value[0],
-                            value -> value[1]
-                    ));
+            return new QueryString(splitHttpPath[1]);
         }
-        else if (splitHttpPath.length == 1) {
-            this.queryString = Map.of();
+        if (splitHttpPath.length == 1) {
+            return QueryString.empty();
         }
-        else {
-            throw new IllegalArgumentException("HttpPath값이 정상적으로 입력되지 않았습니다 - " + httpPath);
-        }
+        throw new IllegalArgumentException("HttpPath값이 정상적으로 입력되지 않았습니다 - " + httpPath);
     }
 
     public String getPath() {
@@ -34,6 +28,6 @@ public class HttpPath {
     }
 
     public Map<String, String> getQueryString() {
-        return queryString;
+        return queryString.getQueryParameters();
     }
 }

@@ -5,6 +5,8 @@ import java.util.Arrays;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import static java.util.Collections.emptyMap;
+
 public class QueryString {
 
     private static final String QUERY_STRING_FORMAT_SPLIT_REGEX = "&";
@@ -15,6 +17,14 @@ public class QueryString {
     private static final int QUERY_PARAMETER_VALUE_INDEX = 1;
 
     private final Map<String, String> queryParameters;
+
+    public static QueryString empty() {
+        return new QueryString(emptyMap());
+    }
+
+    public QueryString(Map<String, String> queryParameters) {
+        this.queryParameters = queryParameters;
+    }
 
     public QueryString(String queryString) {
         this.queryParameters = Arrays.stream(queryString.split(QUERY_STRING_FORMAT_SPLIT_REGEX))
