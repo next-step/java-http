@@ -5,6 +5,7 @@ public class RequestLine {
     private final String httpMethod;
     private final String httpUrl;
     private final String protocol;
+    private final String protocolVersion;
 
     public RequestLine(String requestLine) {
         String[] splitRequestLine = parseRequestLine(requestLine);
@@ -12,6 +13,7 @@ public class RequestLine {
         httpUrl = splitRequestLine[1];
         String[] httpProtocol = parseHttpProtocol(splitRequestLine);
         this.protocol = httpProtocol[0];
+        this.protocolVersion = httpProtocol[1];
     }
 
     private String[] parseRequestLine(String requestLine) {
@@ -48,5 +50,9 @@ public class RequestLine {
 
     public String getProtocol() {
         return protocol;
+    }
+
+    public String getProtocolVersion() {
+        return protocolVersion;
     }
 }

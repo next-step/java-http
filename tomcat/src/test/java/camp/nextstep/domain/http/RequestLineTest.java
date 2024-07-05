@@ -39,4 +39,10 @@ class RequestLineTest {
         RequestLine actual = new RequestLine("GET /docs/index.html HTTP/1.1");
         assertThat(actual.getProtocol()).isEqualTo("HTTP");
     }
+
+    @Test
+    void RequestLine에서_protocol_version을_파싱한다() {
+        RequestLine actual = new RequestLine("GET /docs/index.html HTTP/1.1");
+        assertThat(actual.getProtocolVersion()).isEqualTo("1.1");
+    }
 }
