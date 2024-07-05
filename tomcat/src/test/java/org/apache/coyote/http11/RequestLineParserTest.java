@@ -3,6 +3,8 @@ package org.apache.coyote.http11;
 import org.apache.coyote.http11.model.RequestLine;
 import org.junit.jupiter.api.Test;
 
+import java.util.HashMap;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
@@ -15,14 +17,14 @@ class RequestLineParserTest {
     private static final String TEST_VERSION = "1.1";
     private static final String BLANK = " ";
     private static final String SLASH = "/";
-    private static final String TEST_GET_REQUEST_STRING = GET_METHOD + BLANK + TEST_PATH + BLANK + TEST_PROTOCOL + SLASH + TEST_VERSION;
-    private static final String TEST_POST_REQUEST_STRING = POST_METHOD + BLANK + TEST_PATH + BLANK + TEST_PROTOCOL + SLASH + TEST_VERSION;
-    private static final RequestLineParser REQUEST_LINE_PARSER = new RequestLineParser();
+    private static final String TEST_PATH_QUERY_STRING = "/users?userId=javajigi&password=password&name=JaeSung";
+    private final RequestLineParser requestLineParser = new RequestLineParser();
 
     @Test
     void httpGetParsingTest() {
         // given
-        final RequestLine getRequestLine = REQUEST_LINE_PARSER.parse(TEST_GET_REQUEST_STRING);
+        final String request = createTestRequestString(GET_METHOD, TEST_PATH);
+        final RequestLine getRequestLine = requestLineParser.parse(request);
 
         // when
         final String httpMethod = getRequestLine.httpMethod()
@@ -43,7 +45,8 @@ class RequestLineParserTest {
     @Test
     void httpPostParsingTest() {
         // given
-        final RequestLine getRequestLine = REQUEST_LINE_PARSER.parse(TEST_POST_REQUEST_STRING);
+        final String request = createTestRequestString(POST_METHOD, TEST_PATH);
+        final RequestLine getRequestLine = requestLineParser.parse(request);
 
         // when
         final String httpMethod = getRequestLine.httpMethod()
@@ -59,5 +62,26 @@ class RequestLineParserTest {
                 () -> assertThat(protocol).isEqualTo(TEST_PROTOCOL),
                 () -> assertThat(version).isEqualTo(TEST_VERSION)
         );
+    }
+
+    @Test
+    void queryStringParsingTest() {
+        // given
+        final String request = createTestRequestString(GET_METHOD, TEST_PATH_QUERY_STRING);
+        final RequestLine requestLine = requestLineParser.parse(request);
+
+        // when
+        final HashMap<String, String> result = requestLine.queryParams();
+
+        // then
+        assertAll(
+                () -> assertThat(result.get("userId")).isEqualTo("javajigi"),
+                () -> assertThat(result.get("password")).isEqualTo("password"),
+                () -> assertThat(result.get("name")).isEqualTo("JaeSung")
+        );
+    }
+
+    private String createTestRequestString(final String httpMethod, final String path) {
+        return httpMethod + BLANK + path + BLANK + TEST_PROTOCOL + SLASH + TEST_VERSION;
     }
 }
