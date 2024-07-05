@@ -1,6 +1,7 @@
 package org.apache.coyote.http11;
 
 import org.apache.coyote.http11.model.RequestLine;
+import org.apache.coyote.http11.model.Url;
 import org.apache.coyote.http11.model.constant.HttpMethod;
 
 import java.util.HashMap;
@@ -25,10 +26,9 @@ public class RequestLineParser {
 
         return new RequestLine(
                 HttpMethod.valueOf(httpMethod),
-                path,
+                Url.of(path, queryParams),
                 protocol,
-                version,
-                queryParams
+                version
         );
     }
 

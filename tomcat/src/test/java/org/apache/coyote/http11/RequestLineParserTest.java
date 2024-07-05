@@ -1,9 +1,8 @@
 package org.apache.coyote.http11;
 
+import org.apache.coyote.http11.model.QueryParams;
 import org.apache.coyote.http11.model.RequestLine;
 import org.junit.jupiter.api.Test;
-
-import java.util.HashMap;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -71,13 +70,13 @@ class RequestLineParserTest {
         final RequestLine requestLine = requestLineParser.parse(request);
 
         // when
-        final HashMap<String, String> result = requestLine.queryParams();
+        final QueryParams result = requestLine.queryParams();
 
         // then
         assertAll(
-                () -> assertThat(result.get("userId")).isEqualTo("javajigi"),
-                () -> assertThat(result.get("password")).isEqualTo("password"),
-                () -> assertThat(result.get("name")).isEqualTo("JaeSung")
+                () -> assertThat(result.valueBy("userId")).isEqualTo("javajigi"),
+                () -> assertThat(result.valueBy("password")).isEqualTo("password"),
+                () -> assertThat(result.valueBy("name")).isEqualTo("JaeSung")
         );
     }
 
