@@ -50,10 +50,9 @@ class IOStreamTest {
             final OutputStream outputStream = new ByteArrayOutputStream(bytes.length);
 
             /**
-             * todo
              * OutputStream 객체의 write 메서드를 사용해서 테스트를 통과시킨다
              */
-
+            outputStream.write(bytes);
             final String actual = outputStream.toString();
 
             assertThat(actual).isEqualTo("nextstep");
