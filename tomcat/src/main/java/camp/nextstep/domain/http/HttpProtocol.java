@@ -17,7 +17,7 @@ public class HttpProtocol {
         this.version = splitHttpProtocol[VERSION_INDEX];
     }
 
-    private static String[] splitHttpProtocol(String httpProtocol) {
+    private String[] splitHttpProtocol(String httpProtocol) {
         String[] splitHttpProtocol = httpProtocol.split(HTTP_PROTOCOL_FORMAT_SPLIT_REGEX);
         if (splitHttpProtocol.length != HTTP_PROTOCOL_FORMAT_LENGTH) {
             throw new IllegalArgumentException("HttpProtocol값이 정상적으로 입력되지 않았습니다 - " + httpProtocol);
