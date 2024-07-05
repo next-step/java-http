@@ -39,6 +39,11 @@ User-Agent: Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1)
   - path을 파싱할 수 있다.
   - protocol과 버전을 파싱할 수 있다.
     - protocol 값과 version이 없으면 예외가 발생한다.
+- HttpPath
+  - ?를 통해 queryString을 파싱할 수 있다.
+  - queryString의 경우 &로 각 값이 구분된다.
+  - queryString의 각 값은 =를 통해 key와 value로 구분된다.
+  - =를 통해 각 값이 정상적으로 분지어지지 않는 경우 예외가 발생한다.
 - HttpMethod
   - GET과 POST를 가진다.
   - GET과 POST가 아닌 값으로 파싱하려하는 경우 예외가 발생한다.
