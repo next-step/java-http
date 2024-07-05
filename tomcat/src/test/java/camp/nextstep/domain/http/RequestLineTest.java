@@ -33,4 +33,10 @@ class RequestLineTest {
     void RequestLine에서_protocol이_없는_경우_예외가_발생한다() {
         assertThrowsExactly(IllegalArgumentException.class, () -> new RequestLine("GET /docs/index.html /1.1"));
     }
+
+    @Test
+    void RequestLine에서_protocol을_파싱한다() {
+        RequestLine actual = new RequestLine("GET /docs/index.html HTTP/1.1");
+        assertThat(actual.getProtocol()).isEqualTo("HTTP");
+    }
 }

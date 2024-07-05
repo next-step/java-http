@@ -4,12 +4,13 @@ public class RequestLine {
 
     private final String httpMethod;
     private final String httpUrl;
+    private final String protocol;
 
     public RequestLine(String requestLine) {
         String[] splitRequestLine = parseRequestLine(requestLine);
         httpMethod = parseHttpMethod(splitRequestLine);
         httpUrl = splitRequestLine[1];
-        parseProtocol(splitRequestLine[2].split("/"));
+        this.protocol = parseProtocol(splitRequestLine[2].split("/"));
     }
 
     private String[] parseRequestLine(String requestLine) {
@@ -42,5 +43,9 @@ public class RequestLine {
 
     public String getHttpUrl() {
         return httpUrl;
+    }
+
+    public String getProtocol() {
+        return protocol;
     }
 }
