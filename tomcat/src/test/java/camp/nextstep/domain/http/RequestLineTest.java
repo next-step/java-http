@@ -8,8 +8,13 @@ import static org.junit.jupiter.api.Assertions.*;
 class RequestLineTest {
 
     @Test
+    void RequestLine이_포맷이_맞지_않으면_예외가_발생한다() {
+        assertThrowsExactly(IllegalArgumentException.class, () -> new RequestLine("GET /docs/index.html"));
+    }
+
+    @Test
     void RequestLine에_status_GET이_없으면_예외가_발생한다() {
-        assertThrowsExactly(IllegalArgumentException.class, () -> new RequestLine("ERROR"));
+        assertThrowsExactly(IllegalArgumentException.class, () -> new RequestLine("ERROR /docs/index.html HTTP/1.1"));
     }
 
     @Test

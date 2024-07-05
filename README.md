@@ -33,10 +33,10 @@ User-Agent: Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1)
 ```
 
 - RequestLine
+  - RequestLine에서 각 요소가 존재하지 않으면 예외가 발생한다.
+    - 공백으로 분리했을 때 값이 3개가 아니면 예외가 발생한다.
   - HttpMethod인 GET을 파싱할 수 있다.
-    - index 0에 GET이 없으면 예외가 발생한다.
+    - GET이 없는 경우 예외가 발생한다.
   - path을 파싱할 수 있다.
-    - index 1에 path 값이 없으면 예외가 발생한다.
   - protocol과 버전을 파싱할 수 있다.
-    - index 2에 값이 없으면 예외가 발생한다.
     - protocol 값과 version이 없으면 예외가 발생한다.
