@@ -22,4 +22,10 @@ class RequestLineTest {
         RequestLine actual = new RequestLine("GET /docs/index.html HTTP/1.1");
         assertThat(actual.getHttpMethod()).isEqualTo("GET");
     }
+
+    @Test
+    void RequestLine에서_http_url을_파싱한다() {
+        RequestLine actual = new RequestLine("GET /docs/index.html HTTP/1.1");
+        assertThat(actual.getHttpUrl()).isEqualTo("/docs/index.html");
+    }
 }
