@@ -25,7 +25,7 @@ public class HttpPath {
             return new QueryString(splitHttpPath[QUERY_STRING_INDEX]);
         }
         if (splitHttpPath.length == HTTP_PATH_EMPTY_QUERY_STRING_FORMAT_LENGTH) {
-            return QueryString.empty();
+            return new QueryString();
         }
         throw new IllegalArgumentException("HttpPath값이 정상적으로 입력되지 않았습니다 - " + httpPath);
     }

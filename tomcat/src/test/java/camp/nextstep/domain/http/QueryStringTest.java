@@ -10,6 +10,12 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 class QueryStringTest {
 
     @Test
+    void 기본_생성자는_빈_쿼리_파라미터를_가진다() {
+        QueryString actual = new QueryString();
+        assertThat(actual.getQueryParameters()).isEmpty();
+    }
+
+    @Test
     void key_value가_잘못된_형태로_입력된_경우_예외가_발생한다() {
         assertThatThrownBy(() -> new QueryString("name=jin=young"))
                 .isInstanceOf(IllegalArgumentException.class)

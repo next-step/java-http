@@ -18,12 +18,8 @@ public class QueryString {
 
     private final Map<String, String> queryParameters;
 
-    public static QueryString empty() {
-        return new QueryString(emptyMap());
-    }
-
-    public QueryString(Map<String, String> queryParameters) {
-        this.queryParameters = queryParameters;
+    public QueryString() {
+        this.queryParameters = emptyMap();
     }
 
     public QueryString(String queryString) {
