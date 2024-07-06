@@ -19,3 +19,8 @@
 1. [File, I/O Stream](study/src/test/java/study)
 2. [HTTP Cache](study/src/test/java/cache)
 3. [Thread](study/src/test/java/thread)
+
+# 미션 진행
+
+## RequestLine
+- [x] Get 요청에 대해서 파싱할 수 있다.
