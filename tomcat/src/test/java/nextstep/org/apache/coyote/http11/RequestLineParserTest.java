@@ -8,6 +8,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.Socket;
+import java.util.Map;
 import java.util.Objects;
 
 class RequestLineParserTest {
@@ -39,6 +40,24 @@ class RequestLineParserTest {
         // when
         final var result = parser.parse();
         final var expected = new RequestLine("POST", "/users", "HTTP", "1.1");
+
+        // then
+        Assertions.assertThat(result).isEqualTo(expected);
+    }
+
+    @Test
+    void parser_params() {
+        final String httpRequest = String.join("\r\n",
+                "GET /users?userId=javajigi&password=password&name=JaeSung HTTP/1.1 ",
+                "");
+        final var socket = new StubSocket(httpRequest);
+        final var parser = new RequestLineParser(socket);
+
+        // when
+        final var result = parser.parse();
+        final var expected = new RequestLine("POST", "/users", "HTTP", "1.1",
+                Map.of("userId", "javajigi", "password", "password", "name", "JaeSung")
+        );
 
         // then
         Assertions.assertThat(result).isEqualTo(expected);
