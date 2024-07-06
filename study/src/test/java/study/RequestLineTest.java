@@ -31,7 +31,13 @@ public class RequestLineTest {
             throw new IllegalArgumentException("지원되지 않는 HTTP method. 입력=" + upperCase);
         }
     }
+
     static class RequestLine {
+        private static final String REQUEST_LINE_SPLITERATOR = " ";
+        private static final String PATH_QUERY_SPLITERATOR = "&";
+        private static final String QUERY_STRING_KEY_VALUE_SPLITERATOR = "=";
+        private static final String PROTOCOL_VERSION_SPLITERATOR = "/";
+
         private final HttpMethod method;
         private final String path;
         private final String protocol;
@@ -53,25 +59,28 @@ public class RequestLineTest {
         }
 
         public static RequestLine from(final String request) {
-            String[] requests = request.split("\n");
-            String requestLine = requests[0];
-            String[] requestLines = requestLine.split(" ");
+            String[] requestLines = request.split("\n");
+            String[] requestLine = requestLines[0].split(REQUEST_LINE_SPLITERATOR);
 
-            String method = requestLines[0];
+            String method = requestLine[0];
 
-            String[] pathAndQueryStrings = requestLines[1].split("\\?");
+            String[] pathAndQueryStrings = requestLine[1].split("\\?");
             String path = pathAndQueryStrings[0];
+            Map<String, String> queryStringMap = createQueryStringMap(pathAndQueryStrings);
 
-            String[] queryStrings = pathAndQueryStrings[1].split("&");
-            Map<String, String> queryStringMap = Arrays.stream(queryStrings)
-                    .map(queryString -> queryString.split("="))
-                    .collect(Collectors.toUnmodifiableMap(queryString -> queryString[0], queryString -> queryString[1]));
-
-            String[] protocolAndVersion = requestLines[2].split("/");
+            String[] protocolAndVersion = requestLine[2].split(PROTOCOL_VERSION_SPLITERATOR);
             String protocol = protocolAndVersion[0];
             String version = protocolAndVersion[1];
 
             return new RequestLine(HttpMethod.from(method), path, protocol, version, queryStringMap);
+        }
+
+        private static Map<String, String> createQueryStringMap(final String[] pathAndQueryStrings) {
+            String[] queryStrings = pathAndQueryStrings[1].split(PATH_QUERY_SPLITERATOR);
+
+            return Arrays.stream(queryStrings)
+                    .map(queryString -> queryString.split(QUERY_STRING_KEY_VALUE_SPLITERATOR))
+                    .collect(Collectors.toUnmodifiableMap(queryString -> queryString[0], queryString -> queryString[1]));
         }
 
         public HttpMethod getMethod() {
