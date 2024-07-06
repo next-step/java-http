@@ -25,7 +25,12 @@ public class RequestLineTest {
         }
 
         public static RequestLine from(final String request) {
-            return new RequestLine("", "", "", "");
+            String[] requests = request.split("\n");
+            String requestLine = requests[0];
+            String[] requestLines = requestLine.split(" ");
+
+            String[] protocolAndVersion = requestLines[2].split("/");
+            return new RequestLine(requestLines[0], requestLines[1], protocolAndVersion[0], protocolAndVersion[1]);
         }
 
         public String getMethod() {
@@ -48,7 +53,7 @@ public class RequestLineTest {
     @Test
     void 요청에_대한_RequestLine을_파싱한다() {
         final String request = """
-                GET /docs/index.html HTTP/1.1
+                GET /users HTTP/1.1
                 Host: www.nowhere123.com
                 Accept: image/gif, image/jpeg, */*
                 Accept-Language: en-us
