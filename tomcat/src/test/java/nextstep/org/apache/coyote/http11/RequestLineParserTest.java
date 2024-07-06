@@ -71,12 +71,21 @@ class RequestLine {
     String path;
     String protocol;
     String version;
+    Map<String, String> params;
 
     public RequestLine(String method, String path, String protocol, String version) {
         this.method = method;
         this.path = path;
         this.protocol = protocol;
         this.version = version;
+    }
+
+    public RequestLine(String method, String path, String protocol, String version, Map<String, String> params) {
+        this.method = method;
+        this.path = path;
+        this.protocol = protocol;
+        this.version = version;
+        this.params = params;
     }
 
     @Override
