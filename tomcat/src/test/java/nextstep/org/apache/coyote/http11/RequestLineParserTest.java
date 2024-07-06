@@ -27,7 +27,7 @@ class RequestLineParserTest {
 
         // then
         assertSoftly(softly -> {
-            softly.assertThat(result.method).isEqualTo("GET");
+            softly.assertThat(result.method).isEqualTo(RequestLine.Method.GET);
             softly.assertThat(result.path).isEqualTo("/users");
             softly.assertThat(result.protocol).isEqualTo("HTTP");
             softly.assertThat(result.version).isEqualTo("1.1");
@@ -47,7 +47,7 @@ class RequestLineParserTest {
 
         // then
         assertSoftly(softly -> {
-            softly.assertThat(result.method).isEqualTo("POST");
+            softly.assertThat(result.method).isEqualTo(RequestLine.Method.POST);
             softly.assertThat(result.path).isEqualTo("/users");
             softly.assertThat(result.protocol).isEqualTo("HTTP");
             softly.assertThat(result.version).isEqualTo("1.1");
@@ -68,7 +68,7 @@ class RequestLineParserTest {
 
         // then
         assertSoftly(softly -> {
-            softly.assertThat(result.method).isEqualTo("GET");
+            softly.assertThat(result.method).isEqualTo(RequestLine.Method.GET);
             softly.assertThat(result.path).isEqualTo("/users");
             softly.assertThat(result.protocol).isEqualTo("HTTP");
             softly.assertThat(result.version).isEqualTo("1.1");
@@ -82,13 +82,17 @@ class RequestLineParserTest {
 }
 
 class RequestLine {
-    String method;
+    Method method;
     String path;
     String protocol;
     String version;
     Map<String, String> params;
 
-    public RequestLine(String method, String path, String protocol, String version, Map<String, String> params) {
+    enum Method {
+        GET, POST,
+    }
+
+    public RequestLine(Method method, String path, String protocol, String version, Map<String, String> params) {
         this.method = method;
         this.path = path;
         this.protocol = protocol;
@@ -111,7 +115,7 @@ class RequestLineParser {
 
             BufferedReader br = new BufferedReader(new InputStreamReader(inputStream, "UTF-8"));
             final var lines = br.readLine().split(" ");
-            final String method = lines[0];
+            final RequestLine.Method method = RequestLine.Method.valueOf(lines[0]);
             final String path = lines[1].split("\\?")[0];
             final var params = parseParams(lines[1]);
             final String protocol = lines[2].split("/")[0];
@@ -125,7 +129,7 @@ class RequestLineParser {
 
     private Map<String, String> parseParams(final String input) {
         final var maps = new HashMap<String, String>();
-        if(!input.contains("?")) return maps;
+        if (!input.contains("?")) return maps;
         final var params = input.split("\\?")[1].split("&");
         for (String param : params) {
             final String key = param.split("=")[0];
