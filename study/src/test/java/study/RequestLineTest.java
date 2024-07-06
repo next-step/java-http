@@ -2,6 +2,8 @@ package study;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -50,21 +52,22 @@ public class RequestLineTest {
         }
     }
 
-    @Test
-    void 요청에_대한_RequestLine을_파싱한다() {
+    @ParameterizedTest(name = "method = {0}")
+    @ValueSource(strings = {"GET", "POST"})
+    void 요청에_대한_RequestLine을_파싱한다(String method) {
         final String request = """
-                GET /users HTTP/1.1
+                %s /users HTTP/1.1
                 Host: www.nowhere123.com
                 Accept: image/gif, image/jpeg, */*
                 Accept-Language: en-us
                 Accept-Encoding: gzip, deflate
                 User-Agent: Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1)
                 (blank line)
-                """;
+                """.formatted(method);
 
         RequestLine requestLine = RequestLine.from(request);
 
-        assertThat(requestLine.getMethod()).isEqualTo("GET");
+        assertThat(requestLine.getMethod()).isEqualTo(method);
         assertThat(requestLine.getPath()).isEqualTo("/users");
         assertThat(requestLine.getProtocol()).isEqualTo("HTTP");
         assertThat(requestLine.getVersion()).isEqualTo("1.1");
