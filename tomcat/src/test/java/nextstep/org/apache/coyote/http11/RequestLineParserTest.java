@@ -28,6 +28,23 @@ class RequestLineParserTest {
         Assertions.assertThat(result).isEqualTo(expected);
     }
 
+    @Test
+    void parser_post() {
+        final String httpRequest = String.join("\r\n",
+                "POST /users HTTP/1.1 ",
+                "");
+        final var socket = new StubSocket(httpRequest);
+        final var parser = new RequestLineParser(socket);
+
+        // when
+        final var result = parser.parse();
+        final var expected = new RequestLine("POST", "/users", "HTTP", "1.1");
+
+        // then
+        Assertions.assertThat(result).isEqualTo(expected);
+    }
+
+
 }
 
 class RequestLine {
