@@ -3,6 +3,7 @@ package camp.nextstep.io;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import static camp.nextstep.io.HttpMethod.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -16,7 +17,7 @@ class RequestLineTest {
         RequestLine requestLine = new RequestLine(request);
         //then
         assertAll(
-                () -> assertThat(requestLine.getMethod()).isEqualTo("GET"),
+                () -> assertThat(requestLine.getMethod()).isEqualTo(GET),
                 () -> assertThat(requestLine.getPath()).isEqualTo("/users"),
                 () -> assertThat(requestLine.getProtocol()).isEqualTo("HTTP"),
                 () -> assertThat(requestLine.getVersion()).isEqualTo("1.1")
@@ -32,7 +33,7 @@ class RequestLineTest {
         RequestLine requestLine = new RequestLine(request);
         //then
         assertAll(
-                () -> assertThat(requestLine.getMethod()).isEqualTo("POST"),
+                () -> assertThat(requestLine.getMethod()).isEqualTo(POST),
                 () -> assertThat(requestLine.getPath()).isEqualTo("/users"),
                 () -> assertThat(requestLine.getProtocol()).isEqualTo("HTTP"),
                 () -> assertThat(requestLine.getVersion()).isEqualTo("1.1")
@@ -48,7 +49,7 @@ class RequestLineTest {
         RequestLine requestLine = new RequestLine(request);
         //then
         assertAll(
-                () -> assertThat(requestLine.getMethod()).isEqualTo("GET"),
+                () -> assertThat(requestLine.getMethod()).isEqualTo(GET),
                 () -> assertThat(requestLine.getPath()).isEqualTo("/users"),
                 () -> assertThat(requestLine.getProtocol()).isEqualTo("HTTP"),
                 () -> assertThat(requestLine.getVersion()).isEqualTo("1.1"),

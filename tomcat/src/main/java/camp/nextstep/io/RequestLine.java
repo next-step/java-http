@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 public class RequestLine {
-    private String method;
+    private HttpMethod method;
     private String path;
     private String protocol;
     private String version;
@@ -13,7 +13,7 @@ public class RequestLine {
 
     public RequestLine(String request) {
         String[] tokens = request.split(" ");
-        this.method = tokens[0];
+        this.method = HttpMethod.valueOf(tokens[0]);
 
         if (tokens[1].contains("?")) {
             String[] pathAndQueryString = tokens[1].split("\\?");
@@ -32,7 +32,7 @@ public class RequestLine {
         this.version = protocolAndVersion[1];
     }
 
-    public String getMethod() {
+    public HttpMethod getMethod() {
         return method;
     }
 
