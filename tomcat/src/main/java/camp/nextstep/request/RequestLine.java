@@ -7,7 +7,7 @@ public class RequestLine {
 
     private final String requestLine;
 
-    private String method;
+    private RequestMethod method;
     private String path;
     private String queryString;
     private String protocol;
@@ -24,11 +24,15 @@ public class RequestLine {
         String uri = split[1];
         String protocolAndVersion = split[2];
 
-        this.method = method;
+        extractMethod(method);
         extractPath(uri);
         extractQueryString(uri);
         extractProtocol(protocolAndVersion);
         extractVersion(protocolAndVersion);
+    }
+
+    private void extractMethod(String method) {
+        this.method = RequestMethod.valueOf(method);
     }
 
     private void extractPath(String uri) {
@@ -52,7 +56,7 @@ public class RequestLine {
         this.version = protocolAndVersion.split(PROTOCOL_AND_VERSION_SEPARATOR)[1];
     }
 
-    public String getMethod() {
+    public RequestMethod getMethod() {
         return method;
     }
 

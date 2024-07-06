@@ -11,7 +11,7 @@ class RequestLineTest {
 
         requestLine.process();
 
-        assertThat(requestLine.getMethod()).isEqualTo("GET");
+        assertThat(requestLine.getMethod()).isEqualTo(RequestMethod.GET);
         assertThat(requestLine.getPath()).isEqualTo("/docs/index.html");
         assertThat(requestLine.getProtocol()).isEqualTo("HTTP");
         assertThat(requestLine.getVersion()).isEqualTo("1.1");
@@ -23,7 +23,7 @@ class RequestLineTest {
 
         requestLine.process();
 
-        assertThat(requestLine.getMethod()).isEqualTo("POST");
+        assertThat(requestLine.getMethod()).isEqualTo(RequestMethod.POST);
         assertThat(requestLine.getPath()).isEqualTo("/docs/index.html");
         assertThat(requestLine.getProtocol()).isEqualTo("HTTP");
         assertThat(requestLine.getVersion()).isEqualTo("1.1");
@@ -35,7 +35,7 @@ class RequestLineTest {
 
         requestLine.process();
 
-        assertThat(requestLine.getMethod()).isEqualTo("GET");
+        assertThat(requestLine.getMethod()).isEqualTo(RequestMethod.GET);
         assertThat(requestLine.getPath()).isEqualTo("/users");
         assertThat(requestLine.getQueryString()).isEqualTo("userId=javajigi&password=password&name=JaeSung");
         assertThat(requestLine.getProtocol()).isEqualTo("HTTP");
