@@ -93,12 +93,12 @@ class RequestLine {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         RequestLine that = (RequestLine) o;
-        return Objects.equals(method, that.method) && Objects.equals(path, that.path) && Objects.equals(protocol, that.protocol) && Objects.equals(version, that.version);
+        return Objects.equals(method, that.method) && Objects.equals(path, that.path) && Objects.equals(protocol, that.protocol) && Objects.equals(version, that.version) && Objects.equals(params, that.params);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(method, path, protocol, version);
+        return Objects.hash(method, path, protocol, version, params);
     }
 }
 
@@ -117,13 +117,26 @@ class RequestLineParser {
             BufferedReader br = new BufferedReader(new InputStreamReader(inputStream, "UTF-8"));
             final var lines = br.readLine().split(" ");
             final String method = lines[0];
-            final String path = lines[1];
+            final String path = lines[1].split("\\?")[0];
+            final var params = parseParams(lines[1]);
             final String protocol = lines[2].split("/")[0];
             final String version = lines[2].split("/")[1];
 
-            return new RequestLine(method, path, protocol, version);
+            return new RequestLine(method, path, protocol, version, params);
         } catch (IOException e) {
             return null;
         }
+    }
+
+    private Map<String, String> parseParams(final String input) {
+        final var maps = new HashMap<String, String>();
+        if(!input.contains("?")) return maps;
+        final var params = input.split("\\?")[1].split("&");
+        for (String param : params) {
+            final String key = param.split("=")[0];
+            final String value = param.split("=")[1];
+            maps.put(key, value);
+        }
+        return maps;
     }
 }
