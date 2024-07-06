@@ -115,16 +115,32 @@ class RequestLineParser {
 
             BufferedReader br = new BufferedReader(new InputStreamReader(inputStream, "UTF-8"));
             final var lines = br.readLine().split(" ");
-            final RequestLine.Method method = RequestLine.Method.valueOf(lines[0]);
-            final String path = lines[1].split("\\?")[0];
+            final RequestLine.Method method = parseMethod(lines[0]);
+            final String path = parsePath(lines[1]);
             final var params = parseParams(lines[1]);
-            final String protocol = lines[2].split("/")[0];
-            final String version = lines[2].split("/")[1];
+            final String protocol = parseProtocol(lines[2]);
+            final String version = parseVersion(lines[2]);
 
             return new RequestLine(method, path, protocol, version, params);
         } catch (IOException e) {
             return null;
         }
+    }
+
+    private RequestLine.Method parseMethod(final String input) {
+        return RequestLine.Method.valueOf(input);
+    }
+
+    private String parsePath(final String input) {
+        return input.split("\\?")[0];
+    }
+
+    private String parseProtocol(final String input) {
+        return input.split("/")[0];
+    }
+
+    private String parseVersion(final String input) {
+        return input.split("/")[1];
     }
 
     private Map<String, String> parseParams(final String input) {
