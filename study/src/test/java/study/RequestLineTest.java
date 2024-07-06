@@ -1,10 +1,8 @@
 package study;
 
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
-import org.junit.jupiter.params.provider.ValueSource;
 
 import java.util.Arrays;
 import java.util.Map;
@@ -38,12 +36,20 @@ public class RequestLineTest {
         private final String path;
         private final String protocol;
         private final String version;
+        private final Map<String, String> queryStringMap;
 
-        private RequestLine(final HttpMethod method, final String path, final String protocol, final String version) {
+        private RequestLine(
+                final HttpMethod method,
+                final String path,
+                final String protocol,
+                final String version,
+                final Map<String, String> queryStringMap
+        ) {
             this.method = method;
             this.path = path;
             this.protocol = protocol;
             this.version = version;
+            this.queryStringMap = queryStringMap;
         }
 
         public static RequestLine from(final String request) {
@@ -52,13 +58,20 @@ public class RequestLineTest {
             String[] requestLines = requestLine.split(" ");
 
             String method = requestLines[0];
-            String path = requestLines[1];
+
+            String[] pathAndQueryStrings = requestLines[1].split("\\?");
+            String path = pathAndQueryStrings[0];
+
+            String[] queryStrings = pathAndQueryStrings[1].split("&");
+            Map<String, String> queryStringMap = Arrays.stream(queryStrings)
+                    .map(queryString -> queryString.split("="))
+                    .collect(Collectors.toUnmodifiableMap(queryString -> queryString[0], queryString -> queryString[1]));
 
             String[] protocolAndVersion = requestLines[2].split("/");
             String protocol = protocolAndVersion[0];
             String version = protocolAndVersion[1];
 
-            return new RequestLine(HttpMethod.from(method), path, protocol, version);
+            return new RequestLine(HttpMethod.from(method), path, protocol, version, queryStringMap);
         }
 
         public HttpMethod getMethod() {
@@ -78,7 +91,7 @@ public class RequestLineTest {
         }
 
         public Map<String, String> getQueryStringMap() {
-            return Map.of();
+            return queryStringMap;
         }
     }
 
