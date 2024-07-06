@@ -1,6 +1,5 @@
 package nextstep.org.apache.coyote.http11;
 
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import support.StubSocket;
 
@@ -8,8 +7,10 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.Socket;
+import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
+
+import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
 class RequestLineParserTest {
 
@@ -23,10 +24,14 @@ class RequestLineParserTest {
 
         // when
         final var result = parser.parse();
-        final var expected = new RequestLine("GET", "/users", "HTTP", "1.1");
 
         // then
-        Assertions.assertThat(result).isEqualTo(expected);
+        assertSoftly(softly -> {
+            softly.assertThat(result.method).isEqualTo("GET");
+            softly.assertThat(result.path).isEqualTo("/users");
+            softly.assertThat(result.protocol).isEqualTo("HTTP");
+            softly.assertThat(result.version).isEqualTo("1.1");
+        });
     }
 
     @Test
@@ -39,10 +44,15 @@ class RequestLineParserTest {
 
         // when
         final var result = parser.parse();
-        final var expected = new RequestLine("POST", "/users", "HTTP", "1.1");
 
         // then
-        Assertions.assertThat(result).isEqualTo(expected);
+        assertSoftly(softly -> {
+            softly.assertThat(result.method).isEqualTo("POST");
+            softly.assertThat(result.path).isEqualTo("/users");
+            softly.assertThat(result.protocol).isEqualTo("HTTP");
+            softly.assertThat(result.version).isEqualTo("1.1");
+        });
+
     }
 
     @Test
@@ -55,12 +65,17 @@ class RequestLineParserTest {
 
         // when
         final var result = parser.parse();
-        final var expected = new RequestLine("POST", "/users", "HTTP", "1.1",
-                Map.of("userId", "javajigi", "password", "password", "name", "JaeSung")
-        );
 
         // then
-        Assertions.assertThat(result).isEqualTo(expected);
+        assertSoftly(softly -> {
+            softly.assertThat(result.method).isEqualTo("GET");
+            softly.assertThat(result.path).isEqualTo("/users");
+            softly.assertThat(result.protocol).isEqualTo("HTTP");
+            softly.assertThat(result.version).isEqualTo("1.1");
+            softly.assertThat(result.params.get("userId")).isEqualTo("javajigi");
+            softly.assertThat(result.params.get("password")).isEqualTo("password");
+            softly.assertThat(result.params.get("name")).isEqualTo("JaeSung");
+        });
     }
 
 
@@ -73,32 +88,12 @@ class RequestLine {
     String version;
     Map<String, String> params;
 
-    public RequestLine(String method, String path, String protocol, String version) {
-        this.method = method;
-        this.path = path;
-        this.protocol = protocol;
-        this.version = version;
-    }
-
     public RequestLine(String method, String path, String protocol, String version, Map<String, String> params) {
         this.method = method;
         this.path = path;
         this.protocol = protocol;
         this.version = version;
         this.params = params;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        RequestLine that = (RequestLine) o;
-        return Objects.equals(method, that.method) && Objects.equals(path, that.path) && Objects.equals(protocol, that.protocol) && Objects.equals(version, that.version) && Objects.equals(params, that.params);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(method, path, protocol, version, params);
     }
 }
 
