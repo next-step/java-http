@@ -20,7 +20,7 @@ class RequestLineTest {
         // then
         assertAll(
                 () -> assertThat(requestLine.getHttpMethod()).isEqualTo("GET"),
-                () -> assertThat(requestLine.getPath()).isEqualTo("/users"),
+                () -> assertThat(requestLine.getHttpPath().getPath()).isEqualTo("/users"),
                 () -> assertThat(requestLine.getHttpProtocol()).isEqualTo("HTTP/1.1")
         );
     }
@@ -37,7 +37,27 @@ class RequestLineTest {
         // then
         assertAll(
                 () -> assertThat(requestLine.getHttpMethod()).isEqualTo("POST"),
-                () -> assertThat(requestLine.getPath()).isEqualTo("/users"),
+                () -> assertThat(requestLine.getHttpPath().getPath()).isEqualTo("/users"),
+                () -> assertThat(requestLine.getHttpProtocol()).isEqualTo("HTTP/1.1")
+        );
+    }
+
+    @Test
+    @DisplayName("HTTP 요청에 전달되는 QueryString을 파싱할 수 있다.")
+    void parseQueryString() {
+        // given
+        String request = "GET /users?userId=javajigi&password=password&name=JaeSung HTTP/1.1";
+
+        // when
+        RequestLine requestLine = RequestLine.parse(request);
+
+        // then
+        assertAll(
+                () -> assertThat(requestLine.getHttpMethod()).isEqualTo("GET"),
+                () -> assertThat(requestLine.getHttpPath().getPath()).isEqualTo("/users"),
+                () -> assertThat(requestLine.getHttpPath().getQueryString().getQueryParams()).containsEntry("userId", "javajigi"),
+                () -> assertThat(requestLine.getHttpPath().getQueryString().getQueryParams()).containsEntry("password", "password"),
+                () -> assertThat(requestLine.getHttpPath().getQueryString().getQueryParams()).containsEntry("name", "JaeSung"),
                 () -> assertThat(requestLine.getHttpProtocol()).isEqualTo("HTTP/1.1")
         );
     }
