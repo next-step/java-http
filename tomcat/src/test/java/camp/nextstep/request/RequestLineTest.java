@@ -16,4 +16,16 @@ class RequestLineTest {
         assertThat(requestLine.getProtocol()).isEqualTo("HTTP");
         assertThat(requestLine.getVersion()).isEqualTo("1.1");
     }
+
+    @Test
+    void parsePostRequest() {
+        RequestLine requestLine = new RequestLine("POST /docs/index.html HTTP/1.1");
+
+        requestLine.process();
+
+        assertThat(requestLine.getMethod()).isEqualTo("POST");
+        assertThat(requestLine.getPath()).isEqualTo("/docs/index.html");
+        assertThat(requestLine.getProtocol()).isEqualTo("HTTP");
+        assertThat(requestLine.getVersion()).isEqualTo("1.1");
+    }
 }
