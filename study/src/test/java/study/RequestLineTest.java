@@ -76,6 +76,10 @@ public class RequestLineTest {
         public String getVersion() {
             return version;
         }
+
+        public Map<String, String> getQueryStringMap() {
+            return Map.of();
+        }
     }
 
     @ParameterizedTest(name = "method = {0}")
@@ -97,5 +101,27 @@ public class RequestLineTest {
         assertThat(requestLine.getPath()).isEqualTo("/users");
         assertThat(requestLine.getProtocol()).isEqualTo("HTTP");
         assertThat(requestLine.getVersion()).isEqualTo("1.1");
+    }
+
+    @Test
+    void 쿼리_스트링을_파싱한다() {
+        final String request = """
+                GET /users?userId=javajigi&password=password&name=JaeSung HTTP/1.1
+                Host: www.nowhere123.com
+                Accept: image/gif, image/jpeg, */*
+                Accept-Language: en-us
+                Accept-Encoding: gzip, deflate
+                User-Agent: Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1)
+                (blank line)
+                """;
+
+        RequestLine requestLine = RequestLine.from(request);
+
+        Map<String, String> queryStringMap = requestLine.getQueryStringMap();
+        assertThat(queryStringMap).containsAllEntriesOf(Map.of(
+                "userId", "javajigi",
+                "password", "password",
+                "name", "JaeSung"
+        ));
     }
 }
