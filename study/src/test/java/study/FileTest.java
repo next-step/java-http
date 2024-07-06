@@ -3,9 +3,13 @@ package study;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.io.*;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -18,7 +22,7 @@ class FileTest {
 
     /**
      * resource 디렉터리 경로 찾기
-     *
+     * <p>
      * File 객체를 생성하려면 파일의 경로를 알아야 한다.
      * 자바 애플리케이션은 resource 디렉터리에 HTML, CSS 같은 정적 파일을 저장한다.
      * resource 디렉터리의 경로는 어떻게 알아낼 수 있을까?
@@ -27,28 +31,48 @@ class FileTest {
     void resource_디렉터리에_있는_파일의_경로를_찾는다() {
         final String fileName = "nextstep.txt";
 
-        // todo
-        final String actual = "";
+        final String actual = ClassLoader.getSystemResource(fileName).getFile();
 
         assertThat(actual).endsWith(fileName);
     }
 
     /**
      * 파일 내용 읽기
-     *
-     * 읽어온 파일의 내용을 I/O Stream을 사용해서 사용자에게 전달 해야 한다.
+     * <p>
+     * 읽어온 파일의 내용을 I/O Stream 을 사용해서 사용자에게 전달 해야 한다.
      * File, Files 클래스를 사용하여 파일의 내용을 읽어보자.
      */
     @Test
-    void 파일의_내용을_읽는다() {
+    void 파일의_내용을_읽는다() throws IOException {
         final String fileName = "nextstep.txt";
 
-        // todo
-        final Path path = null;
+        String absoluteFileName = ClassLoader.getSystemResource(fileName).getFile();
+        final Path path = new File(absoluteFileName).toPath();
 
-        // todo
-        final List<String> actual = Collections.emptyList();
+        final List<String> actual;
+        try (Stream<String> lines = Files.lines(path)) {
+            actual = lines.toList();
+        }
 
+        assertThat(actual).containsOnly("nextstep");
+    }
+
+    @Test
+    void stream_을_이용해_파일의_내용을_읽는다() throws IOException {
+        final String fileName = "nextstep.txt";
+
+        InputStream inputStream = ClassLoader.getSystemResourceAsStream(fileName);
+        assert inputStream != null;
+        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
+
+        String line = bufferedReader.readLine();
+        List<String> lines = new ArrayList<>();
+        while (line != null) {
+            lines.add(line);
+            System.out.println(line);
+            line = bufferedReader.readLine();
+        }
+        List<String> actual = lines;
         assertThat(actual).containsOnly("nextstep");
     }
 }
