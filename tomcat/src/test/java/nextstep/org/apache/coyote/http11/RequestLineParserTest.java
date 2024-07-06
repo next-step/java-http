@@ -88,7 +88,7 @@ class RequestLineParser {
 
             BufferedReader br = new BufferedReader(new InputStreamReader(inputStream, "UTF-8"));
             final var lines = br.readLine().split(" ");
-            final String method = "GET";
+            final String method = lines[0];
             final String path = lines[1];
             final String protocol = lines[2].split("/")[0];
             final String version = lines[2].split("/")[1];
