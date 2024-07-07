@@ -19,3 +19,34 @@
 1. [File, I/O Stream](study/src/test/java/study)
 2. [HTTP Cache](study/src/test/java/cache)
 3. [Thread](study/src/test/java/thread)
+
+## 1단계 - TDD 실습
+- request example
+```http request
+GET /docs/index.html HTTP/1.1
+Host: www.nowhere123.com
+Accept: image/gif, image/jpeg, */*
+Accept-Language: en-us
+Accept-Encoding: gzip, deflate
+User-Agent: Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1)
+(blank line)
+```
+
+- RequestLine
+  - RequestLine에서 각 요소가 존재하지 않으면 예외가 발생한다.
+    - 공백으로 분리했을 때 값이 3개가 아니면 예외가 발생한다.
+  - HttpMethod를 파싱할 수 있다.
+  - path을 파싱할 수 있다.
+  - protocol과 버전을 파싱할 수 있다.
+    - protocol 값과 version이 없으면 예외가 발생한다.
+- HttpPath
+  - ?를 통해 queryString을 파싱할 수 있다.
+  - queryString의 경우 &로 각 값이 구분된다.
+  - queryString의 각 값은 =를 통해 key와 value로 구분된다.
+  - =를 통해 각 값이 정상적으로 분지어지지 않는 경우 예외가 발생한다.
+- HttpMethod
+  - GET과 POST를 가진다.
+  - GET과 POST가 아닌 값으로 파싱하려하는 경우 예외가 발생한다.
+- HttpProtocol
+  - HttpProtocol 스펙(protocol, version)을 관리한다. 
+  - protocol값과 version이 없으면 예외가 발생한다.
