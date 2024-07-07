@@ -1,6 +1,8 @@
 package camp.nextstep.util;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 
 import java.io.IOException;
 
@@ -33,5 +35,12 @@ class FileUtilTest {
         assertThatThrownBy(() -> FileUtil.parseExtension("/index/test"))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("확장자 구분자가 존재하지 않아 확장자를 추출할 수 없습니다 - /index/test");
+    }
+
+    @ParameterizedTest
+    @CsvSource(value = {"/index.html,true", "/index,false"})
+    void 파일의_확장자가_있는지_확인한다(String givenPath, boolean expected) {
+        boolean actual = FileUtil.containsExtensionDelimiter(givenPath);
+        assertThat(actual).isEqualTo(expected);
     }
 }

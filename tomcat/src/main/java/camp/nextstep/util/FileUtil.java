@@ -38,4 +38,8 @@ public class FileUtil {
         }
         return filePath.substring(filePath.lastIndexOf(FILE_EXTENSION_DELIMITER));
     }
+
+    public static boolean containsExtensionDelimiter(String path) {
+        return path.contains(FILE_EXTENSION_DELIMITER);
+    }
 }
