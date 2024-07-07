@@ -40,6 +40,7 @@ public class Http11Processor implements Runnable, Processor {
             final RequestURI requestURI = requestLine.getRequestURI();
 
             var responseBody = "Hello world!".getBytes();
+            var responseContentType = "text/html";
             final HttpPath path = requestURI.getPath();
             if (path.isHtml()) {
                 InputStream inputStream = ClassLoader.getSystemClassLoader().getResourceAsStream("static" + path.getPath());
@@ -47,11 +48,15 @@ public class Http11Processor implements Runnable, Processor {
                     inputStream = ClassLoader.getSystemClassLoader().getResourceAsStream("static/404.html");
                 }
                 responseBody = inputStream.readAllBytes();
+            } else if (path.isCss()) {
+                InputStream inputStream = ClassLoader.getSystemClassLoader().getResourceAsStream("static" + path.getPath());
+                responseBody = inputStream.readAllBytes();
+                responseContentType = "text/css";
             }
 
             final var responseHeader = String.join(System.lineSeparator(),
                     "HTTP/1.1 200 OK ",
-                    "Content-Type: text/html;charset=utf-8 ",
+                    String.format("Content-Type: %s;charset=utf-8 ", responseContentType),
                     "Content-Length: " + responseBody.length + " ",
                     System.lineSeparator());
 

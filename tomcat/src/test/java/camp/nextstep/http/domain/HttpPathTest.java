@@ -20,4 +20,11 @@ class HttpPathTest {
         assertThat(httpPath.isHtml()).isTrue();
     }
 
+    @Test
+    void httpPath_가_css_인지_반환받을_수_있다() {
+        final HttpPath httpPath = new HttpPath("/style.css");
+
+        assertThat(httpPath.isCss()).isTrue();
+    }
+
 }

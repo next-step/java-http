@@ -18,6 +18,10 @@ public class HttpPath {
         return path.endsWith(".html");
     }
 
+    public boolean isCss() {
+        return path.endsWith(".css");
+    }
+
     @Override
     public boolean equals(final Object o) {
         if (this == o) return true;
