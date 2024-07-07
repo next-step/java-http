@@ -13,7 +13,7 @@ public class RequestLine {
     private static final int HTTP_URL_INDEX = 1;
     private static final int HTTP_PROTOCOL_INDEX = 2;
 
-    private static final ContentType DEFAULT_FILE_PATH = ContentType.TEXT_HTML;
+    private static final ContentType DEFAULT_CONTENT_TYPE = ContentType.TEXT_HTML;
 
     private final HttpMethod httpMethod;
     private final HttpPath httpPath;
@@ -46,7 +46,7 @@ public class RequestLine {
         if (containsExtensionDelimiter(httpPath.getPath())) {
             return httpPath.getPath();
         }
-        return httpPath.getPath() + DEFAULT_FILE_PATH.getExtension();
+        return httpPath.getPath() + DEFAULT_CONTENT_TYPE.getExtension();
     }
 
     public Map<String, String> getQueryString() {
