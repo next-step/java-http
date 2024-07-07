@@ -5,19 +5,24 @@ import camp.nextstep.http.exception.InvalidHttpVersionException;
 import java.util.Objects;
 
 public class HttpVersion {
+    private static final int REQUIRED_HTTP_VERSION_LENGTH = 2;
+    private static final int PROTOCOL_INDEX = 0;
+    private static final int VERSION_INDEX = 1;
+    private static final String DELIMITER = "/";
+
     private final String protocol;
     private final String version;
 
     public HttpVersion(final String httpVersion) {
         final String[] split = parseHttpVersion(httpVersion);
-        this.protocol = split[0];
-        this.version = split[1];
+        this.protocol = split[PROTOCOL_INDEX];
+        this.version = split[VERSION_INDEX];
     }
 
     private static String[] parseHttpVersion(final String httpVersion) {
-        final String[] split = httpVersion.split("/");
+        final String[] split = httpVersion.split(DELIMITER);
 
-        if (split.length != 2) {
+        if (split.length != REQUIRED_HTTP_VERSION_LENGTH) {
             throw new InvalidHttpVersionException("Invalid HTTP version: " + httpVersion);
         }
 
