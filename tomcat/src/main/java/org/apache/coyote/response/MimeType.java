@@ -20,7 +20,7 @@ public enum MimeType {
         return Arrays.stream(values())
                 .filter(mimeType -> path.contains(mimeType.fileExtension))
                 .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("지원하지 않는 타입입니다."));
+                .orElse(HTML);
     }
 
     public String getContentType() {

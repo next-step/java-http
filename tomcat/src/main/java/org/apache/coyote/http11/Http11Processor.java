@@ -1,6 +1,8 @@
 package org.apache.coyote.http11;
 
+import camp.nextstep.db.InMemoryUserRepository;
 import camp.nextstep.exception.UncheckedServletException;
+import camp.nextstep.model.User;
 import org.apache.coyote.Processor;
 import org.apache.coyote.request.RequestHeaders;
 import org.apache.coyote.request.RequestLine;
@@ -55,9 +57,15 @@ public class Http11Processor implements Runnable, Processor {
             String responseBody = findResponseBody(httpPath);
             MimeType mimeType = MimeType.from(httpPath);
 
+            if (null != requestLine.findQueryParam("account")) {
+                User account = InMemoryUserRepository.findByAccount(requestLine.findQueryParam("account"))
+                        .orElseThrow(IllegalArgumentException::new);
+                log.info(account.toString());
+            }
+
             String response = String.join("\r\n",
                     "HTTP/1.1 200 OK ",
-                    "Content-Type: " + mimeType.getContentType() + "  ",
+                    "Content-Type: " + mimeType.getContentType() + " ",
                     "Content-Length: " + responseBody.getBytes().length + " ",
                     "",
                     responseBody);
@@ -74,6 +82,9 @@ public class Http11Processor implements Runnable, Processor {
             return ROOT_CONTENT;
         }
         ClassLoader classLoader = getClass().getClassLoader();
+        if (!httpPath.contains(".")) {
+            httpPath += ".html";
+        }
         URL resource = classLoader.getResource("static" + httpPath);
         Path path = Path.of(Objects.requireNonNull(resource).getPath());
         return new String(Files.readAllBytes(path));
