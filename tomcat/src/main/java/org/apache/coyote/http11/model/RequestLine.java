@@ -34,4 +34,8 @@ public class RequestLine {
     public QueryParams queryParams() {
         return path.queryParams();
     }
+
+    public boolean isRootPath() {
+        return path.isRootPath();
+    }
 }
