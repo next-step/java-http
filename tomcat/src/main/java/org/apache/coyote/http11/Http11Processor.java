@@ -17,6 +17,8 @@ public class Http11Processor implements Runnable, Processor {
 
     private static final Logger log = LoggerFactory.getLogger(Http11Processor.class);
 
+    private static final String ROOT_PATH = "/";
+
     private final Socket connection;
 
     public Http11Processor(final Socket connection) {
@@ -53,14 +55,14 @@ public class Http11Processor implements Runnable, Processor {
     }
 
     private String parseResponseBody(final String path) throws IOException {
-        if (path.equals("/")) {
+        if (path.equals(ROOT_PATH)) {
             return "Hello world!";
         }
         return FileUtil.readStaticPathFileResource(path, getClass());
     }
 
     private ContentType parseContentType(final String path) {
-        if (path.equals("/")) {
+        if (path.equals(ROOT_PATH)) {
             return ContentType.TEXT_HTML;
         }
         String extension = FileUtil.parseExtension(path);
