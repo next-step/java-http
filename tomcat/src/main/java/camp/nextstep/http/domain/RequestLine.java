@@ -1,5 +1,7 @@
 package camp.nextstep.http.domain;
 
+import camp.nextstep.http.exception.InvalidRequestLineException;
+
 public class RequestLine {
 
     private final String method;
@@ -8,10 +10,19 @@ public class RequestLine {
     private final String version;
 
     public RequestLine(final String requestLine) {
-        this.method = requestLine.split(" ")[0];
-        this.path = requestLine.split(" ")[1];
-        this.protocol = requestLine.split(" ")[2].split("/")[0];
-        this.version = requestLine.split(" ")[2].split("/")[1];
+        final String[] split = parseRequestLine(requestLine);
+        this.method = split[0];
+        this.path = split[1];
+        this.protocol = split[2].split("/")[0];
+        this.version = split[2].split("/")[1];
+    }
+
+    private String[] parseRequestLine(final String requestLine) {
+        final String[] split = requestLine.split(" ");
+        if (split.length != 3) {
+            throw new InvalidRequestLineException("Invalid request line: " + requestLine);
+        }
+        return split;
     }
 
     public String getMethod() {

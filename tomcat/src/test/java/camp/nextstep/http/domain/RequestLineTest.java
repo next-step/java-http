@@ -1,8 +1,10 @@
 package camp.nextstep.http.domain;
 
+import camp.nextstep.http.exception.InvalidRequestLineException;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class RequestLineTest {
 
@@ -32,5 +34,11 @@ class RequestLineTest {
         final RequestLine requestLine = new RequestLine("GET /users HTTP/1.1");
 
         assertThat(requestLine.getVersion()).isEqualTo("1.1");
+    }
+
+    @Test
+    void requestLine_형식이_맞지_않으면_예외가_발생한다() {
+        assertThatThrownBy(() -> new RequestLine("GET /wrong"))
+                .isInstanceOf(InvalidRequestLineException.class);
     }
 }
