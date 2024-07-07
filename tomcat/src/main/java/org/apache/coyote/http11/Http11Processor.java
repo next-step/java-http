@@ -40,8 +40,12 @@ public class Http11Processor implements Runnable, Processor {
             final RequestURI requestURI = requestLine.getRequestURI();
 
             var responseBody = "Hello world!".getBytes();
-            if (new HttpPath("/index.html").equals(requestURI.getPath())) {
-                final InputStream inputStream = ClassLoader.getSystemClassLoader().getResourceAsStream("static/index.html");
+            final HttpPath path = requestURI.getPath();
+            if (path.isHtml()) {
+                InputStream inputStream = ClassLoader.getSystemClassLoader().getResourceAsStream("static" + path.getPath());
+                if (inputStream == null) {
+                    inputStream = ClassLoader.getSystemClassLoader().getResourceAsStream("static/404.html");
+                }
                 responseBody = inputStream.readAllBytes();
             }
 

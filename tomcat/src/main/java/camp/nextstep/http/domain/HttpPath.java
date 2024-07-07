@@ -14,6 +14,10 @@ public class HttpPath {
         return path;
     }
 
+    public boolean isHtml() {
+        return path.endsWith(".html");
+    }
+
     @Override
     public boolean equals(final Object o) {
         if (this == o) return true;
