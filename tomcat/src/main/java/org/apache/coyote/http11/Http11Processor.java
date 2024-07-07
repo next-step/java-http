@@ -1,8 +1,10 @@
 package org.apache.coyote.http11;
 
+import camp.nextstep.db.InMemoryUserRepository;
 import camp.nextstep.domain.http.ContentType;
 import camp.nextstep.domain.http.RequestLine;
 import camp.nextstep.exception.UncheckedServletException;
+import camp.nextstep.model.User;
 import camp.nextstep.util.FileUtil;
 import org.apache.coyote.Processor;
 import org.slf4j.Logger;
@@ -40,6 +42,16 @@ public class Http11Processor implements Runnable, Processor {
 
             final var requestLine = new RequestLine(inputReader.readLine());
             final var responseBody = parseResponseBody(requestLine);
+
+            if (requestLine.getHttpPath().equals("/login")) {
+                String account = requestLine.getQueryString().get("account");
+                String password = requestLine.getQueryString().get("password");
+                User user = InMemoryUserRepository.findByAccount(account)
+                        .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 account입니다."));
+                if (user.checkPassword(password)) {
+                    log.info("조회한 유저 정보 - {}", user);
+                }
+            }
 
             final var response = String.join("\r\n",
                     "HTTP/1.1 200 OK ",
