@@ -22,4 +22,8 @@ public enum ContentType {
                 .findAny()
                 .orElseThrow(() -> new IllegalArgumentException("지원하지 않는 확장자입니다."));
     }
+
+    public String getContentType() {
+        return contentType;
+    }
 }

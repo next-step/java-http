@@ -1,5 +1,6 @@
 package org.apache.coyote.http11;
 
+import camp.nextstep.domain.http.ContentType;
 import camp.nextstep.domain.http.RequestLine;
 import camp.nextstep.exception.UncheckedServletException;
 import camp.nextstep.util.FileUtil;
@@ -39,7 +40,7 @@ public class Http11Processor implements Runnable, Processor {
 
             final var response = String.join("\r\n",
                     "HTTP/1.1 200 OK ",
-                    "Content-Type: " + parseContentType(requestLine.getHttpPath()) + ";charset=utf-8 ",
+                    "Content-Type: " + parseContentType(requestLine.getHttpPath()).getContentType() + ";charset=utf-8 ",
                     "Content-Length: " + responseBody.getBytes().length + " ",
                     "",
                     responseBody);
@@ -58,13 +59,11 @@ public class Http11Processor implements Runnable, Processor {
         return FileUtil.readStaticPathFileResource(path, getClass());
     }
 
-    private String parseContentType(final String path) {
-        if (path.endsWith(".css")) {
-            return "text/css";
+    private ContentType parseContentType(final String path) {
+        if (path.equals("/")) {
+            return ContentType.TEXT_HTML;
         }
-        if (path.endsWith(".js")) {
-            return "application/javascript";
-        }
-        return "text/html";
+        String extension = FileUtil.parseExtension(path);
+        return ContentType.fromExtension(extension);
     }
 }
