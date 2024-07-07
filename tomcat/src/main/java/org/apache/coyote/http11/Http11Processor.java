@@ -55,10 +55,7 @@ public class Http11Processor implements Runnable, Processor {
         if (path.equals("/")) {
             return "Hello world!";
         }
-        if (path.endsWith(".html") || path.endsWith(".css") || path.endsWith(".js")) {
-            return FileUtil.readStaticPathFileResource(path, getClass());
-        }
-        throw new IllegalStateException("처리할 수 없습니다.");
+        return FileUtil.readStaticPathFileResource(path, getClass());
     }
 
     private String parseContentType(final String path) {
