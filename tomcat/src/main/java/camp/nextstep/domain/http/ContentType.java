@@ -23,6 +23,10 @@ public enum ContentType {
                 .orElseThrow(() -> new IllegalArgumentException("지원하지 않는 확장자입니다."));
     }
 
+    public String getExtension() {
+        return extension;
+    }
+
     public String getContentType() {
         return contentType;
     }
