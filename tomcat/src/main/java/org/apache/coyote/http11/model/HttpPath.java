@@ -27,4 +27,9 @@ public class HttpPath {
     public boolean isRootPath() {
         return urlPath.isRootPath();
     }
+
+    public String contentTypeText() {
+        return urlPath.findContentType()
+                .contentType();
+    }
 }

@@ -21,6 +21,10 @@ public class UrlPath {
     }
 
     public ContentType findContentType() {
+        if (isRootPath()) {
+            return ContentType.TEXT_HTML;
+        }
+
         final String extension = urlPath.substring(urlPath.lastIndexOf(EXTENSION_DELIMITER));
         return ContentType.findByExtension(extension);
     }

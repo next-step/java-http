@@ -38,4 +38,8 @@ public class RequestLine {
     public boolean isRootPath() {
         return httpPath.isRootPath();
     }
+
+    public String contentTypeText() {
+        return httpPath.contentTypeText();
+    }
 }

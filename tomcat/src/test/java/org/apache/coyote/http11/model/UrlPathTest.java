@@ -12,9 +12,9 @@ class UrlPathTest {
     @CsvSource(
             delimiter = ',',
             value = {
-                    "test.js, APPLICATION_JAVASCRIPT",
-                    "test.html, TEXT_HTML",
-                    "test.css, TEXT_CSS"
+                    "/test.js, APPLICATION_JAVASCRIPT",
+                    "/test.html, TEXT_HTML",
+                    "/test.css, TEXT_CSS"
             }
     )
     void findExtension(final String urlPathString, final ContentType expect) {
