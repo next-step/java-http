@@ -76,3 +76,19 @@ X-Pad: avoid browser bug
 - HTTP 요청(request)의 Query String으로 전달되는 데이터를 파싱한다.
 - "GET /users?userId=javajigi&password=password&name=JaeSung HTTP/1.1" 파싱해 Query String 을 추출할 수 있다.
 
+## 2단계 - HTTP 서버 구현하기
+
+### 요구사항 1 - GET /index.html 응답하기
+
+- http://localhost:8080/index.html 에 접근할 수 있도록 한다
+    ```http request
+      GET /index.html HTTP/1.1
+      Host: localhost:8080
+      Connection: keep-alive
+      Accept: */*
+    ```
+    - `Http11ProcessorTest` 를 통과 시켜야 한다.
+      - `/`요청은 `Hello world!` 를 OutputStream 에 쓴다.
+      - `/index.html`요청은 해당 파일을 찾아 OutputStream 에 쓴다.
+        - 해당 파일이 없는경우 `404.html` 을 OutputStream 에 쓴다.
+  
