@@ -1,26 +1,29 @@
 package org.apache.coyote.http11;
 
 import camp.nextstep.exception.UncheckedServletException;
-import org.apache.catalina.connector.CoyoteAdapter;
+import jakarta.servlet.ServletContext;
 import org.apache.coyote.Processor;
-import org.apache.coyote.http.*;
-import org.apache.coyote.view.ErrorViewResolver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.Socket;
+import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 public class Http11Processor implements Runnable, Processor {
 
     private static final Logger log = LoggerFactory.getLogger(Http11Processor.class);
 
     private final Socket connection;
-    private final CoyoteAdapter adapter;
 
-    public Http11Processor(final Socket connection, final CoyoteAdapter adapter) {
+    public Http11Processor(final Socket connection) {
         this.connection = connection;
-        this.adapter = adapter;
     }
 
     @Override
@@ -34,39 +37,42 @@ public class Http11Processor implements Runnable, Processor {
         try (final var inputStream = connection.getInputStream();
              final var outputStream = connection.getOutputStream()) {
 
-            final Response response = new Response();
-            final HttpInputParser httpParser = new HttpInputParser(inputStream);
+            final Http11Input http11Input = new Http11Input(inputStream);
+            http11Input.parseRequestLine();
 
-            processInternal(httpParser, response);
+            final Request request = http11Input.getRequest();
 
-            outputStream.write(response.toBytes());
-            httpParser.close();
+            var responseBody = "Hello world!";
+            // TODO 일급컬렉션 변경
+            final Map<String, String> responseHeaderMap = new HashMap<>();
+            responseHeaderMap.put("Content-Type", "text/html;charset=utf-8 ");
+
+            // TODO 역할 분리
+            final URL resource = getClass().getClassLoader().getResource("static/" + request.getPath());
+
+            if (resource != null) {
+                final Path path = new File(resource.getFile()).toPath();
+                responseBody = new String(Files.readAllBytes(path));
+                final String mimeType = Files.probeContentType(path);
+                responseHeaderMap.put("Content-Type", mimeType + ";charset=utf-8 ");
+            }
+
+            final String headers = responseHeaderMap.entrySet()
+                    .stream()
+                    .map(entry -> entry.getKey() + ": " + entry.getValue())
+                    .collect(Collectors.joining("\r\n"));
+
+            final var response = String.join("\r\n",
+                    "HTTP/1.1 200 OK ",
+                    headers,
+                    "Content-Length: " + responseBody.getBytes().length + " ",
+                    "",
+                    responseBody);
+
+            outputStream.write(response.getBytes());
             outputStream.flush();
-
         } catch (IOException | UncheckedServletException e) {
             log.error(e.getMessage(), e);
-        }
-    }
-
-    private void processInternal(final HttpInputParser httpParser, final Response response) {
-        try {
-            httpParser.parseRequestLine();
-
-            final Request request = httpParser.getRequest();
-            response.init();
-
-            adapter.service(request, response);
-        } catch (HttpParseException e) {
-            final String body = ErrorViewResolver.errorView(e.getMessage());
-
-            response.setBody(body, ContentType.TEXT_HTML);
-            response.setResponseLine(HttpVersion.HTTP1_1, StatusCode.BAD_REQUEST);
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
-            final String body = ErrorViewResolver.errorView(e.getMessage());
-
-            response.setBody(body, ContentType.TEXT_HTML);
-            response.setResponseLine(HttpVersion.HTTP1_1, StatusCode.INTERNAL_SERVER_ERROR);
         }
     }
 }
