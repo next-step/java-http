@@ -4,14 +4,15 @@ import camp.nextstep.http.exception.InvalidRequestLineException;
 
 public class RequestLine {
 
-    private final String method;
+    private static final int METHOD_INDEX = 0;
+    private final HttpMethod method;
     private final String path;
     private final String protocol;
     private final String version;
 
     public RequestLine(final String requestLine) {
         final String[] split = parseRequestLine(requestLine);
-        this.method = split[0];
+        this.method = HttpMethod.valueOf(split[METHOD_INDEX]);
         this.path = split[1];
         this.protocol = split[2].split("/")[0];
         this.version = split[2].split("/")[1];
@@ -25,7 +26,7 @@ public class RequestLine {
         return split;
     }
 
-    public String getMethod() {
+    public HttpMethod getMethod() {
         return method;
     }
 
