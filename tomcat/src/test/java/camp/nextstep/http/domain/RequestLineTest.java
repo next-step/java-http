@@ -30,17 +30,10 @@ class RequestLineTest {
     }
 
     @Test
-    void requestLine_에서_Protocol_을_반환받을_수_있다() {
-        final RequestLine requestLine = new RequestLine("GET /users HTTP/1.1");
-
-        assertThat(requestLine.getProtocol()).isEqualTo("HTTP");
-    }
-
-    @Test
     void requestLine_에서_Version_을_반환받을_수_있다() {
         final RequestLine requestLine = new RequestLine("GET /users HTTP/1.1");
 
-        assertThat(requestLine.getVersion()).isEqualTo("1.1");
+        assertThat(requestLine.getVersion()).isEqualTo(new HttpVersion("HTTP/1.1"));
     }
 
     @Test

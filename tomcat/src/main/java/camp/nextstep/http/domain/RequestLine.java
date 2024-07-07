@@ -8,15 +8,13 @@ public class RequestLine {
     public static final int PATH_INDEX = 1;
     private final HttpMethod method;
     private final HttpPath path;
-    private final String protocol;
-    private final String version;
+    private final HttpVersion version;
 
     public RequestLine(final String requestLine) {
         final String[] split = parseRequestLine(requestLine);
         this.method = HttpMethod.valueOf(split[METHOD_INDEX]);
         this.path = new HttpPath(split[PATH_INDEX]);
-        this.protocol = split[2].split("/")[0];
-        this.version = split[2].split("/")[1];
+        this.version = new HttpVersion(split[2]);
     }
 
     private String[] parseRequestLine(final String requestLine) {
@@ -35,11 +33,7 @@ public class RequestLine {
         return path;
     }
 
-    public String getProtocol() {
-        return protocol;
-    }
-
-    public String getVersion() {
+    public HttpVersion getVersion() {
         return version;
     }
 }
