@@ -3,14 +3,12 @@ package org.apache.coyote.http11.model;
 import java.util.HashMap;
 
 public class HttpPath {
-    private static final String ROOT_PATH = "/";
-
-    private final String path;
+    private final UrlPath urlPath;
     private final QueryParams queryParams;
 
 
     public HttpPath(final String path, final QueryParams queryParams) {
-        this.path = path;
+        this.urlPath = new UrlPath(path);
         this.queryParams = queryParams;
     }
 
@@ -19,7 +17,7 @@ public class HttpPath {
     }
 
     public String path() {
-        return path;
+        return urlPath.urlPath();
     }
 
     public QueryParams queryParams() {
@@ -27,6 +25,6 @@ public class HttpPath {
     }
 
     public boolean isRootPath() {
-        return ROOT_PATH.equals(this.path);
+        return urlPath.isRootPath();
     }
 }
