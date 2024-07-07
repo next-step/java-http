@@ -3,10 +3,12 @@ package study;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import java.io.File;
 import java.io.IOException;
-import java.nio.file.*;
-import java.util.Collections;
+import java.net.URL;
+import java.nio.file.FileSystems;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -40,6 +42,19 @@ class FileTest {
                 .toString();
 
         assertThat(actual).endsWith(fileName);
+    }
+
+    @DisplayName("ClassLoader를 이용해서 클래스 패스에서 파일 이름으로 파일 찾기")
+    @Test
+    void 파일_경로_찾기() {
+        final String fileName = "nextstep.txt";
+
+        // build/resources, build/classes 에서 파일을 찾는다
+        URL resource = getClass()
+                .getClassLoader()
+                .getResource(fileName);  // nextstep.txt 파일은 test/resources 에 위치하므로 build/resources/test 에서 찾게 된다.
+
+        assertThat(resource.toString()).endsWith(fileName);
     }
 
     /**
