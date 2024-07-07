@@ -33,14 +33,18 @@ public class Http11Processor implements Runnable, Processor {
     @Override
     public void process(final Socket connection) {
         try (final var inputStream = connection.getInputStream();
+             BufferedReader br = new BufferedReader(new InputStreamReader(inputStream));
              final var outputStream = connection.getOutputStream()) {
 
-            BufferedReader br = new BufferedReader(new InputStreamReader(inputStream));
             StringBuilder sb = new StringBuilder();
 
-            String line;
-            while ((line = br.readLine()) != null) {
-                sb.append(line);
+            while (true) {
+                String line = br.readLine();
+                if (line == null || line.isEmpty()) {
+                    break;
+                }
+
+                sb.append(line).append("\n");
             }
 
             String requestLines = sb.toString();
