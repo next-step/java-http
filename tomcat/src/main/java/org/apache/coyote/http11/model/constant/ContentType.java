@@ -25,4 +25,8 @@ public enum ContentType {
     public String contentType() {
         return this.contentType;
     }
+
+    public String extension() {
+        return this.extension;
+    }
 }

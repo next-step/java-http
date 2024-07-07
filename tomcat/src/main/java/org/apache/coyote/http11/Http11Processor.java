@@ -25,7 +25,7 @@ public class Http11Processor implements Runnable, Processor {
     private static final Logger log = LoggerFactory.getLogger(Http11Processor.class);
     private static final String STATIC_PATH = "static";
     private static final String ROOT_PATH_RESPONSE_BODY = "Hello world!";
-    private static final String LOGIN_PATH = "/login.html";
+    private static final String LOGIN_PATH = "/login";
     private static final String LOGIN_ACCOUNT_KEY = "account";
     private static final String LOGIN_PASSWORD_KEY = "password";
     private static final HttpRequestHeaderParser HTTP_REQUEST_HEADER_PARSER = new HttpRequestHeaderParser();
@@ -82,7 +82,7 @@ public class Http11Processor implements Runnable, Processor {
     private void loggingUser(final QueryParams queryParams) {
         final User user = InMemoryUserRepository.findByAccount(queryParams.valueBy(LOGIN_ACCOUNT_KEY))
                 .orElseThrow(NoSuchElementException::new);
-        
+
         if (user.checkPassword(queryParams.valueBy(LOGIN_PASSWORD_KEY))) {
             log.info("user {}", user);
         }
@@ -92,6 +92,7 @@ public class Http11Processor implements Runnable, Processor {
         if (requestLine.isRootPath()) {
             return ROOT_PATH_RESPONSE_BODY;
         }
+
         final URL path = getClass().getClassLoader().getResource(STATIC_PATH + requestLine.url());
         final File html = new File(path.getFile());
 

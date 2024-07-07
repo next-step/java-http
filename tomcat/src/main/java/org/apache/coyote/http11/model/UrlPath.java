@@ -4,7 +4,7 @@ import org.apache.coyote.http11.model.constant.ContentType;
 
 public class UrlPath {
     private static final String ROOT_PATH = "/";
-    private static final char EXTENSION_DELIMITER = '.';
+    private static final String EXTENSION_DELIMITER = ".";
 
     private final String urlPath;
 
@@ -13,6 +13,10 @@ public class UrlPath {
     }
 
     public String urlPath() {
+        if (hasNotExtension()) {
+            return urlPath + ContentType.TEXT_HTML.extension();
+        }
+
         return urlPath;
     }
 
@@ -21,11 +25,15 @@ public class UrlPath {
     }
 
     public ContentType findContentType() {
-        if (isRootPath()) {
+        if (isRootPath() || hasNotExtension()) {
             return ContentType.TEXT_HTML;
         }
 
         final String extension = urlPath.substring(urlPath.lastIndexOf(EXTENSION_DELIMITER));
         return ContentType.findByExtension(extension);
+    }
+
+    private boolean hasNotExtension() {
+        return !urlPath.contains(EXTENSION_DELIMITER);
     }
 }

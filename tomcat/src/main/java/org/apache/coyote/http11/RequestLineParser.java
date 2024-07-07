@@ -33,7 +33,7 @@ public class RequestLineParser {
     }
 
     private String parsePath(final String path, final HashMap<String, String> queryParams) {
-        if (hasQueryString(path)) {
+        if (hasNotQueryString(path)) {
             return path;
         }
 
@@ -48,7 +48,7 @@ public class RequestLineParser {
         return pathTokens[0];
     }
 
-    private boolean hasQueryString(final String path) {
+    private boolean hasNotQueryString(final String path) {
         return !path.contains(QUESTION_MARK);
     }
 
