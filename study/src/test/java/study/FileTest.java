@@ -3,9 +3,14 @@ package study;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import java.nio.file.Path;
-import java.util.Collections;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.List;
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -18,37 +23,43 @@ class FileTest {
 
     /**
      * resource 디렉터리 경로 찾기
-     *
+     * <p>
      * File 객체를 생성하려면 파일의 경로를 알아야 한다.
      * 자바 애플리케이션은 resource 디렉터리에 HTML, CSS 같은 정적 파일을 저장한다.
      * resource 디렉터리의 경로는 어떻게 알아낼 수 있을까?
      */
     @Test
-    void resource_디렉터리에_있는_파일의_경로를_찾는다() {
+    void resource_디렉터리에_있는_파일의_경로를_찾는다() throws URISyntaxException {
         final String fileName = "nextstep.txt";
+        final URI uri = getUri(fileName);
 
-        // todo
-        final String actual = "";
+        final String actual = uri.toString();
 
         assertThat(actual).endsWith(fileName);
     }
 
     /**
      * 파일 내용 읽기
-     *
+     * <p>
      * 읽어온 파일의 내용을 I/O Stream을 사용해서 사용자에게 전달 해야 한다.
      * File, Files 클래스를 사용하여 파일의 내용을 읽어보자.
      */
     @Test
-    void 파일의_내용을_읽는다() {
+    void 파일의_내용을_읽는다() throws URISyntaxException, IOException {
         final String fileName = "nextstep.txt";
+        final File file = new File(getUri(fileName));
 
-        // todo
-        final Path path = null;
-
-        // todo
-        final List<String> actual = Collections.emptyList();
+        final List<String> actual;
+        try (final BufferedReader bufferedReader = new BufferedReader(new FileReader(file));
+             final Stream<String> lines = bufferedReader.lines()) {
+            actual = lines.toList();
+        }
 
         assertThat(actual).containsOnly("nextstep");
+    }
+
+    private URI getUri(final String fileName) throws URISyntaxException {
+        ClassLoader classLoader = getClass().getClassLoader();
+        return classLoader.getResource(fileName).toURI();
     }
 }
