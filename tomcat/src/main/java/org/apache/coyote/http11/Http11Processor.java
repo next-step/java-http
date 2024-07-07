@@ -54,9 +54,10 @@ public class Http11Processor implements Runnable, Processor {
                     .getResource("static" + path);
 
             final var responseBody = new String(Files.readAllBytes(new File(resource.getFile()).toPath()));
+
             final var response = String.join("\r\n",
                     "HTTP/1.1 200 OK ",
-                    "Content-Type: text/html;charset=utf-8 ",
+                    "Content-Type: text/%s;charset=utf-8 ".formatted(getFileExtension(path)),
                     "Content-Length: " + responseBody.getBytes().length + " ",
                     "",
                     responseBody);
@@ -66,5 +67,13 @@ public class Http11Processor implements Runnable, Processor {
         } catch (IOException | UncheckedServletException e) {
             log.error(e.getMessage(), e);
         }
+    }
+
+    public String getFileExtension(String path) {
+        if (path.contains(".")) {
+            String[] split = path.split("\\.");
+            return split[split.length - 1];
+        }
+        return "";
     }
 }
