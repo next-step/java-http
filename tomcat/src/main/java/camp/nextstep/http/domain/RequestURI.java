@@ -1,6 +1,7 @@
 package camp.nextstep.http.domain;
 
 import java.util.List;
+import java.util.Objects;
 
 public class RequestURI {
     private static final String EMPTY_STRING = "";
@@ -32,5 +33,18 @@ public class RequestURI {
 
     public QueryParameters getQueryParameters() {
         return queryParams;
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        final RequestURI that = (RequestURI) o;
+        return Objects.equals(httpPath, that.httpPath) && Objects.equals(queryParams, that.queryParams);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(httpPath, queryParams);
     }
 }
