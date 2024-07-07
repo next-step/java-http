@@ -62,3 +62,11 @@ X-Pad: avoid browser bug
 - RequestLine 을 공백으로 split 한다.
     - 분리 시 Method, Path, Protocol/Version 를 추출한다.
     - 위 세가지가 포함되어 있지 않으면 예외가 발생한다.
+
+### 요구사항 2 - POST 요청
+
+- RequestLine 파싱 ("POST /users HTTP/1.1"을 파싱하면 다음과 같은 결과를 얻을 수 있어야 한다.)
+    - method는 POST
+    - path는 /users
+    - protocol은 HTTP
+    - version은 1.1
