@@ -38,11 +38,11 @@ public class Http11Processor implements Runnable, Processor {
              final var outputStream = connection.getOutputStream()) {
 
             final var requestLine = new RequestLine(inputReader.readLine());
-            final var responseBody = parseResponseBody(requestLine.getHttpPath());
+            final var responseBody = parseResponseBody(requestLine.getFilePath());
 
             final var response = String.join("\r\n",
                     "HTTP/1.1 200 OK ",
-                    "Content-Type: " + parseContentType(requestLine.getHttpPath()).getContentType() + ";charset=utf-8 ",
+                    "Content-Type: " + parseContentType(requestLine.getFilePath()).getContentType() + ";charset=utf-8 ",
                     "Content-Length: " + responseBody.getBytes().length + " ",
                     "",
                     responseBody);
