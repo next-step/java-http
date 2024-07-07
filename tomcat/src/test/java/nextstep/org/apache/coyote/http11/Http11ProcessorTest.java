@@ -116,4 +116,32 @@ class Http11ProcessorTest {
 
         assertThat(socket.output()).isEqualTo(expected);
     }
+
+    @Test
+    void js() throws IOException {
+        // given
+        final String httpRequest= String.join("\r\n",
+                "GET /js/scripts.js HTTP/1.1 ",
+                "Host: localhost:8080 ",
+                "Connection: keep-alive ",
+                "",
+                "");
+
+        final var socket = new StubSocket(httpRequest);
+        final Http11Processor processor = new Http11Processor(socket);
+
+        // when
+        processor.process(socket);
+
+        // then
+        final URL resource = getClass().getClassLoader().getResource("static/js/scripts.js");
+        final var expected = String.join("\r\n",
+                "HTTP/1.1 200 OK ",
+                "Content-Type: text/javascript;charset=utf-8 ",
+                "Content-Length: 1002 ", // 운영체제 환경에 따라 다른 값이 나올 수 있음. 자신의 개발 환경에 맞춰 수정할 것.
+                "",
+                new String(Files.readAllBytes(new File(resource.getFile()).toPath())));
+
+        assertThat(socket.output()).isEqualTo(expected);
+    }
 }

@@ -27,4 +27,11 @@ class HttpPathTest {
         assertThat(httpPath.isCss()).isTrue();
     }
 
+    @Test
+    void httpPath_가_js_인지_반환받을_수_있다() {
+        final HttpPath httpPath = new HttpPath("/scripts.js");
+
+        assertThat(httpPath.isJs()).isTrue();
+    }
+
 }

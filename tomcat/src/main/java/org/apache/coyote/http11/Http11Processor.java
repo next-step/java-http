@@ -52,6 +52,10 @@ public class Http11Processor implements Runnable, Processor {
                 InputStream inputStream = ClassLoader.getSystemClassLoader().getResourceAsStream("static" + path.getPath());
                 responseBody = inputStream.readAllBytes();
                 responseContentType = "text/css";
+            } else if (path.isJs()) {
+                InputStream inputStream = ClassLoader.getSystemClassLoader().getResourceAsStream("static" + path.getPath());
+                responseBody = inputStream.readAllBytes();
+                responseContentType = "text/javascript";
             }
 
             final var responseHeader = String.join(System.lineSeparator(),

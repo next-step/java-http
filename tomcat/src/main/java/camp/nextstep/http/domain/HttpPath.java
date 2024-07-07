@@ -22,6 +22,10 @@ public class HttpPath {
         return path.endsWith(".css");
     }
 
+    public boolean isJs() {
+        return path.endsWith(".js");
+    }
+
     @Override
     public boolean equals(final Object o) {
         if (this == o) return true;
