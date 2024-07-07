@@ -5,12 +5,11 @@ import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Files;
 
-// XXX: test
 public class StaticResourceLoader {
     public String readAllLines(String path) throws IOException {
-        URL resource = getClass().getClassLoader().getResource("static" + path);
+        URL resource = getClass().getClassLoader().getResource(path);
         if (resource == null) {
-            // TODO: NotFoundException?
+            // TODO: 404 NOT FOUND exception
             throw new IllegalArgumentException("path 에 지정한 파일이 없습니다: " + path);
         }
         return readAllLines(resource);

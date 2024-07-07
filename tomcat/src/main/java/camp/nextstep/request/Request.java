@@ -1,41 +1,18 @@
 package camp.nextstep.request;
 
-public class Request {
-    public static final String REQUEST_LINE_SEPARATOR = " ";
-    public static final String QUERY_STRING_SEPARATOR = "\\?";
-    public static final String PROTOCOL_AND_VERSION_SEPARATOR = "/";
+import java.util.List;
 
+public class Request {
     private final RequestMethod method;
     private final String path;
-    private final String queryString;
-    private final String protocol;
-    private final String version;
+    private final List<String[]> queryParameters;
+    private final String httpVersion;
 
-    public Request(String requestLine) {
-        String[] split = requestLine.split(REQUEST_LINE_SEPARATOR);
-
-        String method = split[0];
-        String uri = split[1];
-        String protocolAndVersion = split[2];
-
-        this.method = RequestMethod.valueOf(method);
-
-        // XXX: 아래 두개 묶기 (uri)
-        this.path = uri.split(QUERY_STRING_SEPARATOR)[0];
-        this.queryString = getString(uri);
-
-        this.protocol = protocolAndVersion.split(PROTOCOL_AND_VERSION_SEPARATOR)[0];
-        this.version = protocolAndVersion.split(PROTOCOL_AND_VERSION_SEPARATOR)[1];
-    }
-
-    // XXX: 얘 머지?
-    private static String getString(String uri) {
-        String result = "";
-        String[] split = uri.split("\\?", 2);
-        if (split.length >= 2) {
-            result = split[1];
-        }
-        return result;
+    public Request(RequestMethod method, String path, List<String[]> queryParameters, String httpVersion) {
+        this.method = method;
+        this.path = path;
+        this.queryParameters = queryParameters;
+        this.httpVersion = httpVersion;
     }
 
     public RequestMethod getMethod() {
@@ -46,19 +23,33 @@ public class Request {
         return path;
     }
 
-    public String getProtocol() {
-        return protocol;
+    /**
+     * key 이름을 가진 파라메터 값의 배열을 리턴한다.
+     *
+     * @param key 쿼리 파라메터의 키. 대소문자 구별함
+     * @return 하나도 없을 때는 빈 배열, 1개 이상일 때, 쿼리 문자열에 등장한 순서대로 배열로 리턴
+     */
+    public Object[] getQueryParameters(String key) {
+        return queryParameters
+                .stream()
+                .filter(it -> it[0].equals(key))
+                .map(it -> it[1])
+                .toArray();
     }
 
-    public String getVersion() {
-        return version;
+    public Object getQueryParameter(String key) {
+        return queryParameters
+                .stream()
+                .filter(it -> it[0].equals(key))
+                .map(it -> it[1])
+                .findFirst()
+                .orElse(null);
     }
 
-    public String getQueryString() {
-        return queryString;
+    public String getHttpVersion() {
+        return httpVersion;
     }
 
-    // XXX 얘도 로직 떼내기. MimeTypes
     public String getPredictedMimeType() {
         if (path.equals("/")) {
             return "text/html";
@@ -76,6 +67,6 @@ public class Request {
             return "text/css";
         }
 
-        return "text/plain";
+        return "text/html";
     }
 }
