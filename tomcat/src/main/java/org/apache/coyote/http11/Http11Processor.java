@@ -1,28 +1,32 @@
 package org.apache.coyote.http11;
 
 import camp.nextstep.exception.UncheckedServletException;
-import camp.nextstep.request.RequestLine;
+import camp.nextstep.request.Request;
+import camp.nextstep.request.RequestParser;
+import camp.nextstep.staticresource.StaticResourceLoader;
 import org.apache.coyote.Processor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.Socket;
 import java.net.URISyntaxException;
-import java.net.URL;
-import java.nio.file.Files;
 
 public class Http11Processor implements Runnable, Processor {
 
     private static final Logger log = LoggerFactory.getLogger(Http11Processor.class);
 
     private final Socket connection;
+    private RequestParser requestParser;
+    private StaticResourceLoader staticResourceLoader;
 
     public Http11Processor(final Socket connection) {
         this.connection = connection;
+
+        this.requestParser = new RequestParser();
+        this.staticResourceLoader = new StaticResourceLoader();
     }
 
     @Override
@@ -34,16 +38,18 @@ public class Http11Processor implements Runnable, Processor {
     @Override
     public void process(final Socket connection) {
         try (final var inputStream = connection.getInputStream();
-             final var inputReader = new BufferedReader(new InputStreamReader(inputStream));
-             final var outputStream = connection.getOutputStream()) {
+             final var inputStreamReader = new InputStreamReader(inputStream);
+             final var bufferedReader = new BufferedReader(inputStreamReader);
+             final var outputStream = connection.getOutputStream();
+        ) {
 
-            RequestLine requestLine = new RequestLine(inputReader.readLine());
-            requestLine.process();
-            String responseBody = getResponseBody(requestLine.getPath());
+            Request request = requestParser.parse(bufferedReader);
+
+            String responseBody = getResponseBody(request.getPath());
 
             final var response = String.join("\r\n",
                     "HTTP/1.1 200 OK ",
-                    "Content-Type: text/html;charset=utf-8 ",
+                    "Content-Type: " + request.getPredictedMimeType() + ";charset=utf-8 ",
                     "Content-Length: " + responseBody.getBytes().length + " ",
                     "",
                     responseBody);
@@ -59,18 +65,6 @@ public class Http11Processor implements Runnable, Processor {
         if (path.length() <= 1) {
             return "Hello world!";
         }
-        return getStaticFile(getStaticResource(path));
-    }
-
-    private URL getStaticResource(String path) {
-        URL resource = getClass().getClassLoader().getResource("static" + path);
-        if (resource == null) {
-            throw new IllegalArgumentException("path 에 지정한 파일이 없습니다");
-        }
-        return resource;
-    }
-
-    private String getStaticFile(URL resource) throws IOException {
-        return new String(Files.readAllBytes(new File(resource.getFile()).toPath()));
+        return staticResourceLoader.readAllLines(path);
     }
 }
