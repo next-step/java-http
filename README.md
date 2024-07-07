@@ -42,10 +42,10 @@
 ### Mission 2
 
 - [ ] HTTP 서버 구현
-    - [ ] GET /index.html 응답
-        - [ ] Http11ProcessorTest 모든 테스트 통과
-        - [ ] HttpRequestHeader 구현
-            - [ ] RequestLine 포함
+    - [X] GET /index.html 응답
+        - [X] Http11ProcessorTest 모든 테스트 통과
+        - [X] HttpRequestHeader 구현
+            - [X] RequestLine 포함
     - [ ] CSS 지원
         - [ ] resources/static/css내의 css 파일 호출
     - [ ] QueryString 파싱
