@@ -159,7 +159,7 @@ class IOStreamTest {
              */
             try (inputStream) {
                 inputStream.read();
-                }
+            }
             verify(inputStream, atLeastOnce()).close();
         }
     }

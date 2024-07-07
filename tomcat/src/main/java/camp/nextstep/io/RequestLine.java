@@ -1,43 +1,40 @@
 package camp.nextstep.io;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
 public class RequestLine {
-    private HttpMethod method;
-    private String path;
-    private String protocol;
-    private String version;
-    private List<Map> queryString = new ArrayList<>();
+    private final HttpMethod httpMethod;
+    private final Path path;
+    private final String protocol;
+    private final String version;
 
-    public RequestLine(String request) {
-        String[] tokens = request.split(" ");
-        this.method = HttpMethod.valueOf(tokens[0]);
-
-        if (tokens[1].contains("?")) {
-            String[] pathAndQueryString = tokens[1].split("\\?");
-            this.path = pathAndQueryString[0];
-            String[] queryStrings = pathAndQueryString[1].split("&");
-            for (String queryString : queryStrings) {
-                String[] keyAndValue = queryString.split("=");
-                this.queryString.add(Map.of(keyAndValue[0], keyAndValue[1]));
-            }
-        } else {
-            this.path = tokens[1];
-        }
-
-        String[] protocolAndVersion = tokens[2].split("/");
-        this.protocol = protocolAndVersion[0];
-        this.version = protocolAndVersion[1];
+    public RequestLine(HttpMethod httpMethod, Path path, String protocol, String version) {
+        this.httpMethod = httpMethod;
+        this.path = path;
+        this.protocol = protocol;
+        this.version = version;
     }
 
-    public HttpMethod getMethod() {
-        return method;
+    public static RequestLine from(RequestParser requestParser) {
+        HttpMethod httpMethod = requestParser.getHttpMethod();
+        Path path = requestParser.getPath();
+        String protocol = requestParser.getProtocol();
+        String version = requestParser.getVersion();
+        return new RequestLine(httpMethod, path, protocol, version);
     }
 
-    public String getPath() {
+    public HttpMethod getHttpMethod() {
+        return httpMethod;
+    }
+
+    public Path getPath() {
         return path;
+    }
+
+    public String getRequestPath() {
+        return path.requestPath();
+    }
+
+    public QueryStrings getQueryStrings() {
+        return path.queryStrings();
     }
 
     public String getProtocol() {
@@ -46,9 +43,5 @@ public class RequestLine {
 
     public String getVersion() {
         return version;
-    }
-
-    public List<Map> getQueryString() {
-        return queryString;
     }
 }

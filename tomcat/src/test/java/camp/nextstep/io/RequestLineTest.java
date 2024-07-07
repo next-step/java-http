@@ -14,11 +14,12 @@ class RequestLineTest {
         //given
         String request = "GET /users HTTP/1.1";
         //when
-        RequestLine requestLine = new RequestLine(request);
+        RequestParser requestParser = new RequestParser(request);
+        RequestLine requestLine = RequestLine.from(requestParser);
         //then
         assertAll(
-                () -> assertThat(requestLine.getMethod()).isEqualTo(GET),
-                () -> assertThat(requestLine.getPath()).isEqualTo("/users"),
+                () -> assertThat(requestLine.getHttpMethod()).isEqualTo(GET),
+                () -> assertThat(requestLine.getRequestPath()).isEqualTo("/users"),
                 () -> assertThat(requestLine.getProtocol()).isEqualTo("HTTP"),
                 () -> assertThat(requestLine.getVersion()).isEqualTo("1.1")
         );
@@ -30,11 +31,12 @@ class RequestLineTest {
         //given
         String request = "POST /users HTTP/1.1";
         //when
-        RequestLine requestLine = new RequestLine(request);
+        RequestParser requestParser = new RequestParser(request);
+        RequestLine requestLine = RequestLine.from(requestParser);
         //then
         assertAll(
-                () -> assertThat(requestLine.getMethod()).isEqualTo(POST),
-                () -> assertThat(requestLine.getPath()).isEqualTo("/users"),
+                () -> assertThat(requestLine.getHttpMethod()).isEqualTo(POST),
+                () -> assertThat(requestLine.getRequestPath()).isEqualTo("/users"),
                 () -> assertThat(requestLine.getProtocol()).isEqualTo("HTTP"),
                 () -> assertThat(requestLine.getVersion()).isEqualTo("1.1")
         );
@@ -46,16 +48,17 @@ class RequestLineTest {
         //given
         String request = "GET /users?userId=javajigi&password=password&name=JaeSung HTTP/1.1";
         //when
-        RequestLine requestLine = new RequestLine(request);
+        RequestParser requestParser = new RequestParser(request);
+        RequestLine requestLine = RequestLine.from(requestParser);
         //then
         assertAll(
-                () -> assertThat(requestLine.getMethod()).isEqualTo(GET),
-                () -> assertThat(requestLine.getPath()).isEqualTo("/users"),
+                () -> assertThat(requestLine.getHttpMethod()).isEqualTo(GET),
+                () -> assertThat(requestLine.getRequestPath()).isEqualTo("/users"),
                 () -> assertThat(requestLine.getProtocol()).isEqualTo("HTTP"),
                 () -> assertThat(requestLine.getVersion()).isEqualTo("1.1"),
-                () -> assertThat(requestLine.getQueryString().get(0).get("userId")).isEqualTo("javajigi"),
-                () -> assertThat(requestLine.getQueryString().get(1).get("password")).isEqualTo("password"),
-                () -> assertThat(requestLine.getQueryString().get(2).get("name")).isEqualTo("JaeSung")
+                () -> assertThat(requestLine.getQueryStrings().getQueryStringValueByKey("userId")).isEqualTo("javajigi"),
+                () -> assertThat(requestLine.getQueryStrings().getQueryStringValueByKey("password")).isEqualTo("password"),
+                () -> assertThat(requestLine.getQueryStrings().getQueryStringValueByKey("name")).isEqualTo("JaeSung")
         );
     }
 }
