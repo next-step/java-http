@@ -3,9 +3,9 @@ package camp.nextstep.domain.http;
 import java.util.Arrays;
 
 public enum ContentType {
-    HTML("html", "text/html"),
-    CSS("css", "text/css"),
-    JS("js", "application/javascript"),
+    TEXT_HTML("html", "text/html"),
+    TEXT_CSS("css", "text/css"),
+    APPLICATION_JAVASCRIPT("js", "application/javascript"),
     ;
 
     private final String extension;
@@ -20,6 +20,6 @@ public enum ContentType {
         return Arrays.stream(values())
                 .filter(value -> value.extension.equals(extension))
                 .findAny()
-                .get();
+                .orElseThrow(() -> new IllegalArgumentException("지원하지 않는 확장자입니다."));
     }
 }
