@@ -18,6 +18,7 @@ public class Http11Processor implements Runnable, Processor {
     private static final Logger log = LoggerFactory.getLogger(Http11Processor.class);
 
     private static final String ROOT_PATH = "/";
+    private static final String ROOT_BODY = "Hello world!";
 
     private final Socket connection;
 
@@ -38,11 +39,11 @@ public class Http11Processor implements Runnable, Processor {
              final var outputStream = connection.getOutputStream()) {
 
             final var requestLine = new RequestLine(inputReader.readLine());
-            final var responseBody = parseResponseBody(requestLine.getFilePath());
+            final var responseBody = parseResponseBody(requestLine);
 
             final var response = String.join("\r\n",
                     "HTTP/1.1 200 OK ",
-                    "Content-Type: " + parseContentType(requestLine.getFilePath()).getContentType() + ";charset=utf-8 ",
+                    "Content-Type: " + parseContentType(requestLine).getContentType() + ";charset=utf-8 ",
                     "Content-Length: " + responseBody.getBytes().length + " ",
                     "",
                     responseBody);
@@ -54,18 +55,23 @@ public class Http11Processor implements Runnable, Processor {
         }
     }
 
-    private String parseResponseBody(final String path) throws IOException {
-        if (path.equals(ROOT_PATH)) {
-            return "Hello world!";
+    private String parseResponseBody(final RequestLine requestLine) throws IOException {
+        if (isRootPath(requestLine)) {
+            return ROOT_BODY;
         }
-        return FileUtil.readStaticPathFileResource(path, getClass());
+        return FileUtil.readStaticPathFileResource(requestLine.getFilePath(), getClass());
     }
 
-    private ContentType parseContentType(final String path) {
-        if (path.equals(ROOT_PATH)) {
+    private ContentType parseContentType(final RequestLine requestLine) {
+        if (isRootPath(requestLine)) {
             return ContentType.TEXT_HTML;
         }
-        String extension = FileUtil.parseExtension(path);
+        String extension = FileUtil.parseExtension(requestLine.getFilePath());
         return ContentType.fromExtension(extension);
+    }
+
+    private boolean isRootPath(final RequestLine requestLine) {
+        return requestLine.getHttpPath()
+                .equals(ROOT_PATH);
     }
 }
