@@ -12,13 +12,13 @@ public class RequestLine {
     private static final int PROTOCOL_INDEX = 0;
     private static final int VERSION_INDEX = 1;
 
-    private final String method;
+    private final HttpMethod method;
     private final HttpPath path;
     private final String protocol;
     private final String version;
 
     private RequestLine(String method, HttpPath path, String protocol, String version) {
-        this.method = method;
+        this.method = HttpMethod.valueOf(method);
         this.path = path;
         this.protocol = protocol;
         this.version = version;
@@ -35,7 +35,7 @@ public class RequestLine {
     }
 
     public String getMethod() {
-        return method;
+        return method.name();
     }
 
     public String getPath() {
