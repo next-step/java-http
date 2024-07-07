@@ -72,3 +72,6 @@ User-Agent: Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1)
     - html: text/html
     - css: text/css
     - js: application/javascript
+
+### 3. Query String 파싱
+- /login을 요청했을 때 query string을 파싱하여 로그를 남긴다.
