@@ -14,12 +14,16 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.Socket;
+import java.util.Map;
 
 public class Http11Processor implements Runnable, Processor {
 
     private static final Logger log = LoggerFactory.getLogger(Http11Processor.class);
 
     private static final String ROOT_PATH = "/";
+    private static final String LOGIN_PATH = "/login";
+    private static final String LOGIN_ACCOUNT_KEY = "account";
+    private static final String LOGIN_PASSWORD_KEY = "password";
     private static final String ROOT_BODY = "Hello world!";
 
     private final Socket connection;
@@ -41,18 +45,11 @@ public class Http11Processor implements Runnable, Processor {
              final var outputStream = connection.getOutputStream()) {
 
             final var requestLine = new RequestLine(inputReader.readLine());
-            final var responseBody = parseResponseBody(requestLine);
-
-            if (requestLine.getHttpPath().equals("/login")) {
-                String account = requestLine.getQueryString().get("account");
-                String password = requestLine.getQueryString().get("password");
-                User user = InMemoryUserRepository.findByAccount(account)
-                        .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 account입니다."));
-                if (user.checkPassword(password)) {
-                    log.info("조회한 유저 정보 - {}", user);
-                }
+            if (isLoginPath(requestLine.getHttpPath())) {
+                checkLoginUser(requestLine);
             }
 
+            final var responseBody = parseResponseBody(requestLine);
             final var response = String.join("\r\n",
                     "HTTP/1.1 200 OK ",
                     "Content-Type: " + parseContentType(requestLine).getContentType() + ";charset=utf-8 ",
@@ -64,6 +61,23 @@ public class Http11Processor implements Runnable, Processor {
             outputStream.flush();
         } catch (IOException | UncheckedServletException e) {
             log.error(e.getMessage(), e);
+        }
+    }
+
+    private boolean isLoginPath(String path) {
+        return LOGIN_PATH.equals(path);
+    }
+
+    private void checkLoginUser(RequestLine requestLine) {
+        Map<String, String> queryString = requestLine.getQueryString();
+        User user = InMemoryUserRepository.findByAccount(queryString.get(LOGIN_ACCOUNT_KEY))
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 account입니다."));
+        checkLoginUserPassword(user, queryString);
+    }
+
+    private void checkLoginUserPassword(User user, Map<String, String> queryString) {
+        if (user.checkPassword(queryString.get(LOGIN_PASSWORD_KEY))) {
+            log.info("조회한 유저 정보 - {}", user);
         }
     }
 
