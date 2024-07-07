@@ -21,4 +21,10 @@ class FileUtilTest {
         String actual = FileUtil.readStaticPathFileResource("/nextstep.txt", getClass());
         assertThat(actual).isEqualTo("nextstep");
     }
+
+    @Test
+    void 파일의_확장자를_반환한다() {
+        String actual = FileUtil.parseExtension("/index.html");
+        assertThat(actual).isEqualTo("html");
+    }
 }

@@ -60,6 +60,7 @@ User-Agent: Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1)
 - FileUtil
   - resource가 없는 경우 예외가 발생한다.
   - 요청된 경로에 있는 resource에 있는 데이터를 반환한다.
+  - file path를 받아 파일 확장자를 반환할 수 있다.
 
 ### 2. CSS 지원하기
 - css파일인 경우 응답헤더의 content-type을 text/css로 반환한다.

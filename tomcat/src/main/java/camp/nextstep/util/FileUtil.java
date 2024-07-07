@@ -30,4 +30,8 @@ public class FileUtil {
     private static String readResource(File file) throws IOException {
         return new String(Files.readAllBytes(file.toPath()));
     }
+
+    public static String parseExtension(String filePath) {
+        return filePath.substring(filePath.lastIndexOf(".") + 1);
+    }
 }
