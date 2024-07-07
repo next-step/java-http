@@ -22,9 +22,19 @@
 
 
 ## 2단계 - HTTP 서버 구현하기 요구사항 목록
+- HTTP 요청 구조에 따라 모든 데이터 읽어들이기
+    -  ![img.png](img/img.png)
+    - [] startLine 파싱
+      - 먼저 파싱해서 만든다 
+    - [] 모든 header 파싱 
+      - 빈 줄이 나올 때 까지 파싱해서 만든다
+    - [] body 파싱 
+      - 이는 POST일 경우에만 파싱하면 될 것 같다. (HttpMethod에 따라 body를 파싱)
+      - POST일 경우, Header에서 Content-Length를 조회하고, 나머지 부분들에 대해 Length만큼만 읽는다. 
+    - 특징 : headers와 body는 emptyLine으로 구분된다. 
+    - [참고 자료](https://developer.mozilla.org/ko/docs/Web/HTTP/Messages)
 - `GET /index.html`에 응답하기 
-  - [] `Http11ProcessorTest`의 모든 테스트 성공하기  
-  - [] 나머지 http request header 읽기 
+  - [] `Http11ProcessorTest`의 모든 테스트 성공하기
 - `CSS 지원하기`
   - [] 사용자가 페이지를 열었을 때 `CSS 파일도 호출`하도록 기능 추가하기
   - [] Content-Type이 `test/css`로 응답되어야 한다. 
