@@ -1,5 +1,7 @@
 package org.apache.coyote.http11;
 
+import java.util.Map;
+import java.util.Objects;
 import org.apache.coyote.http11.RequestLine;
 import org.apache.coyote.http11.RequestLineParser;
 import org.assertj.core.api.Assertions;
@@ -25,7 +27,10 @@ class RequestLineParserTest {
         final var expected = RequestLine.from(httpRequest);
 
         // then
-        Assertions.assertThat(result).isEqualTo(expected);
+        Assertions.assertThat(result.getMethod()).isEqualTo(expected.getMethod());
+        Assertions.assertThat(result.getPath()).isEqualTo(expected.getPath());
+        Assertions.assertThat(result.getProtocol()).isEqualTo(expected.getProtocol());
+        Assertions.assertThat(result.getVersion()).isEqualTo(expected.getVersion());
     }
 
     @DisplayName("POST 메서드를 통해 요청을 받았을 때 RequestLine 객체를 반환한다")
@@ -43,6 +48,28 @@ class RequestLineParserTest {
         final var expected = RequestLine.from(httpRequest);
 
         // then
-        Assertions.assertThat(result).isEqualTo(expected);
+        Assertions.assertThat(result.getMethod()).isEqualTo(expected.getMethod());
+        Assertions.assertThat(result.getPath()).isEqualTo(expected.getPath());
+        Assertions.assertThat(result.getProtocol()).isEqualTo(expected.getProtocol());
+        Assertions.assertThat(result.getVersion()).isEqualTo(expected.getVersion());
+    }
+
+    @Test
+    @DisplayName("QueryString을 파싱할 수 있다.")
+    void parse_QueryString() {
+        // given
+        final String httpRequest = String.join("\r\n",
+                                               "GET /users?userId=javajigi&password=password&name=JaeSung HTTP/1.1 ",
+                                               "");
+        final var socket = new StubSocket(httpRequest);
+        final var parser = new RequestLineParser(socket);
+
+        // when
+        final var result = parser.parse();
+        // then
+        Map<String, Object> parameters = result.getParameters();
+        Assertions.assertThat(parameters.get("userId")).isEqualTo("javajigi");
+        Assertions.assertThat(parameters.get("password")).isEqualTo("password");
+        Assertions.assertThat(parameters.get("name")).isEqualTo("JaeSung");
     }
 }
