@@ -48,7 +48,6 @@ public class Connector implements Runnable {
 
     @Override
     public void run() {
-        // 클라이언트가 연결될때까지 대기한다.
         while (!stopped) {
             connect();
         }
