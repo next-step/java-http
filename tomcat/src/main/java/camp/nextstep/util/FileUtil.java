@@ -1,7 +1,9 @@
 package camp.nextstep.util;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.URL;
+import java.nio.file.Files;
 
 public class FileUtil {
 
@@ -11,8 +13,9 @@ public class FileUtil {
         throw new AssertionError();
     }
 
-    public static File getStaticPathFile(String filePath, Class<?> clazz) {
-        return getFile(STATIC_FILE_PATH_PREFIX + filePath, clazz);
+    public static String readStaticPathFileResource(String filePath, Class<?> clazz) throws IOException {
+        File file = getFile(STATIC_FILE_PATH_PREFIX + filePath, clazz);
+        return readResource(file);
     }
 
     private static File getFile(String filePath, Class<?> clazz) {
@@ -22,5 +25,9 @@ public class FileUtil {
             throw new IllegalArgumentException("존재하지 않는 file 경로입니다. - " + filePath);
         }
         return new File(resource.getFile());
+    }
+
+    private static String readResource(File file) throws IOException {
+        return new String(Files.readAllBytes(file.toPath()));
     }
 }

@@ -59,4 +59,4 @@ User-Agent: Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1)
 
 - FileUtil
   - resource가 없는 경우 예외가 발생한다.
-  - 요청된 경로에 있는 resource를 반환한다.
+  - 요청된 경로에 있는 resource에 있는 데이터를 반환한다.
