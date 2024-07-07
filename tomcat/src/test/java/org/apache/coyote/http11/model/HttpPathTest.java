@@ -8,7 +8,7 @@ import java.util.HashMap;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class PathTest {
+class HttpPathTest {
 
     @DisplayName("path가 root path인지 확인한다.")
     @ParameterizedTest
@@ -22,10 +22,10 @@ class PathTest {
     )
     void isRootPathTest(final String pathString, final boolean expect) {
         // given
-        final Path path = new Path(pathString, new QueryParams(new HashMap<>()));
+        final HttpPath httpPath = new HttpPath(pathString, new QueryParams(new HashMap<>()));
 
         // when
-        final boolean result = path.isRootPath();
+        final boolean result = httpPath.isRootPath();
 
         // then
         assertThat(result).isEqualTo(expect);

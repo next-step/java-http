@@ -1,6 +1,6 @@
 package org.apache.coyote.http11;
 
-import org.apache.coyote.http11.model.Path;
+import org.apache.coyote.http11.model.HttpPath;
 import org.apache.coyote.http11.model.RequestLine;
 import org.apache.coyote.http11.model.constant.HttpMethod;
 
@@ -26,7 +26,7 @@ public class RequestLineParser {
 
         return new RequestLine(
                 HttpMethod.valueOf(httpMethod),
-                Path.of(path, queryParams),
+                HttpPath.of(path, queryParams),
                 protocol,
                 version
         );

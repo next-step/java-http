@@ -2,20 +2,20 @@ package org.apache.coyote.http11.model;
 
 import java.util.HashMap;
 
-public class Path {
+public class HttpPath {
     private static final String ROOT_PATH = "/";
 
     private final String path;
     private final QueryParams queryParams;
 
 
-    public Path(final String path, final QueryParams queryParams) {
+    public HttpPath(final String path, final QueryParams queryParams) {
         this.path = path;
         this.queryParams = queryParams;
     }
 
-    public static Path of(final String path, final HashMap<String, String> queryParams) {
-        return new Path(path, new QueryParams(queryParams));
+    public static HttpPath of(final String path, final HashMap<String, String> queryParams) {
+        return new HttpPath(path, new QueryParams(queryParams));
     }
 
     public String path() {
