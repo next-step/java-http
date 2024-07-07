@@ -41,12 +41,12 @@
 
 ### Mission 2
 
-- [ ] HTTP 서버 구현
+- [X] HTTP 서버 구현
     - [X] GET /index.html 응답
         - [X] Http11ProcessorTest 모든 테스트 통과
         - [X] HttpRequestHeader 구현
             - [X] RequestLine 포함
     - [X] CSS 지원
         - [X] resources/static/css내의 css 파일 호출
-    - [ ] QueryString 파싱
-        - [ ] 로그인 페이지 호출시 입력한 QueryString의 아이디, 비밀번호가 일치하면 콘솔창에 회원 조회 결과 로깅
+    - [X] QueryString 파싱
+        - [X] 로그인 페이지 호출시 입력한 QueryString의 아이디, 비밀번호가 일치하면 콘솔창에 회원 조회 결과 로깅
