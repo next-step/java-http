@@ -65,3 +65,9 @@ User-Agent: Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1)
 - css파일인 경우 응답헤더의 content-type을 text/css로 반환한다.
   - 요청값의 확장자를 가지고 css를 판단한다. 
 - html파일인 경우 응답헤더의 content-type을 text/html로 반환한다.
+
+- ContentType
+  - 확장자에 맞는 content-type으로 변환할 수 있다.
+    - html: text/html
+    - css: text/css
+    - js: application/javascript
