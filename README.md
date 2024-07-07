@@ -70,3 +70,9 @@ X-Pad: avoid browser bug
     - path는 /users
     - protocol은 HTTP
     - version은 1.1
+
+### 요구사항 3 - Query String 파싱
+
+- HTTP 요청(request)의 Query String으로 전달되는 데이터를 파싱한다.
+- "GET /users?userId=javajigi&password=password&name=JaeSung HTTP/1.1" 파싱해 Query String 을 추출할 수 있다.
+
