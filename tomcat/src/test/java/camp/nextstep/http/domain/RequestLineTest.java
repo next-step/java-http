@@ -26,7 +26,7 @@ class RequestLineTest {
     void requestLine_에서_Path_를_반환받을_수_있다() {
         final RequestLine requestLine = new RequestLine("GET /users HTTP/1.1");
 
-        assertThat(requestLine.getPath()).isEqualTo("/users");
+        assertThat(requestLine.getPath()).isEqualTo(new HttpPath("/users"));
     }
 
     @Test
