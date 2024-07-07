@@ -17,4 +17,8 @@ public class HttpRequestHeader {
     public Object headerValueBy(final String key) {
         return headers.get(key.toLowerCase());
     }
+
+    public int size() {
+        return headers.size();
+    }
 }

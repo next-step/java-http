@@ -16,12 +16,13 @@ class HttpRequestHeaderParserTest {
     private static final String TEST_HOST = "Host: localhost:8080 ";
     private static final String TEST_CONNECTION = "Connection: keep-alive ";
     private static final String TEST_ACCEPT = "Accept: */* ";
+    private static final String TEST_NOT_HEADER_LINE = "is not header line";
     private static final String TEST_REQUEST_STRING = String.join("\r\n",
             TEST_REQUEST_LINE,
             TEST_HOST,
             TEST_CONNECTION,
             TEST_ACCEPT,
-            "",
+            TEST_NOT_HEADER_LINE,
             "");
     private static final HttpRequestHeaderParser PARSER = new HttpRequestHeaderParser();
 
@@ -38,7 +39,8 @@ class HttpRequestHeaderParserTest {
                 () -> assertThat(httpRequestHeader.requestLine().httpMethod()).isEqualTo(HttpMethod.GET),
                 () -> assertThat(httpRequestHeader.headerValueBy("Host")).isEqualTo("localhost:8080"),
                 () -> assertThat(httpRequestHeader.headerValueBy("Connection")).isEqualTo("keep-alive"),
-                () -> assertThat(httpRequestHeader.headerValueBy("Accept")).isEqualTo("*/*")
+                () -> assertThat(httpRequestHeader.headerValueBy("Accept")).isEqualTo("*/*"),
+                () -> assertThat(httpRequestHeader.size()).isEqualTo(4)
         );
     }
 }
