@@ -21,6 +21,10 @@ public class RequestLine {
     }
 
     private String[] parseRequestLine(final String requestLine) {
+        if (requestLine == null) {
+            throw new InvalidRequestLineException("requestLine cannot be null");
+        }
+
         final String[] splitRequestLine = requestLine.split(DELIMITER);
         if (splitRequestLine.length != REQUIRED_REQUEST_LINE_LENGTH) {
             throw new InvalidRequestLineException("Invalid request line: " + requestLine);

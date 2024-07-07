@@ -2,6 +2,9 @@ package camp.nextstep.http.domain;
 
 import camp.nextstep.http.exception.InvalidRequestLineException;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.NullSource;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -36,9 +39,14 @@ class RequestLineTest {
         assertThat(requestLine.getVersion()).isEqualTo(new HttpVersion("HTTP/1.1"));
     }
 
-    @Test
-    void requestLine_형식이_맞지_않으면_예외가_발생한다() {
-        assertThatThrownBy(() -> new RequestLine("GET /wrong"))
+    @ParameterizedTest
+    @NullSource
+    @ValueSource(strings = {
+            "GET",
+            "GET /wrong"
+    })
+    void requestLine_형식이_맞지_않으면_예외가_발생한다(final String input) {
+        assertThatThrownBy(() -> new RequestLine(input))
                 .isInstanceOf(InvalidRequestLineException.class);
     }
 }
