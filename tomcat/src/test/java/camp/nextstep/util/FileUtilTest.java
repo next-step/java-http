@@ -2,6 +2,9 @@ package camp.nextstep.util;
 
 import org.junit.jupiter.api.Test;
 
+import java.io.File;
+
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class FileUtilTest {
@@ -11,5 +14,11 @@ class FileUtilTest {
         assertThatThrownBy(() -> FileUtil.getFile("/error-path.html", getClass()))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("존재하지 않는 file 경로입니다. - /error-path.html");
+    }
+
+    @Test
+    void 요청된_경로의_파일을_반환한다() {
+        File actual = FileUtil.getFile("nextstep.txt", getClass());
+        assertThat(actual.getName()).isEqualTo("nextstep.txt");
     }
 }
