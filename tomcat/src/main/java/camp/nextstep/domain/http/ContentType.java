@@ -3,9 +3,9 @@ package camp.nextstep.domain.http;
 import java.util.Arrays;
 
 public enum ContentType {
-    TEXT_HTML("html", "text/html"),
-    TEXT_CSS("css", "text/css"),
-    APPLICATION_JAVASCRIPT("js", "application/javascript"),
+    TEXT_HTML(".html", "text/html"),
+    TEXT_CSS(".css", "text/css"),
+    APPLICATION_JAVASCRIPT(".js", "application/javascript"),
     ;
 
     private final String extension;

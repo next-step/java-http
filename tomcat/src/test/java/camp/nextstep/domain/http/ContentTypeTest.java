@@ -10,7 +10,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 class ContentTypeTest {
 
     @ParameterizedTest
-    @CsvSource(value = {"html, TEXT_HTML", "css, TEXT_CSS"})
+    @CsvSource(value = {".html, TEXT_HTML", ".css, TEXT_CSS"})
     void 확장자값을_통해_ContentType을_생성한다(String givenExtension, ContentType expected) {
         ContentType actual = ContentType.fromExtension(givenExtension);
         assertThat(actual).isEqualTo(expected);

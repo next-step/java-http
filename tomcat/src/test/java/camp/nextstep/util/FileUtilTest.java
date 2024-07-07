@@ -25,7 +25,7 @@ class FileUtilTest {
     @Test
     void 파일의_확장자를_반환한다() {
         String actual = FileUtil.parseExtension("/index.html");
-        assertThat(actual).isEqualTo("html");
+        assertThat(actual).isEqualTo(".html");
     }
 
     @Test
