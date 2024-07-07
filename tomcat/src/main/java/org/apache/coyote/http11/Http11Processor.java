@@ -37,8 +37,10 @@ public class Http11Processor implements Runnable, Processor {
 
             BufferedReader br = new BufferedReader(new InputStreamReader(inputStream));
             StringBuilder sb = new StringBuilder();
-            while (br.ready()) {
-                sb.append(br.readLine());
+
+            String line;
+            while ((line = br.readLine()) != null) {
+                sb.append(line);
             }
 
             String requestLines = sb.toString();
