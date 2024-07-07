@@ -28,8 +28,12 @@ public class RequestLine {
         return httpMethod;
     }
 
-    public HttpPath getHttpPath() {
-        return httpPath;
+    public String getHttpPath() {
+        return httpPath.getPath();
+    }
+
+    public String findQueryParam(String key) {
+        return httpPath.findQueryParam(key);
     }
 
     public String getHttpProtocol() {

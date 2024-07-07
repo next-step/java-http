@@ -42,4 +42,8 @@ public class QueryString {
     public Map<String, String> getQueryParams() {
         return queryParams;
     }
+
+    public String findQueryParam(String key) {
+        return queryParams.get(key);
+    }
 }
