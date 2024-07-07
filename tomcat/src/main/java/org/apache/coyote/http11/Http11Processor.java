@@ -39,7 +39,7 @@ public class Http11Processor implements Runnable, Processor {
 
             final var response = String.join("\r\n",
                     "HTTP/1.1 200 OK ",
-                    "Content-Type: text/html;charset=utf-8 ",
+                    "Content-Type: " + parseContentType(requestLine.getHttpPath()) + ";charset=utf-8 ",
                     "Content-Length: " + responseBody.getBytes().length + " ",
                     "",
                     responseBody);
@@ -55,9 +55,19 @@ public class Http11Processor implements Runnable, Processor {
         if (path.equals("/")) {
             return "Hello world!";
         }
-        if (path.endsWith(".html")) {
+        if (path.endsWith(".html") || path.endsWith(".css") || path.endsWith(".js")) {
             return FileUtil.readStaticPathFileResource(path, getClass());
         }
         throw new IllegalStateException("처리할 수 없습니다.");
+    }
+
+    private String parseContentType(final String path) {
+        if (path.endsWith(".css")) {
+            return "text/css";
+        }
+        if (path.endsWith(".js")) {
+            return "application/javascript";
+        }
+        return "text/html";
     }
 }
