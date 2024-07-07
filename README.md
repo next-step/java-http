@@ -88,7 +88,21 @@ X-Pad: avoid browser bug
       Accept: */*
     ```
     - `Http11ProcessorTest` 를 통과 시켜야 한다.
-      - `/`요청은 `Hello world!` 를 OutputStream 에 쓴다.
-      - `/index.html`요청은 해당 파일을 찾아 OutputStream 에 쓴다.
-        - 해당 파일이 없는경우 `404.html` 을 OutputStream 에 쓴다.
+        - `/`요청은 `Hello world!` 를 OutputStream 에 쓴다.
+        - `/index.html`요청은 해당 파일을 찾아 OutputStream 에 쓴다.
+            - 해당 파일이 없는경우 `404.html` 을 OutputStream 에 쓴다.
+
+### 요구사항 2 - CSS 지원하기
+
+- 사용자가 페이지를 열었을 때 CSS 파일도 호출하도록 기능을 추가하자.
+    ```http request
+        GET /css/styles.css HTTP/1.1
+        Host: localhost:8080
+        Accept: text/css,*/*;q=0.1
+        Connection: keep-alive
+    ```
+    - 요청 path 의 확장자를 확인해 response header 의 Content-Type 을 바꿔준다.
+      - html -> text/html
+      - css -> text/css
+      - js -> text/javascript (참고 [rfc9239](https://www.rfc-editor.org/rfc/rfc9239))
   
