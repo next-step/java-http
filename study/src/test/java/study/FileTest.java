@@ -3,13 +3,19 @@ package study;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Stream;
+import java.util.Objects;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -43,16 +49,12 @@ class FileTest {
      * File, Files 클래스를 사용하여 파일의 내용을 읽어보자.
      */
     @Test
-    void 파일의_내용을_읽는다() throws IOException {
+    void 파일의_내용을_읽는다() throws IOException, URISyntaxException {
         final String fileName = "nextstep.txt";
 
-        String absoluteFileName = ClassLoader.getSystemResource(fileName).getFile();
-        final Path path = new File(absoluteFileName).toPath();
-
-        final List<String> actual;
-        try (Stream<String> lines = Files.lines(path)) {
-            actual = lines.toList();
-        }
+        URI uri = ClassLoader.getSystemResource(fileName).toURI();
+        Path path1 = Paths.get(uri);
+        var actual = Files.readAllLines(path1);
 
         assertThat(actual).containsOnly("nextstep");
     }
@@ -61,17 +63,17 @@ class FileTest {
     void stream_을_이용해_파일의_내용을_읽는다() throws IOException {
         final String fileName = "nextstep.txt";
 
-        InputStream inputStream = ClassLoader.getSystemResourceAsStream(fileName);
-        assert inputStream != null;
-        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
-
-        String line = bufferedReader.readLine();
         List<String> lines = new ArrayList<>();
-        while (line != null) {
-            lines.add(line);
-            System.out.println(line);
-            line = bufferedReader.readLine();
+        try (InputStream inputStream = Objects.requireNonNull(ClassLoader.getSystemResourceAsStream(fileName));
+             InputStreamReader inputStreamReader = new InputStreamReader(inputStream, StandardCharsets.UTF_8);
+             BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
+        ) {
+            while (bufferedReader.ready()) {
+                String line = bufferedReader.readLine();
+                lines.add(line);
+            }
         }
+
         List<String> actual = lines;
         assertThat(actual).containsOnly("nextstep");
     }
