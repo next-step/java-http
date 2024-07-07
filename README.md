@@ -56,3 +56,7 @@ User-Agent: Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1)
 - inputStream의 첫줄은 RequestLine으로 저장한다.
 - 입력된 값에서 파일정보가 있는 경우 html 파일로 파싱하여 response body를 반환한다.
 - root의 경우 default로 "hello world"를 출력하도록 한다.
+
+- FileUtil
+  - resource가 없는 경우 예외가 발생한다.
+  - 요청된 경로에 있는 resource를 반환한다.
