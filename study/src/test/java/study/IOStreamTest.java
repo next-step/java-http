@@ -5,10 +5,8 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 import java.io.*;
-import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.in;
 import static org.mockito.Mockito.*;
 
 /**
@@ -214,8 +212,25 @@ class IOStreamTest {
             try (final InputStream inputStream = new ByteArrayInputStream(emoji.getBytes());
                  final BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));) {
                 final StringBuilder actual = new StringBuilder();
-                while (bufferedReader.ready()) {
-                    actual.append(bufferedReader.readLine()).append("\r\n");
+
+                /*
+                  아래의 코드는 잘못 구현한 것이다. 의도와는 다른 동작을 할 수 있다고 한다.
+                  ready()는 단순히 스트림이 준비가 되었는지(버퍼가 비어있지 않거나 입력 스트림이 준비된 경우 true)를 확인하는 것이다.
+                  나는 비었는지 여부를 확인할 수 있겠구나 싶어서 사용했지만 올바르지 않게 동작할 확률이 높다고 한다. 아래의 개념을 참고하자.
+                   - 데이터가 도착하기 전에 ready()가 호출되어 false를 반환할 수 있기도 함
+                   - 반면에 read(), readLine()은 데이터가 도착할 때 까지 기다림
+                  따라서, ready()를 bufferedReader가 비었는지 여부를 알기위해 사용하는 것은 하면 안된다고 한다.
+                  참고: https://stackoverflow.com/questions/5244839/does-bufferedreader-ready-method-ensure-that-readline-method-does-not-return
+                  참고: https://beatmejy.tistory.com/33
+                 */
+//                while (bufferedReader.ready()) {
+//                    actual.append(bufferedReader.readLine()).append("\r\n");
+//                }
+
+                // 그러므로 아래와 같이 구현해야 한다.
+                String line;
+                while ((line = bufferedReader.readLine()) != null) {
+                    actual.append(line).append("\r\n");
                 }
 
                 assertThat(actual).hasToString(emoji);
