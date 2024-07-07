@@ -4,7 +4,6 @@ import org.apache.coyote.http11.model.HttpRequestHeader;
 import org.apache.coyote.http11.model.RequestLine;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.HashMap;
 import java.util.List;
 
@@ -18,9 +17,13 @@ public class HttpRequestHeaderParser {
     private static final int VALUE_INDEX = 1;
     private static final RequestLineParser REQUEST_LINE_PARSER = new RequestLineParser();
 
-    public HttpRequestHeader parse(final InputStream inputStream) throws IOException {
-        final List<String> lines = StreamToStringListConverter.parseToStringList(inputStream);
+    public HttpRequestHeader parse(final List<String> lines) throws IOException {
         final HashMap<String, Object> headerMap = new HashMap<>();
+
+        if (lines.isEmpty()) {
+            return new HttpRequestHeader(headerMap);
+        }
+
         requestLineParsing(lines, headerMap);
         otherHeadersParsing(lines, headerMap);
 
