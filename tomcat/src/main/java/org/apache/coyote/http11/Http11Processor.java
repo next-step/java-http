@@ -2,7 +2,9 @@ package org.apache.coyote.http11;
 
 import camp.nextstep.exception.UncheckedServletException;
 import org.apache.coyote.Processor;
+import org.apache.coyote.request.RequestHeaders;
 import org.apache.coyote.request.RequestLine;
+import org.apache.coyote.response.MimeType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -13,6 +15,7 @@ import java.net.Socket;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
 import java.util.Objects;
 
 public class Http11Processor implements Runnable, Processor {
@@ -40,13 +43,21 @@ public class Http11Processor implements Runnable, Processor {
              final var bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
              final var outputStream = connection.getOutputStream()) {
 
-            String firstHttpRequestLine = bufferedReader.readLine();
-            RequestLine requestLine = RequestLine.parse(firstHttpRequestLine);
-            String responseBody = findResponseBody(requestLine.getHttpPath());
+            String requestLineValue = bufferedReader.readLine();
+            List<String> requestHeaderValues = bufferedReader.lines()
+                    .takeWhile(line -> !line.isEmpty())
+                    .toList();
 
-            final var response = String.join("\r\n",
+            RequestLine requestLine = RequestLine.parse(requestLineValue);
+            RequestHeaders requestHeaders = RequestHeaders.parse(requestHeaderValues);
+
+            String httpPath = requestLine.getHttpPath();
+            String responseBody = findResponseBody(httpPath);
+            MimeType mimeType = MimeType.from(httpPath);
+
+            String response = String.join("\r\n",
                     "HTTP/1.1 200 OK ",
-                    "Content-Type: text/html;charset=utf-8 ",
+                    "Content-Type: " + mimeType.getContentType() + "  ",
                     "Content-Length: " + responseBody.getBytes().length + " ",
                     "",
                     responseBody);
