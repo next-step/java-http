@@ -50,3 +50,9 @@ User-Agent: Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1)
 - HttpProtocol
   - HttpProtocol 스펙(protocol, version)을 관리한다. 
   - protocol값과 version이 없으면 예외가 발생한다.
+
+## 2단계 - HTTP 서버 구현하기
+### 1. GET /index.html 응답하기
+- inputStream의 첫줄은 RequestLine으로 저장한다.
+- 입력된 값에서 파일정보가 있는 경우 html 파일로 파싱하여 response body를 반환한다.
+- root의 경우 default로 "hello world"를 출력하도록 한다.
