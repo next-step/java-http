@@ -1,16 +1,23 @@
 package org.apache.coyote.http11;
 
-import java.util.Objects;
+import java.util.Map;
 
 public class RequestLine {
 
     private static final String DELIMITER = " ";
+    private static final String SLASH = "/";
+    private static final int METHOD_INDEX = 0;
+    private static final int PATH_INDEX = 1;
+    private static final int PROTOCOL_AND_VERSION_INDEX = 2;
+    private static final int PROTOCOL_INDEX = 0;
+    private static final int VERSION_INDEX = 1;
+
     private final String method;
-    private final String path;
+    private final HttpPath path;
     private final String protocol;
     private final String version;
 
-    private RequestLine(String method, String path, String protocol, String version) {
+    private RequestLine(String method, HttpPath path, String protocol, String version) {
         this.method = method;
         this.path = path;
         this.protocol = protocol;
@@ -19,30 +26,31 @@ public class RequestLine {
 
     public static RequestLine from(String requestLine) {
         String[] tokens = requestLine.split(DELIMITER);
-        String method = tokens[0];
-        String path = tokens[1];
-        String[] protocolAndVersion = tokens[2].split("/");
-        String protocol = protocolAndVersion[0];
-        String version = protocolAndVersion[1];
-        return new RequestLine(method, path, protocol, version);
+        String method = tokens[METHOD_INDEX];
+        String path = tokens[PATH_INDEX];
+        String[] protocolAndVersion = tokens[PROTOCOL_AND_VERSION_INDEX].split(SLASH);
+        String protocol = protocolAndVersion[PROTOCOL_INDEX];
+        String version = protocolAndVersion[VERSION_INDEX];
+        return new RequestLine(method, HttpPath.from(path), protocol, version);
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        RequestLine that = (RequestLine) o;
-        return Objects.equals(method, that.method) && Objects.equals(path, that.path) && Objects.equals(protocol,
-                                                                                                        that.protocol)
-               && Objects.equals(version, that.version);
+    public String getMethod() {
+        return method;
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(method, path, protocol, version);
+    public String getPath() {
+        return path.getPath();
+    }
+
+    public String getProtocol() {
+        return protocol;
+    }
+
+    public String getVersion() {
+        return version;
+    }
+
+    public Map<String, Object> getParameters() {
+        return path.getQuery().getParameters();
     }
 }
