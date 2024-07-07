@@ -19,3 +19,15 @@
 1. [File, I/O Stream](study/src/test/java/study)
 2. [HTTP Cache](study/src/test/java/cache)
 3. [Thread](study/src/test/java/thread)
+
+
+## 2단계 - HTTP 서버 구현하기 요구사항 목록
+- `GET /index.html`에 응답하기 
+  - [] `Http11ProcessorTest`의 모든 테스트 성공하기  
+  - [] 나머지 http request header 읽기 
+- `CSS 지원하기`
+  - [] 사용자가 페이지를 열었을 때 `CSS 파일도 호출`하도록 기능 추가하기
+  - [] Content-Type이 `test/css`로 응답되어야 한다. 
+- `Query String` 파싱하기 
+  - [] Query String을 파싱하기 
+  - [] 로그인 페이지에 접속했을 때 파싱한 ID, PW 값이 일치하면 콘솔 창에 로그로 회원을 조회한 결과가 나와야 한다
