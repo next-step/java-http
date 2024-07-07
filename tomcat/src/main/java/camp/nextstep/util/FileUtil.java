@@ -33,6 +33,9 @@ public class FileUtil {
     }
 
     public static String parseExtension(String filePath) {
+        if (!filePath.contains(FILE_EXTENSION_DELIMITER)) {
+            throw new IllegalArgumentException("확장자 구분자가 존재하지 않아 확장자를 추출할 수 없습니다 - " + filePath);
+        }
         return filePath.substring(filePath.lastIndexOf(FILE_EXTENSION_DELIMITER) + 1);
     }
 }
