@@ -8,6 +8,7 @@ import java.nio.file.Files;
 public class FileUtil {
 
     private static final String STATIC_FILE_PATH_PREFIX = "static";
+    private static final String FILE_EXTENSION_DELIMITER = ".";
 
     private FileUtil() {
         throw new AssertionError();
@@ -32,6 +33,6 @@ public class FileUtil {
     }
 
     public static String parseExtension(String filePath) {
-        return filePath.substring(filePath.lastIndexOf(".") + 1);
+        return filePath.substring(filePath.lastIndexOf(FILE_EXTENSION_DELIMITER) + 1);
     }
 }
