@@ -58,7 +58,7 @@ public class Http11Processor implements Runnable, Processor {
             return "Hello world!";
         }
         if (path.endsWith(".html")) {
-            return readFile(FileUtil.getFile("static" + path, getClass()));
+            return readFile(FileUtil.getStaticPathFile(path, getClass()));
         }
         throw new IllegalStateException("처리할 수 없습니다.");
     }

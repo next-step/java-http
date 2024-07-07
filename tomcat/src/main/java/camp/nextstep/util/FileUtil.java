@@ -5,11 +5,17 @@ import java.net.URL;
 
 public class FileUtil {
 
+    private static final String STATIC_FILE_PATH_PREFIX = "static";
+
     private FileUtil() {
         throw new AssertionError();
     }
 
-    public static File getFile(String filePath, Class<?> clazz) {
+    public static File getStaticPathFile(String filePath, Class<?> clazz) {
+        return getFile(STATIC_FILE_PATH_PREFIX + filePath, clazz);
+    }
+
+    private static File getFile(String filePath, Class<?> clazz) {
         URL resource = clazz.getClassLoader()
                 .getResource(filePath);
         if (resource == null) {
