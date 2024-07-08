@@ -39,6 +39,12 @@ public class HttpResponse {
         return new HttpResponse(httpProtocol, HttpStatus.OK, httpHeaders, responseBody);
     }
 
+    public static HttpResponse ok(HttpProtocol httpProtocol, ContentType contentType, Map<String, String> httpHeaders, String responseBody) {
+        Map<String, String> headers = new LinkedHashMap<>(Map.of("Content-Type", contentType.getContentType() + ";charset=utf-8"));
+        headers.putAll(httpHeaders);
+        return new HttpResponse(httpProtocol, HttpStatus.OK, headers, responseBody);
+    }
+
     public static HttpResponse found(HttpProtocol httpProtocol, String location) {
         return new HttpResponse(httpProtocol, HttpStatus.FOUND, Map.of(LOCATION_HEADER_KEY, location), EMPTY_RESPONSE_BODY);
     }
