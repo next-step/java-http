@@ -1,7 +1,5 @@
-package nextstep.org.apache.coyote;
+package org.apache.coyote;
 
-import org.apache.coyote.Request;
-import org.apache.coyote.RequestMethod;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
