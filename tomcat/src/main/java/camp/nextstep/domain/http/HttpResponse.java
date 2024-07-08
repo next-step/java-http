@@ -8,6 +8,7 @@ public class HttpResponse {
 
     private static final String CONTENT_LENGTH_HEADER_KEY = "Content-Length";
     private static final String LOCATION_HEADER_KEY = "Location";
+    private static final String CONTENT_TYPE_HEADER_KEY = "Content-Type";
     private static final String EMPTY_RESPONSE_BODY = "";
 
     private static final String RESPONSE_DELIMITER = "\r\n";
@@ -40,7 +41,7 @@ public class HttpResponse {
     }
 
     public static HttpResponse ok(HttpProtocol httpProtocol, ContentType contentType, String responseBody) {
-        return new HttpResponse(httpProtocol, HttpStatus.OK, Map.of("Content-Type", contentType.getUtf8ContentType()), responseBody);
+        return new HttpResponse(httpProtocol, HttpStatus.OK, Map.of(CONTENT_TYPE_HEADER_KEY, contentType.getUtf8ContentType()), responseBody);
     }
 
     public static HttpResponse found(HttpProtocol httpProtocol, String location) {
