@@ -4,6 +4,8 @@ import java.util.Map;
 
 public class HttpResponse {
 
+    private static final String EMPTY_RESPONSE_BODY = "";
+
     private final HttpProtocol httpProtocol;
     private final HttpStatus httpStatus;
     private final Map<String, String> httpHeaders;
@@ -12,7 +14,12 @@ public class HttpResponse {
     public HttpResponse(HttpProtocol httpProtocol, HttpStatus httpStatus, String responseBody) {
         this.httpProtocol = httpProtocol;
         this.httpStatus = httpStatus;
-        this.httpHeaders = Map.of("Content-Length", String.valueOf(responseBody.getBytes().length));
+        if (!responseBody.isEmpty()) {
+            this.httpHeaders = Map.of("Content-Length", String.valueOf(responseBody.getBytes().length));
+        } else {
+            this.httpHeaders = Map.of();
+        }
+
         this.responseBody = responseBody;
     }
 
