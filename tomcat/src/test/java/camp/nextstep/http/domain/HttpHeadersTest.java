@@ -28,6 +28,13 @@ class HttpHeadersTest {
         assertThat(headers.getContentLength()).isEqualTo(1000L);
     }
 
+    @Test
+    void ContentLength_설정을_안하면_0을_반환한다() {
+        final HttpHeaders headers = new HttpHeaders();
+
+        assertThat(headers.getContentLength()).isEqualTo(0);
+    }
+
     @ParameterizedTest
     @ValueSource(longs = {-1L, 0})
     void ContentLength_는_0보다_커야한다(final long value) {
