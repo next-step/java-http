@@ -1,29 +1,15 @@
 package study;
 
-import com.google.common.reflect.Reflection;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.net.URI;
-import java.nio.file.DirectoryStream;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.nio.file.spi.FileSystemProvider;
-import java.util.Arrays;
-import java.util.stream.Collectors;
-import org.apache.commons.lang3.ClassPathUtils;
-import org.apache.tomcat.util.file.ConfigurationSource;
-import org.apache.tomcat.util.file.ConfigurationSource.Resource;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import java.nio.file.Path;
-import java.util.Collections;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.util.List;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.PathResource;
-import org.springframework.util.ResourceUtils;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -43,32 +29,23 @@ class FileTest {
      */
     @Test
     void resource_디렉터리에_있는_파일의_경로를_찾는다() throws FileNotFoundException {
+
         final String fileName = "nextstep.txt";
 
         // todo
-        String currentDirectory = new File("").getAbsolutePath();
-        System.out.println("currentDirectory = " + currentDirectory);
-        // /Users/jaypark/private/java-http/study
-        // /Users/jaypark/private/java-http/study/src/test/resources
+        final String currentDirectory = new File("").getAbsolutePath();
 
         var file = new File(currentDirectory);
-        for (File listFile : file.listFiles()) {
-            if (listFile.getPath().endsWith("src")) {
-                for (File listedFile : listFile.listFiles()) {
-                    if (listedFile.getPath().endsWith("test")) {
-                        for (File file1 : listedFile.listFiles()) {
-                            if (file1.getPath().endsWith("resources")) {
-                                var files = file1.listFiles();
-                                System.out.println("files = " + Arrays.toString(files));
-                                String actual = files[0].getName();
-                                assertThat(actual).endsWith(fileName);
-                            }
-                        }
-                    }
-                }
+        for (File foo: Objects.requireNonNull(file.listFiles())) {
+            File foundFile = findFile(foo, fileName);
+            if (foundFile != null) {
+                assertThat(foundFile.getName()).isEqualTo(fileName);
+                break;
             }
         }
+
     }
+
 
     /**
      * 파일 내용 읽기
@@ -78,27 +55,41 @@ class FileTest {
      */
     @Test
     void 파일의_내용을_읽는다() throws IOException {
-        final String fileContents= "nextstep";
-/*
-        // todo
-        final PathResource path = new PathResource("/Users/jaypark/private/java-http/study/src/test/resources/nextstep.txt");
 
-        var a = path.getInputStream().readAllBytes();
-
-        StringBuilder builder =  new StringBuilder();
-        System.out.println("builder = " + new String(a));*/
-
-
-        Path path2 = Paths.get("/Users/jaypark/private/java-http/study/src/test/resources/nextstep.txt");
-
-        var bufferedReader = Files.newBufferedReader(path2);
-        var bufferLine = bufferedReader.lines();
+        final String fileName = "nextstep.txt";
 
 
         // todo
-        final List<String> actual =  bufferLine.collect(Collectors.toList());
-        assertThat(actual).containsOnly("nextstep");
+        final String currentDirectory = new File("").getAbsolutePath();
+
+        var file = new File(currentDirectory);
+        for (File foo: Objects.requireNonNull(file.listFiles())) {
+            File foundFile = findFile(foo, fileName);
+            if (foundFile != null) {
+                try(var bufferedReader = Files.newBufferedReader(foundFile.toPath())) {
+                    List<String> actual = bufferedReader.lines().collect(Collectors.toList());
+                    assertThat(actual).containsOnly("nextstep");
+                }
+                break;
+            }
+        }
     }
 
+
+    private File findFile(File file, String fileName) {
+        if (Objects.isNull(file.listFiles())) {
+            return null;
+        }
+
+        for (File foo : Objects.requireNonNull(file.listFiles())) {
+            if (foo.isDirectory()) {
+                findFile(foo, fileName);
+            }
+            if (foo.getName().equals(fileName)) {
+                return foo;
+            }
+        }
+        return null;
+    }
 
 }
