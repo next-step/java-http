@@ -1,6 +1,6 @@
 package org.apache.coyote.http11;
 
-import org.assertj.core.api.Assertions;
+import static org.assertj.core.api.Assertions.assertThat;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -17,8 +17,8 @@ class QueryTest {
         final var result = Query.from(queryString);
 
         // then
-        Assertions.assertThat(result.getParameters()).hasSize(1);
-        Assertions.assertThat(result.getParameter("userId")).isEqualTo("1");
+        assertThat(result.getParameters()).hasSize(1);
+        assertThat(result.getParameter("userId")).isEqualTo("1");
     }
 
     @DisplayName("QueryString이 없는 Query 객체를 생성할 수 있다.")
@@ -31,6 +31,6 @@ class QueryTest {
         final var result = Query.from(queryString);
 
         // then
-        Assertions.assertThat(result.getParameters()).isEmpty();
+        assertThat(result.getParameters()).isEmpty();
     }
 }

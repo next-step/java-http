@@ -50,16 +50,16 @@ public class Http11Processor implements Runnable, Processor {
             String responseBody = getResponseBody(path);
 
             String response = String.join("\r\n",
-                                   "HTTP/1.1 200 OK ",
-                                   "Content-Type: " + ContentType.from(requestLine.getExtension()).getValue() + " ",
-                                   "Content-Length: " + responseBody.getBytes().length + " ",
-                                   "",
-                                   responseBody);
+                "HTTP/1.1 200 OK ",
+                "Content-Type: " + ContentType.from(requestLine.getExtension()).getValue() + " ",
+                "Content-Length: " + responseBody.getBytes().length + " ",
+                "",
+                responseBody);
 
             if (path.equals(LOGIN_PATH)) {
                 Map<String, Object> parameters = requestLine.getParameters();
                 User user = InMemoryUserRepository.findByAccount(parameters.get("account").toString())
-                                                  .orElseThrow(IllegalArgumentException::new);
+                    .orElseThrow(IllegalArgumentException::new);
                 log.info(user.toString());
             }
 

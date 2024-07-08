@@ -1,7 +1,7 @@
 package org.apache.coyote.http11;
 
 import java.util.Map;
-import org.assertj.core.api.Assertions;
+import static org.assertj.core.api.Assertions.assertThat;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -19,10 +19,10 @@ class RequestLineTest {
         final var result = RequestLine.from(httpRequest);
 
         // then
-        Assertions.assertThat(result.getMethod()).isEqualTo("GET");
-        Assertions.assertThat(result.getPath().getPath()).isEqualTo("/users");
-        Assertions.assertThat(result.getProtocol()).isEqualTo("HTTP");
-        Assertions.assertThat(result.getVersion()).isEqualTo("1.1");
+        assertThat(result.getMethod()).isEqualTo("GET");
+        assertThat(result.getPath().getPath()).isEqualTo("/users");
+        assertThat(result.getProtocol()).isEqualTo("HTTP");
+        assertThat(result.getVersion()).isEqualTo("1.1");
     }
 
     @DisplayName("POST 메서드를 통해 요청을 받았을 때 RequestLine 객체를 반환한다")
@@ -36,10 +36,10 @@ class RequestLineTest {
         final var result = RequestLine.from(httpRequest);
 
         // then
-        Assertions.assertThat(result.getMethod()).isEqualTo("POST");
-        Assertions.assertThat(result.getPath().getPath()).isEqualTo("/users");
-        Assertions.assertThat(result.getProtocol()).isEqualTo("HTTP");
-        Assertions.assertThat(result.getVersion()).isEqualTo("1.1");
+        assertThat(result.getMethod()).isEqualTo("POST");
+        assertThat(result.getPath().getPath()).isEqualTo("/users");
+        assertThat(result.getProtocol()).isEqualTo("HTTP");
+        assertThat(result.getVersion()).isEqualTo("1.1");
     }
 
     @Test
@@ -55,9 +55,9 @@ class RequestLineTest {
 
         // then
         Map<String, Object> parameters = result.getParameters();
-        Assertions.assertThat(parameters.get("userId")).isEqualTo("javajigi");
-        Assertions.assertThat(parameters.get("password")).isEqualTo("password");
-        Assertions.assertThat(parameters.get("name")).isEqualTo("JaeSung");
+        assertThat(parameters.get("userId")).isEqualTo("javajigi");
+        assertThat(parameters.get("password")).isEqualTo("password");
+        assertThat(parameters.get("name")).isEqualTo("JaeSung");
     }
 }
 
