@@ -75,3 +75,18 @@ User-Agent: Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1)
 
 ### 3. Query String 파싱
 - /login을 요청했을 때 query string을 파싱하여 로그를 남긴다.
+
+## 3단계 - 로그인 구현하기
+1. HTTP Status Code 302
+- HttpResponse
+  - status코드를 가진다(200 ok, 302 ok)
+  - response header를 가진다
+  - response body를 가진다
+    - response body의 content length를 header에 저장한다
+    - body가 비어있을 경우 content length와 content type이 없이 반환된다.
+  - response format에 맞추어 응답값을 반환한다
+- /login에서 gugu/password로 로그인에 성공하면 302로 반환하고 /index.html로 리다이랙할 수 있도록 전달한다.
+```
+HTTP/1.1 302 Found
+Location: /index.html
+```
