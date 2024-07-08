@@ -54,9 +54,9 @@
 ### Mission 3
 
 - [ ] 로그인 구현
-    - [ ] HTTP Status Code 302
-        - [ ] 로그인이 성공하면 302 Code를 반환하고, /index.html로 리다이렉트
-        - [ ] 로그인이 실패하면 401 Code를 반환하고, /401.html로 리다이렉트
+    - [X] HTTP Status Code 302
+        - [X] 로그인이 성공하면 302 Code를 반환하고, /index.html로 리다이렉트
+        - [X] 로그인이 실패하면 302 Code를 반환하고, /401.html로 리다이렉트
     - [ ] POST 방식으로 회원가입, 로그인
         - [ ] 회원가입 페이지(register.html) GET 요청 조회
         - [ ] 회원가입 버튼을 POST로 요청 /index.html로 리다이렉트
