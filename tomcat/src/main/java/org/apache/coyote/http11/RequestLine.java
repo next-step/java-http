@@ -38,8 +38,8 @@ public class RequestLine {
         return method.name();
     }
 
-    public String getPath() {
-        return path.getPath();
+    public HttpPath getPath() {
+        return path;
     }
 
     public String getProtocol() {
@@ -48,6 +48,10 @@ public class RequestLine {
 
     public String getVersion() {
         return version;
+    }
+
+    public String getExtension() {
+        return path.getExtension();
     }
 
     public Map<String, Object> getParameters() {
