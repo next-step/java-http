@@ -40,7 +40,7 @@ public class Http11Processor implements Runnable, Processor {
 
             final var response = String.join("\r\n",
                     "HTTP/1.1 200 OK ",
-                    "Content-Type: text/html;charset=utf-8 ",
+                    "Content-Type: text/%s;charset=utf-8 ".formatted(requestLine.getFileExtension()),
                     "Content-Length: " + responseBody.length + " ",
                     "",
                     new String(responseBody));
