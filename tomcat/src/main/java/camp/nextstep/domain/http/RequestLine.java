@@ -53,11 +53,7 @@ public class RequestLine {
         return httpPath.getQueryString();
     }
 
-    public String getProtocol() {
-        return httpProtocol.getProtocol();
-    }
-
-    public String getProtocolVersion() {
-        return httpProtocol.getVersion();
+    public HttpProtocol getHttpProtocol() {
+        return httpProtocol;
     }
 }

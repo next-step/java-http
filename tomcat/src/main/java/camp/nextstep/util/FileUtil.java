@@ -14,7 +14,7 @@ public class FileUtil {
         throw new AssertionError();
     }
 
-    public static String readStaticPathFileResource(String filePath, Class<?> clazz) throws IOException {
+    public static String readStaticPathFileResource(String filePath, Class<?> clazz) {
         File file = getFile(STATIC_FILE_PATH_PREFIX + filePath, clazz);
         return readResource(file);
     }
@@ -28,8 +28,12 @@ public class FileUtil {
         return new File(resource.getFile());
     }
 
-    private static String readResource(File file) throws IOException {
-        return new String(Files.readAllBytes(file.toPath()));
+    private static String readResource(File file) {
+        try {
+            return new String(Files.readAllBytes(file.toPath()));
+        } catch (IOException e) {
+            throw new IllegalStateException("파일 읽기 중 에러가 발생했습니다.");
+        }
     }
 
     public static boolean containsExtensionDelimiter(String path) {

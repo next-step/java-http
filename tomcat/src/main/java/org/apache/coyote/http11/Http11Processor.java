@@ -2,6 +2,7 @@ package org.apache.coyote.http11;
 
 import camp.nextstep.db.InMemoryUserRepository;
 import camp.nextstep.domain.http.ContentType;
+import camp.nextstep.domain.http.HttpResponse;
 import camp.nextstep.domain.http.RequestLine;
 import camp.nextstep.exception.UncheckedServletException;
 import camp.nextstep.model.User;
@@ -45,59 +46,63 @@ public class Http11Processor implements Runnable, Processor {
              final var outputStream = connection.getOutputStream()) {
 
             final var requestLine = new RequestLine(inputReader.readLine());
-            if (isLoginPath(requestLine.getHttpPath())) {
-                checkLoginUser(requestLine);
-            }
+            final var response = createResponse(requestLine);
 
-            final var responseBody = parseResponseBody(requestLine);
-            final var response = String.join("\r\n",
-                    "HTTP/1.1 200 OK ",
-                    "Content-Type: " + parseContentType(requestLine).getContentType() + ";charset=utf-8 ",
-                    "Content-Length: " + responseBody.getBytes().length + " ",
-                    "",
-                    responseBody);
-
-            outputStream.write(response.getBytes());
+            outputStream.write(response.buildResponse().getBytes());
             outputStream.flush();
         } catch (IOException | UncheckedServletException e) {
             log.error(e.getMessage(), e);
         }
     }
 
-    private boolean isLoginPath(String path) {
-        return LOGIN_PATH.equals(path);
+    private HttpResponse createResponse(final RequestLine requestLine) {
+        if (requestLine.getHttpPath().equals(LOGIN_PATH)) {
+            HttpResponse requestLine1 = handleLoginPath(requestLine);
+            if (requestLine1 != null) return requestLine1;
+        }
+        if (requestLine.getHttpPath().equals(ROOT_PATH)) {
+            return HttpResponse.ok(
+                    requestLine.getHttpProtocol(),
+                    Map.of("Content-Type", parseContentType(ContentType.TEXT_HTML)),
+                    ROOT_BODY
+            );
+        }
+        return HttpResponse.ok(
+                requestLine.getHttpProtocol(),
+                Map.of("Content-Type", parseContentType(parseContentType(requestLine))),
+                parseResponseBody(requestLine)
+        );
     }
 
-    private void checkLoginUser(RequestLine requestLine) {
-        Map<String, String> queryString = requestLine.getQueryString();
-        User user = InMemoryUserRepository.findByAccount(queryString.get(LOGIN_ACCOUNT_KEY))
+    private HttpResponse handleLoginPath(RequestLine requestLine) {
+        if (requestLine.getQueryString().isEmpty()) {
+            return HttpResponse.ok(
+                    requestLine.getHttpProtocol(),
+                    Map.of("Content-Type", parseContentType(parseContentType(requestLine))),
+                    parseResponseBody(requestLine)
+            );
+        }
+        final var queryString = requestLine.getQueryString();
+        final var account = queryString.get(LOGIN_ACCOUNT_KEY);
+        final var password = queryString.get(LOGIN_PASSWORD_KEY);
+        User user = InMemoryUserRepository.findByAccount(account)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 account입니다."));
-        checkLoginUserPassword(user, queryString);
+        if (user.checkPassword(password)) {
+            return HttpResponse.found(requestLine.getHttpProtocol(), Map.of("Location", "/index.html"));
+        }
+        return HttpResponse.found(requestLine.getHttpProtocol(), Map.of("Location", "/401.html"));
     }
 
-    private void checkLoginUserPassword(User user, Map<String, String> queryString) {
-        if (user.checkPassword(queryString.get(LOGIN_PASSWORD_KEY))) {
-            log.info("조회한 유저 정보 - {}", user);
-        }
-    }
-
-    private String parseResponseBody(final RequestLine requestLine) throws IOException {
-        if (isRootPath(requestLine)) {
-            return ROOT_BODY;
-        }
+    private String parseResponseBody(final RequestLine requestLine) {
         return FileUtil.readStaticPathFileResource(requestLine.getFilePath(), getClass());
     }
 
-    private ContentType parseContentType(final RequestLine requestLine) {
-        if (isRootPath(requestLine)) {
-            return ContentType.TEXT_HTML;
-        }
-        String extension = FileUtil.parseExtension(requestLine.getFilePath());
-        return ContentType.fromExtension(extension);
+    private String parseContentType(final ContentType contentType) {
+        return contentType.getContentType() + ";charset=utf-8";
     }
 
-    private boolean isRootPath(final RequestLine requestLine) {
-        return requestLine.getHttpPath()
-                .equals(ROOT_PATH);
+    private ContentType parseContentType(final RequestLine requestLine) {
+        String extension = FileUtil.parseExtension(requestLine.getFilePath());
+        return ContentType.fromExtension(extension);
     }
 }
