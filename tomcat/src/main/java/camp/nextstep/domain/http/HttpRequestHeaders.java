@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import static java.lang.Integer.parseInt;
+
 public class HttpRequestHeaders {
 
     private static final String CONTENT_LENGTH_HEADER_KEY = "Content-Length";
@@ -36,6 +38,13 @@ public class HttpRequestHeaders {
 
     public boolean containsContentLength() {
         return headers.containsKey(CONTENT_LENGTH_HEADER_KEY);
+    }
+
+    public int getContentLength() {
+        if (!containsContentLength()) {
+            throw new IllegalStateException("Content-Length가 존재하지 않습니다.");
+        }
+        return parseInt(headers.get(CONTENT_LENGTH_HEADER_KEY));
     }
 
     public Map<String, String> getHeaders() {

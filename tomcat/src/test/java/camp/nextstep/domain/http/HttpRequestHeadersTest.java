@@ -38,4 +38,17 @@ class HttpRequestHeadersTest {
         boolean actual = new HttpRequestHeaders(List.of(givenHeaders)).containsContentLength();
         assertThat(actual).isEqualTo(expected);
     }
+
+    @Test
+    void content_length가_없는데_가져오려하면_예외가_발생한다() {
+        assertThatThrownBy(() -> new HttpRequestHeaders(List.of("Content-Type: A")).getContentLength())
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessage("Content-Length가 존재하지 않습니다.");
+    }
+
+    @Test
+    void content_length를_가져온다() {
+        int actual = new HttpRequestHeaders(List.of("Content-Length: 55")).getContentLength();
+        assertThat(actual).isEqualTo(55);
+    }
 }
