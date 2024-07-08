@@ -1,9 +1,8 @@
 package camp.nextstep.domain.http;
 
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
-
-import static java.util.Collections.emptyMap;
 
 public class HttpResponse {
 
@@ -19,26 +18,28 @@ public class HttpResponse {
     private final Map<String, String> httpHeaders;
     private final String responseBody;
 
-    public HttpResponse(HttpProtocol httpProtocol, HttpStatus httpStatus, String responseBody) {
+    public HttpResponse(HttpProtocol httpProtocol, HttpStatus httpStatus, Map<String, String> httpHeaders, String responseBody) {
         this.httpProtocol = httpProtocol;
         this.httpStatus = httpStatus;
-        this.httpHeaders = extractHttpHeaders(responseBody);
+        this.httpHeaders = parseHttpHeaders(httpHeaders, responseBody);
         this.responseBody = responseBody;
     }
 
-    private Map<String, String> extractHttpHeaders(String responseBody) {
-        if (!responseBody.isEmpty()) {
-            return Map.of(CONTENT_LENGTH_HEADER_KEY, String.valueOf(responseBody.getBytes().length));
+    private Map<String, String> parseHttpHeaders(Map<String, String> httpHeaders, String responseBody) {
+        if (responseBody.isEmpty()) {
+            return httpHeaders;
         }
-        return emptyMap();
+        Map<String, String> headers = new LinkedHashMap<>(httpHeaders);
+        headers.put(CONTENT_LENGTH_HEADER_KEY, String.valueOf(responseBody.getBytes().length));
+        return headers;
     }
 
-    public static HttpResponse ok(HttpProtocol httpProtocol, String responseBody) {
-        return new HttpResponse(httpProtocol, HttpStatus.OK, responseBody);
+    public static HttpResponse ok(HttpProtocol httpProtocol, Map<String, String> httpHeaders, String responseBody) {
+        return new HttpResponse(httpProtocol, HttpStatus.OK, httpHeaders, responseBody);
     }
 
-    public static HttpResponse found(HttpProtocol httpProtocol) {
-        return new HttpResponse(httpProtocol, HttpStatus.FOUND, EMPTY_RESPONSE_BODY);
+    public static HttpResponse found(HttpProtocol httpProtocol, Map<String, String> httpHeaders) {
+        return new HttpResponse(httpProtocol, HttpStatus.FOUND, httpHeaders, EMPTY_RESPONSE_BODY);
     }
 
     public String buildResponse() {
@@ -67,19 +68,11 @@ public class HttpResponse {
                 .collect(Collectors.joining(RESPONSE_DELIMITER));
     }
 
-    public HttpProtocol getHttpProtocol() {
-        return httpProtocol;
-    }
-
     public HttpStatus getHttpStatus() {
         return httpStatus;
     }
 
     public Map<String, String> getHttpHeaders() {
         return httpHeaders;
-    }
-
-    public String getResponseBody() {
-        return responseBody;
     }
 }
