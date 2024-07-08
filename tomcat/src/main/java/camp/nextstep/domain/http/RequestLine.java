@@ -34,6 +34,10 @@ public class RequestLine {
         return splitRequestLine;
     }
 
+    public boolean isGetMethod() {
+        return httpMethod == HttpMethod.GET;
+    }
+
     public HttpMethod getHttpMethod() {
         return httpMethod;
     }

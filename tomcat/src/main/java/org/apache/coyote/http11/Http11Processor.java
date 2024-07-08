@@ -22,6 +22,7 @@ public class Http11Processor implements Runnable, Processor {
 
     private static final String ROOT_PATH = "/";
     private static final String LOGIN_PATH = "/login";
+    private static final String REGISTER_PATH = "/register";
     private static final String LOGIN_ACCOUNT_KEY = "account";
     private static final String LOGIN_PASSWORD_KEY = "password";
     private static final String ROOT_BODY = "Hello world!";
@@ -59,6 +60,9 @@ public class Http11Processor implements Runnable, Processor {
         if (path.equals(LOGIN_PATH)) {
             return handleLoginPath(requestLine);
         }
+        if (path.equals(REGISTER_PATH)) {
+            return handleRegisterPath(requestLine);
+        }
         if (path.equals(ROOT_PATH)) {
             return handleRootPath(requestLine);
         }
@@ -82,6 +86,17 @@ public class Http11Processor implements Runnable, Processor {
             return HttpResponse.found(requestLine.getHttpProtocol(), "/index.html");
         }
         return HttpResponse.found(requestLine.getHttpProtocol(), "/401.html");
+    }
+
+    private HttpResponse handleRegisterPath(final RequestLine requestLine) {
+        if (requestLine.isGetMethod()) {
+            return HttpResponse.ok(
+                    requestLine.getHttpProtocol(),
+                    parseContentType(requestLine),
+                    parseResponseBody(requestLine)
+            );
+        }
+        throw new RuntimeException();
     }
 
     private HttpResponse handleRootPath(final RequestLine requestLine) {
