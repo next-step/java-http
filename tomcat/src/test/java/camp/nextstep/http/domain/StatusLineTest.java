@@ -25,7 +25,6 @@ class StatusLineTest {
         assertThat(statusLine.getStatusCode()).isEqualTo(HttpStatusCode.OK);
     }
 
-
     @ParameterizedTest
     @NullSource
     @ValueSource(strings = {
@@ -34,8 +33,15 @@ class StatusLineTest {
             "HTTP/1.1 OK",
             "HTTP/1.1 GOAT 200"
     })
-    void requestLine_형식이_맞지_않으면_예외가_발생한다(final String input) {
+    void statusLine_형식이_맞지_않으면_예외가_발생한다(final String input) {
         assertThatThrownBy(() -> new StatusLine(input))
                 .isInstanceOf(InvalidStatusLineException.class);
+    }
+
+    @Test
+    void statusLine_을_byte_로_변환할_수_있다() {
+        final StatusLine statusLine = new StatusLine("HTTP/1.1 200 OK");
+
+        assertThat(statusLine.getBytes()).isEqualTo("HTTP/1.1 200 OK".getBytes());
     }
 }

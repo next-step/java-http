@@ -35,4 +35,8 @@ public enum HttpStatusCode {
     public String getReasonPhrase() {
         return reasonPhrase;
     }
+
+    public int getValue() {
+        return value;
+    }
 }

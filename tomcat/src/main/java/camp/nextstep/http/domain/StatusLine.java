@@ -2,8 +2,9 @@ package camp.nextstep.http.domain;
 
 import camp.nextstep.http.exception.InvalidHttpStatusException;
 import camp.nextstep.http.exception.InvalidStatusLineException;
+import org.apache.coyote.http11.HttpWritable;
 
-public class StatusLine {
+public class StatusLine implements HttpWritable {
     private static final int REQUIRED_STATUS_LINE_LENGTH = 3;
     private static final String DELIMITER = " ";
     private static final int VERSION_INDEX = 0;
@@ -47,5 +48,16 @@ public class StatusLine {
 
     public HttpStatusCode getStatusCode() {
         return statusCode;
+    }
+
+    @Override
+    public byte[] getBytes() {
+        return String.format(
+                "%s/%s %d %s",
+                version.getProtocol(),
+                version.getVersion(),
+                statusCode.getValue(),
+                statusCode.getReasonPhrase()
+        ).getBytes();
     }
 }
