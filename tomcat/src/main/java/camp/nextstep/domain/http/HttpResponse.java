@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 public class HttpResponse {
 
     private static final String CONTENT_LENGTH_HEADER_KEY = "Content-Length";
+    private static final String LOCATION_HEADER_KEY = "Location";
     private static final String EMPTY_RESPONSE_BODY = "";
 
     private static final String RESPONSE_DELIMITER = "\r\n";
@@ -38,8 +39,8 @@ public class HttpResponse {
         return new HttpResponse(httpProtocol, HttpStatus.OK, httpHeaders, responseBody);
     }
 
-    public static HttpResponse found(HttpProtocol httpProtocol, Map<String, String> httpHeaders) {
-        return new HttpResponse(httpProtocol, HttpStatus.FOUND, httpHeaders, EMPTY_RESPONSE_BODY);
+    public static HttpResponse found(HttpProtocol httpProtocol, String location) {
+        return new HttpResponse(httpProtocol, HttpStatus.FOUND, Map.of(LOCATION_HEADER_KEY, location), EMPTY_RESPONSE_BODY);
     }
 
     public String buildResponse() {

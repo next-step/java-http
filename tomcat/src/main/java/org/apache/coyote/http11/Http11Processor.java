@@ -80,9 +80,9 @@ public class Http11Processor implements Runnable, Processor {
         User user = InMemoryUserRepository.findByAccount(account)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 account입니다."));
         if (user.checkPassword(password)) {
-            return HttpResponse.found(requestLine.getHttpProtocol(), Map.of("Location", "/index.html"));
+            return HttpResponse.found(requestLine.getHttpProtocol(), "/index.html");
         }
-        return HttpResponse.found(requestLine.getHttpProtocol(), Map.of("Location", "/401.html"));
+        return HttpResponse.found(requestLine.getHttpProtocol(), "/401.html");
     }
 
     private HttpResponse handleRootPath(final RequestLine requestLine) {

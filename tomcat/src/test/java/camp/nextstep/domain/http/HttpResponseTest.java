@@ -6,6 +6,7 @@ import java.util.Map;
 
 import static java.util.Collections.emptyMap;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 class HttpResponseTest {
 
@@ -19,8 +20,11 @@ class HttpResponseTest {
 
     @Test
     void found_response를_생성한다() {
-        HttpResponse actual = HttpResponse.found(DEFAULT_HTTP_PROTOCOL, emptyMap());
-        assertThat(actual.getHttpStatus()).isEqualTo(HttpStatus.FOUND);
+        HttpResponse actual = HttpResponse.found(DEFAULT_HTTP_PROTOCOL, "/index.html");
+        assertAll(
+                () -> assertThat(actual.getHttpStatus()).isEqualTo(HttpStatus.FOUND),
+                () -> assertThat(actual.getHttpHeaders()).contains(Map.entry("Location", "/index.html"))
+        );
     }
 
     @Test
