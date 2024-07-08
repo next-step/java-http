@@ -1,16 +1,12 @@
 package org.apache.coyote.http11;
 
 import java.util.Map;
-import java.util.Objects;
-import org.apache.coyote.http11.RequestLine;
-import org.apache.coyote.http11.RequestLineParser;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import support.StubSocket;
 
-@DisplayName("RequestLineParser class는")
-class RequestLineParserTest {
+@DisplayName("RequestParser class는")
+class RequestLineTest {
 
     @DisplayName("GET 메서드를 통해 요청을 받았을 때 RequestLine 객체를 반환한다")
     @Test
@@ -19,18 +15,14 @@ class RequestLineParserTest {
         final String httpRequest = String.join("\r\n",
                                                "GET /users HTTP/1.1 ",
                                                "");
-        final var socket = new StubSocket(httpRequest);
-        final var parser = new RequestLineParser(socket);
-
         // when
-        final var result = parser.parse();
-        final var expected = RequestLine.from(httpRequest);
+        final var result = RequestLine.from(httpRequest);
 
         // then
-        Assertions.assertThat(result.getMethod()).isEqualTo(expected.getMethod());
-        Assertions.assertThat(result.getPath()).isEqualTo(expected.getPath());
-        Assertions.assertThat(result.getProtocol()).isEqualTo(expected.getProtocol());
-        Assertions.assertThat(result.getVersion()).isEqualTo(expected.getVersion());
+        Assertions.assertThat(result.getMethod()).isEqualTo("GET");
+        Assertions.assertThat(result.getPath().getPath()).isEqualTo("/users");
+        Assertions.assertThat(result.getProtocol()).isEqualTo("HTTP");
+        Assertions.assertThat(result.getVersion()).isEqualTo("1.1");
     }
 
     @DisplayName("POST 메서드를 통해 요청을 받았을 때 RequestLine 객체를 반환한다")
@@ -40,18 +32,14 @@ class RequestLineParserTest {
         final String httpRequest = String.join("\r\n",
                                                "POST /users HTTP/1.1 ",
                                                "");
-        final var socket = new StubSocket(httpRequest);
-        final var parser = new RequestLineParser(socket);
-
         // when
-        final var result = parser.parse();
-        final var expected = RequestLine.from(httpRequest);
+        final var result = RequestLine.from(httpRequest);
 
         // then
-        Assertions.assertThat(result.getMethod()).isEqualTo(expected.getMethod());
-        Assertions.assertThat(result.getPath()).isEqualTo(expected.getPath());
-        Assertions.assertThat(result.getProtocol()).isEqualTo(expected.getProtocol());
-        Assertions.assertThat(result.getVersion()).isEqualTo(expected.getVersion());
+        Assertions.assertThat(result.getMethod()).isEqualTo("POST");
+        Assertions.assertThat(result.getPath().getPath()).isEqualTo("/users");
+        Assertions.assertThat(result.getProtocol()).isEqualTo("HTTP");
+        Assertions.assertThat(result.getVersion()).isEqualTo("1.1");
     }
 
     @Test
@@ -61,11 +49,10 @@ class RequestLineParserTest {
         final String httpRequest = String.join("\r\n",
                                                "GET /users?userId=javajigi&password=password&name=JaeSung HTTP/1.1 ",
                                                "");
-        final var socket = new StubSocket(httpRequest);
-        final var parser = new RequestLineParser(socket);
 
         // when
-        final var result = parser.parse();
+        final var result = RequestLine.from(httpRequest);
+
         // then
         Map<String, Object> parameters = result.getParameters();
         Assertions.assertThat(parameters.get("userId")).isEqualTo("javajigi");
@@ -73,3 +60,4 @@ class RequestLineParserTest {
         Assertions.assertThat(parameters.get("name")).isEqualTo("JaeSung");
     }
 }
+

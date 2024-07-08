@@ -5,7 +5,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 @DisplayName("Query 클래스는")
-public class QueryTest {
+class QueryTest {
 
     @DisplayName("Query 객체를 생성할 수 있다.")
     @Test
@@ -31,6 +31,6 @@ public class QueryTest {
         final var result = Query.from(queryString);
 
         // then
-        Assertions.assertThat(result.getParameters()).hasSize(0);
+        Assertions.assertThat(result.getParameters()).isEmpty();
     }
 }
