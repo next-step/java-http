@@ -102,7 +102,17 @@ X-Pad: avoid browser bug
         Connection: keep-alive
     ```
     - 요청 path 의 확장자를 확인해 response header 의 Content-Type 을 바꿔준다.
-      - html -> text/html
-      - css -> text/css
-      - js -> text/javascript (참고 [rfc9239](https://www.rfc-editor.org/rfc/rfc9239))
-  
+        - html -> text/html
+        - css -> text/css
+        - js -> text/javascript (참고 [rfc9239](https://www.rfc-editor.org/rfc/rfc9239))
+
+### 요구사항 3 - Query String 파싱
+
+- http://localhost:8080/login?account=gugu&password=password 으로 접속하면 login.html 를 보여준다.
+    - Query String 에서 account 와 password 를 추출한다.
+    - 해당 account 로 User 를 찾는다
+        - 존재하지 않으면 예외를 던진다.
+        - 존재하면 password 를 비교한다.
+            - password 가 틀리면 예외를 던진다.
+            - password 가 동일하면 콘솔에 User 객체를 출력한다
+    - `login.html` 을 OutputStream 에 쓴다.
