@@ -103,6 +103,8 @@ Location: /index.html
 - HttpRequest
   - RequestLine
   - HttpRequestHeader
+    - List값을 읽어 포멧에 맞게 파싱하여 생성할 수 있다.
+    - Content-Length가 존재하는지 확인하고 가져올 수 있다.
   - HttpRequestBody
 - HttpRequestBody
   - `Content-Type`이 `application/x-www-form-urlencoded`인 경우 &로 구분된 값을 파싱하여 저장한다.

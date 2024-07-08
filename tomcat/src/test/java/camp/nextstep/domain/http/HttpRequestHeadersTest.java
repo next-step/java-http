@@ -1,6 +1,8 @@
 package camp.nextstep.domain.http;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 
 import java.util.List;
 import java.util.Map;
@@ -28,5 +30,12 @@ class HttpRequestHeadersTest {
     void 헤더값을_파싱하여_생성한다() {
         HttpRequestHeaders actual = new HttpRequestHeaders(List.of("Content-Length: 55", "Content-Type: A"));
         assertThat(actual.getHeaders()).containsAllEntriesOf(Map.of("Content-Length", "55", "Content-Type", "A"));
+    }
+
+    @ParameterizedTest
+    @CsvSource(value = {"Content-Length: 55,true", "Content-Type: A,false"})
+    void content_length_헤더를_가지는지_확인할_수_있다(String givenHeaders, boolean expected) {
+        boolean actual = new HttpRequestHeaders(List.of(givenHeaders)).containsContentLength();
+        assertThat(actual).isEqualTo(expected);
     }
 }

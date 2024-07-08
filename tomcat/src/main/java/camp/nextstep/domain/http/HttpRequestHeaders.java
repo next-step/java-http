@@ -7,6 +7,8 @@ import java.util.stream.Collectors;
 
 public class HttpRequestHeaders {
 
+    private static final String CONTENT_LENGTH_HEADER_KEY = "Content-Length";
+
     private static final String REQUEST_HEADER_FORMAT_SPLIT_REGEX = ": ";
 
     private static final int REQUEST_HEADER_FORMAT_LENGTH = 2;
@@ -30,6 +32,10 @@ public class HttpRequestHeaders {
                 splitRequestHeader[REQUEST_HEADER_KEY_INDEX],
                 splitRequestHeader[REQUEST_HEADER_VALUE_INDEX]
         );
+    }
+
+    public boolean containsContentLength() {
+        return headers.containsKey(CONTENT_LENGTH_HEADER_KEY);
     }
 
     public Map<String, String> getHeaders() {
