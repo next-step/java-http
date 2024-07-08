@@ -50,3 +50,28 @@ User-Agent: Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1)
 - HttpProtocol
   - HttpProtocol 스펙(protocol, version)을 관리한다. 
   - protocol값과 version이 없으면 예외가 발생한다.
+
+## 2단계 - HTTP 서버 구현하기
+### 1. GET /index.html 응답하기
+- inputStream의 첫줄은 RequestLine으로 저장한다.
+- 입력된 값에서 파일정보가 있는 경우 html 파일로 파싱하여 response body를 반환한다.
+- root의 경우 default로 "hello world"를 출력하도록 한다.
+
+- FileUtil
+  - resource가 없는 경우 예외가 발생한다.
+  - 요청된 경로에 있는 resource에 있는 데이터를 반환한다.
+  - file path를 받아 파일 확장자를 반환할 수 있다.
+
+### 2. CSS 지원하기
+- css파일인 경우 응답헤더의 content-type을 text/css로 반환한다.
+  - 요청값의 확장자를 가지고 css를 판단한다. 
+- html파일인 경우 응답헤더의 content-type을 text/html로 반환한다.
+
+- ContentType
+  - 확장자에 맞는 content-type으로 변환할 수 있다.
+    - html: text/html
+    - css: text/css
+    - js: application/javascript
+
+### 3. Query String 파싱
+- /login을 요청했을 때 query string을 파싱하여 로그를 남긴다.

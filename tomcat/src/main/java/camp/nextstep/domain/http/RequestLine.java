@@ -2,6 +2,8 @@ package camp.nextstep.domain.http;
 
 import java.util.Map;
 
+import static camp.nextstep.util.FileUtil.containsExtensionDelimiter;
+
 public class RequestLine {
 
     private static final String REQUEST_LINE_FORMAT_SPLIT_REGEX = " ";
@@ -10,6 +12,8 @@ public class RequestLine {
     private static final int HTTP_METHOD_INDEX = 0;
     private static final int HTTP_URL_INDEX = 1;
     private static final int HTTP_PROTOCOL_INDEX = 2;
+
+    private static final ContentType DEFAULT_CONTENT_TYPE = ContentType.TEXT_HTML;
 
     private final HttpMethod httpMethod;
     private final HttpPath httpPath;
@@ -36,6 +40,13 @@ public class RequestLine {
 
     public String getHttpPath() {
         return httpPath.getPath();
+    }
+
+    public String getFilePath() {
+        if (containsExtensionDelimiter(httpPath.getPath())) {
+            return httpPath.getPath();
+        }
+        return httpPath.getPath() + DEFAULT_CONTENT_TYPE.getExtension();
     }
 
     public Map<String, String> getQueryString() {
