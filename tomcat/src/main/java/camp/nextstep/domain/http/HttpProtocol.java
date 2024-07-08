@@ -25,6 +25,10 @@ public class HttpProtocol {
         return splitHttpProtocol;
     }
 
+    public String buildProtocol() {
+        return protocol + HTTP_PROTOCOL_FORMAT_SPLIT_REGEX + version;
+    }
+
     public String getProtocol() {
         return protocol;
     }

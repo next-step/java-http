@@ -12,4 +12,12 @@ public enum HttpStatus {
         this.statusCode = statusCode;
         this.reasonPhrase = reasonPhrase;
     }
+
+    public int getStatusCode() {
+        return statusCode;
+    }
+
+    public String getReasonPhrase() {
+        return reasonPhrase;
+    }
 }

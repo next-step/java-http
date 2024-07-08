@@ -23,4 +23,10 @@ class HttpProtocolTest {
                 () -> assertThat(actual.getVersion()).isEqualTo("1.1")
         );
     }
+
+    @Test
+    void buildProtocol() {
+        String actual = new HttpProtocol("HTTP/1.1").buildProtocol();
+        assertThat(actual).isEqualTo("HTTP/1.1");
+    }
 }

@@ -33,4 +33,15 @@ class HttpResponseTest {
         HttpResponse actual = new HttpResponse(DEFAULT_HTTP_PROTOCOL, HttpStatus.OK, "");
         assertThat(actual.getHttpHeaders()).doesNotContainKey("Content-Length");
     }
+
+    @Test
+    void response_format에_맞추어_response를_반환한다() {
+        String actual = new HttpResponse(DEFAULT_HTTP_PROTOCOL, HttpStatus.OK, "Hello world!").buildResponse();
+        String expected = String.join("\r\n",
+                "HTTP/1.1 200 OK ",
+                "Content-Length: 12 ",
+                "",
+                "Hello world!");
+        assertThat(actual).isEqualTo(expected);
+    }
 }
