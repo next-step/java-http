@@ -1,5 +1,7 @@
 package camp.nextstep.http.domain;
 
+import camp.nextstep.http.exception.InvalidHttpHeaderException;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -20,6 +22,10 @@ public class HttpHeaders {
     }
 
     public void setContentLength(final long contentLength) {
+        if (contentLength < 1L) {
+            throw new InvalidHttpHeaderException("ContentLength must be grater than 0");
+        }
+
         headers.put("Content-Length", String.valueOf(contentLength));
     }
 
