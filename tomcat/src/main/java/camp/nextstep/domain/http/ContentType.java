@@ -27,7 +27,7 @@ public enum ContentType {
         return extension;
     }
 
-    public String getContentType() {
-        return contentType;
+    public String getUtf8ContentType() {
+        return contentType + ";charset=utf-8";
     }
 }

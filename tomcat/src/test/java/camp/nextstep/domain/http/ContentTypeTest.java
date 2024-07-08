@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
+import static camp.nextstep.domain.http.ContentType.TEXT_HTML;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
@@ -21,5 +22,11 @@ class ContentTypeTest {
         assertThatThrownBy(() -> ContentType.fromExtension("error"))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("지원하지 않는 확장자입니다.");
+    }
+
+    @Test
+    void utf8이_포함된_content_type을_반환한다() {
+        String actual = TEXT_HTML.getUtf8ContentType();
+        assertThat(actual).isEqualTo("text/html;charset=utf-8");
     }
 }

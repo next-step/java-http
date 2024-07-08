@@ -40,7 +40,7 @@ public class HttpResponse {
     }
 
     public static HttpResponse ok(HttpProtocol httpProtocol, ContentType contentType, String responseBody) {
-        return new HttpResponse(httpProtocol, HttpStatus.OK, Map.of("Content-Type", contentType.getContentType() + ";charset=utf-8"), responseBody);
+        return new HttpResponse(httpProtocol, HttpStatus.OK, Map.of("Content-Type", contentType.getUtf8ContentType()), responseBody);
     }
 
     public static HttpResponse found(HttpProtocol httpProtocol, String location) {
