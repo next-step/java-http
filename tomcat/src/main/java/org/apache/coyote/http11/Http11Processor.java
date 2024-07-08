@@ -55,7 +55,7 @@ public class Http11Processor implements Runnable, Processor {
     }
 
     private byte[] getResponseBody(final HttpPath path) throws IOException {
-        if ("/".equals(path.getPath())) {
+        if (path.isRoot()) {
             return "Hello world!".getBytes();
         }
 

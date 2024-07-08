@@ -5,6 +5,7 @@ import java.util.Objects;
 public class HttpPath {
 
     private static final String DOT = ".";
+    private static final String ROOT_PATH = "/";
 
     private final String path;
 
@@ -24,16 +25,8 @@ public class HttpPath {
         return path.substring(lastDotIndex);
     }
 
-    public boolean isHtml() {
-        return path.endsWith(".html");
-    }
-
-    public boolean isCss() {
-        return path.endsWith(".css");
-    }
-
-    public boolean isJs() {
-        return path.endsWith(".js");
+    public boolean isRoot() {
+        return ROOT_PATH.equals(path);
     }
 
     @Override

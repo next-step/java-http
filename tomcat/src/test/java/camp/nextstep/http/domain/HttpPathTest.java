@@ -16,24 +16,10 @@ class HttpPathTest {
     }
 
     @Test
-    void httpPath_가_html_인지_반환받을_수_있다() {
-        final HttpPath httpPath = new HttpPath("/index.html");
+    void httpPath_가_root_인지_반환받을_수_있다() {
+        final HttpPath httpPath = new HttpPath("/");
 
-        assertThat(httpPath.isHtml()).isTrue();
-    }
-
-    @Test
-    void httpPath_가_css_인지_반환받을_수_있다() {
-        final HttpPath httpPath = new HttpPath("/style.css");
-
-        assertThat(httpPath.isCss()).isTrue();
-    }
-
-    @Test
-    void httpPath_가_js_인지_반환받을_수_있다() {
-        final HttpPath httpPath = new HttpPath("/scripts.js");
-
-        assertThat(httpPath.isJs()).isTrue();
+        assertThat(httpPath.isRoot()).isTrue();
     }
 
     @ParameterizedTest
