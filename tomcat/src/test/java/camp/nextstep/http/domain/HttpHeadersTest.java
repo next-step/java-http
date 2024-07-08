@@ -45,4 +45,19 @@ class HttpHeadersTest {
                 .hasMessage("ContentLength must be grater than 0");
     }
 
+    @Test
+    void HttpHeaders_를_byte_로_변환할_수_있다() {
+        final HttpHeaders headers = new HttpHeaders();
+
+        headers.setContentType(ContentType.HTML);
+        headers.setContentLength(1000L);
+
+        assertThat(headers.getBytes()).isEqualTo(
+                String.join(System.lineSeparator(),
+                        "Content-Type: text/html",
+                        "Content-Length: 1000"
+                ).getBytes()
+        );
+    }
+
 }

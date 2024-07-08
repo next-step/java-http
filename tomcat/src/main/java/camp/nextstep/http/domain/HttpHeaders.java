@@ -1,20 +1,23 @@
 package camp.nextstep.http.domain;
 
 import camp.nextstep.http.exception.InvalidHttpHeaderException;
+import org.apache.coyote.http11.HttpWritable;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
-public class HttpHeaders {
+public class HttpHeaders implements HttpWritable {
 
     private static final String CONTENT_TYPE = "Content-Type";
     private static final long MIN_CONTENT_LENGTH = 1L;
     private static final String CONTENT_LENGTH = "Content-Length";
     private static final int EMPTY_CONTENT_LENGTH = 0;
+
     private final Map<String, String> headers;
 
     public HttpHeaders() {
-        headers = new HashMap<>();
+        headers = new LinkedHashMap<>();
     }
 
     public void setContentType(final ContentType contentType) {
@@ -39,5 +42,13 @@ public class HttpHeaders {
             return EMPTY_CONTENT_LENGTH;
         }
         return Long.parseLong(value);
+    }
+
+    @Override
+    public byte[] getBytes() {
+        return headers.entrySet()
+                .stream()
+                .map(entry -> String.format("%s: %s", entry.getKey(), entry.getValue()))
+                .collect(Collectors.joining(System.lineSeparator())).getBytes();
     }
 }
