@@ -46,17 +46,17 @@ class HttpHeadersTest {
     }
 
     @Test
-    void HttpHeaders_를_byte_로_변환할_수_있다() {
+    void HttpHeaders_를_String_으로_변환할_수_있다() {
         final HttpHeaders headers = new HttpHeaders();
 
         headers.setContentType(ContentType.HTML);
         headers.setContentLength(1000L);
 
-        assertThat(headers.getBytes()).isEqualTo(
+        assertThat(headers.convertToString()).isEqualTo(
                 String.join(System.lineSeparator(),
-                        "Content-Type: text/html;charset=UTF-8",
-                        "Content-Length: 1000"
-                ).getBytes()
+                        "Content-Type: text/html;charset=utf-8 ",
+                        "Content-Length: 1000 "
+                )
         );
     }
 

@@ -1,8 +1,6 @@
 package camp.nextstep.http.domain;
 
-import org.apache.coyote.http11.HttpWritable;
-
-public class StatusLine implements HttpWritable {
+public class StatusLine {
     private final HttpVersion version;
     private final HttpStatusCode statusCode;
 
@@ -23,14 +21,13 @@ public class StatusLine implements HttpWritable {
         return statusCode;
     }
 
-    @Override
-    public byte[] getBytes() {
+    public String convertToString() {
         return String.format(
-                "%s/%s %d %s",
+                "%s/%s %d %s ",
                 version.getProtocol(),
                 version.getVersion(),
                 statusCode.getValue(),
                 statusCode.getReasonPhrase()
-        ).getBytes();
+        );
     }
 }

@@ -21,9 +21,9 @@ class StatusLineTest {
     }
 
     @Test
-    void statusLine_을_byte_로_변환할_수_있다() {
+    void statusLine_을_String_로_변환할_수_있다() {
         final StatusLine statusLine = StatusLine.createOk();
 
-        assertThat(statusLine.getBytes()).isEqualTo("HTTP/1.1 200 OK".getBytes());
+        assertThat(statusLine.convertToString()).isEqualTo("HTTP/1.1 200 OK ");
     }
 }
