@@ -1,0 +1,15 @@
+package camp.nextstep.http.domain;
+
+import org.junit.jupiter.api.Test;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
+class StatusLineTest {
+
+    @Test
+    void statusLine_에서_Version_을_반환받을_수_있다() {
+        final StatusLine statusLine = new StatusLine("HTTP/1.1 200 OK");
+
+        assertThat(statusLine.getVersion()).isEqualTo(new HttpVersion("HTTP/1.1"));
+    }
+}
