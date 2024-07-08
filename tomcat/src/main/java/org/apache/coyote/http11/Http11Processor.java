@@ -57,8 +57,7 @@ public class Http11Processor implements Runnable, Processor {
 
     private HttpResponse createResponse(final RequestLine requestLine) {
         if (requestLine.getHttpPath().equals(LOGIN_PATH)) {
-            HttpResponse requestLine1 = handleLoginPath(requestLine);
-            if (requestLine1 != null) return requestLine1;
+            return handleLoginPath(requestLine);
         }
         if (requestLine.getHttpPath().equals(ROOT_PATH)) {
             return HttpResponse.ok(
@@ -75,14 +74,14 @@ public class Http11Processor implements Runnable, Processor {
     }
 
     private HttpResponse handleLoginPath(RequestLine requestLine) {
-        if (requestLine.getQueryString().isEmpty()) {
+        final var queryString = requestLine.getQueryString();
+        if (queryString.isEmpty()) {
             return HttpResponse.ok(
                     requestLine.getHttpProtocol(),
                     Map.of("Content-Type", parseContentType(parseContentType(requestLine))),
                     parseResponseBody(requestLine)
             );
         }
-        final var queryString = requestLine.getQueryString();
         final var account = queryString.get(LOGIN_ACCOUNT_KEY);
         final var password = queryString.get(LOGIN_PASSWORD_KEY);
         User user = InMemoryUserRepository.findByAccount(account)
