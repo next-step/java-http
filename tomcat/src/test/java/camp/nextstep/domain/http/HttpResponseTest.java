@@ -13,12 +13,6 @@ class HttpResponseTest {
     private static final HttpProtocol DEFAULT_HTTP_PROTOCOL = new HttpProtocol("HTTP/1.1");
 
     @Test
-    void ok_response를_생성한다() {
-        HttpResponse actual = HttpResponse.ok(DEFAULT_HTTP_PROTOCOL, emptyMap(), "Hello world!");
-        assertThat(actual.getHttpStatus()).isEqualTo(HttpStatus.OK);
-    }
-
-    @Test
     void contentType을_받는_ok_response를_생성한다() {
         HttpResponse actual = HttpResponse.ok(DEFAULT_HTTP_PROTOCOL, ContentType.TEXT_HTML, "Hello world!");
         assertAll(

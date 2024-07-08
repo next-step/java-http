@@ -36,10 +36,6 @@ public class HttpResponse {
         return headers;
     }
 
-    public static HttpResponse ok(HttpProtocol httpProtocol, Map<String, String> httpHeaders, String responseBody) {
-        return new HttpResponse(httpProtocol, HttpStatus.OK, httpHeaders, responseBody);
-    }
-
     public static HttpResponse ok(HttpProtocol httpProtocol, ContentType contentType, String responseBody) {
         return new HttpResponse(httpProtocol, HttpStatus.OK, Map.of(CONTENT_TYPE_HEADER_KEY, contentType.getUtf8ContentType()), responseBody);
     }

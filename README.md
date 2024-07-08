@@ -80,6 +80,8 @@ User-Agent: Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1)
 1. HTTP Status Code 302
 - HttpResponse
   - status코드를 가진다(200 ok, 302 ok)
+    - found의 경우 location을 받아 생성한다.
+    - ok의 경우 contentType을 받아 생성한다.
   - response header를 가진다
   - response body를 가진다
     - response body의 content length를 header에 저장한다
@@ -90,3 +92,4 @@ User-Agent: Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1)
 HTTP/1.1 302 Found
 Location: /index.html
 ```
+- 로그인에 성공할 경우 `/index.html`로 리다이랙하고 실패하는 경우 `/401.html`로 리다이랙하도록 한다.
