@@ -1,6 +1,6 @@
 package org.apache.coyote.http11;
 
-import org.apache.coyote.http11.model.Path;
+import org.apache.coyote.http11.model.HttpPath;
 import org.apache.coyote.http11.model.RequestLine;
 import org.apache.coyote.http11.model.constant.HttpMethod;
 
@@ -14,6 +14,13 @@ public class RequestLineParser {
     private static final String EQUAL_SIGN = "=";
     private static final String BACKSLASH = "\\";
 
+    private RequestLineParser() {
+    }
+
+    public static RequestLineParser getInstance() {
+        return SingletonHelper.SINGLETON;
+    }
+
     public RequestLine parse(final String requestLine) {
         final String[] tokens = tokenize(requestLine, BLANK);
         final HashMap<String, String> queryParams = new HashMap<>();
@@ -26,14 +33,14 @@ public class RequestLineParser {
 
         return new RequestLine(
                 HttpMethod.valueOf(httpMethod),
-                Path.of(path, queryParams),
+                HttpPath.of(path, queryParams),
                 protocol,
                 version
         );
     }
 
     private String parsePath(final String path, final HashMap<String, String> queryParams) {
-        if (hasQueryString(path)) {
+        if (hasNotQueryString(path)) {
             return path;
         }
 
@@ -48,11 +55,15 @@ public class RequestLineParser {
         return pathTokens[0];
     }
 
-    private boolean hasQueryString(final String path) {
+    private boolean hasNotQueryString(final String path) {
         return !path.contains(QUESTION_MARK);
     }
 
     private String[] tokenize(String input, String delimiter) {
         return StringTokenizer.token(input, delimiter);
+    }
+
+    private static class SingletonHelper {
+        private static final RequestLineParser SINGLETON = new RequestLineParser();
     }
 }

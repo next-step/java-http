@@ -14,10 +14,11 @@ class RequestLineParserTest {
     private static final String TEST_PATH = "/users";
     private static final String TEST_PROTOCOL = "HTTP";
     private static final String TEST_VERSION = "1.1";
+    private static final String HTML = ".html";
     private static final String BLANK = " ";
     private static final String SLASH = "/";
     private static final String TEST_PATH_QUERY_STRING = "/users?userId=javajigi&password=password&name=JaeSung";
-    private final RequestLineParser requestLineParser = new RequestLineParser();
+    private final RequestLineParser requestLineParser = RequestLineParser.getInstance();
 
     @Test
     void httpGetParsingTest() {
@@ -35,7 +36,7 @@ class RequestLineParserTest {
         // then
         assertAll(
                 () -> assertThat(httpMethod).isEqualTo(GET_METHOD),
-                () -> assertThat(path).isEqualTo(TEST_PATH),
+                () -> assertThat(path).isEqualTo(TEST_PATH + HTML),
                 () -> assertThat(protocol).isEqualTo(TEST_PROTOCOL),
                 () -> assertThat(version).isEqualTo(TEST_VERSION)
         );
@@ -57,7 +58,7 @@ class RequestLineParserTest {
         // then
         assertAll(
                 () -> assertThat(httpMethod).isEqualTo(POST_METHOD),
-                () -> assertThat(path).isEqualTo(TEST_PATH),
+                () -> assertThat(path).isEqualTo(TEST_PATH + HTML),
                 () -> assertThat(protocol).isEqualTo(TEST_PROTOCOL),
                 () -> assertThat(version).isEqualTo(TEST_VERSION)
         );
