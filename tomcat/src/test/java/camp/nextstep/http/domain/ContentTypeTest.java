@@ -27,4 +27,17 @@ class ContentTypeTest {
         assertThatThrownBy(() -> ContentType.from("notExist"))
                 .isInstanceOf(InvalidContentTypeException.class);
     }
+
+
+    @ParameterizedTest
+    @CsvSource(value = {
+            "/index.html:HTML",
+            "/style.css:CSS",
+            "/scripts.js:JAVASCRIPT"
+    }, delimiter = ':')
+    void ContentType_을_HttpPath_로_생성_할_수_있다(final String path, final ContentType expected) {
+        final ContentType contentType = ContentType.from(new HttpPath(path));
+
+        assertThat(contentType).isEqualTo(expected);
+    }
 }

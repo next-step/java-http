@@ -5,14 +5,16 @@ import camp.nextstep.http.exception.InvalidContentTypeException;
 import java.util.Arrays;
 
 public enum ContentType {
-    HTML("text/html"),
-    CSS("text/css"),
-    JAVASCRIPT("text/javascript");
+    HTML("text/html", ".html"),
+    CSS("text/css", ".css"),
+    JAVASCRIPT("text/javascript", ".js");
 
     private final String type;
+    private final String extension;
 
-    ContentType(final String type) {
+    ContentType(final String type, final String extension) {
         this.type = type;
+        this.extension = extension;
     }
 
     public static ContentType from(final String contentType) {
@@ -20,6 +22,13 @@ public enum ContentType {
                 .filter(type -> type.type.equalsIgnoreCase(contentType))
                 .findFirst()
                 .orElseThrow(() -> new InvalidContentTypeException("No matching HttpStatusCode found for " + contentType));
+    }
+
+    public static ContentType from(final HttpPath path) {
+        return Arrays.stream(values())
+                .filter(type -> type.extension.equalsIgnoreCase(path.getExtension()))
+                .findFirst()
+                .orElseThrow(() -> new InvalidContentTypeException("No matching HttpStatusCode found for " + path.getPath()));
     }
 
     public String getType() {
