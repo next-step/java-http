@@ -1,6 +1,7 @@
 package camp.nextstep;
 
 import camp.nextstep.model.dto.RequestLine;
+import camp.nextstep.model.enums.HttpMethod;
 import org.junit.jupiter.api.Test;
 import support.StubInputStream;
 
@@ -21,7 +22,7 @@ class RequestParserTest {
                 "");
         try(StubInputStream stubInputStream = new StubInputStream(httpRequest)) {
             RequestLine requestLine = RequestParser.parseRequest(stubInputStream);
-            assertEquals(requestLine.getMethod(), "GET");
+            assertEquals(requestLine.getMethod(), HttpMethod.GET);
             assertEquals(requestLine.getPath(), "/index.html");
             assertEquals(requestLine.getProtocol(), "HTTP");
             assertEquals(requestLine.getVersion(), "1.1");
@@ -41,7 +42,7 @@ class RequestParserTest {
                 "");
         try(StubInputStream stubInputStream = new StubInputStream(httpRequest)) {
             RequestLine requestLine = RequestParser.parseRequest(stubInputStream);
-            assertEquals(requestLine.getMethod(), "POST");
+            assertEquals(requestLine.getMethod(), HttpMethod.POST);
             assertEquals(requestLine.getPath(), "/user");
             assertEquals(requestLine.getProtocol(), "HTTP");
             assertEquals(requestLine.getVersion(), "1.1");
@@ -60,7 +61,7 @@ class RequestParserTest {
                 "");
         try(StubInputStream stubInputStream = new StubInputStream(httpRequest)) {
             RequestLine requestLine = RequestParser.parseRequest(stubInputStream);
-            assertEquals(requestLine.getMethod(), "GET");
+            assertEquals(requestLine.getMethod(), HttpMethod.GET);
             assertEquals(requestLine.getPath(), "/user");
             assertEquals(requestLine.getQueryStringMap().get("userId"), "lsh");
             assertEquals(requestLine.getQueryStringMap().get("password"), "pw");
