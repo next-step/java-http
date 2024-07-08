@@ -33,4 +33,12 @@ public class RequestTarget {
 
             return new RequestTarget(requestTarget, Map.of());
         }
+
+    public String getPath() {
+        return path;
     }
+
+    public Map<String, String> getQueryParamMap() {
+        return queryParamMap;
+    }
+}
