@@ -1,16 +1,40 @@
 package camp.nextstep;
 
-import java.net.http.HttpRequest;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.List;
 
-import camp.nextstep.model.dto.GetRequestDto;
-import camp.nextstep.model.dto.PostRequestDto;
+import camp.nextstep.model.dto.RequestLine;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class RequestParser {
-	public static GetRequestDto parseGetRequest(String request) {
-		return null;
+
+	private static final Logger log = LoggerFactory.getLogger(RequestParser.class);
+
+	public static RequestLine parseRequest(InputStream is) {
+		List<String> request = getRequest(is);
+		String[] requestInfos = request.get(0).split(" "); // GET /hello HTTP/1.1
+		String[] version = requestInfos[2].split("/");
+		return RequestLine.of(requestInfos[0], requestInfos[1], version[0], version[1]);
 	}
 
-	public static PostRequestDto parsePostRequest(String request) {
-		return null;
+	private static List<String> getRequest(InputStream is) {
+		List<String> request = new ArrayList<>();
+		try {
+			BufferedReader br = new BufferedReader(new InputStreamReader(is, "UTF-8"));
+			String line = br.readLine();
+			while (line != null) {
+				request.add(line);
+				line = br.readLine();
+			}
+			return request;
+		} catch (IOException e) {
+			log.error(e.getMessage());
+			throw new RuntimeException("유효하지 않은 요청입니다.");
+		}
 	}
 }

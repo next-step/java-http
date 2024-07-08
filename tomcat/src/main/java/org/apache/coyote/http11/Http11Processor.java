@@ -2,19 +2,13 @@ package org.apache.coyote.http11;
 
 import camp.nextstep.RequestParser;
 import camp.nextstep.exception.UncheckedServletException;
+import camp.nextstep.model.dto.RequestLine;
 import org.apache.coyote.Processor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.net.Socket;
-import java.util.ArrayList;
-import java.util.List;
-
-import com.sun.jdi.connect.IllegalConnectorArgumentsException;
 
 public class Http11Processor implements Runnable, Processor {
 
@@ -37,8 +31,6 @@ public class Http11Processor implements Runnable, Processor {
         try (final var inputStream = connection.getInputStream();
              final var outputStream = connection.getOutputStream()) {
 
-            List<String> request = getRequest(inputStream);
-
             final var responseBody = "Hello world!";
 
             final var response = String.join("\r\n",
@@ -52,22 +44,6 @@ public class Http11Processor implements Runnable, Processor {
             outputStream.flush();
         } catch (IOException | UncheckedServletException e) {
             log.error(e.getMessage(), e);
-        }
-    }
-
-    public List<String> getRequest(InputStream is) {
-        List<String> request = new ArrayList<>();
-        try {
-            BufferedReader br = new BufferedReader(new InputStreamReader(is, "UTF-8"));
-            String line = br.readLine();
-            while (line != null) {
-                line = br.readLine();
-                request.add(line);
-            }
-            return request;
-        } catch (IOException e) {
-            log.error(e.getMessage());
-            throw new RuntimeException("유효하지 않은 요청입니다.");
         }
     }
 }
