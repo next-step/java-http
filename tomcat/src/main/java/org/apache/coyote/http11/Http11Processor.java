@@ -25,7 +25,7 @@ public class Http11Processor implements Runnable, Processor {
     private static final Logger log = LoggerFactory.getLogger(Http11Processor.class);
     private static final String STATIC_PATH = "static";
     private static final String ROOT_PATH_RESPONSE_BODY = "Hello world!";
-    private static final String LOGIN_PATH = "/login";
+    private static final String LOGIN_PATH = "/login.html";
     private static final String LOGIN_ACCOUNT_KEY = "account";
     private static final String LOGIN_PASSWORD_KEY = "password";
     private static final HttpRequestHeaderParser HTTP_REQUEST_HEADER_PARSER = new HttpRequestHeaderParser();
@@ -76,7 +76,7 @@ public class Http11Processor implements Runnable, Processor {
 
     private boolean isLogin(final RequestLine requestLine) {
         return requestLine.url()
-                .equals(LOGIN_PATH);
+                .contains(LOGIN_PATH);
     }
 
     private void loggingUser(final QueryParams queryParams) {
