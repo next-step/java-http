@@ -69,6 +69,6 @@
   Accept: text/css,*/*;q=0.1
   Connection: keep-alive
   ```
-- [ ] 요구사항 3 - Query String 파싱
+- [x] 요구사항 3 - Query String 파싱
   - http://localhost:8080/login?account=gugu&password=password으로 접속하면 로그인 페이지(login.html)를 보여주도록 만들자.
   - 그리고 로그인 페이지에 접속했을 때 Query String을 파싱해서 아이디, 비밀번호가 일치하면 콘솔창에 로그로 회원을 조회한 결과가 나오도록 만들자.

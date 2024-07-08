@@ -1,8 +1,11 @@
 package org.apache.coyote.http11;
 
+import camp.nextstep.db.InMemoryUserRepository;
 import camp.nextstep.exception.UncheckedServletException;
+import camp.nextstep.model.User;
 import org.apache.coyote.Processor;
 import org.apache.coyote.http11.requestline.ContentType;
+import org.apache.coyote.http11.requestline.QueryStrings;
 import org.apache.coyote.http11.requestline.RequestLine;
 import org.apache.coyote.http11.requestline.RequestLineParser;
 import org.apache.coyote.http11.util.UtilString;
@@ -16,6 +19,7 @@ import java.io.InputStreamReader;
 import java.net.Socket;
 import java.net.URL;
 import java.nio.file.Files;
+import java.util.NoSuchElementException;
 
 public class Http11Processor implements Runnable, Processor {
 
@@ -48,9 +52,17 @@ public class Http11Processor implements Runnable, Processor {
 
             String urlPath = requestLine.getUrlPath();
 
-            urlPath = urlPath.equals("/") ? "index.html" : urlPath;
+            urlPath = urlPath.equals("/") ? "/index.html" : urlPath;
 
-            URL resource = getClass().getClassLoader().getResource("static/" + urlPath);
+            if (urlPath.equals("/login")) {
+                urlPath = "/login.html";
+                QueryStrings queryStrings = requestLine.getQueryStrings();
+                String account = queryStrings.getQueryStringValueByKey("account");
+                String password = queryStrings.getQueryStringValueByKey("password");
+                login(account, password);
+            }
+
+            URL resource = getClass().getClassLoader().getResource("static" + urlPath);
 
             String extension = UtilString.parseExtension(urlPath);
 
@@ -67,6 +79,12 @@ public class Http11Processor implements Runnable, Processor {
             outputStream.flush();
         } catch (IOException | UncheckedServletException e) {
             log.error(e.getMessage(), e);
+        }
+    }
+    private void login(String account, String password) {
+        final User user = InMemoryUserRepository.findByAccount(account).orElseThrow(NoSuchElementException::new);
+        if (user.checkPassword(password)) {
+            log.info("user {}", user);
         }
     }
 }
