@@ -3,14 +3,14 @@ package org.apache.coyote;
 import java.util.HashMap;
 import java.util.Map;
 
-public class Request {
+public class HttpRequestLine {
     public RequestMethod method;
     public String path;
     public Map<String, String> params;
     public String protocol;
     public String protocolVersion;
 
-    public Request(final String requestLine) {
+    public HttpRequestLine(final String requestLine) {
         final var tokens = requestLine.split(" ");
         this.method = RequestMethod.valueOf(tokens[0]);
         this.path = tokens[1].split("\\?")[0];
