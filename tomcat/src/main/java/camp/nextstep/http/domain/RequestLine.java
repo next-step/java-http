@@ -46,4 +46,8 @@ public class RequestLine {
     public RequestURI getRequestURI() {
         return requestURI;
     }
+
+    public HttpPath getPath() {
+        return requestURI.getPath();
+    }
 }

@@ -33,6 +33,13 @@ class RequestLineTest {
     }
 
     @Test
+    void requestLine_에서_HttpPath_를_반환받을_수_있다() {
+        final RequestLine requestLine = new RequestLine("GET /users?userId=javajigi&password=password&name=JaeSung HTTP/1.1");
+
+        assertThat(requestLine.getPath()).isEqualTo(new HttpPath("/users"));
+    }
+
+    @Test
     void requestLine_에서_Version_을_반환받을_수_있다() {
         final RequestLine requestLine = new RequestLine("GET /users HTTP/1.1");
 

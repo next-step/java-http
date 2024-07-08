@@ -34,8 +34,7 @@ public class Http11Processor implements Runnable, Processor {
              final var outputStream = new BufferedOutputStream(connection.getOutputStream())) {
 
             final RequestLine requestLine = new RequestLine(inputStreamReader.readLine());
-            final RequestURI requestURI = requestLine.getRequestURI();
-            final HttpPath path = requestURI.getPath();
+            final HttpPath path = requestLine.getPath();
 
             final var responseBody = getResponseBody(path);
             final HttpHeaders headers = new HttpHeaders();
