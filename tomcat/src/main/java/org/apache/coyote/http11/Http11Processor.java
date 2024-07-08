@@ -15,7 +15,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.Socket;
-import java.util.Map;
 
 public class Http11Processor implements Runnable, Processor {
 
@@ -71,7 +70,7 @@ public class Http11Processor implements Runnable, Processor {
         if (queryString.isEmpty()) {
             return HttpResponse.ok(
                     requestLine.getHttpProtocol(),
-                    Map.of("Content-Type", parseContentType(parseContentType(requestLine))),
+                    parseContentType(requestLine),
                     parseResponseBody(requestLine)
             );
         }
@@ -88,7 +87,7 @@ public class Http11Processor implements Runnable, Processor {
     private HttpResponse handleRootPath(final RequestLine requestLine) {
         return HttpResponse.ok(
                 requestLine.getHttpProtocol(),
-                Map.of("Content-Type", parseContentType(ContentType.TEXT_HTML)),
+                ContentType.TEXT_HTML,
                 ROOT_BODY
         );
     }
@@ -96,17 +95,13 @@ public class Http11Processor implements Runnable, Processor {
     private HttpResponse handlePath(final RequestLine requestLine) {
         return HttpResponse.ok(
                 requestLine.getHttpProtocol(),
-                Map.of("Content-Type", parseContentType(parseContentType(requestLine))),
+                parseContentType(requestLine),
                 parseResponseBody(requestLine)
         );
     }
 
     private String parseResponseBody(final RequestLine requestLine) {
         return FileUtil.readStaticPathFileResource(requestLine.getFilePath(), getClass());
-    }
-
-    private String parseContentType(final ContentType contentType) {
-        return contentType.getContentType() + ";charset=utf-8";
     }
 
     private ContentType parseContentType(final RequestLine requestLine) {

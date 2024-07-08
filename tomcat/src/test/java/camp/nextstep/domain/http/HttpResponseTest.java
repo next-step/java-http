@@ -20,12 +20,7 @@ class HttpResponseTest {
 
     @Test
     void contentType을_받는_ok_response를_생성한다() {
-        HttpResponse actual = HttpResponse.ok(
-                DEFAULT_HTTP_PROTOCOL,
-                ContentType.TEXT_HTML,
-                emptyMap(),
-                "Hello world!"
-        );
+        HttpResponse actual = HttpResponse.ok(DEFAULT_HTTP_PROTOCOL, ContentType.TEXT_HTML, "Hello world!");
         assertAll(
                 () -> assertThat(actual.getHttpStatus()).isEqualTo(HttpStatus.OK),
                 () -> assertThat(actual.getHttpHeaders()).contains(Map.entry("Content-Type", "text/html;charset=utf-8"))
