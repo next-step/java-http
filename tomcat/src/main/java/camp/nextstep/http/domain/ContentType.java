@@ -5,9 +5,9 @@ import camp.nextstep.http.exception.InvalidContentTypeException;
 import java.util.Arrays;
 
 public enum ContentType {
-    HTML("text/html;charset=UTF-8", ".html"),
-    CSS("text/css;charset=UTF-8", ".css"),
-    JAVASCRIPT("text/javascript;charset=UTF-8", ".js");
+    HTML("text/html;charset=utf-8", ".html"),
+    CSS("text/css;charset=utf-8", ".css"),
+    JAVASCRIPT("text/javascript;charset=utf-8", ".js");
 
     private final String type;
     private final String extension;
