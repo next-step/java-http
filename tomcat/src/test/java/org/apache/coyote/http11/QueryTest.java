@@ -10,11 +10,8 @@ class QueryTest {
     @DisplayName("Query 객체를 생성할 수 있다.")
     @Test
     void create_Query() {
-        // given
-        final String queryString = "userId=1";
-
-        // when
-        final var result = Query.from(queryString);
+        // given & when
+        final var result = Query.from("userId=1");
 
         // then
         assertThat(result.getParameters()).hasSize(1);
@@ -24,11 +21,8 @@ class QueryTest {
     @DisplayName("QueryString이 없는 Query 객체를 생성할 수 있다.")
     @Test
     void create_Query_Without_QueryString() {
-        // given
-        final String queryString = "";
-
-        // when
-        final var result = Query.from(queryString);
+        // given & when
+        final var result = Query.from("");
 
         // then
         assertThat(result.getParameters()).isEmpty();
