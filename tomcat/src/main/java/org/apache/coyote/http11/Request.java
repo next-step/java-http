@@ -61,6 +61,10 @@ public class Request {
         return Collections.unmodifiableMap(this.queryStringMapping);
     }
 
+    public String getParameter(final String parameterName) {
+        return this.queryStringMapping.get(parameterName);
+    }
+
     public String getProtocol() {
         return this.protocol;
     }
