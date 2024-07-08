@@ -1,7 +1,10 @@
 package org.apache.coyote.http11;
 
+import camp.nextstep.db.InMemoryUserRepository;
 import camp.nextstep.exception.UncheckedServletException;
 import camp.nextstep.http.domain.*;
+import camp.nextstep.model.User;
+import camp.nextstep.model.UserNotFoundException;
 import org.apache.coyote.Processor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,6 +21,8 @@ public class Http11Processor implements Runnable, Processor {
     private static final String DEFAULT_MESSAGE = "Hello world!";
     private static final String PATH_PREFIX = "static";
     private static final String NOT_FOUND_PATH = "/404.html";
+    private static final String ACCOUNT = "account";
+    private static final String PASSWORD = "password";
 
     private final Socket connection;
 
@@ -39,6 +44,10 @@ public class Http11Processor implements Runnable, Processor {
             final RequestLine requestLine = new RequestLine(inputStreamReader.readLine());
             final HttpPath path = requestLine.getPath();
 
+            if (path.isLoginPath()) {
+                processLogin(requestLine);
+            }
+
             final var responseBody = getResponseBody(path);
             final HttpHeaders headers = new HttpHeaders();
             headers.setContentType(ContentType.from(path));
@@ -57,12 +66,29 @@ public class Http11Processor implements Runnable, Processor {
         }
     }
 
+    private void processLogin(final RequestLine requestLine) {
+        final QueryParameters parameters = requestLine.getRequestURI().getQueryParameters();
+        final User user = InMemoryUserRepository.findByAccount(parameters.get(ACCOUNT))
+                .orElseThrow(UserNotFoundException::new);
+
+        if (user.checkPassword(parameters.get(PASSWORD))) {
+            log.info("user : {}", user);
+            return;
+        }
+        throw new UserNotFoundException();
+    }
+
     private byte[] getResponseBody(final HttpPath path) throws IOException {
         if (path.isRoot()) {
             return DEFAULT_MESSAGE.getBytes();
         }
 
-        final Resource resource = new Resource(PATH_PREFIX + path.getPath());
+        String filePath = path.getPath();
+        if (path.isLoginPath()) {
+            filePath += ContentType.HTML.getExtension();
+        }
+
+        final Resource resource = new Resource(PATH_PREFIX + filePath);
         if (resource.exists()) {
             return resource.readAllBytes();
         }

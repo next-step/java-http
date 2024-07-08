@@ -6,6 +6,7 @@ public class HttpPath {
 
     private static final String DOT = ".";
     private static final String ROOT_PATH = "/";
+    private static final String LOGIN_PATH = "/login";
 
     private final String path;
 
@@ -27,6 +28,10 @@ public class HttpPath {
 
     public boolean isRoot() {
         return ROOT_PATH.equals(path);
+    }
+
+    public boolean isLoginPath() {
+        return LOGIN_PATH.equals(path);
     }
 
     @Override
