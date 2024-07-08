@@ -47,7 +47,7 @@ public class Response {
     }
 
     public void notFound() {
-        setBody("Hello world!");
+        setBody("Hello world!", "text/html");
     }
 
     public byte[] toBytes() {
