@@ -1,16 +1,13 @@
 package org.apache.coyote.http11;
 
 import org.apache.coyote.*;
-import org.apache.coyote.handler.DefaultHandler;
-import org.apache.coyote.handler.Handler;
-import org.apache.coyote.handler.NotSupportHandlerException;
-import org.apache.coyote.handler.ResourceHandler;
+import org.apache.coyote.handler.*;
 
 import java.util.List;
 
 public class Http11ProcessorHandlers {
 
-    private final List<Handler> handlers = List.of(new ResourceHandler(), new DefaultHandler());
+    private final List<Handler> handlers = List.of(new LoginHandler(), new ResourceHandler(), new DefaultHandler());
 
     public HttpResponse handle(HttpRequest request) {
         HttpResponse response = null;
