@@ -2,9 +2,11 @@ package camp.nextstep.domain.http;
 
 import java.util.Map;
 
+import static java.util.Collections.emptyMap;
+
 public class HttpResponse {
 
-    private static final String EMPTY_RESPONSE_BODY = "";
+    private static final String CONTENT_LENGTH_HEADER_KEY = "Content-Length";
 
     private final HttpProtocol httpProtocol;
     private final HttpStatus httpStatus;
@@ -14,13 +16,15 @@ public class HttpResponse {
     public HttpResponse(HttpProtocol httpProtocol, HttpStatus httpStatus, String responseBody) {
         this.httpProtocol = httpProtocol;
         this.httpStatus = httpStatus;
-        if (!responseBody.isEmpty()) {
-            this.httpHeaders = Map.of("Content-Length", String.valueOf(responseBody.getBytes().length));
-        } else {
-            this.httpHeaders = Map.of();
-        }
-
+        this.httpHeaders = extractHttpHeaders(responseBody);
         this.responseBody = responseBody;
+    }
+
+    private Map<String, String> extractHttpHeaders(String responseBody) {
+        if (!responseBody.isEmpty()) {
+            return Map.of(CONTENT_LENGTH_HEADER_KEY, String.valueOf(responseBody.getBytes().length));
+        }
+        return emptyMap();
     }
 
     public static HttpResponse ok(HttpProtocol httpProtocol, String responseBody) {
