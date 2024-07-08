@@ -14,17 +14,20 @@ public class RequestLine {
     private final HttpVersion version;
 
     public RequestLine(final String requestLine) {
+        checkNull(requestLine);
         final String[] parsedRequestLine = parseRequestLine(requestLine);
         this.method = HttpMethod.valueOf(parsedRequestLine[METHOD_INDEX]);
         this.requestURI = new RequestURI(parsedRequestLine[REQUEST_URI_INDEX]);
         this.version = new HttpVersion(parsedRequestLine[VERSION_INDEX]);
     }
 
-    private String[] parseRequestLine(final String requestLine) {
+    private void checkNull(final String requestLine) {
         if (requestLine == null) {
             throw new InvalidRequestLineException("requestLine cannot be null");
         }
+    }
 
+    private String[] parseRequestLine(final String requestLine) {
         final String[] splitRequestLine = requestLine.split(DELIMITER);
         if (splitRequestLine.length != REQUIRED_REQUEST_LINE_LENGTH) {
             throw new InvalidRequestLineException("Invalid request line: " + requestLine);
