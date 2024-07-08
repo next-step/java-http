@@ -5,14 +5,14 @@ import org.apache.coyote.http11.model.constant.HttpMethod;
 public class RequestLine {
     private final HttpMethod httpMethod;
     private final HttpPath httpPath;
-    private final String protocol;
-    private final String version;
+    private final HttpProtocol protocol;
+    private final HttpVersion version;
 
     public RequestLine(final HttpMethod httpMethod, final HttpPath httpPath, final String protocol, final String version) {
         this.httpMethod = httpMethod;
         this.httpPath = httpPath;
-        this.protocol = protocol;
-        this.version = version;
+        this.protocol = new HttpProtocol(protocol);
+        this.version = new HttpVersion(version);
     }
 
     public HttpMethod httpMethod() {
@@ -24,11 +24,11 @@ public class RequestLine {
     }
 
     public String protocol() {
-        return protocol;
+        return protocol.protocol();
     }
 
     public String version() {
-        return version;
+        return version.version();
     }
 
     public QueryParams queryParams() {
