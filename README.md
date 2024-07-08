@@ -77,7 +77,7 @@ User-Agent: Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1)
 - /login을 요청했을 때 query string을 파싱하여 로그를 남긴다.
 
 ## 3단계 - 로그인 구현하기
-1. HTTP Status Code 302
+### 1. HTTP Status Code 302
 - HttpResponse
   - status코드를 가진다(200 ok, 302 ok)
     - found의 경우 location을 받아 생성한다.
@@ -93,3 +93,9 @@ HTTP/1.1 302 Found
 Location: /index.html
 ```
 - 로그인에 성공할 경우 `/index.html`로 리다이랙하고 실패하는 경우 `/401.html`로 리다이랙하도록 한다.
+
+### 2. POST 방식으로 회원가입
+- `http://localhost:8080/register` 호출 시
+  - GET 요청인 경우 회원가입 페이지를 보여준다.
+  - POST 요청인 경우 회원가입을 한 후 `/index.html`로 리다이랙한다.
+- 로그인 페이지도 동일하게 버튼 클릭 시 POST 방식으로 변경한다.
