@@ -15,6 +15,9 @@ import java.net.Socket;
 public class Http11Processor implements Runnable, Processor {
 
     private static final Logger log = LoggerFactory.getLogger(Http11Processor.class);
+    private static final String DEFAULT_MESSAGE = "Hello world!";
+    private static final String PATH_PREFIX = "static";
+    private static final String NOT_FOUND_PATH = "/404.html";
 
     private final Socket connection;
 
@@ -56,13 +59,13 @@ public class Http11Processor implements Runnable, Processor {
 
     private byte[] getResponseBody(final HttpPath path) throws IOException {
         if (path.isRoot()) {
-            return "Hello world!".getBytes();
+            return DEFAULT_MESSAGE.getBytes();
         }
 
-        final Resource resource = new Resource("static" + path.getPath());
+        final Resource resource = new Resource(PATH_PREFIX + path.getPath());
         if (resource.exists()) {
             return resource.readAllBytes();
         }
-        return new Resource("static/404.html").readAllBytes();
+        return new Resource(PATH_PREFIX + NOT_FOUND_PATH).readAllBytes();
     }
 }
