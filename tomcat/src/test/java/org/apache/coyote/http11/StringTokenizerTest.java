@@ -19,9 +19,7 @@ class StringTokenizerTest {
         // then
         assertAll(
                 () -> assertThat(result.length).isEqualTo(3),
-                () -> assertThat(result[0]).isEqualTo("aaaa"),
-                () -> assertThat(result[1]).isEqualTo("ssd"),
-                () -> assertThat(result[2]).isEqualTo("dd")
+                () -> assertThat(result).containsExactly("aaaa", "ssd", "dd")
         );
     }
 }
