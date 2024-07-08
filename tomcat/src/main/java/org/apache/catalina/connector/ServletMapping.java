@@ -16,7 +16,7 @@ public class ServletMapping {
     private final List<ServletHandler> servletHandlers = new ArrayList<>();
 
     public void addServlet(final String mapping, final Servlet servlet) {
-        this.servletHandlers.addFirst(new ServletHandler(mapping, servlet));
+        this.servletHandlers.add(0, new ServletHandler(mapping, servlet));
     }
 
     public Servlet getServlet(final Request request) {
