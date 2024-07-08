@@ -1,4 +1,4 @@
-package camp.nextstep.io;
+package org.apache.coyote.http11.requestline;
 
 import java.util.HashMap;
 import java.util.Map;

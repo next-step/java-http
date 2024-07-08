@@ -1,4 +1,4 @@
-package camp.nextstep.io;
+package org.apache.coyote.http11.requestline;
 
 public class RequestLine {
     private final HttpMethod httpMethod;

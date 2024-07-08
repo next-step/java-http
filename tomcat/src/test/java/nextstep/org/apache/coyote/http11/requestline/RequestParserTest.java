@@ -1,5 +1,9 @@
-package camp.nextstep.io;
+package nextstep.org.apache.coyote.http11.requestline;
 
+import org.apache.coyote.http11.requestline.HttpMethod;
+import org.apache.coyote.http11.requestline.Path;
+import org.apache.coyote.http11.requestline.QueryStrings;
+import org.apache.coyote.http11.requestline.RequestParser;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 

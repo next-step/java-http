@@ -1,9 +1,11 @@
-package camp.nextstep.io;
+package nextstep.org.apache.coyote.http11.requestline;
 
+import org.apache.coyote.http11.requestline.RequestLine;
+import org.apache.coyote.http11.requestline.RequestParser;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import static camp.nextstep.io.HttpMethod.*;
+import static org.apache.coyote.http11.requestline.HttpMethod.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
