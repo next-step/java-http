@@ -4,8 +4,8 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import camp.nextstep.model.dto.RequestLine;
 import org.slf4j.Logger;
@@ -18,8 +18,22 @@ public class RequestParser {
 	public static RequestLine parseRequest(InputStream is) {
 		List<String> request = getRequest(is);
 		String[] requestInfos = request.get(0).split(" "); // GET /hello HTTP/1.1
-		String[] version = requestInfos[2].split("/");
-		return RequestLine.of(requestInfos[0], requestInfos[1], version[0], version[1]);
+		String[] protocolAndVersion = requestInfos[2].split("\\/");
+		String[] uri = requestInfos[1].split("\\?");
+		if (uri.length == 1) {
+			return RequestLine.of(requestInfos[0], uri[0], protocolAndVersion[0], protocolAndVersion[1]);
+		}
+		Map<String, String> queryStringMap = getQueryStringMap(uri[1]);
+		return RequestLine.of(requestInfos[0], uri[0], protocolAndVersion[0], protocolAndVersion[1], queryStringMap);
+	}
+
+	private static Map<String, String> getQueryStringMap(String queryStrings) {
+		return Arrays.stream(queryStrings.split("\\&"))
+				.map(queryString -> queryString.split("\\="))
+				.collect(Collectors.toMap(
+						keyAndValues -> keyAndValues[0],
+						keyAndValues -> keyAndValues.length > 1 ? keyAndValues[1] : "")
+				);
 	}
 
 	private static List<String> getRequest(InputStream is) {

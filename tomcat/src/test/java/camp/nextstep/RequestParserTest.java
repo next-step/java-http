@@ -49,4 +49,25 @@ class RequestParserTest {
             System.err.println(e.getMessage());
         }
     }
+    @Test
+    void parseGetQueryStringRequest() {
+        // given
+        final String httpRequest= String.join("\r\n",
+                "GET /user?userId=lsh&password=pw HTTP/1.1 ",
+                "Host: localhost:8080 ",
+                "Connection: keep-alive ",
+                "",
+                "");
+        try(StubInputStream stubInputStream = new StubInputStream(httpRequest)) {
+            RequestLine requestLine = RequestParser.parseRequest(stubInputStream);
+            assertEquals(requestLine.getMethod(), "GET");
+            assertEquals(requestLine.getPath(), "/user");
+            assertEquals(requestLine.getQueryStringMap().get("userId"), "lsh");
+            assertEquals(requestLine.getQueryStringMap().get("password"), "pw");
+            assertEquals(requestLine.getProtocol(), "HTTP");
+            assertEquals(requestLine.getVersion(), "1.1");
+        } catch (IOException e) {
+            System.err.println(e.getMessage());
+        }
+    }
 }

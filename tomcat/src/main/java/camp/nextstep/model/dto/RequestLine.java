@@ -1,10 +1,14 @@
 package camp.nextstep.model.dto;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class RequestLine {
     String method;
     String path;
     String protocol;
     String version;
+    Map<String, String> queryStringMap = new HashMap<>();
 
     public String getMethod() {
         return method;
@@ -22,6 +26,10 @@ public class RequestLine {
         return version;
     }
 
+    public Map<String, String> getQueryStringMap() {
+        return queryStringMap;
+    }
+
     public static RequestLine of(String method, String path, String protocol, String version) {
         RequestLine requestLine = new RequestLine();
         requestLine.method = method;
@@ -31,13 +39,13 @@ public class RequestLine {
         return requestLine;
     }
 
-    @Override
-    public String toString() {
-        return "RequestDto{" +
-                "method='" + method + '\'' +
-                ", path='" + path + '\'' +
-                ", protocol='" + protocol + '\'' +
-                ", version='" + version + '\'' +
-                '}';
+    public static RequestLine of(String method, String path, String protocol, String version, Map<String, String> queryString) {
+        RequestLine requestLine = new RequestLine();
+        requestLine.method = method;
+        requestLine.path = path;
+        requestLine.protocol = protocol;
+        requestLine.version = version;
+        requestLine.queryStringMap = queryString;
+        return requestLine;
     }
 }
