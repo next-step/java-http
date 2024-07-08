@@ -2,6 +2,7 @@ package org.apache.coyote.http11;
 
 import camp.nextstep.db.InMemoryUserRepository;
 import camp.nextstep.domain.http.ContentType;
+import camp.nextstep.domain.http.HttpRequestHeaders;
 import camp.nextstep.domain.http.HttpResponse;
 import camp.nextstep.domain.http.RequestLine;
 import camp.nextstep.exception.UncheckedServletException;
@@ -15,6 +16,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.Socket;
+import java.util.ArrayList;
 
 public class Http11Processor implements Runnable, Processor {
 
@@ -46,6 +48,7 @@ public class Http11Processor implements Runnable, Processor {
              final var outputStream = connection.getOutputStream()) {
 
             final var requestLine = new RequestLine(inputReader.readLine());
+            final var requestHeader = parseRequestHeader(inputReader);
             final var response = createResponse(requestLine);
 
             outputStream.write(response.buildResponse().getBytes());
@@ -53,6 +56,18 @@ public class Http11Processor implements Runnable, Processor {
         } catch (IOException | UncheckedServletException e) {
             log.error(e.getMessage(), e);
         }
+    }
+
+    private HttpRequestHeaders parseRequestHeader(BufferedReader inputReader) throws IOException {
+        final var requestHeaders = new ArrayList<String>();
+        while (inputReader.ready()) {
+            final var line = inputReader.readLine();
+            if (line.isEmpty()) {
+                break;
+            }
+            requestHeaders.add(line);
+        }
+        return new HttpRequestHeaders(requestHeaders);
     }
 
     private HttpResponse createResponse(final RequestLine requestLine) {

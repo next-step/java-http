@@ -15,10 +15,6 @@ public class HttpRequestHeaders {
 
     private final Map<String, String> headers;
 
-    public HttpRequestHeaders(Map<String, String> headers) {
-        this.headers = headers;
-    }
-
     public HttpRequestHeaders(List<String> headers) {
         this.headers = headers.stream()
                 .map(this::parseRequestHeader)
