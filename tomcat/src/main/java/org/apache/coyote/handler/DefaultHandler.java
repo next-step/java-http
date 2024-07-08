@@ -1,4 +1,6 @@
-package org.apache.coyote;
+package org.apache.coyote.handler;
+
+import org.apache.coyote.*;
 
 import java.util.Map;
 
