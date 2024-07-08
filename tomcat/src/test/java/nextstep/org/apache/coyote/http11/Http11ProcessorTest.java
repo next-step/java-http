@@ -13,6 +13,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class Http11ProcessorTest {
 
+    private static final String HTTP_GET_REQUEST_TEMPLATE =
+            "GET %s HTTP/1.1 \r\n" +
+                    "Host: localhost:8080 \r\n" +
+                    "Connection: keep-alive \r\n" +
+                    "\r\n";
+
     @Test
     void process() {
         // given
@@ -34,15 +40,9 @@ class Http11ProcessorTest {
     }
 
     @Test
-    void index() throws IOException {
+    void process_index() throws IOException {
         // given
-        final String httpRequest= String.join("\r\n",
-                "GET /index.html HTTP/1.1 ",
-                "Host: localhost:8080 ",
-                "Connection: keep-alive ",
-                "",
-                "");
-
+        final String httpRequest = String.format(HTTP_GET_REQUEST_TEMPLATE, "/index.html");
         final var socket = new StubSocket(httpRequest);
         final Http11Processor processor = new Http11Processor(socket);
 
@@ -62,15 +62,9 @@ class Http11ProcessorTest {
     }
 
     @Test
-    void wrong_page() throws IOException {
+    void process_wrong_page() throws IOException {
         // given
-        final String httpRequest= String.join("\r\n",
-                "GET /wrong_page.html HTTP/1.1 ",
-                "Host: localhost:8080 ",
-                "Connection: keep-alive ",
-                "",
-                "");
-
+        final String httpRequest = String.format(HTTP_GET_REQUEST_TEMPLATE, "/wrong_page.html");
         final var socket = new StubSocket(httpRequest);
         final Http11Processor processor = new Http11Processor(socket);
 
@@ -90,15 +84,9 @@ class Http11ProcessorTest {
     }
 
     @Test
-    void css() throws IOException {
+    void process_css() throws IOException {
         // given
-        final String httpRequest= String.join("\r\n",
-                "GET /css/styles.css HTTP/1.1 ",
-                "Host: localhost:8080 ",
-                "Connection: keep-alive ",
-                "",
-                "");
-
+        final String httpRequest = String.format(HTTP_GET_REQUEST_TEMPLATE, "/css/styles.css");
         final var socket = new StubSocket(httpRequest);
         final Http11Processor processor = new Http11Processor(socket);
 
@@ -118,15 +106,9 @@ class Http11ProcessorTest {
     }
 
     @Test
-    void js() throws IOException {
+    void process_js() throws IOException {
         // given
-        final String httpRequest= String.join("\r\n",
-                "GET /js/scripts.js HTTP/1.1 ",
-                "Host: localhost:8080 ",
-                "Connection: keep-alive ",
-                "",
-                "");
-
+        final String httpRequest = String.format(HTTP_GET_REQUEST_TEMPLATE, "/js/scripts.js");
         final var socket = new StubSocket(httpRequest);
         final Http11Processor processor = new Http11Processor(socket);
 
@@ -146,15 +128,9 @@ class Http11ProcessorTest {
     }
 
     @Test
-    void login() throws IOException {
+    void process_login() throws IOException {
         // given
-        final String httpRequest= String.join("\r\n",
-                "GET /login?account=gugu&password=password HTTP/1.1 ",
-                "Host: localhost:8080 ",
-                "Connection: keep-alive ",
-                "",
-                "");
-
+        final String httpRequest = String.format(HTTP_GET_REQUEST_TEMPLATE, "/login?account=gugu&password=password");
         final var socket = new StubSocket(httpRequest);
         final Http11Processor processor = new Http11Processor(socket);
 
