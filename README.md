@@ -19,3 +19,31 @@
 1. [File, I/O Stream](study/src/test/java/study)
 2. [HTTP Cache](study/src/test/java/cache)
 3. [Thread](study/src/test/java/thread)
+
+
+## 컨벤션
+### 커밋로그
+커밋로그의 형태는 아래와 같이 맞춘다.
+
+- 기능 구현
+  - feat : "구현한 기능명"
+- 버그 고치기
+  - fix : "고친 내용"
+- 문서 수정
+  - docs : "수정한 문서 내용"
+- 리팩토링
+  - refactor : "리팩토링한 내용"
+- 테스트 코드 작성
+  - test : "테스트 내용"
+
+## 구현할 기능
+### RequestLine 파싱
+- 여러 방식의 요청 대한 파싱을 구현
+  - ex) GET /users HTTP/1.1 의 경우, 
+    - method는 GET
+    - path는 /users
+    - protocol은 HTTP
+    - version은 1.1
+- HTTP요청으로 넘어오는 Query String 파싱
+  - ex) name1=value1&name2=value2
+
