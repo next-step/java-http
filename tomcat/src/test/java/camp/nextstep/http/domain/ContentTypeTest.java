@@ -12,9 +12,9 @@ class ContentTypeTest {
 
     @ParameterizedTest
     @CsvSource(value = {
-            "text/html:HTML",
-            "text/css:CSS",
-            "text/javascript:JAVASCRIPT"
+            "text/html;charset=UTF-8:HTML",
+            "text/css;charset=UTF-8:CSS",
+            "text/javascript;charset=UTF-8:JAVASCRIPT"
     }, delimiter = ':')
     void ContentType_을_생성_할_수_있다(final String input, final ContentType expected) {
         final ContentType contentType = ContentType.from(input);

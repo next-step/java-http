@@ -54,7 +54,7 @@ class HttpHeadersTest {
 
         assertThat(headers.getBytes()).isEqualTo(
                 String.join(System.lineSeparator(),
-                        "Content-Type: text/html",
+                        "Content-Type: text/html;charset=UTF-8",
                         "Content-Length: 1000"
                 ).getBytes()
         );
