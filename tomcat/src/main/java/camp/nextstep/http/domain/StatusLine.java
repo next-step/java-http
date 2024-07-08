@@ -1,5 +1,6 @@
 package camp.nextstep.http.domain;
 
+import camp.nextstep.http.exception.InvalidHttpStatusException;
 import camp.nextstep.http.exception.InvalidStatusLineException;
 
 public class StatusLine {
@@ -7,15 +8,13 @@ public class StatusLine {
     private static final String DELIMITER = " ";
 
     private final HttpVersion version;
-    private final int statusCode;
-    private final String reasonPhase;
+    private final HttpStatusCode statusCode;
 
     public StatusLine(final String statusLine) {
         checkNull(statusLine);
         final String[] parsedStatusLine = parseStatusLine(statusLine);
         this.version = new HttpVersion(parsedStatusLine[0]);
-        this.statusCode = Integer.parseInt(parsedStatusLine[1]);
-        this.reasonPhase = parsedStatusLine[2];
+        this.statusCode = convertStatusCode(parsedStatusLine[1]);
     }
 
     private void checkNull(final String statusLine) {
@@ -32,15 +31,19 @@ public class StatusLine {
         return splitRequestLine;
     }
 
+    private HttpStatusCode convertStatusCode(final String statusCode) {
+        try {
+            return HttpStatusCode.valueOf(Integer.parseInt(statusCode));
+        } catch (final NumberFormatException | InvalidHttpStatusException e) {
+            throw new InvalidStatusLineException(statusCode, e);
+        }
+    }
+
     public HttpVersion getVersion() {
         return version;
     }
 
-    public int getStatusCode() {
+    public HttpStatusCode getStatusCode() {
         return statusCode;
-    }
-
-    public String getReasonPhase() {
-        return reasonPhase;
     }
 }

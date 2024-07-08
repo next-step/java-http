@@ -22,22 +22,17 @@ class StatusLineTest {
     void statusLine_에서_Status_Code_를_반환받을_수_있다() {
         final StatusLine statusLine = new StatusLine("HTTP/1.1 200 OK");
 
-        assertThat(statusLine.getStatusCode()).isEqualTo(200);
+        assertThat(statusLine.getStatusCode()).isEqualTo(HttpStatusCode.OK);
     }
 
-    @Test
-    void statusLine_에서_Reason_Phase_를_반환받을_수_있다() {
-        final StatusLine statusLine = new StatusLine("HTTP/1.1 200 OK");
-
-        assertThat(statusLine.getReasonPhase()).isEqualTo("OK");
-    }
 
     @ParameterizedTest
     @NullSource
     @ValueSource(strings = {
             "HTTP/1.1",
             "HTTP/1.1 200",
-            "HTTP/1.1 OK"
+            "HTTP/1.1 OK",
+            "HTTP/1.1 GOAT 200"
     })
     void requestLine_형식이_맞지_않으면_예외가_발생한다(final String input) {
         assertThatThrownBy(() -> new StatusLine(input))
