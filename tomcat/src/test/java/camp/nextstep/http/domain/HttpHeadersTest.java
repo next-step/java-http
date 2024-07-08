@@ -14,9 +14,9 @@ class HttpHeadersTest {
     void ContentType_설정시_정상적으로_저장된다() {
         final HttpHeaders headers = new HttpHeaders();
 
-        headers.setContentType("text/html");
+        headers.setContentType(ContentType.HTML);
 
-        assertThat(headers.getContentType()).isEqualTo("text/html");
+        assertThat(headers.getContentType()).isEqualTo(ContentType.HTML);
     }
 
     @Test

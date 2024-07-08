@@ -17,12 +17,12 @@ public class HttpHeaders {
         headers = new HashMap<>();
     }
 
-    public void setContentType(final String contentType) {
-        headers.put(CONTENT_TYPE, contentType);
+    public void setContentType(final ContentType contentType) {
+        headers.put(CONTENT_TYPE, contentType.getType());
     }
 
-    public String getContentType() {
-        return headers.get(CONTENT_TYPE);
+    public ContentType getContentType() {
+        return ContentType.from(headers.get(CONTENT_TYPE));
     }
 
     public void setContentLength(final long contentLength) {
