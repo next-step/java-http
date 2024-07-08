@@ -1,10 +1,7 @@
 package org.apache.coyote.http11.request;
 
 import org.apache.coyote.http11.model.constant.ContentType;
-import org.apache.coyote.http11.request.handler.DefaultHandler;
-import org.apache.coyote.http11.request.handler.LoginHandler;
-import org.apache.coyote.http11.request.handler.NotFoundHandler;
-import org.apache.coyote.http11.request.handler.RequestHandler;
+import org.apache.coyote.http11.request.handler.*;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -18,6 +15,7 @@ public class RequestHandlerMapper {
         tempMap.put("/login.html", new LoginHandler());
         tempMap.put("/index.html", new DefaultHandler());
         tempMap.put("/401.html", new DefaultHandler());
+        tempMap.put("/register.html", new RegisterHandler());
         this.handlerMap = Collections.unmodifiableMap(tempMap);
     }
 
