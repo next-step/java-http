@@ -6,6 +6,8 @@ import camp.nextstep.http.exception.InvalidStatusLineException;
 public class StatusLine {
     private static final int REQUIRED_STATUS_LINE_LENGTH = 3;
     private static final String DELIMITER = " ";
+    private static final int VERSION_INDEX = 0;
+    private static final int STATUS_INDEX = 1;
 
     private final HttpVersion version;
     private final HttpStatusCode statusCode;
@@ -13,8 +15,8 @@ public class StatusLine {
     public StatusLine(final String statusLine) {
         checkNull(statusLine);
         final String[] parsedStatusLine = parseStatusLine(statusLine);
-        this.version = new HttpVersion(parsedStatusLine[0]);
-        this.statusCode = convertStatusCode(parsedStatusLine[1]);
+        this.version = new HttpVersion(parsedStatusLine[VERSION_INDEX]);
+        this.statusCode = convertStatusCode(parsedStatusLine[STATUS_INDEX]);
     }
 
     private void checkNull(final String statusLine) {
