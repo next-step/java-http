@@ -28,7 +28,6 @@ class ContentTypeTest {
                 .isInstanceOf(InvalidContentTypeException.class);
     }
 
-
     @ParameterizedTest
     @CsvSource(value = {
             "/index.html:HTML",
@@ -39,5 +38,12 @@ class ContentTypeTest {
         final ContentType contentType = ContentType.from(new HttpPath(path));
 
         assertThat(contentType).isEqualTo(expected);
+    }
+
+    @Test
+    void Path_로_생성시_확장자가_존재하지_않으면_HTML_을_반환한다() {
+        final ContentType contentType = ContentType.from(new HttpPath("notExist"));
+
+        assertThat(contentType).isEqualTo(ContentType.HTML);
     }
 }
