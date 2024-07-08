@@ -4,6 +4,8 @@ import java.util.Objects;
 
 public class HttpPath {
 
+    private static final String DOT = ".";
+
     private final String path;
 
     public HttpPath(final String path) {
@@ -12,6 +14,14 @@ public class HttpPath {
 
     public String getPath() {
         return path;
+    }
+
+    public String getExtension() {
+        final int lastDotIndex = path.lastIndexOf(DOT);
+        if (lastDotIndex == -1) {
+            return "";
+        }
+        return path.substring(lastDotIndex);
     }
 
     public boolean isHtml() {
