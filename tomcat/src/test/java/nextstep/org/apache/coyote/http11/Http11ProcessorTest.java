@@ -102,7 +102,7 @@ class Http11ProcessorTest {
     void login() throws IOException {
         // given
         final String httpRequest= String.join("\r\n",
-                "GET /login?account=djawnstj&password=password&email=djawnstj@nextstep.com HTTP/1.1 ",
+                "GET /login?account=gugu&password=password HTTP/1.1 ",
                 "Host: localhost:8080 ",
                 "Connection: keep-alive ",
                 "",
