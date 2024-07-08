@@ -11,4 +11,10 @@ class HttpResponseTest {
         HttpResponse actual = HttpResponse.ok(new HttpProtocol("HTTP/1.1"));
         assertThat(actual.getHttpStatus()).isEqualTo(HttpStatus.OK);
     }
+
+    @Test
+    void found_response를_생성한다() {
+        HttpResponse actual = HttpResponse.found(new HttpProtocol("HTTP/1.1"));
+        assertThat(actual.getHttpStatus()).isEqualTo(HttpStatus.FOUND);
+    }
 }

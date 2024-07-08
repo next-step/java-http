@@ -14,6 +14,10 @@ public class HttpResponse {
         return new HttpResponse(httpProtocol, HttpStatus.OK);
     }
 
+    public static HttpResponse found(HttpProtocol httpProtocol) {
+        return new HttpResponse(httpProtocol, HttpStatus.FOUND);
+    }
+
     public HttpProtocol getHttpProtocol() {
         return httpProtocol;
     }
