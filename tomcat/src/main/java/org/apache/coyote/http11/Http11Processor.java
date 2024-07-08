@@ -2,8 +2,10 @@ package org.apache.coyote.http11;
 
 import camp.nextstep.exception.UncheckedServletException;
 import org.apache.coyote.Processor;
+import org.apache.coyote.http11.requestline.ContentType;
 import org.apache.coyote.http11.requestline.RequestLine;
 import org.apache.coyote.http11.requestline.RequestLineParser;
+import org.apache.coyote.http11.util.UtilString;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,16 +46,19 @@ public class Http11Processor implements Runnable, Processor {
 
             RequestLine requestLine = RequestLine.from(requestLineParser);
 
-            String responseBody = "Hello world!";
+            String urlPath = requestLine.getUrlPath();
 
-            if (!requestLine.getPath().urlPath().equals("/")) {
-                final URL resource = getClass().getClassLoader().getResource("static/" + requestLine.getPath().urlPath());
-                responseBody = new String(Files.readAllBytes(new File(resource.getFile()).toPath()));
-            }
+            urlPath = urlPath.equals("/") ? "index.html" : urlPath;
+
+            URL resource = getClass().getClassLoader().getResource("static/" + urlPath);
+
+            String extension = UtilString.parseExtension(urlPath);
+
+            final String responseBody = new String(Files.readAllBytes(new File(resource.getFile()).toPath()));
 
             final var response = String.join("\r\n",
                     "HTTP/1.1 200 OK ",
-                    "Content-Type: text/html;charset=utf-8 ",
+                    "Content-Type: " + ContentType.findByExtension(extension).getContentType() + ";charset=utf-8 ",
                     "Content-Length: " + responseBody.getBytes().length + " ",
                     "",
                     responseBody);

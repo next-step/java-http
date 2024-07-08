@@ -21,7 +21,7 @@ class RequestLineTest {
         //then
         assertAll(
                 () -> assertThat(requestLine.getHttpMethod()).isEqualTo(GET),
-                () -> assertThat(requestLine.getRequestPath()).isEqualTo("/users"),
+                () -> assertThat(requestLine.getUrlPath()).isEqualTo("/users"),
                 () -> assertThat(requestLine.getProtocol()).isEqualTo("HTTP"),
                 () -> assertThat(requestLine.getVersion()).isEqualTo("1.1")
         );
@@ -38,7 +38,7 @@ class RequestLineTest {
         //then
         assertAll(
                 () -> assertThat(requestLine.getHttpMethod()).isEqualTo(POST),
-                () -> assertThat(requestLine.getRequestPath()).isEqualTo("/users"),
+                () -> assertThat(requestLine.getUrlPath()).isEqualTo("/users"),
                 () -> assertThat(requestLine.getProtocol()).isEqualTo("HTTP"),
                 () -> assertThat(requestLine.getVersion()).isEqualTo("1.1")
         );
@@ -55,7 +55,7 @@ class RequestLineTest {
         //then
         assertAll(
                 () -> assertThat(requestLine.getHttpMethod()).isEqualTo(GET),
-                () -> assertThat(requestLine.getRequestPath()).isEqualTo("/users"),
+                () -> assertThat(requestLine.getUrlPath()).isEqualTo("/users"),
                 () -> assertThat(requestLine.getProtocol()).isEqualTo("HTTP"),
                 () -> assertThat(requestLine.getVersion()).isEqualTo("1.1"),
                 () -> assertThat(requestLine.getQueryStrings().getQueryStringValueByKey("userId")).isEqualTo("javajigi"),

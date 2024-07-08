@@ -29,7 +29,7 @@ public class RequestLine {
         return path;
     }
 
-    public String getRequestPath() {
+    public String getUrlPath() {
         return path.urlPath();
     }
 
