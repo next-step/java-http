@@ -48,7 +48,7 @@
 - [x] 요구사항 4 - enum 적용(선택)
   - HTTP method인 GET, POST를 enum으로 구현한다.
 ### 2단계 - HTTP 서버 구현하기
-- [ ] 요구사항 1 - GET /index.html 응답하기
+- [x] 요구사항 1 - GET /index.html 응답하기
   - 인덱스 페이지(http://localhost:8080/index.html)에 접근할 수 있도록 만들자.
   - Http11ProcessorTest 테스트 클래스의 모든 테스트를 통과하면 된다.
   - 브라우저에서 요청한 HTTP Request Header는 다음과 같다.

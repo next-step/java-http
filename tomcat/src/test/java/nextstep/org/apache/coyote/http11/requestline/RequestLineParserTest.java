@@ -3,14 +3,14 @@ package nextstep.org.apache.coyote.http11.requestline;
 import org.apache.coyote.http11.requestline.HttpMethod;
 import org.apache.coyote.http11.requestline.Path;
 import org.apache.coyote.http11.requestline.QueryStrings;
-import org.apache.coyote.http11.requestline.RequestParser;
+import org.apache.coyote.http11.requestline.RequestLineParser;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
-public class RequestParserTest {
+public class RequestLineParserTest {
     private static String REQUEST = "GET /users HTTP/1.1";
     private static String REQUEST_WITH_STRING_QUERY = "GET /users?userId=javajigi&password=password&name=JaeSung HTTP/1.1";
 
@@ -18,10 +18,10 @@ public class RequestParserTest {
     @Test
     public void getHttpMethod() {
         //given
-        RequestParser requestParser = new RequestParser(REQUEST_WITH_STRING_QUERY);
+        RequestLineParser requestLineParser = new RequestLineParser(REQUEST_WITH_STRING_QUERY);
 
         //when
-        HttpMethod result = requestParser.getHttpMethod();
+        HttpMethod result = requestLineParser.getHttpMethod();
 
         //then
         assertThat(result).isEqualTo(HttpMethod.GET);
@@ -31,10 +31,10 @@ public class RequestParserTest {
     @Test
     public void getProtocol() {
         //given
-        RequestParser requestParser = new RequestParser(REQUEST_WITH_STRING_QUERY);
+        RequestLineParser requestLineParser = new RequestLineParser(REQUEST_WITH_STRING_QUERY);
 
         //when
-        String result = requestParser.getProtocol();
+        String result = requestLineParser.getProtocol();
 
         //then
         assertThat(result).isEqualTo("HTTP");
@@ -44,10 +44,10 @@ public class RequestParserTest {
     @Test
     public void getVersion() {
         //given
-        RequestParser requestParser = new RequestParser(REQUEST_WITH_STRING_QUERY);
+        RequestLineParser requestLineParser = new RequestLineParser(REQUEST_WITH_STRING_QUERY);
 
         //when
-        String result = requestParser.getVersion();
+        String result = requestLineParser.getVersion();
 
         //then
         assertThat(result).isEqualTo("1.1");
@@ -57,11 +57,11 @@ public class RequestParserTest {
     @Test
     public void getRequestPath() {
         //given
-        RequestParser requestParser = new RequestParser(REQUEST);
+        RequestLineParser requestLineParser = new RequestLineParser(REQUEST);
 
         //when
-        Path path = requestParser.getPath();
-        String result = path.requestPath();
+        Path path = requestLineParser.getPath();
+        String result = path.urlPath();
 
         //then
         assertThat(result).isEqualTo("/users");
@@ -71,11 +71,11 @@ public class RequestParserTest {
     @Test
     public void getRequestPathWithStringQuery() {
         //given
-        RequestParser requestParser = new RequestParser(REQUEST_WITH_STRING_QUERY);
+        RequestLineParser requestLineParser = new RequestLineParser(REQUEST_WITH_STRING_QUERY);
 
         //when
-        Path path = requestParser.getPath();
-        String result = path.requestPath();
+        Path path = requestLineParser.getPath();
+        String result = path.urlPath();
 
         //then
         assertThat(result).isEqualTo("/users");
@@ -85,10 +85,10 @@ public class RequestParserTest {
     @Test
     public void getStringQuery() {
         //given
-        RequestParser requestParser = new RequestParser(REQUEST_WITH_STRING_QUERY);
+        RequestLineParser requestLineParser = new RequestLineParser(REQUEST_WITH_STRING_QUERY);
 
         //when
-        Path path = requestParser.getPath();
+        Path path = requestLineParser.getPath();
         QueryStrings result = path.queryStrings();
 
         //then

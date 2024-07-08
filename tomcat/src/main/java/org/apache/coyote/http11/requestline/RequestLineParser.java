@@ -3,7 +3,7 @@ package org.apache.coyote.http11.requestline;
 import java.util.HashMap;
 import java.util.Map;
 
-public class RequestParser {
+public class RequestLineParser {
     public static final String HTTP_METHOD_AND_PATH_DELIMITER_CHARACTER = " ";
     public static final String PROTOCOL_AND_VERSION_DELIMITER_CHARACTER = "/";
     public static final String PATH_AND_QUERY_STRING_DELIMITER_CHARACTER = "\\?";
@@ -12,7 +12,7 @@ public class RequestParser {
 
     private final String request;
 
-    public RequestParser(String request) {
+    public RequestLineParser(String request) {
         this.request = request;
     }
 

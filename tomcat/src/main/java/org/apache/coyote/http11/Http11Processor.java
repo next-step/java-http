@@ -2,6 +2,8 @@ package org.apache.coyote.http11;
 
 import camp.nextstep.exception.UncheckedServletException;
 import org.apache.coyote.Processor;
+import org.apache.coyote.http11.requestline.RequestLine;
+import org.apache.coyote.http11.requestline.RequestLineParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,10 +37,19 @@ public class Http11Processor implements Runnable, Processor {
              final var outputStream = connection.getOutputStream();
              final BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream))) {
 
-            bufferedReader.readLine();
-            final URL resource = getClass().getClassLoader().getResource("static/index.html");
+            if (bufferedReader.lines() == null) {
+                return;
+            }
+            RequestLineParser requestLineParser = new RequestLineParser(bufferedReader.readLine());
 
-            final var responseBody = new String(Files.readAllBytes(new File(resource.getFile()).toPath()));
+            RequestLine requestLine = RequestLine.from(requestLineParser);
+
+            String responseBody = "Hello world!";
+
+            if (!requestLine.getPath().urlPath().equals("/")) {
+                final URL resource = getClass().getClassLoader().getResource("static/" + requestLine.getPath().urlPath());
+                responseBody = new String(Files.readAllBytes(new File(resource.getFile()).toPath()));
+            }
 
             final var response = String.join("\r\n",
                     "HTTP/1.1 200 OK ",

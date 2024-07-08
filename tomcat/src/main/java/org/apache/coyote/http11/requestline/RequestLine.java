@@ -13,11 +13,11 @@ public class RequestLine {
         this.version = version;
     }
 
-    public static RequestLine from(RequestParser requestParser) {
-        HttpMethod httpMethod = requestParser.getHttpMethod();
-        Path path = requestParser.getPath();
-        String protocol = requestParser.getProtocol();
-        String version = requestParser.getVersion();
+    public static RequestLine from(RequestLineParser requestLineParser) {
+        HttpMethod httpMethod = requestLineParser.getHttpMethod();
+        Path path = requestLineParser.getPath();
+        String protocol = requestLineParser.getProtocol();
+        String version = requestLineParser.getVersion();
         return new RequestLine(httpMethod, path, protocol, version);
     }
 
@@ -30,7 +30,7 @@ public class RequestLine {
     }
 
     public String getRequestPath() {
-        return path.requestPath();
+        return path.urlPath();
     }
 
     public QueryStrings getQueryStrings() {

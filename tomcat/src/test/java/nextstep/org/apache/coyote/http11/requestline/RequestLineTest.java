@@ -1,7 +1,7 @@
 package nextstep.org.apache.coyote.http11.requestline;
 
 import org.apache.coyote.http11.requestline.RequestLine;
-import org.apache.coyote.http11.requestline.RequestParser;
+import org.apache.coyote.http11.requestline.RequestLineParser;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -16,8 +16,8 @@ class RequestLineTest {
         //given
         String request = "GET /users HTTP/1.1";
         //when
-        RequestParser requestParser = new RequestParser(request);
-        RequestLine requestLine = RequestLine.from(requestParser);
+        RequestLineParser requestLineParser = new RequestLineParser(request);
+        RequestLine requestLine = RequestLine.from(requestLineParser);
         //then
         assertAll(
                 () -> assertThat(requestLine.getHttpMethod()).isEqualTo(GET),
@@ -33,8 +33,8 @@ class RequestLineTest {
         //given
         String request = "POST /users HTTP/1.1";
         //when
-        RequestParser requestParser = new RequestParser(request);
-        RequestLine requestLine = RequestLine.from(requestParser);
+        RequestLineParser requestLineParser = new RequestLineParser(request);
+        RequestLine requestLine = RequestLine.from(requestLineParser);
         //then
         assertAll(
                 () -> assertThat(requestLine.getHttpMethod()).isEqualTo(POST),
@@ -50,8 +50,8 @@ class RequestLineTest {
         //given
         String request = "GET /users?userId=javajigi&password=password&name=JaeSung HTTP/1.1";
         //when
-        RequestParser requestParser = new RequestParser(request);
-        RequestLine requestLine = RequestLine.from(requestParser);
+        RequestLineParser requestLineParser = new RequestLineParser(request);
+        RequestLine requestLine = RequestLine.from(requestLineParser);
         //then
         assertAll(
                 () -> assertThat(requestLine.getHttpMethod()).isEqualTo(GET),
