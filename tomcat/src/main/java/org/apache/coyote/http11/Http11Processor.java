@@ -36,19 +36,7 @@ public class Http11Processor implements Runnable, Processor {
              BufferedReader br = new BufferedReader(new InputStreamReader(inputStream));
              final var outputStream = connection.getOutputStream()) {
 
-            StringBuilder sb = new StringBuilder();
-
-            while (true) {
-                String line = br.readLine();
-                if (line == null || line.isEmpty()) {
-                    break;
-                }
-
-                sb.append(line).append("\n");
-            }
-
-            String requestLines = sb.toString();
-            RequestLine requestLine = RequestLine.from(requestLines);
+            RequestLine requestLine = RequestLine.from(br.readLine());
             String path = requestLine.getPath();
 
             if (Objects.equals(path, "/")) {
