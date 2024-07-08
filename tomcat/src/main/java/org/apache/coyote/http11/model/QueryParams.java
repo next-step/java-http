@@ -13,4 +13,8 @@ public class QueryParams {
     public String valueBy(final String key) {
         return queryParams.get(key);
     }
+
+    public boolean isEmpty() {
+        return queryParams.isEmpty();
+    }
 }
