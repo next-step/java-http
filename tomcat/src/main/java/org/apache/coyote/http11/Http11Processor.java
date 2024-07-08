@@ -1,10 +1,7 @@
 package org.apache.coyote.http11;
 
 import camp.nextstep.db.InMemoryUserRepository;
-import camp.nextstep.domain.http.ContentType;
-import camp.nextstep.domain.http.HttpRequestHeaders;
-import camp.nextstep.domain.http.HttpResponse;
-import camp.nextstep.domain.http.RequestLine;
+import camp.nextstep.domain.http.*;
 import camp.nextstep.exception.UncheckedServletException;
 import camp.nextstep.model.User;
 import camp.nextstep.util.FileUtil;
@@ -49,6 +46,7 @@ public class Http11Processor implements Runnable, Processor {
 
             final var requestLine = new RequestLine(inputReader.readLine());
             final var requestHeader = parseRequestHeader(inputReader);
+            final var requestBody = parseRequestBody(inputReader, requestHeader);
             final var response = createResponse(requestLine);
 
             outputStream.write(response.buildResponse().getBytes());
@@ -58,7 +56,7 @@ public class Http11Processor implements Runnable, Processor {
         }
     }
 
-    private HttpRequestHeaders parseRequestHeader(BufferedReader inputReader) throws IOException {
+    private HttpRequestHeaders parseRequestHeader(final BufferedReader inputReader) throws IOException {
         final var requestHeaders = new ArrayList<String>();
         while (inputReader.ready()) {
             final var line = inputReader.readLine();
@@ -68,6 +66,16 @@ public class Http11Processor implements Runnable, Processor {
             requestHeaders.add(line);
         }
         return new HttpRequestHeaders(requestHeaders);
+    }
+
+    private HttpRequestBody parseRequestBody(final BufferedReader inputReader, final HttpRequestHeaders requestHeaders) throws IOException {
+        if (!requestHeaders.containsContentLength()) {
+            return new HttpRequestBody();
+        }
+        int contentLength = requestHeaders.getContentLength();
+        char[] buffer = new char[contentLength];
+        inputReader.read(buffer, 0, contentLength);
+        return new HttpRequestBody(new String(buffer));
     }
 
     private HttpResponse createResponse(final RequestLine requestLine) {
