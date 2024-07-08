@@ -24,7 +24,7 @@ class ResourceTest {
             "nextstep.txt:true",
             "notExist.none:false"
     }, delimiter = ':')
-    void resource_아래의_파일이_존재여부를_반환받을_수_있다(final String path, final boolean expected) throws IOException {
+    void resource_아래의_파일이_존재여부를_반환받을_수_있다(final String path, final boolean expected) {
         final Resource resource = new Resource(path);
 
         assertThat(resource.exists()).isEqualTo(expected);
