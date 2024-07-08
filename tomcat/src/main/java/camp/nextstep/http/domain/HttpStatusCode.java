@@ -5,15 +5,17 @@ import camp.nextstep.http.exception.InvalidHttpStatusException;
 import java.util.Arrays;
 
 public enum HttpStatusCode {
-    OK(200);
+    OK(200, "OK");
 
     private static final int MAX_STATUS_CODE = 999;
     private static final int MIN_STATUS_CODE = 100;
 
     private final int value;
+    private final String reasonPhrase;
 
-    HttpStatusCode(final int value) {
+    HttpStatusCode(final int value, final String reasonPhrase) {
         this.value = value;
+        this.reasonPhrase = reasonPhrase;
     }
 
     public static HttpStatusCode valueOf(final int statusCode) {
@@ -30,4 +32,7 @@ public enum HttpStatusCode {
         }
     }
 
+    public String getReasonPhrase() {
+        return reasonPhrase;
+    }
 }

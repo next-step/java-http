@@ -23,4 +23,10 @@ class HttpStatusCodeTest {
         assertThatThrownBy(() -> HttpStatusCode.valueOf(value))
                 .isInstanceOf(InvalidHttpStatusException.class);
     }
+
+    @Test
+    void HttpStatus_에서_ReasonPhase_를_반환받을_수_있다() {
+        assertThat(HttpStatusCode.OK.getReasonPhrase()).isEqualTo("OK");
+    }
+
 }
