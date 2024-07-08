@@ -56,24 +56,17 @@ public class Http11Processor implements Runnable, Processor {
     }
 
     private HttpResponse createResponse(final RequestLine requestLine) {
-        if (requestLine.getHttpPath().equals(LOGIN_PATH)) {
+        final var path = requestLine.getHttpPath();
+        if (path.equals(LOGIN_PATH)) {
             return handleLoginPath(requestLine);
         }
-        if (requestLine.getHttpPath().equals(ROOT_PATH)) {
-            return HttpResponse.ok(
-                    requestLine.getHttpProtocol(),
-                    Map.of("Content-Type", parseContentType(ContentType.TEXT_HTML)),
-                    ROOT_BODY
-            );
+        if (path.equals(ROOT_PATH)) {
+            return handleRootPath(requestLine);
         }
-        return HttpResponse.ok(
-                requestLine.getHttpProtocol(),
-                Map.of("Content-Type", parseContentType(parseContentType(requestLine))),
-                parseResponseBody(requestLine)
-        );
+        return handlePath(requestLine);
     }
 
-    private HttpResponse handleLoginPath(RequestLine requestLine) {
+    private HttpResponse handleLoginPath(final RequestLine requestLine) {
         final var queryString = requestLine.getQueryString();
         if (queryString.isEmpty()) {
             return HttpResponse.ok(
@@ -90,6 +83,22 @@ public class Http11Processor implements Runnable, Processor {
             return HttpResponse.found(requestLine.getHttpProtocol(), Map.of("Location", "/index.html"));
         }
         return HttpResponse.found(requestLine.getHttpProtocol(), Map.of("Location", "/401.html"));
+    }
+
+    private HttpResponse handleRootPath(final RequestLine requestLine) {
+        return HttpResponse.ok(
+                requestLine.getHttpProtocol(),
+                Map.of("Content-Type", parseContentType(ContentType.TEXT_HTML)),
+                ROOT_BODY
+        );
+    }
+
+    private HttpResponse handlePath(final RequestLine requestLine) {
+        return HttpResponse.ok(
+                requestLine.getHttpProtocol(),
+                Map.of("Content-Type", parseContentType(parseContentType(requestLine))),
+                parseResponseBody(requestLine)
+        );
     }
 
     private String parseResponseBody(final RequestLine requestLine) {
