@@ -21,7 +21,7 @@ public enum ContentType {
         return Arrays.stream(values())
                 .filter(type -> type.type.equalsIgnoreCase(contentType))
                 .findFirst()
-                .orElseThrow(() -> new InvalidContentTypeException("No matching HttpStatusCode found for " + contentType));
+                .orElseThrow(() -> new InvalidContentTypeException("No matching ContentType found for " + contentType));
     }
 
     public static ContentType from(final HttpPath path) {
@@ -31,7 +31,7 @@ public enum ContentType {
         return Arrays.stream(values())
                 .filter(type -> type.extension.equalsIgnoreCase(path.getExtension()))
                 .findFirst()
-                .orElseThrow(() -> new InvalidContentTypeException("No matching HttpStatusCode found for " + path.getPath()));
+                .orElseThrow(() -> new InvalidContentTypeException("No matching ContentType found for " + path.getPath()));
     }
 
     private static boolean isExtensionEmpty(final HttpPath path) {
