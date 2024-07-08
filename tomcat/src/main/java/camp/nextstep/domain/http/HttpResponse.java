@@ -7,6 +7,7 @@ import static java.util.Collections.emptyMap;
 public class HttpResponse {
 
     private static final String CONTENT_LENGTH_HEADER_KEY = "Content-Length";
+    private static final String EMPTY_RESPONSE_BODY = "";
 
     private final HttpProtocol httpProtocol;
     private final HttpStatus httpStatus;
@@ -31,8 +32,8 @@ public class HttpResponse {
         return new HttpResponse(httpProtocol, HttpStatus.OK, responseBody);
     }
 
-    public static HttpResponse found(HttpProtocol httpProtocol, String responseBody) {
-        return new HttpResponse(httpProtocol, HttpStatus.FOUND, responseBody);
+    public static HttpResponse found(HttpProtocol httpProtocol) {
+        return new HttpResponse(httpProtocol, HttpStatus.FOUND, EMPTY_RESPONSE_BODY);
     }
 
     public HttpProtocol getHttpProtocol() {

@@ -18,7 +18,7 @@ class HttpResponseTest {
 
     @Test
     void found_response를_생성한다() {
-        HttpResponse actual = HttpResponse.found(DEFAULT_HTTP_PROTOCOL, "Hello world!");
+        HttpResponse actual = HttpResponse.found(DEFAULT_HTTP_PROTOCOL);
         assertThat(actual.getHttpStatus()).isEqualTo(HttpStatus.FOUND);
     }
 
