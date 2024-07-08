@@ -24,12 +24,12 @@ class HttpRequestHeaderParserTest {
             TEST_NOT_HEADER_LINE,
             "",
             "");
-    private static final HttpRequestHeaderParser PARSER = new HttpRequestHeaderParser();
+    private final HttpRequestHeaderParser parser = HttpRequestHeaderParser.getInstance();
 
     @Test
     void readInputStreamTest() throws IOException {
         // given // when
-        final HttpRequestHeader httpRequestHeader = PARSER.parse(TEST_REQUEST_LINES);
+        final HttpRequestHeader httpRequestHeader = parser.parse(TEST_REQUEST_LINES);
 
         // then
         assertAll(

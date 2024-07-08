@@ -28,7 +28,6 @@ public class Http11Processor implements Runnable, Processor {
     private static final String LOGIN_PATH = "/login.html";
     private static final String LOGIN_ACCOUNT_KEY = "account";
     private static final String LOGIN_PASSWORD_KEY = "password";
-    private static final HttpRequestHeaderParser HTTP_REQUEST_HEADER_PARSER = new HttpRequestHeaderParser();
 
     private final Socket connection;
 
@@ -52,7 +51,8 @@ public class Http11Processor implements Runnable, Processor {
                     .takeWhile(line -> !line.isEmpty())
                     .toList();
 
-            final HttpRequestHeader httpRequestHeader = HTTP_REQUEST_HEADER_PARSER.parse(requestLines);
+            final HttpRequestHeader httpRequestHeader = HttpRequestHeaderParser.getInstance()
+                    .parse(requestLines);
             final RequestLine requestLine = httpRequestHeader.requestLine();
 
             if (isLogin(requestLine)) {

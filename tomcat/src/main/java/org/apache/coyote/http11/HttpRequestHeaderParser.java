@@ -15,7 +15,13 @@ public class HttpRequestHeaderParser {
     private static final int HAS_NOT_OTHER_HEADER_SIZE = 1;
     private static final int KEY_INDEX = 0;
     private static final int VALUE_INDEX = 1;
-    private static final RequestLineParser REQUEST_LINE_PARSER = new RequestLineParser();
+
+    private HttpRequestHeaderParser() {
+    }
+
+    public static HttpRequestHeaderParser getInstance() {
+        return SingletonHelper.SINGLETON;
+    }
 
     public HttpRequestHeader parse(final List<String> lines) throws IOException {
         final HashMap<String, Object> headerMap = new HashMap<>();
@@ -31,7 +37,8 @@ public class HttpRequestHeaderParser {
     }
 
     private void requestLineParsing(final List<String> lines, final HashMap<String, Object> headerMap) {
-        final RequestLine requestLine = REQUEST_LINE_PARSER.parse(lines.get(REQUEST_LINE_INDEX));
+        final RequestLine requestLine = RequestLineParser.getInstance()
+                .parse(lines.get(REQUEST_LINE_INDEX));
         headerMap.put(REQUEST_LINE_KEY, requestLine);
     }
 
@@ -60,5 +67,9 @@ public class HttpRequestHeaderParser {
 
     private boolean isNotHeaderLine(final String headerLine) {
         return !headerLine.contains(COLON_SPACE);
+    }
+
+    private static class SingletonHelper {
+        private static final HttpRequestHeaderParser SINGLETON = new HttpRequestHeaderParser();
     }
 }

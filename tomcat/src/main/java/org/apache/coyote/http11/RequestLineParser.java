@@ -14,6 +14,13 @@ public class RequestLineParser {
     private static final String EQUAL_SIGN = "=";
     private static final String BACKSLASH = "\\";
 
+    private RequestLineParser() {
+    }
+
+    public static RequestLineParser getInstance() {
+        return SingletonHelper.SINGLETON;
+    }
+
     public RequestLine parse(final String requestLine) {
         final String[] tokens = tokenize(requestLine, BLANK);
         final HashMap<String, String> queryParams = new HashMap<>();
@@ -54,5 +61,9 @@ public class RequestLineParser {
 
     private String[] tokenize(String input, String delimiter) {
         return StringTokenizer.token(input, delimiter);
+    }
+
+    private static class SingletonHelper {
+        private static final RequestLineParser SINGLETON = new RequestLineParser();
     }
 }

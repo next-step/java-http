@@ -17,7 +17,7 @@ class RequestLineParserTest {
     private static final String BLANK = " ";
     private static final String SLASH = "/";
     private static final String TEST_PATH_QUERY_STRING = "/users?userId=javajigi&password=password&name=JaeSung";
-    private final RequestLineParser requestLineParser = new RequestLineParser();
+    private final RequestLineParser requestLineParser = RequestLineParser.getInstance();
 
     @Test
     void httpGetParsingTest() {
