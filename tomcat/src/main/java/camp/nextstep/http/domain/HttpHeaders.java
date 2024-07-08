@@ -18,4 +18,16 @@ public class HttpHeaders {
     public String getContentType() {
         return headers.get("Content-Type");
     }
+
+    public void setContentLength(final long contentLength) {
+        headers.put("Content-Length", String.valueOf(contentLength));
+    }
+
+    public long getContentLength() {
+        final String value = headers.get("Content-Length");
+        if (value == null) {
+            return 0;
+        }
+        return Long.parseLong(value);
+    }
 }

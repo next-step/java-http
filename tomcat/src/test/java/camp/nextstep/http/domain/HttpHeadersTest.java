@@ -14,4 +14,14 @@ class HttpHeadersTest {
 
         assertThat(headers.getContentType()).isEqualTo("text/html");
     }
+
+    @Test
+    void ContentLength_설정시_정상적으로_저장된다() {
+        final HttpHeaders headers = new HttpHeaders();
+
+        headers.setContentLength(1000L);
+
+        assertThat(headers.getContentLength()).isEqualTo(1000L);
+    }
+
 }
