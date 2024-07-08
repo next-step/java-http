@@ -5,6 +5,8 @@ import java.util.Arrays;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import static java.util.Collections.emptyMap;
+
 public class HttpRequestBody {
 
     private static final String REQUEST_BODY_FORMAT_SPLIT_REGEX = "&";
@@ -15,6 +17,10 @@ public class HttpRequestBody {
     private static final int REQUEST_BODY_ENTRY_VALUE_INDEX = 1;
 
     private final Map<String, String> values;
+
+    public HttpRequestBody() {
+        this.values = emptyMap();
+    }
 
     public HttpRequestBody(String requestBody) {
         this.values = Arrays.stream(requestBody.split(REQUEST_BODY_FORMAT_SPLIT_REGEX))

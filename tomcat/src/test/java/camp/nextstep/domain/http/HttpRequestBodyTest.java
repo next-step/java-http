@@ -10,6 +10,12 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 class HttpRequestBodyTest {
 
     @Test
+    void 기본생성자인_경우_빈맵을_반환한다() {
+        HttpRequestBody actual = new HttpRequestBody();
+        assertThat(actual.getValues()).isEmpty();
+    }
+
+    @Test
     void key_value가_잘못된_형태로_입력된_경우_예외가_발생한다() {
         assertThatThrownBy(() -> new HttpRequestBody("name=jin=young"))
                 .isInstanceOf(IllegalArgumentException.class)
