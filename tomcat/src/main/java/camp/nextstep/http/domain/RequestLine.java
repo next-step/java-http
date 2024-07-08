@@ -43,8 +43,8 @@ public class RequestLine {
         return version;
     }
 
-    public RequestURI getRequestURI() {
-        return requestURI;
+    public QueryParameters getQueryParameters() {
+        return requestURI.getQueryParameters();
     }
 
     public HttpPath getPath() {

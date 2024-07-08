@@ -67,7 +67,7 @@ public class Http11Processor implements Runnable, Processor {
     }
 
     private void processLogin(final RequestLine requestLine) {
-        final QueryParameters parameters = requestLine.getRequestURI().getQueryParameters();
+        final QueryParameters parameters = requestLine.getQueryParameters();
         final User user = InMemoryUserRepository.findByAccount(parameters.get(ACCOUNT))
                 .orElseThrow(UserNotFoundException::new);
 
