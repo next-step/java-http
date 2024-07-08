@@ -32,8 +32,7 @@ public class RequestLineTest {
 
             assertThat(requestLine.getMethod()).isEqualTo(method);
             assertThat(requestLine.getPath()).isEqualTo("/users");
-            assertThat(requestLine.getProtocol()).isEqualTo("HTTP");
-            assertThat(requestLine.getVersion()).isEqualTo("1.1");
+            assertThat(requestLine.getVersion()).isEqualTo("HTTP/1.1");
             assertThat(requestLine.getQueryStringMap()).isEmpty();
         }
 

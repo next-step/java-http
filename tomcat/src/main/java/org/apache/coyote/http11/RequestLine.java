@@ -11,40 +11,37 @@ public class RequestLine {
     private static final String PROTOCOL_VERSION_SPLITERATOR = "/";
 
     private final HttpMethod method;
+
+    // 요청 타겟
     private final String path;
-    private final String protocol;
-    private final String version;
     private final Map<String, String> queryStringMap;
+
+    private final HttpProtocol httpProtocol;
 
     private RequestLine(
             final HttpMethod method,
             final String path,
-            final String protocol,
-            final String version,
-            final Map<String, String> queryStringMap
+            final Map<String, String> queryStringMap,
+            final HttpProtocol httpProtocol
     ) {
         this.method = method;
         this.path = path;
-        this.protocol = protocol;
-        this.version = version;
         this.queryStringMap = queryStringMap;
+        this.httpProtocol = httpProtocol;
     }
 
-    public static RequestLine from(final String request) {
-        String[] requestLines = request.split("\n");
-        String[] requestLine = requestLines[0].split(REQUEST_LINE_SPLITERATOR);
+    public static RequestLine from(final String requestLine) {
+        String[] requestLineElements = requestLine.split(REQUEST_LINE_SPLITERATOR);
 
-        String method = requestLine[0];
+        String method = requestLineElements[0];
 
-        String[] pathAndQueryStrings = requestLine[1].split("\\?");
+        String[] pathAndQueryStrings = requestLineElements[1].split("\\?");
         String path = pathAndQueryStrings[0];
         Map<String, String> queryStringMap = createQueryStringMap(pathAndQueryStrings);
 
-        String[] protocolAndVersion = requestLine[2].split(PROTOCOL_VERSION_SPLITERATOR);
-        String protocol = protocolAndVersion[0];
-        String version = protocolAndVersion[1];
+        HttpProtocol httpProtocol = HttpProtocol.from(requestLineElements[2]);
 
-        return new RequestLine(HttpMethod.from(method), path, protocol, version, queryStringMap);
+        return new RequestLine(HttpMethod.from(method), path, queryStringMap, httpProtocol);
     }
 
     private static Map<String, String> createQueryStringMap(final String[] pathAndQueryStrings) {
@@ -67,15 +64,12 @@ public class RequestLine {
         return path;
     }
 
-    public String getProtocol() {
-        return protocol;
-    }
-
-    public String getVersion() {
-        return version;
-    }
 
     public Map<String, String> getQueryStringMap() {
         return queryStringMap;
+    }
+
+    public String getVersion() {
+        return httpProtocol.getVersion();
     }
 }
