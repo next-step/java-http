@@ -99,3 +99,10 @@ Location: /index.html
   - GET 요청인 경우 회원가입 페이지를 보여준다.
   - POST 요청인 경우 회원가입을 한 후 `/index.html`로 리다이랙한다.
 - 로그인 페이지도 동일하게 버튼 클릭 시 POST 방식으로 변경한다.
+
+- HttpRequest
+  - RequestLine
+  - HttpRequestHeader
+  - HttpRequestBody
+- HttpRequestBody
+  - `Content-Type`이 `application/x-www-form-urlencoded`인 경우 &로 구분된 값을 파싱하여 저장한다.
