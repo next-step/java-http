@@ -1,20 +1,16 @@
-package org.apache.coyote.http11;
+package org.apache.coyote;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 public class Request {
     private HttpMethod method;
     private String path;
-    private final Map<String, String> queryStringMapping = new HashMap<>();
     private String protocol;
     private String protocolVersion;
+    private final ParamsMapping params = new ParamsMapping();
 
     public void setMethod(final String requestMethod) {
-        this.method = HttpMethod.of(requestMethod);
+        this.method = HttpMethod.from(requestMethod);
     }
 
     public void setPath(final String path) {
@@ -30,16 +26,7 @@ public class Request {
             return;
         }
 
-        this.queryStringMapping.putAll(toQueryStringMapping(requestPath[1]));
-    }
-
-    private Map<String, String> toQueryStringMapping(final String queryString) {
-        return Arrays.stream(queryString.split("&"))
-                .map(param -> param.split("=", 2))
-                .collect(Collectors.toMap(
-                        pair -> pair[0],
-                        pair -> pair.length > 1 ? pair[1] : ""
-                ));
+        this.params.toQueryStringMapping(requestPath[1]);
     }
 
     public void setProtocol(final String protocol) {
@@ -57,12 +44,12 @@ public class Request {
         return this.path;
     }
 
-    public Map<String, String> getQueryStringMapping() {
-        return Collections.unmodifiableMap(this.queryStringMapping);
+    public Map<String, String> getParameters() {
+        return this.params.getParams();
     }
 
     public String getParameter(final String parameterName) {
-        return this.queryStringMapping.get(parameterName);
+        return this.params.getParam(parameterName);
     }
 
     public String getProtocol() {

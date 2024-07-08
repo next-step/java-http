@@ -1,6 +1,4 @@
-package org.apache.coyote.http11;
-
-import org.apache.coyote.HeaderMapping;
+package org.apache.coyote;
 
 import java.io.File;
 import java.io.IOException;

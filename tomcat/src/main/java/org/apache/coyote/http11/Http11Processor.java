@@ -3,6 +3,8 @@ package org.apache.coyote.http11;
 import camp.nextstep.exception.UncheckedServletException;
 import org.apache.catalina.connector.CoyoteAdapter;
 import org.apache.coyote.Processor;
+import org.apache.coyote.Request;
+import org.apache.coyote.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -14,12 +16,13 @@ public class Http11Processor implements Runnable, Processor {
     private static final Logger log = LoggerFactory.getLogger(Http11Processor.class);
 
     private final Socket connection;
-
     private final CoyoteAdapter adapter;
+    private final HttpInputParser httpParser;
 
-    public Http11Processor(final Socket connection, final CoyoteAdapter adapter) {
+    public Http11Processor(final Socket connection, final CoyoteAdapter adapter, final HttpInputParser httpParser) {
         this.connection = connection;
         this.adapter = adapter;
+        this.httpParser = httpParser;
     }
 
     @Override
@@ -33,10 +36,9 @@ public class Http11Processor implements Runnable, Processor {
         try (final var inputStream = connection.getInputStream();
              final var outputStream = connection.getOutputStream()) {
 
-            final Http11Input http11Input = new Http11Input(inputStream);
-            http11Input.parseRequestLine();
+            httpParser.parseRequestLine(inputStream);
 
-            final Request request = http11Input.getRequest();
+            final Request request = httpParser.getRequest();
 
             final Response response = new Response();
             response.init();
@@ -45,7 +47,6 @@ public class Http11Processor implements Runnable, Processor {
 
             outputStream.write(response.toBytes());
             outputStream.flush();
-            http11Input.close();
         } catch (IOException | UncheckedServletException e) {
             log.error(e.getMessage(), e);
         } catch (Exception e) {

@@ -1,5 +1,7 @@
 package org.apache.coyote.http11;
 
+import org.apache.coyote.HttpMethod;
+import org.apache.coyote.Request;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -50,7 +52,7 @@ class RequestTest {
         // then
         assertAll(
                 () -> assertThat(request.getPath()).isEqualTo("/users"),
-                () -> assertThat(request.getQueryStringMapping()).hasSize(3)
+                () -> assertThat(request.getParameters()).hasSize(3)
                         .containsExactlyInAnyOrderEntriesOf(Map.of("userId", "djawnstj", "password", "password", "name", "JunSeo"))
         );
     }
@@ -68,7 +70,7 @@ class RequestTest {
         // then
         assertAll(
                 () -> assertThat(request.getPath()).isEqualTo("/users"),
-                () -> assertThat(request.getQueryStringMapping()).hasSize(0)
+                () -> assertThat(request.getParameters()).hasSize(0)
         );
     }
 

@@ -2,8 +2,8 @@ package camp.nextstep.servlet;
 
 import camp.nextstep.model.User;
 import com.javax.servlet.Servlet;
-import org.apache.coyote.http11.Request;
-import org.apache.coyote.http11.Response;
+import org.apache.coyote.Request;
+import org.apache.coyote.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

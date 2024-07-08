@@ -3,6 +3,7 @@ package nextstep.org.apache.coyote.http11;
 import camp.nextstep.servlet.LoginServlet;
 import org.apache.catalina.connector.CoyoteAdapter;
 import org.apache.coyote.http11.Http11Processor;
+import org.apache.coyote.http11.HttpInputParser;
 import org.junit.jupiter.api.Test;
 import support.StubSocket;
 
@@ -20,7 +21,8 @@ class Http11ProcessorTest {
         // given
         final var socket = new StubSocket();
         final var adapter = new CoyoteAdapter();
-        final var processor = new Http11Processor(socket, adapter);
+        final HttpInputParser httpParser = new HttpInputParser();
+        final var processor = new Http11Processor(socket, adapter, httpParser);
 
         // when
         processor.process(socket);
@@ -48,7 +50,8 @@ class Http11ProcessorTest {
 
         final var socket = new StubSocket(httpRequest);
         final var adapter = new CoyoteAdapter();
-        final Http11Processor processor = new Http11Processor(socket, adapter);
+        final HttpInputParser httpParser = new HttpInputParser();
+        final var processor = new Http11Processor(socket, adapter, httpParser);
 
         // when
         processor.process(socket);
@@ -77,7 +80,8 @@ class Http11ProcessorTest {
 
         final var socket = new StubSocket(httpRequest);
         final var adapter = new CoyoteAdapter();
-        final Http11Processor processor = new Http11Processor(socket, adapter);
+        final HttpInputParser httpParser = new HttpInputParser();
+        final var processor = new Http11Processor(socket, adapter, httpParser);
 
         // when
         processor.process(socket);
@@ -107,7 +111,8 @@ class Http11ProcessorTest {
         final var socket = new StubSocket(httpRequest);
         final var adapter = new CoyoteAdapter();
         adapter.addServlet("/login", new LoginServlet());
-        final Http11Processor processor = new Http11Processor(socket, adapter);
+        final HttpInputParser httpParser = new HttpInputParser();
+        final var processor = new Http11Processor(socket, adapter, httpParser);
 
         // when
         processor.process(socket);

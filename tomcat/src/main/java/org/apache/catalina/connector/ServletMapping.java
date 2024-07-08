@@ -3,7 +3,7 @@ package org.apache.catalina.connector;
 import com.javax.servlet.Servlet;
 import org.apache.catalina.servlets.DefaultServlet;
 import org.apache.coyote.ServletHandler;
-import org.apache.coyote.http11.Request;
+import org.apache.coyote.Request;
 
 import java.util.*;
 

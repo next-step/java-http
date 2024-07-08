@@ -1,13 +1,8 @@
 package org.apache.catalina.servlets;
 
 import com.javax.servlet.Servlet;
-import org.apache.coyote.http11.Request;
-import org.apache.coyote.http11.Response;
-
-import java.io.File;
-import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.Path;
+import org.apache.coyote.Request;
+import org.apache.coyote.Response;
 
 public class DefaultServlet implements Servlet {
 

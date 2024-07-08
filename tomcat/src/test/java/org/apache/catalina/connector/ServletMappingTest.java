@@ -2,12 +2,11 @@ package org.apache.catalina.connector;
 
 import com.javax.servlet.Servlet;
 import org.apache.catalina.servlets.DefaultServlet;
-import org.apache.coyote.http11.Request;
+import org.apache.coyote.Request;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
