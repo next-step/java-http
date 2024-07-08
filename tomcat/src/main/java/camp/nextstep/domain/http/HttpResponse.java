@@ -42,8 +42,18 @@ public class HttpResponse {
     }
 
     public String buildResponse() {
-        String response = String.join(RESPONSE_DELIMITER, buildStatusLine(), buildHeaders());
+        String response = buildBaseResponse();
+        if (responseBody.isEmpty()) {
+            return response;
+        }
         return String.join(RESPONSE_DELIMITER, response, "", responseBody);
+    }
+
+    private String buildBaseResponse() {
+        if (httpHeaders.isEmpty()) {
+            return buildStatusLine();
+        }
+        return String.join(RESPONSE_DELIMITER, buildStatusLine(), buildHeaders());
     }
 
     private String buildStatusLine() {

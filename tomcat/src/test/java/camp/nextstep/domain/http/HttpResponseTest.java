@@ -44,4 +44,11 @@ class HttpResponseTest {
                 "Hello world!");
         assertThat(actual).isEqualTo(expected);
     }
+
+    @Test
+    void response_body가_빈값인_경우_format에_body연관_데이터없이_반환한다() {
+        String actual = new HttpResponse(DEFAULT_HTTP_PROTOCOL, HttpStatus.FOUND, "").buildResponse();
+        String expected = "HTTP/1.1 302 Found ";
+        assertThat(actual).isEqualTo(expected);
+    }
 }
