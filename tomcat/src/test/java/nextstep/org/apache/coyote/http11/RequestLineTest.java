@@ -33,7 +33,7 @@ public class RequestLineTest {
             assertThat(requestLine.getMethod()).isEqualTo(method);
             assertThat(requestLine.getPath()).isEqualTo("/users");
             assertThat(requestLine.getVersion()).isEqualTo("HTTP/1.1");
-            assertThat(requestLine.getQueryStringMap()).isEmpty();
+            assertThat(requestLine.getQueryParamMap()).isEmpty();
         }
 
         @DisplayName("쿼리 스트링이 있는 경우")
@@ -43,7 +43,7 @@ public class RequestLineTest {
 
             RequestLine requestLine = RequestLine.from(request);
 
-            assertThat(requestLine.getQueryStringMap()).containsAllEntriesOf(Map.of(
+            assertThat(requestLine.getQueryParamMap()).containsAllEntriesOf(Map.of(
                     "userId", "javajigi",
                     "password", "password",
                     "name", "JaeSung"
