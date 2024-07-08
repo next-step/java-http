@@ -50,4 +50,19 @@ class RequestTest {
         );
     }
 
+    @DisplayName("파라미터 이름을 통해 파라미터를 반환한다")
+    @Test
+    public void getParameter() throws Exception {
+        // given
+        final Request request = new Request();
+        request.setMethod("GET");
+        request.setPath("/users?userId=djawnstj");
+
+        // when
+        final String userId = request.getParameter("userId");
+
+        // then
+        assertThat(userId).isEqualTo("djawnstj");
+    }
+
 }
