@@ -11,7 +11,7 @@ public class HttpHeaders {
     private static final String CONTENT_TYPE = "Content-Type";
     private static final long MIN_CONTENT_LENGTH = 1L;
     private static final String CONTENT_LENGTH = "Content-Length";
-    private static final int EMPTY_CONTENT_LENGTH = 0;
+    private static final String EMPTY_CONTENT_LENGTH = "0";
 
     private final Map<String, String> headers;
 
@@ -36,10 +36,7 @@ public class HttpHeaders {
     }
 
     public long getContentLength() {
-        final String value = headers.get(CONTENT_LENGTH);
-        if (value == null) {
-            return EMPTY_CONTENT_LENGTH;
-        }
+        final String value = headers.getOrDefault(CONTENT_LENGTH, EMPTY_CONTENT_LENGTH);
         return Long.parseLong(value);
     }
 
@@ -48,5 +45,9 @@ public class HttpHeaders {
                 .stream()
                 .map(entry -> String.format("%s: %s ", entry.getKey(), entry.getValue()))
                 .collect(Collectors.joining(System.lineSeparator()));
+    }
+
+    public void add(final String key, final String value) {
+        headers.put(key, value);
     }
 }
