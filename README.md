@@ -133,3 +133,10 @@ X-Pad: avoid browser bug
     - 회원가입 버튼을 누르면 POST 요청을 사용한다.
     - 회원가입을 완료하면 `index.html` 로 리다이렉트 한다.
 - 로그인 페이지도 버튼을 눌렀을때 POST 방식으로 전송하도록 변경한다.
+
+### 요구사항 3. Cookie 에 JSESSIONID 값 저장하기
+
+- HttpHeaders 에서 Cookie 를 추출한다.
+- Cookie 클래스를 추가하고 값들을 저장한다.
+- HTTP Request Header의 Cookie에 `JSESSIONID` 가 없으면 HTTP Response Header에 `JSESSIONID` 를 추가한다.
+- `JSESSIONID`는 UUID 를 이용한다.
