@@ -18,6 +18,11 @@ public class LoginServlet implements Servlet {
     public void service(final Request request, final Response response) throws Exception {
         response.setStaticResource("login.html");
         final String account = request.getParameter("account");
+
+        if (account == null) {
+            return;
+        }
+
         final User byAccount = InMemoryUserRepository.findByAccount(account).orElse(null);
 
         log.debug("user: {}", byAccount);
