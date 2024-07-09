@@ -20,7 +20,7 @@ class RequestLineTest {
         // then
         assertAll(
                 () -> assertThat(requestLine.getHttpMethod()).isEqualTo(HttpMethod.GET),
-                () -> assertThat(requestLine.getHttpPath().getPath()).isEqualTo("/users"),
+                () -> assertThat(requestLine.getHttpPath()).isEqualTo("/users"),
                 () -> assertThat(requestLine.getHttpProtocol()).isEqualTo("HTTP/1.1")
         );
     }
@@ -37,7 +37,7 @@ class RequestLineTest {
         // then
         assertAll(
                 () -> assertThat(requestLine.getHttpMethod()).isEqualTo(HttpMethod.POST),
-                () -> assertThat(requestLine.getHttpPath().getPath()).isEqualTo("/users"),
+                () -> assertThat(requestLine.getHttpPath()).isEqualTo("/users"),
                 () -> assertThat(requestLine.getHttpProtocol()).isEqualTo("HTTP/1.1")
         );
     }
@@ -54,10 +54,10 @@ class RequestLineTest {
         // then
         assertAll(
                 () -> assertThat(requestLine.getHttpMethod()).isEqualTo(HttpMethod.GET),
-                () -> assertThat(requestLine.getHttpPath().getPath()).isEqualTo("/users"),
-                () -> assertThat(requestLine.getHttpPath().getQueryString().getQueryParams()).containsEntry("userId", "javajigi"),
-                () -> assertThat(requestLine.getHttpPath().getQueryString().getQueryParams()).containsEntry("password", "password"),
-                () -> assertThat(requestLine.getHttpPath().getQueryString().getQueryParams()).containsEntry("name", "JaeSung"),
+                () -> assertThat(requestLine.getHttpPath()).isEqualTo("/users"),
+                () -> assertThat(requestLine.findQueryParam("userId")).isEqualTo("javajigi"),
+                () -> assertThat(requestLine.findQueryParam("password")).isEqualTo("password"),
+                () -> assertThat(requestLine.findQueryParam("name")).isEqualTo("JaeSung"),
                 () -> assertThat(requestLine.getHttpProtocol()).isEqualTo("HTTP/1.1")
         );
     }

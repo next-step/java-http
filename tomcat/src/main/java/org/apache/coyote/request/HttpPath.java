@@ -44,4 +44,8 @@ public class HttpPath {
     public QueryString getQueryString() {
         return queryString;
     }
+
+    public String findQueryParam(String key) {
+        return queryString.findQueryParam(key);
+    }
 }
