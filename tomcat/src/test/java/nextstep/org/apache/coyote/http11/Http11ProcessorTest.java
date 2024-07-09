@@ -1,5 +1,6 @@
 package nextstep.org.apache.coyote.http11;
 
+import camp.nextstep.http.domain.HttpSessionManager;
 import org.apache.coyote.http11.Http11Processor;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -15,6 +16,7 @@ import java.nio.file.Files;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.SoftAssertions.assertSoftly;
 import static org.mockito.BDDMockito.given;
 
 class Http11ProcessorTest {
@@ -178,10 +180,10 @@ class Http11ProcessorTest {
                 "Location: /index.html ",
                 "",
                 "");
-
-        assertThat(socket.output())
-                .contains("Set-Cookie: JSESSIONID=")
-                .isEqualTo(expected);
+        assertSoftly(softly -> {
+            softly.assertThat(socket.output()).isEqualTo(expected);
+            softly.assertThat(HttpSessionManager.findSession(mockedUUID.toString())).isNotNull();
+        });
     }
 
     @Test

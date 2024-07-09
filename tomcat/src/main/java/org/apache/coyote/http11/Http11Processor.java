@@ -92,6 +92,9 @@ public class Http11Processor implements Runnable, Processor {
             final User user = userOptional.get();
             if (user.checkPassword(requestBody.get(PASSWORD))) {
                 log.info("user : {}", user);
+                final HttpSession httpSession = httpRequest.getSession(true);
+                httpSession.setAttribute("user", user);
+                httpResponse.setSession(httpSession.getId());
                 httpResponse.sendRedirect("/index.html");
                 return;
             }

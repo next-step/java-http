@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.List;
+import java.util.UUID;
 
 public class HttpRequest {
 
@@ -62,5 +63,16 @@ public class HttpRequest {
 
     public boolean isSessionEmpty() {
         return headers.getCookie("JESSIONID") == null;
+    }
+
+    public HttpSession getSession(final boolean create) {
+        HttpSession session = HttpSessionManager.findSession(headers.getCookie("JESSIONID"));
+
+        if (session == null && create) {
+            session = new HttpSession(UUID.randomUUID().toString());
+            HttpSessionManager.add(session);
+        }
+
+        return session;
     }
 }
