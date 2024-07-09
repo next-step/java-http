@@ -1,8 +1,10 @@
 package org.apache.coyote.http11;
 
 import camp.nextstep.RequestParser;
+import camp.nextstep.UserService;
 import camp.nextstep.exception.UncheckedServletException;
 import camp.nextstep.model.dto.RequestLine;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.coyote.Processor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,10 +18,12 @@ import java.nio.file.Paths;
 public class Http11Processor implements Runnable, Processor {
 
     private static final Logger log = LoggerFactory.getLogger(Http11Processor.class);
+    private final UserService userService;
 
     private final Socket connection;
 
     public Http11Processor(final Socket connection) {
+        this.userService = new UserService();
         this.connection = connection;
     }
 
@@ -35,12 +39,23 @@ public class Http11Processor implements Runnable, Processor {
              final var outputStream = connection.getOutputStream()) {
 
             RequestLine requestLine = RequestParser.parseRequest(inputStream);
-            final URL resourceUrl = getClass().getClassLoader().getResource("static" + requestLine.getPath());
+            if ("/login".equals(requestLine.getPath())) {
+                String account = requestLine.getQueryStringMap().get("account");
+                String password = requestLine.getQueryStringMap().get("password");
+                userService.findUserByAccountAndCheckPassword(account, password);
+            }
+            String filePath = requestLine.getPath();
+            String fileExtension = requestLine.getFileExtension();
+            if (StringUtils.isEmpty(fileExtension)) {
+                fileExtension = "html";
+                filePath = "%s.%s".formatted(filePath, fileExtension);
+            }
+            final URL resourceUrl = getClass().getClassLoader().getResource("static" + filePath);
             final var responseBody = Files.readAllBytes(Paths.get(resourceUrl.getPath()));
 
             final var response = String.join("\r\n",
                     "HTTP/1.1 200 OK ",
-                    "Content-Type: text/%s;charset=utf-8 ".formatted(requestLine.getFileExtension()),
+                    "Content-Type: text/%s;charset=utf-8 ".formatted(fileExtension),
                     "Content-Length: " + responseBody.length + " ",
                     "",
                     new String(responseBody));
