@@ -6,7 +6,15 @@ import org.apache.coyote.handler.*;
 import java.util.List;
 
 public class Http11ProcessorHandlers {
-    private final List<Handler> handlers = List.of(new LoginHandler(), new ResourceHandler(), new DefaultHandler());
+    private final List<Handler> handlers;
+
+    public Http11ProcessorHandlers() {
+        handlers = List.of(new LoginHandler(), new ResourceHandler(), new DefaultHandler());
+    }
+
+    Http11ProcessorHandlers(List<Handler> handlers) {
+        this.handlers = handlers;
+    }
 
     public HttpResponse handle(HttpRequest request) {
         HttpResponse response = null;
