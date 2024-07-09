@@ -5,6 +5,7 @@ import camp.nextstep.http.exception.InvalidHttpHeaderException;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class HttpHeaders {
@@ -16,7 +17,7 @@ public class HttpHeaders {
     private static final String CONTENT_TYPE = "Content-Type";
     private static final long MIN_CONTENT_LENGTH = 1L;
     private static final String CONTENT_LENGTH = "Content-Length";
-    private static final String EMPTY_CONTENT_LENGTH = "0";
+    private static final int EMPTY_CONTENT_LENGTH = 0;
 
     private final Map<String, String> headers;
 
@@ -50,7 +51,7 @@ public class HttpHeaders {
         return ContentType.from(headers.get(CONTENT_TYPE));
     }
 
-    public void setContentLength(final long contentLength) {
+    public void setContentLength(final int contentLength) {
         if (contentLength < MIN_CONTENT_LENGTH) {
             throw new InvalidHttpHeaderException("ContentLength must be grater than 0");
         }
@@ -58,9 +59,13 @@ public class HttpHeaders {
         headers.put(CONTENT_LENGTH, String.valueOf(contentLength));
     }
 
-    public long getContentLength() {
-        final String value = headers.getOrDefault(CONTENT_LENGTH, EMPTY_CONTENT_LENGTH);
-        return Long.parseLong(value);
+    public int getContentLength() {
+        final String value = headers.getOrDefault(CONTENT_LENGTH, String.valueOf(EMPTY_CONTENT_LENGTH));
+        return Integer.parseInt(value);
+    }
+
+    public boolean isContentLengthEmpty() {
+        return getContentLength() == EMPTY_CONTENT_LENGTH;
     }
 
     public String convertToString() {

@@ -25,9 +25,9 @@ class HttpHeadersTest {
     void ContentLength_설정시_정상적으로_저장된다() {
         final HttpHeaders headers = new HttpHeaders();
 
-        headers.setContentLength(1000L);
+        headers.setContentLength(1000);
 
-        assertThat(headers.getContentLength()).isEqualTo(1000L);
+        assertThat(headers.getContentLength()).isEqualTo(1000);
     }
 
     @Test
@@ -38,8 +38,8 @@ class HttpHeadersTest {
     }
 
     @ParameterizedTest
-    @ValueSource(longs = {-1L, 0})
-    void ContentLength_는_0보다_커야한다(final long value) {
+    @ValueSource(ints = {-1, 0})
+    void ContentLength_는_0보다_커야한다(final int value) {
         final HttpHeaders headers = new HttpHeaders();
 
         assertThatThrownBy(() -> headers.setContentLength(value))
@@ -52,7 +52,7 @@ class HttpHeadersTest {
         final HttpHeaders headers = new HttpHeaders();
 
         headers.setContentType(ContentType.HTML);
-        headers.setContentLength(1000L);
+        headers.setContentLength(1000);
 
         assertThat(headers.convertToString()).isEqualTo(
                 String.join(System.lineSeparator(),
