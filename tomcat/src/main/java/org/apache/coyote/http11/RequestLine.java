@@ -1,12 +1,14 @@
 package org.apache.coyote.http11;
 
 
+import java.util.Map;
+
 public class RequestLine {
 
     private final static String DELIMITER = " ";
 
     private String method;
-    private String path;
+    private Path path;
     private String protocol;
     private String version;
 
@@ -16,7 +18,8 @@ public class RequestLine {
             throw new IllegalArgumentException("RequestLine is invalid: " + requestLine);
         }
         this.method = infos[0];
-        this.path = infos[1];
+        this.path = new Path(infos[1]);
+
         var protocols = infos[2].split("/");
         this.protocol = protocols[0];
         this.version = protocols[1];
@@ -31,7 +34,11 @@ public class RequestLine {
     }
 
     public String getPath() {
-        return path;
+        return path.getPath();
+    }
+
+    public Map<String, Object> getQueryParamMap() {
+        return path.getQueryParamMap();
     }
 
     public String getProtocol() {
@@ -41,6 +48,7 @@ public class RequestLine {
     public String getVersion() {
         return version;
     }
+
 
     private static String[] split(String requestLine) {
         if (requestLine == null || requestLine.isEmpty()) {
