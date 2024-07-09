@@ -5,7 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-@DisplayName("RequestParser class는")
+@DisplayName("RequestLine class는")
 class RequestLineTest {
 
     @DisplayName("GET 메서드를 통해 요청을 받았을 때 RequestLine 객체를 반환한다")

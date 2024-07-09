@@ -68,7 +68,7 @@ class Http11ProcessorTest {
 
         // given
         final String httpRequest = String.join("\r\n",
-            "GET /login?account=javajigi&password=password HTTP/1.1 ",
+            "GET /login?account=gugu&password=password HTTP/1.1 ",
             "Host: localhost:8080 ",
             "Connection: keep-alive ",
             "",
