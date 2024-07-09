@@ -8,7 +8,16 @@ import java.nio.file.Files;
 public class ResourceReader {
     private static final String BASE_DIRECTORY = "static";
     private static final String FILE_EXTENSION_SEPARATOR = ".";
-    private static final String HTML_FILE_EXTENSTION = ".html";
+    private static final String HTML_FILE_EXTENSION = ".html";
+
+    public File readFile(final String path) {
+        URL resourceUrl = findResourceUrl(path);
+        if (resourceUrl == null) {
+            throw new IllegalArgumentException("파일을 찾을 수 없습니다.");
+        }
+
+        return new File(resourceUrl.getFile());
+    }
 
     public String read(final String path) {
         URL resourceUrl = findResourceUrl(path);
@@ -26,7 +35,7 @@ public class ResourceReader {
 
     private String ensureFileExtension(final String resource) {
         if (!resource.contains(FILE_EXTENSION_SEPARATOR)) {
-            return HTML_FILE_EXTENSTION;
+            return HTML_FILE_EXTENSION;
         }
 
         return "";
