@@ -18,17 +18,17 @@ public class ResponseResource {
 	private static final Logger log = LoggerFactory.getLogger(ResponseResource.class);
 
 	private final String responseBody;
-	private final String fileName;
+	private final String urlPath;
 
-	private ResponseResource(final String responseBody, String fileName) {
+	private ResponseResource(final String responseBody, String urlPath) {
 		this.responseBody = responseBody;
-		this.fileName = fileName;
+		this.urlPath = urlPath;
 	}
 
 	public static ResponseResource of(final Path path) throws IOException {
 		if(path.urlPath().equals("/")) {
-			String responseBody = createResponseBody("index.html");
-			return new ResponseResource(responseBody, "index.html");
+			String responseBody = createResponseBody("/index.html");
+			return new ResponseResource(responseBody, "/index.html");
 		}
 
 		if (path.urlPath().equals("/login")) {
@@ -36,8 +36,8 @@ public class ResponseResource {
 			String account = queryStrings.getQueryStringValueByKey("account");
 			String password = queryStrings.getQueryStringValueByKey("password");
 			login(account, password);
-			String responseBody = createResponseBody("login.html");
-			return new ResponseResource(responseBody, "login.html");
+			String responseBody = createResponseBody("/login.html");
+			return new ResponseResource(responseBody, "/login.html");
 		}
 
 		String responseBody = createResponseBody(path.urlPath());
@@ -56,12 +56,16 @@ public class ResponseResource {
 	}
 
 	public String parseExtension() {
-		return fileName.substring(fileName.lastIndexOf("."));
+		return urlPath.substring(urlPath.lastIndexOf("."));
 	}
 
 	private static String createResponseBody(String urlPath) throws IOException {
-		URL resource = ResponseResource.class.getClassLoader().getResource("static/" + urlPath);
+		URL resource = ResponseResource.class.getClassLoader().getResource("static" + urlPath);
 		String responseBody = new String(Files.readAllBytes(new File(resource.getFile()).toPath()));
 		return responseBody;
+	}
+
+	public String getUrlPath() {
+		return urlPath;
 	}
 }

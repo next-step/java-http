@@ -42,9 +42,9 @@ public class RequestLineParser {
         String path = tokens[1];
         if (hasQuestionMark(tokens)) {
             String[] pathAndQueryString = path.split(PATH_AND_QUERY_STRING_DELIMITER_CHARACTER);
-            String requestPath = pathAndQueryString[0];
+            String urlPath = pathAndQueryString[0];
             QueryStrings queryStrings = parseQueryStrings(pathAndQueryString[1].split(QUERY_STRING_DELIMITER_CHARACTER));
-            return new Path(requestPath, queryStrings);
+            return new Path(urlPath, queryStrings);
         }
         return new Path(path, QueryStrings.emptyQueryStrings());
     }
