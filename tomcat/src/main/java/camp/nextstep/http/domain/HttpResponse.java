@@ -48,7 +48,7 @@ public class HttpResponse {
     }
 
     public void sendRedirect(final String location) throws IOException {
-        headers.add("Location", location);
+        headers.setLocation(location);
         final var response = String.join(System.lineSeparator(),
                 StatusLine.createFound().convertToString(),
                 headers.convertToString(),

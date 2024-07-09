@@ -18,6 +18,7 @@ public class HttpHeaders {
     private static final long MIN_CONTENT_LENGTH = 1L;
     private static final String CONTENT_LENGTH = "Content-Length";
     private static final int EMPTY_CONTENT_LENGTH = 0;
+    public static final String LOCATION = "Location";
 
     private final Map<String, String> headers;
 
@@ -66,6 +67,10 @@ public class HttpHeaders {
 
     public boolean isContentLengthEmpty() {
         return getContentLength() == EMPTY_CONTENT_LENGTH;
+    }
+
+    public void setLocation(final String location) {
+        headers.put(LOCATION, location);
     }
 
     public String convertToString() {
