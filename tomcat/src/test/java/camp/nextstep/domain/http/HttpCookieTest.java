@@ -45,4 +45,10 @@ class HttpCookieTest {
         String actual = new HttpCookie("JSESSIONID=656cef62-e3c4-40bc-a8df-94732920ed46").getSessionId();
         assertThat(actual).isEqualTo("656cef62-e3c4-40bc-a8df-94732920ed46");
     }
+
+    @Test
+    void 헤더포멧에_맞게_변환하여_반환한다() {
+        String actual = new HttpCookie("name=jinyoung; password=1234").getCookieHeaderFormat();
+        assertThat(actual).isEqualTo("name=jinyoung; password=1234");
+    }
 }
