@@ -13,4 +13,12 @@ class SessionManagerTest {
         Optional<Session> actual = SessionManager.findSession("empty");
         assertThat(actual).isEmpty();
     }
+
+    @Test
+    void session이_있는_경우_반환한다() {
+        SessionManager.add(new Session("key"));
+        Session actual = SessionManager.findSession("key")
+                .get();
+        assertThat(actual).isEqualTo(new Session("key"));
+    }
 }

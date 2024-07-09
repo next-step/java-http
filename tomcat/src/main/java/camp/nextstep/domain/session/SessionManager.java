@@ -15,4 +15,9 @@ public class SessionManager {
     public static Optional<Session> findSession(String id) {
         return Optional.ofNullable(SESSIONS.get(id));
     }
+
+
+    public static void add(Session session) {
+        SESSIONS.put(session.getId(), session);
+    }
 }
