@@ -99,26 +99,28 @@ public class Http11Processor implements Runnable, Processor {
     }
 
     private HttpResponse handleLoginPath(final HttpRequest httpRequest) {
-        final var queryString = httpRequest.getQueryString();
-        if (queryString.isEmpty()) {
+        if (httpRequest.isGetMethod()) {
             return HttpResponse.ok(
                     httpRequest.getHttpProtocol(),
                     parseContentType(httpRequest),
                     parseResponseBody(httpRequest)
             );
         }
-        final var account = queryString.get(LOGIN_ACCOUNT_KEY);
-        final var password = queryString.get(LOGIN_PASSWORD_KEY);
-        User user = InMemoryUserRepository.findByAccount(account)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 account입니다."));
-        if (user.checkPassword(password)) {
-            return HttpResponse.found(httpRequest.getHttpProtocol(), "/index.html");
+        if (httpRequest.isPostMethod()) {
+            final var requestBody = httpRequest.getHttpRequestBody();
+            final var account = requestBody.get(LOGIN_ACCOUNT_KEY);
+            final var password = requestBody.get(LOGIN_PASSWORD_KEY);
+            final var user = InMemoryUserRepository.findByAccount(account)
+                    .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 account입니다."));
+            if (user.checkPassword(password)) {
+                return HttpResponse.found(httpRequest.getHttpProtocol(), "/index.html");
+            }
+            return HttpResponse.found(httpRequest.getHttpProtocol(), "/401.html");
         }
-        return HttpResponse.found(httpRequest.getHttpProtocol(), "/401.html");
+        throw new RuntimeException();
     }
 
     private HttpResponse handleRegisterPath(final HttpRequest httpRequest) {
-        System.out.println("dd");
         if (httpRequest.isGetMethod()) {
             return HttpResponse.ok(
                     httpRequest.getHttpProtocol(),

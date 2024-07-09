@@ -122,14 +122,44 @@ class Http11ProcessorTest {
     }
 
     @Test
-    void login_success() {
+    void login_get() throws IOException {
         // given
         final String httpRequest = String.join("\r\n",
-                "GET /login?account=gugu&password=password HTTP/1.1 ",
+                "GET /login HTTP/1.1 ",
                 "Host: localhost:8080 ",
                 "Connection: keep-alive ",
                 "",
                 "");
+
+        final var socket = new StubSocket(httpRequest);
+        final Http11Processor processor = new Http11Processor(socket);
+
+        // when
+        processor.process(socket);
+
+        // then
+        final URL resource = getClass().getClassLoader().getResource("static/login.html");
+        var expected = String.join("\r\n",
+                "HTTP/1.1 200 OK ",
+                "Content-Type: text/html;charset=utf-8 ",
+                "Content-Length: 3797 ", // 운영체제 환경에 따라 다른 값이 나올 수 있음. 자신의 개발 환경에 맞춰 수정할 것.
+                "",
+                new String(Files.readAllBytes(new File(resource.getFile()).toPath())));
+
+        assertThat(socket.output()).isEqualTo(expected);
+    }
+
+    @Test
+    void login_post_success() {
+        // given
+        final String httpRequest = String.join("\r\n",
+                "POST /login HTTP/1.1 ",
+                "Connection: keep-alive",
+                "Content-Length: 30",
+                "Content-Type: application/x-www-form-urlencoded",
+                "Accept: */*",
+                "",
+                "account=gugu&password=password");
 
         final var socket = new StubSocket(httpRequest);
         final Http11Processor processor = new Http11Processor(socket);
@@ -146,14 +176,16 @@ class Http11ProcessorTest {
     }
 
     @Test
-    void login_fail() {
+    void login_post_fail() {
         // given
         final String httpRequest = String.join("\r\n",
-                "GET /login?account=gugu&password=error HTTP/1.1 ",
-                "Host: localhost:8080 ",
-                "Connection: keep-alive ",
+                "POST /login HTTP/1.1 ",
+                "Connection: keep-alive",
+                "Content-Length: 27",
+                "Content-Type: application/x-www-form-urlencoded",
+                "Accept: */*",
                 "",
-                "");
+                "account=gugu&password=error");
 
         final var socket = new StubSocket(httpRequest);
         final Http11Processor processor = new Http11Processor(socket);
