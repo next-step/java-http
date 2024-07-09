@@ -28,7 +28,11 @@ public class HttpCookie {
     }
 
     public HttpCookie(String cookies) {
-        this.cookies = Arrays.stream(cookies.split(HTTP_COOKIES_FORMAT_SPLIT_REGEX))
+        this.cookies = parseCookies(cookies);
+    }
+
+    private Map<String, String> parseCookies(String cookies) {
+        return Arrays.stream(cookies.split(HTTP_COOKIES_FORMAT_SPLIT_REGEX))
                 .map(this::parseCookie)
                 .collect(Collectors.toMap(
                         Map.Entry::getKey,
