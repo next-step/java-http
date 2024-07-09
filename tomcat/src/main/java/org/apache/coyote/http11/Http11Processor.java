@@ -75,50 +75,66 @@ public class Http11Processor implements Runnable, Processor {
 
     private void processLogin(final HttpRequest httpRequest, final HttpResponse httpResponse) throws IOException {
         if (httpRequest.isGetMethod()) {
-            if (httpRequest.getSession(false) != null) {
-                httpResponse.sendRedirect("/index.html");
-                return;
-            }
-
-            httpResponse.setContentType(ContentType.HTML);
-            httpResponse.forward("/login.html");
+            processLoginGet(httpRequest, httpResponse);
             return;
         }
 
         if (httpRequest.isPostMethod()) {
-            final RequestBody requestBody = httpRequest.getRequestBody();
-            final Optional<User> userOptional = InMemoryUserRepository.findByAccount(requestBody.get(ACCOUNT));
-
-            if (userOptional.isEmpty()) {
-                httpResponse.sendRedirect("/401.html");
-                return;
-            }
-
-            final User user = userOptional.get();
-            if (user.checkPassword(requestBody.get(PASSWORD))) {
-                log.info("user : {}", user);
-                final HttpSession httpSession = httpRequest.getSession(true);
-                httpSession.setAttribute("user", user);
-                httpResponse.setSession(httpSession.getId());
-                httpResponse.sendRedirect("/index.html");
-                return;
-            }
-            httpResponse.sendRedirect("/401.html");
+            processLoginPost(httpRequest, httpResponse);
         }
+    }
+
+    private void processLoginGet(final HttpRequest httpRequest, final HttpResponse httpResponse) throws IOException {
+        if (httpRequest.getSession(false) != null) {
+            httpResponse.sendRedirect("/index.html");
+            return;
+        }
+
+        httpResponse.setContentType(ContentType.HTML);
+        httpResponse.forward("/login.html");
+    }
+
+    private void processLoginPost(final HttpRequest httpRequest, final HttpResponse httpResponse) throws IOException {
+        final RequestBody requestBody = httpRequest.getRequestBody();
+        final Optional<User> userOptional = InMemoryUserRepository.findByAccount(requestBody.get(ACCOUNT));
+
+        if (userOptional.isEmpty()) {
+            httpResponse.sendRedirect("/401.html");
+            return;
+        }
+
+        final User user = userOptional.get();
+        if (user.checkPassword(requestBody.get(PASSWORD))) {
+            log.info("user : {}", user);
+            final HttpSession httpSession = httpRequest.getSession(true);
+            httpSession.setAttribute("user", user);
+            httpResponse.setSession(httpSession.getId());
+            httpResponse.sendRedirect("/index.html");
+            return;
+        }
+        httpResponse.sendRedirect("/401.html");
     }
 
     private void processRegister(final HttpRequest httpRequest, final HttpResponse httpResponse) throws IOException {
         if (httpRequest.isGetMethod()) {
-            httpResponse.setContentType(ContentType.HTML);
-            httpResponse.forward("/register.html");
+            processRegisterGet(httpResponse);
             return;
         }
         if (httpRequest.isPostMethod()) {
-            final RequestBody requestBody = httpRequest.getRequestBody();
-            InMemoryUserRepository.save(
-                    new User(requestBody.get(ACCOUNT), requestBody.get(PASSWORD), requestBody.get(EMAIL))
-            );
-            httpResponse.sendRedirect("/index.html");
+            processRegisterPost(httpRequest, httpResponse);
         }
+    }
+
+    private void processRegisterGet(final HttpResponse httpResponse) throws IOException {
+        httpResponse.setContentType(ContentType.HTML);
+        httpResponse.forward("/register.html");
+    }
+
+    private void processRegisterPost(final HttpRequest httpRequest, final HttpResponse httpResponse) throws IOException {
+        final RequestBody requestBody = httpRequest.getRequestBody();
+        InMemoryUserRepository.save(
+                new User(requestBody.get(ACCOUNT), requestBody.get(PASSWORD), requestBody.get(EMAIL))
+        );
+        httpResponse.sendRedirect("/index.html");
     }
 }
