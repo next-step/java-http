@@ -10,6 +10,10 @@ public class QueryParams {
         this.queryParams = Collections.unmodifiableMap(queryParams);
     }
 
+    public static QueryParams emtpy() {
+        return new QueryParams(Collections.emptyMap());
+    }
+
     public String valueBy(final String key) {
         return queryParams.get(key);
     }
