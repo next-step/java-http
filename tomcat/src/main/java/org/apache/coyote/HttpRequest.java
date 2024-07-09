@@ -9,7 +9,7 @@ import java.util.Optional;
  * https://developer.mozilla.org/en-US/docs/Web/HTTP/Messages#http_requests
  */
 public class HttpRequest {
-    public HttpRequestLine requestLine;
+    private HttpRequestLine requestLine;
     // TODO Headers, Body 추가
 
     public HttpRequest(final List<String> httpMessageLines) {
