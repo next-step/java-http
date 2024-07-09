@@ -2,12 +2,12 @@ package org.apache.coyote.http11;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Predicate;
 
 public class HttpRequest {
         private static final int REQUEST_LINE_INDEX = 0;
         private static final int HEADER_START_INDEX = 1;
-        private static final String HEADER_KEY_VALUE_SEPARATOR = ":";
 
         private final RequestLine requestLine;
         private final HttpHeaders httpHeaders;
@@ -29,5 +29,9 @@ public class HttpRequest {
 
     public String getPath() {
         return requestLine.getPath();
+    }
+
+    public Map<String, String> getQueryParamMap() {
+        return requestLine.getQueryParamMap();
     }
 }
