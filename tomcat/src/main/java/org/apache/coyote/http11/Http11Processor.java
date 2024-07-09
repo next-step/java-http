@@ -22,9 +22,13 @@ public class Http11Processor implements Runnable, Processor {
     private static final String ROOT_PATH = "/";
     private static final String LOGIN_PATH = "/login";
     private static final String REGISTER_PATH = "/register";
+    private static final String ROOT_BODY = "Hello world!";
+
     private static final String LOGIN_ACCOUNT_KEY = "account";
     private static final String LOGIN_PASSWORD_KEY = "password";
-    private static final String ROOT_BODY = "Hello world!";
+    private static final String REGISTER_ACCOUNT_KEY = "account";
+    private static final String REGISTER_PASSWORD_KEY = "password";
+    private static final String REGISTER_EMAIL_KEY = "email";
 
     private final Socket connection;
 
@@ -114,12 +118,23 @@ public class Http11Processor implements Runnable, Processor {
     }
 
     private HttpResponse handleRegisterPath(final HttpRequest httpRequest) {
+        System.out.println("dd");
         if (httpRequest.isGetMethod()) {
             return HttpResponse.ok(
                     httpRequest.getHttpProtocol(),
                     parseContentType(httpRequest),
                     parseResponseBody(httpRequest)
             );
+        }
+        if (httpRequest.isPostMethod()) {
+            final var requestBody = httpRequest.getHttpRequestBody();
+            final var saveRequestUer = new User(
+                    requestBody.get(REGISTER_ACCOUNT_KEY),
+                    requestBody.get(REGISTER_PASSWORD_KEY),
+                    requestBody.get(REGISTER_EMAIL_KEY)
+            );
+            InMemoryUserRepository.save(saveRequestUer);
+            return HttpResponse.found(httpRequest.getHttpProtocol(), "/login.html");
         }
         throw new RuntimeException();
     }

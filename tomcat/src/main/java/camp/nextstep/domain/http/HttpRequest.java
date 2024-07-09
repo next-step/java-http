@@ -6,12 +6,12 @@ public class HttpRequest {
 
     private final RequestLine requestLine;
     private final HttpRequestHeaders httpRequestHeaders;
-    private final HttpRequestBody requestBody;
+    private final HttpRequestBody httpRequestBody;
 
-    public HttpRequest(RequestLine requestLine, HttpRequestHeaders httpRequestHeaders, HttpRequestBody requestBody) {
+    public HttpRequest(RequestLine requestLine, HttpRequestHeaders httpRequestHeaders, HttpRequestBody httpRequestBody) {
         this.requestLine = requestLine;
         this.httpRequestHeaders = httpRequestHeaders;
-        this.requestBody = requestBody;
+        this.httpRequestBody = httpRequestBody;
     }
 
     public boolean isGetMethod() {
@@ -36,5 +36,9 @@ public class HttpRequest {
 
     public Map<String, String> getQueryString() {
         return requestLine.getQueryString();
+    }
+
+    public Map<String, String> getHttpRequestBody() {
+        return httpRequestBody.getValues();
     }
 }

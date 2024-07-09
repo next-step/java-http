@@ -1,5 +1,6 @@
 package nextstep.org.apache.coyote.http11;
 
+import camp.nextstep.db.InMemoryUserRepository;
 import org.apache.coyote.http11.Http11Processor;
 import org.junit.jupiter.api.Test;
 import support.StubSocket;
@@ -10,6 +11,7 @@ import java.net.URL;
 import java.nio.file.Files;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 class Http11ProcessorTest {
 
@@ -193,5 +195,35 @@ class Http11ProcessorTest {
                 new String(Files.readAllBytes(new File(resource.getFile()).toPath())));
 
         assertThat(socket.output()).isEqualTo(expected);
+    }
+
+    @Test
+    void register_post() {
+        // given
+        final String httpRequest = String.join("\r\n",
+                "POST /register HTTP/1.1 ",
+                "Host: localhost:8080",
+                "Connection: keep-alive",
+                "Content-Length: 80",
+                "Content-Type: application/x-www-form-urlencoded",
+                "Accept: */*",
+                "",
+                "account=jinyoung&password=password&email=jinyoungchoi95%40woowahan.com");
+
+        final var socket = new StubSocket(httpRequest);
+        final Http11Processor processor = new Http11Processor(socket);
+
+        // when
+        processor.process(socket);
+
+        // then
+        var expected = String.join("\r\n",
+                "HTTP/1.1 302 Found ",
+                "Location: /login.html ");
+
+        assertAll(
+                () -> assertThat(socket.output()).isEqualTo(expected),
+                () -> assertThat(InMemoryUserRepository.findByAccount("jinyoung")).isNotNull()
+        );
     }
 }
