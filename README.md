@@ -75,3 +75,48 @@ User-Agent: Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1)
 
 ### 3. Query String 파싱
 - /login을 요청했을 때 query string을 파싱하여 로그를 남긴다.
+
+## 3단계 - 로그인 구현하기
+### 1. HTTP Status Code 302
+- HttpResponse
+  - status코드를 가진다(200 ok, 302 ok)
+    - found의 경우 location을 받아 생성한다.
+    - ok의 경우 contentType을 받아 생성한다.
+  - response header를 가진다
+  - response body를 가진다
+    - response body의 content length를 header에 저장한다
+    - body가 비어있을 경우 content length와 content type이 없이 반환된다.
+  - response format에 맞추어 응답값을 반환한다
+- /login에서 gugu/password로 로그인에 성공하면 302로 반환하고 /index.html로 리다이랙할 수 있도록 전달한다.
+```
+HTTP/1.1 302 Found
+Location: /index.html
+```
+- 로그인에 성공할 경우 `/index.html`로 리다이랙하고 실패하는 경우 `/401.html`로 리다이랙하도록 한다.
+
+### 2. POST 방식으로 회원가입
+- `http://localhost:8080/register` 호출 시
+  - GET 요청인 경우 회원가입 페이지를 보여준다.
+  - POST 요청인 경우 회원가입을 한 후 `/index.html`로 리다이랙한다.
+- 로그인 페이지도 동일하게 버튼 클릭 시 POST 방식으로 변경한다.
+
+- HttpRequest
+  - RequestLine
+  - HttpRequestHeader
+    - List값을 읽어 포멧에 맞게 파싱하여 생성할 수 있다.
+    - Content-Length가 존재하는지 확인하고 가져올 수 있다.
+  - HttpRequestBody
+- HttpRequestBody
+  - `Content-Type`이 `application/x-www-form-urlencoded`인 경우 &로 구분된 값을 파싱하여 저장한다.
+
+### 3. Cookie에 JSESSIONID 값 저장하기
+- 쿠키 헤더에 있는 값을 읽어 저장한다.
+  - session id를 추출한다 (없으면 예외가 발생한다.)
+- 쿠키 포멧에 맞지 않게 값이 입력되면 예외가 발생한다.
+- response header에 cookie를 저장할 수 있다.
+
+### 4. Session 구현하기
+- 로그인에 성공하면 session을 쿠키에 넣어 반환한다.
+- 이미 로그인한 상태에서 `/login`에 들어오는 경우 index.html로 리다이랙한다.
+  - cookie에 저장된 session이 있는 session인지 확인할 수 있다.
+- 세션을 관리할 수 있다.

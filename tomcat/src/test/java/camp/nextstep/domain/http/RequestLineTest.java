@@ -32,10 +32,10 @@ class RequestLineTest {
 
     @Test
     void RequestLine에서_HttpProtocol을_파싱한다() {
-        RequestLine actual = new RequestLine("GET /docs/index.html HTTP/1.1");
+        HttpProtocol actual = new RequestLine("GET /docs/index.html HTTP/1.1").getHttpProtocol();
         assertAll(
                 () -> assertThat(actual.getProtocol()).isEqualTo("HTTP"),
-                () -> assertThat(actual.getProtocolVersion()).isEqualTo("1.1")
+                () -> assertThat(actual.getVersion()).isEqualTo("1.1")
         );
     }
 

@@ -16,8 +16,15 @@ public class HttpPath {
 
     public HttpPath(String httpPath) {
         String[] splitHttpPath = httpPath.split(HTTP_PATH_FORMAT_SPLIT_REGEX);
+        validatePathFormat(httpPath, splitHttpPath);
         this.path = splitHttpPath[PATH_INDEX];
         this.queryString = parseQueryString(httpPath, splitHttpPath);
+    }
+
+    private void validatePathFormat(String httpPath, String[] splitHttpPath) {
+        if (splitHttpPath.length != HTTP_PATH_EMPTY_QUERY_STRING_FORMAT_LENGTH && splitHttpPath.length != HTTP_PATH_EXIST_QUERY_STRING_FORMAT_LENGTH) {
+            throw new IllegalArgumentException("HttpPath값이 정상적으로 입력되지 않았습니다 - " + httpPath);
+        }
     }
 
     private QueryString parseQueryString(String httpPath, String[] splitHttpPath) {
