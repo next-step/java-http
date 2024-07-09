@@ -104,11 +104,7 @@ public class Http11Processor implements Runnable, Processor {
 
     private HttpResponse handleLoginPath(final HttpRequest httpRequest) {
         if (httpRequest.isGetMethod()) {
-            return HttpResponse.ok(
-                    httpRequest.getHttpProtocol(),
-                    parseContentType(httpRequest),
-                    parseResponseBody(httpRequest)
-            );
+            return handlePath(httpRequest);
         }
         if (httpRequest.isPostMethod()) {
             return handleLoginPostRequest(httpRequest);
@@ -130,11 +126,7 @@ public class Http11Processor implements Runnable, Processor {
 
     private HttpResponse handleRegisterPath(final HttpRequest httpRequest) {
         if (httpRequest.isGetMethod()) {
-            return HttpResponse.ok(
-                    httpRequest.getHttpProtocol(),
-                    parseContentType(httpRequest),
-                    parseResponseBody(httpRequest)
-            );
+            return handlePath(httpRequest);
         }
         if (httpRequest.isPostMethod()) {
             return handleRegisterPostRequest(httpRequest);
