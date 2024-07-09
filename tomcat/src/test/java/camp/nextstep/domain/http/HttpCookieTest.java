@@ -1,5 +1,6 @@
 package camp.nextstep.domain.http;
 
+import camp.nextstep.domain.session.Session;
 import org.junit.jupiter.api.Test;
 
 import java.util.Map;
@@ -31,6 +32,13 @@ class HttpCookieTest {
     void 여러_cookies를_파싱한다() {
         HttpCookie actual = new HttpCookie("name=jinyoung; password=1234");
         assertThat(actual.getCookies()).isEqualTo(Map.of("name", "jinyoung", "password", "1234"));
+    }
+
+    @Test
+    void session_cookie를_생성한다() {
+        Session session = Session.createNewSession();
+        HttpCookie actual = HttpCookie.sessionCookie(session);
+        assertThat(actual.getCookies()).contains(Map.entry("JSESSIONID", session.getId()));
     }
 
     @Test

@@ -49,7 +49,6 @@ public class HttpCookie {
         );
     }
 
-    // TODO test
     public static HttpCookie sessionCookie(Session session) {
         return new HttpCookie(Map.of(SESSION_COOKIE_KEY, session.getId()));
     }
