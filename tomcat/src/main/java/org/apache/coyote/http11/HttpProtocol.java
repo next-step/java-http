@@ -12,8 +12,9 @@ public class HttpProtocol {
     }
 
     public static HttpProtocol from(final String version) {
-        validate(version);
-        return new HttpProtocol(version);
+        String trimVersion = version.trim();
+        validate(trimVersion);
+        return new HttpProtocol(trimVersion);
     }
 
     private static void validate(final String version) {

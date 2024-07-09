@@ -13,6 +13,6 @@ public class HttpHeader {
 
     public static HttpHeader from(final String httpHeader) {
         String[] keyValue = httpHeader.split(HEADER_KEY_VALUE_SEPARATOR, 2);
-        return new HttpHeader(keyValue[0], keyValue[1]);
+        return new HttpHeader(keyValue[0].trim(), keyValue[1].trim());
     }
 }
