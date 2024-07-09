@@ -1,6 +1,6 @@
 package org.apache.coyote.http11.request.handler;
 
-import org.apache.coyote.http11.model.HttpRequestHeader;
+import org.apache.coyote.http11.model.HttpRequest;
 import org.apache.coyote.http11.model.RequestLine;
 import org.apache.coyote.http11.model.constant.HttpMethod;
 
@@ -12,8 +12,9 @@ public class RegisterHandler extends AbstractRequestHandler {
     private static final String OTHER_METHOD_REDIRECT_PATH = "/404.html";
 
     @Override
-    public String handle(final HttpRequestHeader requestHeader) throws IOException {
-        final RequestLine requestLine = requestHeader.requestLine();
+    public String handle(final HttpRequest request) throws IOException {
+        final RequestLine requestLine = request.httpRequestHeader()
+                .requestLine();
         final HttpMethod httpMethod = requestLine.httpMethod();
 
         if (httpMethod.isGetMethod()) {

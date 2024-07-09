@@ -2,7 +2,7 @@ package org.apache.coyote.http11;
 
 import camp.nextstep.exception.UncheckedServletException;
 import org.apache.coyote.Processor;
-import org.apache.coyote.http11.model.HttpRequestHeader;
+import org.apache.coyote.http11.model.HttpRequest;
 import org.apache.coyote.http11.model.RequestLine;
 import org.apache.coyote.http11.request.RequestHandlerMapper;
 import org.apache.coyote.http11.request.handler.RequestHandler;
@@ -41,13 +41,14 @@ public class Http11Processor implements Runnable, Processor {
                     .takeWhile(line -> !line.isEmpty())
                     .toList();
 
-            final HttpRequestHeader httpRequestHeader = HttpRequestHeaderParser.getInstance()
+            final HttpRequest httpRequest = HttpRequestParser.getInstance()
                     .parse(requestLines);
-            final RequestLine requestLine = httpRequestHeader.requestLine();
+            final RequestLine requestLine = httpRequest.httpRequestHeader()
+                    .requestLine();
 
             final RequestHandler handler = RequestHandlerMapper.getInstance()
                     .getHandler(requestLine.url());
-            final String response = handler.handle(httpRequestHeader);
+            final String response = handler.handle(httpRequest);
 
             outputStream.write(response.getBytes());
             outputStream.flush();

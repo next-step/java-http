@@ -2,7 +2,7 @@ package org.apache.coyote.http11.request.handler;
 
 import camp.nextstep.db.InMemoryUserRepository;
 import camp.nextstep.model.User;
-import org.apache.coyote.http11.model.HttpRequestHeader;
+import org.apache.coyote.http11.model.HttpRequest;
 import org.apache.coyote.http11.model.QueryParams;
 import org.apache.coyote.http11.model.RequestLine;
 
@@ -17,8 +17,9 @@ public class LoginHandler extends AbstractRequestHandler {
     private static final String FAILED_REDIRECT_PATH = "/401.html";
 
     @Override
-    public String handle(final HttpRequestHeader requestHeader) throws IOException {
-        final RequestLine requestLine = requestHeader.requestLine();
+    public String handle(final HttpRequest request) throws IOException {
+        final RequestLine requestLine = request.httpRequestHeader()
+                .requestLine();
         final QueryParams queryParams = requestLine.queryParams();
 
         final String body = buildBodyFromReadFile(requestLine.url());

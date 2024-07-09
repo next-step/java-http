@@ -1,7 +1,7 @@
 package org.apache.coyote.http11.request.handler;
 
-import org.apache.coyote.http11.HttpRequestHeaderParser;
-import org.apache.coyote.http11.model.HttpRequestHeader;
+import org.apache.coyote.http11.HttpRequestParser;
+import org.apache.coyote.http11.model.HttpRequest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -23,7 +23,7 @@ class NotFoundHandlerTest {
                 "",
                 "");
 
-        final HttpRequestHeader httpRequestHeader = HttpRequestHeaderParser.getInstance()
+        final HttpRequest httpRequest = HttpRequestParser.getInstance()
                 .parse(request);
         final RequestHandler notFoundHandler = new NotFoundHandler();
         var expected = String.join("\r\n",
@@ -33,7 +33,7 @@ class NotFoundHandlerTest {
                 "",
                 "Hello world!");
         // when
-        final String response = notFoundHandler.handle(httpRequestHeader);
+        final String response = notFoundHandler.handle(httpRequest);
 
         // then
         assertThat(response).isEqualTo(expected);

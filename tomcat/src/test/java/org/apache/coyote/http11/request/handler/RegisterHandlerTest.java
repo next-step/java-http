@@ -1,7 +1,7 @@
 package org.apache.coyote.http11.request.handler;
 
-import org.apache.coyote.http11.HttpRequestHeaderParser;
-import org.apache.coyote.http11.model.HttpRequestHeader;
+import org.apache.coyote.http11.HttpRequestParser;
+import org.apache.coyote.http11.model.HttpRequest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -26,7 +26,7 @@ class RegisterHandlerTest {
                 "",
                 "");
 
-        final HttpRequestHeader httpRequestHeader = HttpRequestHeaderParser.getInstance()
+        final HttpRequest httpRequest = HttpRequestParser.getInstance()
                 .parse(request);
 
         final RequestHandler registerHandler = new RegisterHandler();
@@ -39,7 +39,7 @@ class RegisterHandlerTest {
                 new String(Files.readAllBytes(new File(resource.getFile()).toPath())));
 
         // when
-        final String response = registerHandler.handle(httpRequestHeader);
+        final String response = registerHandler.handle(httpRequest);
 
         // then
         assertThat(response).isEqualTo(expected);
@@ -53,10 +53,13 @@ class RegisterHandlerTest {
                 "POST /register.html HTTP/1.1 ",
                 "Host: localhost:8080 ",
                 "Connection: keep-alive ",
+                "Content-Length: 80 ",
+                "Content-Type: application/x-www-form-urlencoded ",
+                "Accept: */* ",
                 "",
-                "");
+                "account=gugu&password=password&email=hkkang%40woowahan.com");
 
-        final HttpRequestHeader httpRequestHeader = HttpRequestHeaderParser.getInstance()
+        final HttpRequest httpRequest = HttpRequestParser.getInstance()
                 .parse(request);
 
         final RequestHandler registerHandler = new RegisterHandler();
@@ -67,7 +70,7 @@ class RegisterHandlerTest {
                 "");
 
         // when
-        final String response = registerHandler.handle(httpRequestHeader);
+        final String response = registerHandler.handle(httpRequest);
 
         // then
         assertThat(response).isEqualTo(expected);
@@ -84,7 +87,7 @@ class RegisterHandlerTest {
                 "",
                 "");
 
-        final HttpRequestHeader httpRequestHeader = HttpRequestHeaderParser.getInstance()
+        final HttpRequest httpRequest = HttpRequestParser.getInstance()
                 .parse(request);
 
         final RequestHandler registerHandler = new RegisterHandler();
@@ -95,7 +98,7 @@ class RegisterHandlerTest {
                 "");
 
         // when
-        final String response = registerHandler.handle(httpRequestHeader);
+        final String response = registerHandler.handle(httpRequest);
 
         // then
         assertThat(response).isEqualTo(expected);

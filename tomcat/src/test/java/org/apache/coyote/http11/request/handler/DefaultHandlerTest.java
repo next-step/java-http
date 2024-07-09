@@ -1,7 +1,7 @@
 package org.apache.coyote.http11.request.handler;
 
-import org.apache.coyote.http11.HttpRequestHeaderParser;
-import org.apache.coyote.http11.model.HttpRequestHeader;
+import org.apache.coyote.http11.HttpRequestParser;
+import org.apache.coyote.http11.model.HttpRequest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -14,7 +14,7 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class DefaultHandlerTest {
-    
+
     @DisplayName("별다른 로직이 없는 디폴트 핸들러 요청 테스트")
     @Test
     void handleIndexRequestTest() throws IOException {
@@ -26,7 +26,7 @@ class DefaultHandlerTest {
                 "",
                 "");
 
-        final HttpRequestHeader httpRequestHeader = HttpRequestHeaderParser.getInstance()
+        final HttpRequest httpRequest = HttpRequestParser.getInstance()
                 .parse(request);
         final DefaultHandler defaultHandler = new DefaultHandler();
         final URL resource = getClass().getClassLoader().getResource("static/index.html");
@@ -38,7 +38,7 @@ class DefaultHandlerTest {
                 new String(Files.readAllBytes(new File(resource.getFile()).toPath())));
 
         // when
-        final String response = defaultHandler.handle(httpRequestHeader);
+        final String response = defaultHandler.handle(httpRequest);
 
         // then
         assertThat(response).isEqualTo(expected);

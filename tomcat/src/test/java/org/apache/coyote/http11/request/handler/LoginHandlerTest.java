@@ -1,7 +1,7 @@
 package org.apache.coyote.http11.request.handler;
 
-import org.apache.coyote.http11.HttpRequestHeaderParser;
-import org.apache.coyote.http11.model.HttpRequestHeader;
+import org.apache.coyote.http11.HttpRequestParser;
+import org.apache.coyote.http11.model.HttpRequest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -26,7 +26,7 @@ class LoginHandlerTest {
                 "",
                 "");
 
-        final HttpRequestHeader httpRequestHeader = HttpRequestHeaderParser.getInstance()
+        final HttpRequest httpRequest = HttpRequestParser.getInstance()
                 .parse(request);
         final RequestHandler loginHandler = new LoginHandler();
         final URL resource = getClass().getClassLoader().getResource("static/login.html");
@@ -38,7 +38,7 @@ class LoginHandlerTest {
                 new String(Files.readAllBytes(new File(resource.getFile()).toPath())));
 
         // when
-        final String response = loginHandler.handle(httpRequestHeader);
+        final String response = loginHandler.handle(httpRequest);
 
         // then
         assertThat(response).isEqualTo(expected);
@@ -55,7 +55,7 @@ class LoginHandlerTest {
                 "",
                 "");
 
-        final HttpRequestHeader httpRequestHeader = HttpRequestHeaderParser.getInstance()
+        final HttpRequest httpRequest = HttpRequestParser.getInstance()
                 .parse(request);
         final RequestHandler loginHandler = new LoginHandler();
         var expected = String.join("\r\n",
@@ -65,7 +65,7 @@ class LoginHandlerTest {
                 "");
 
         // when
-        final String response = loginHandler.handle(httpRequestHeader);
+        final String response = loginHandler.handle(httpRequest);
 
         // then
         assertThat(response).isEqualTo(expected);
@@ -82,7 +82,7 @@ class LoginHandlerTest {
                 "",
                 "");
 
-        final HttpRequestHeader httpRequestHeader = HttpRequestHeaderParser.getInstance()
+        final HttpRequest httpRequest = HttpRequestParser.getInstance()
                 .parse(request);
         final RequestHandler loginHandler = new LoginHandler();
         var expected = String.join("\r\n",
@@ -92,7 +92,7 @@ class LoginHandlerTest {
                 "");
 
         // when
-        final String response = loginHandler.handle(httpRequestHeader);
+        final String response = loginHandler.handle(httpRequest);
 
         // then
         assertThat(response).isEqualTo(expected);
