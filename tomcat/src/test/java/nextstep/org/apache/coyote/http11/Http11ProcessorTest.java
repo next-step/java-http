@@ -128,7 +128,7 @@ class Http11ProcessorTest {
     }
 
     @Test
-    void process_login() throws IOException {
+    void process_login() {
         // given
         final String httpRequest = String.format(HTTP_GET_REQUEST_TEMPLATE, "/login?account=gugu&password=password");
         final var socket = new StubSocket(httpRequest);
@@ -138,13 +138,31 @@ class Http11ProcessorTest {
         processor.process(socket);
 
         // then
-        final URL resource = getClass().getClassLoader().getResource("static/login.html");
         final var expected = String.join("\r\n",
-                "HTTP/1.1 200 OK ",
-                "Content-Type: text/html;charset=utf-8 ",
-                "Content-Length: 3862 ", // 운영체제 환경에 따라 다른 값이 나올 수 있음. 자신의 개발 환경에 맞춰 수정할 것.
+                "HTTP/1.1 302 Found ",
+                "Location: /index.html ",
                 "",
-                new String(Files.readAllBytes(new File(resource.getFile()).toPath())));
+                "");
+
+        assertThat(socket.output()).isEqualTo(expected);
+    }
+
+    @Test
+    void process_login_failed() {
+        // given
+        final String httpRequest = String.format(HTTP_GET_REQUEST_TEMPLATE, "/login?account=gugu&password=wrong");
+        final var socket = new StubSocket(httpRequest);
+        final Http11Processor processor = new Http11Processor(socket);
+
+        // when
+        processor.process(socket);
+
+        // then
+        final var expected = String.join("\r\n",
+                "HTTP/1.1 302 Found ",
+                "Location: /401.html ",
+                "",
+                "");
 
         assertThat(socket.output()).isEqualTo(expected);
     }
