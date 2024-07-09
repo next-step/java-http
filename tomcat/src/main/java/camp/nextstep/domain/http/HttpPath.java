@@ -29,7 +29,7 @@ public class HttpPath {
 
     private QueryString parseQueryString(String httpPath, String[] splitHttpPath) {
         if (splitHttpPath.length == HTTP_PATH_EXIST_QUERY_STRING_FORMAT_LENGTH) {
-            return new QueryString(splitHttpPath[QUERY_STRING_INDEX]);
+            return QueryString.from(splitHttpPath[QUERY_STRING_INDEX]);
         }
         if (splitHttpPath.length == HTTP_PATH_EMPTY_QUERY_STRING_FORMAT_LENGTH) {
             return new QueryString();
