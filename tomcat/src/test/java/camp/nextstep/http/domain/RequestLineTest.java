@@ -103,4 +103,18 @@ class RequestLineTest {
         //then
         assertNotNull(requestLine);
     }
+
+    @Test
+    void 쿼리파라미터가_여러개들어와도_정상파싱이_된다() {
+        //given
+        String requestLineStr = "GET /users?userId=%20javajigi&password=password&name=JaeSung HTTP/1.1";
+
+        //when
+        RequestLine requestLine =
+                RequestLine.createRequestLineByRequestLineStr(requestLineStr);
+
+        //then
+        assertNotNull(requestLine);
+        assertEquals(3, requestLine.getQueryParams().size());
+    }
 }
