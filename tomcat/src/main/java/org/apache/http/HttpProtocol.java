@@ -4,7 +4,7 @@ public record HttpProtocol(
         String protocol,
         String version
 ) {
-    private static String DELIMITER = "/";
+    private static final String DELIMITER = "/";
     public static HttpProtocol HTTP_11 = new HttpProtocol("HTTP", "1.1");
 
     public HttpProtocol(final String protocols) {

@@ -2,10 +2,18 @@ package org.apache.http;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 
 public class HttpParams {
-    public final Map<String, String> params = new HashMap<>();
+    private Map<String, String> params = new HashMap<>();
+
+    protected HttpParams() {
+    }
+
+    protected HttpParams(Map<String, String> params) {
+        this.params = params;
+    }
 
     public HttpParams(final String url) {
         if (!url.contains("?")) {
@@ -21,9 +29,24 @@ public class HttpParams {
     private void parseQueryString(final String queryString) {
         final var values = queryString.split("&");
         for (String param : values) {
-            final String key = param.split("=")[0];
-            final String value = param.split("=")[1];
+            var token = param.split("=");
+            if (token.length < 2) continue;
+            final String key = token[0];
+            final String value = token[1];
             params.put(key, value);
         }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        HttpParams that = (HttpParams) o;
+        return Objects.equals(params, that.params);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(params);
     }
 }
