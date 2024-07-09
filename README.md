@@ -57,10 +57,10 @@
     - [X] HTTP Status Code 302
         - [X] 로그인이 성공하면 302 Code를 반환하고, /index.html로 리다이렉트
         - [X] 로그인이 실패하면 302 Code를 반환하고, /401.html로 리다이렉트
-    - [ ] POST 방식으로 회원가입, 로그인
-        - [ ] 회원가입 페이지(register.html) GET 요청 조회
-        - [ ] 회원가입 버튼을 POST로 요청 /index.html로 리다이렉트
-        - [ ] 로그인도 POST 요청으로 리팩터링
+    - [X] POST 방식으로 회원가입, 로그인
+        - [X] 회원가입 페이지(register.html) GET 요청 조회
+        - [X] 회원가입 버튼을 POST로 요청 /index.html로 리다이렉트
+        - [X] 로그인도 POST 요청으로 리팩터링
     - [ ] Cookie에 JSESSIONID 값 저장
         - [ ] Cookie 클래스 추가
         - [ ] Cookie에 JSESSIONID가 없으면 HTTP Response Header에 Set-Cookie를 반환
