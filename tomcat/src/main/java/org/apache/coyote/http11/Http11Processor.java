@@ -34,16 +34,8 @@ public class Http11Processor implements Runnable, Processor {
         try (final var inputStream = connection.getInputStream();
              final var outputStream = connection.getOutputStream()) {
 
-            String requestLine = getRequestLine(inputStream);
-
-            String[] infos = requestLine.split(StringUtils.SPACE);
-            if (infos.length < 3) {
-                throw new UncheckedServletException(new RuntimeException("Request is invalid"));
-            }
-
-            final var url = infos[1];
-
-            if (url.endsWith("/index.html")) {
+            var requestLine = RequestParser.parse(inputStream, StandardCharsets.UTF_8);
+            if (requestLine.pathEndsWith("/index.html")) {
                 final URL resource = getClass().getClassLoader().getResource("static/index.html");
                 final var response = String.join("\r\n",
                         "HTTP/1.1 200 OK ",
