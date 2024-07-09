@@ -18,7 +18,7 @@ class HttpInputParserTest {
     public void parseGetRequestLine() throws Exception {
         // given
         final var socket = new StubSocket();
-        final HttpInputParser httpInputParser = new HttpInputParser();
+        final HttpInputParser httpInputParser = new HttpInputParser(socket.getInputStream());
 
         // when
         httpInputParser.parseRequestLine(socket.getInputStream());
@@ -38,7 +38,7 @@ class HttpInputParserTest {
     public void parsePostRequestLine() throws Exception {
         // given
         final var socket = new StubSocket("POST / HTTP/1.1\r\nHost: localhost:8080\r\n\r\n");
-        final HttpInputParser httpInputParser = new HttpInputParser();
+        final HttpInputParser httpInputParser = new HttpInputParser(socket.getInputStream());
 
         // when
         httpInputParser.parseRequestLine(socket.getInputStream());
@@ -58,7 +58,7 @@ class HttpInputParserTest {
     public void parseRequestQueryString() throws Exception {
         // given
         final var socket = new StubSocket("GET /users?userId=djawnstj&password=password&name=JunSeo HTTP/1.1\r\nHost: localhost:8080\r\n\r\n");
-        final HttpInputParser httpInputParser = new HttpInputParser();
+        final HttpInputParser httpInputParser = new HttpInputParser(socket.getInputStream());
 
         // when
         httpInputParser.parseRequestLine(socket.getInputStream());

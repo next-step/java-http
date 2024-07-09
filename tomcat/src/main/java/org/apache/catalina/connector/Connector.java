@@ -19,7 +19,6 @@ public class Connector implements Runnable {
 
     private final ServerSocket serverSocket;
     private final CoyoteAdapter adapter;
-    private final HttpInputParser httpParser = new HttpInputParser();
     private boolean stopped;
 
     public Connector(final CoyoteAdapter adapter) {
@@ -70,7 +69,7 @@ public class Connector implements Runnable {
         if (connection == null) {
             return;
         }
-        var processor = new Http11Processor(connection, adapter, httpParser);
+        var processor = new Http11Processor(connection, adapter);
         new Thread(processor).start();
     }
 

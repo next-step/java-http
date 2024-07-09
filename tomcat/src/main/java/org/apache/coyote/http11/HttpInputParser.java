@@ -12,9 +12,13 @@ public class HttpInputParser {
     public static final int REQUEST_LINE_NUMBERS = 3;
 
     private final Request request = new Request();
+    private final BufferedReader reader;
+
+    public HttpInputParser(final InputStream inputStream) {
+        this.reader = new BufferedReader(new InputStreamReader(inputStream));;
+    }
 
     void parseRequestLine(final InputStream inputStream) throws IOException {
-        final BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
         final String requestLine = reader.readLine();
 
         final String[] requestLineMetaData = requestLine.split(" ");
@@ -26,11 +30,13 @@ public class HttpInputParser {
         request.setMethod(requestLineMetaData[0]);
         request.setPath(requestLineMetaData[1]);
         request.setProtocol(requestLineMetaData[2]);
-
-        reader.close();
     }
 
     public Request getRequest() {
         return this.request;
+    }
+
+    public void close() throws IOException {
+        this.reader.close();
     }
 }

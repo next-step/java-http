@@ -21,8 +21,8 @@ class Http11ProcessorTest {
         // given
         final var socket = new StubSocket();
         final var adapter = new CoyoteAdapter();
-        final HttpInputParser httpParser = new HttpInputParser();
-        final var processor = new Http11Processor(socket, adapter, httpParser);
+        final HttpInputParser httpParser = new HttpInputParser(socket.getInputStream());
+        final var processor = new Http11Processor(socket, adapter);
 
         // when
         processor.process(socket);
@@ -50,8 +50,7 @@ class Http11ProcessorTest {
 
         final var socket = new StubSocket(httpRequest);
         final var adapter = new CoyoteAdapter();
-        final HttpInputParser httpParser = new HttpInputParser();
-        final var processor = new Http11Processor(socket, adapter, httpParser);
+        final var processor = new Http11Processor(socket, adapter);
 
         // when
         processor.process(socket);
@@ -80,8 +79,7 @@ class Http11ProcessorTest {
 
         final var socket = new StubSocket(httpRequest);
         final var adapter = new CoyoteAdapter();
-        final HttpInputParser httpParser = new HttpInputParser();
-        final var processor = new Http11Processor(socket, adapter, httpParser);
+        final var processor = new Http11Processor(socket, adapter);
 
         // when
         processor.process(socket);
@@ -111,8 +109,7 @@ class Http11ProcessorTest {
         final var socket = new StubSocket(httpRequest);
         final var adapter = new CoyoteAdapter();
         adapter.addServlet("/login", new LoginServlet());
-        final HttpInputParser httpParser = new HttpInputParser();
-        final var processor = new Http11Processor(socket, adapter, httpParser);
+        final var processor = new Http11Processor(socket, adapter);
 
         // when
         processor.process(socket);

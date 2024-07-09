@@ -17,12 +17,10 @@ public class Http11Processor implements Runnable, Processor {
 
     private final Socket connection;
     private final CoyoteAdapter adapter;
-    private final HttpInputParser httpParser;
 
-    public Http11Processor(final Socket connection, final CoyoteAdapter adapter, final HttpInputParser httpParser) {
+    public Http11Processor(final Socket connection, final CoyoteAdapter adapter) {
         this.connection = connection;
         this.adapter = adapter;
-        this.httpParser = httpParser;
     }
 
     @Override
@@ -36,6 +34,7 @@ public class Http11Processor implements Runnable, Processor {
         try (final var inputStream = connection.getInputStream();
              final var outputStream = connection.getOutputStream()) {
 
+            final HttpInputParser httpParser = new HttpInputParser(inputStream);
             httpParser.parseRequestLine(inputStream);
 
             final Request request = httpParser.getRequest();
@@ -46,6 +45,7 @@ public class Http11Processor implements Runnable, Processor {
             adapter.service(request, response);
 
             outputStream.write(response.toBytes());
+            httpParser.close();
             outputStream.flush();
         } catch (IOException | UncheckedServletException e) {
             log.error(e.getMessage(), e);
