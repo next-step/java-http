@@ -25,17 +25,10 @@ public enum ContentType {
     }
 
     public static ContentType from(final HttpPath path) {
-        if (isExtensionEmpty(path)) {
-            return HTML;
-        }
         return Arrays.stream(values())
                 .filter(type -> type.extension.equalsIgnoreCase(path.getExtension()))
                 .findFirst()
                 .orElseThrow(() -> new InvalidContentTypeException("No matching ContentType found for " + path.getPath()));
-    }
-
-    private static boolean isExtensionEmpty(final HttpPath path) {
-        return path.getExtension() == null || path.getExtension().isEmpty();
     }
 
     public String getType() {

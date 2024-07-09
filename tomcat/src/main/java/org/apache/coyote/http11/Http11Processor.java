@@ -44,6 +44,23 @@ public class Http11Processor implements Runnable, Processor {
             final RequestLine requestLine = new RequestLine(inputStreamReader.readLine());
             final HttpPath path = requestLine.getPath();
 
+            if (path.isRoot()) {
+                final var responseBody = DEFAULT_MESSAGE;
+                final HttpHeaders headers = new HttpHeaders();
+                headers.setContentType(ContentType.HTML);
+                headers.setContentLength(responseBody.getBytes().length);
+
+                final var responseHeader = String.join(System.lineSeparator(),
+                        StatusLine.createOk().convertToString(),
+                        headers.convertToString(),
+                        "",
+                        responseBody);
+
+                outputStream.write(responseHeader.getBytes());
+                outputStream.flush();
+                return;
+            }
+
             if (path.isLoginPath()) {
                 try {
                     processLogin(requestLine);
@@ -66,18 +83,20 @@ public class Http11Processor implements Runnable, Processor {
                 return;
             }
 
-            final var responseBody = getResponseBody(path);
+            final var resource = getResource(path);
+            final byte[] resourceBytes = resource.readAllBytes();
+            final var responseBody = new String(resourceBytes);
             final HttpHeaders headers = new HttpHeaders();
             headers.setContentType(ContentType.from(path));
-            headers.setContentLength(responseBody.length);
+            headers.setContentLength(resourceBytes.length);
 
             final var responseHeader = String.join(System.lineSeparator(),
                     StatusLine.createOk().convertToString(),
                     headers.convertToString(),
-                    System.lineSeparator());
+                    "",
+                    responseBody);
 
             outputStream.write(responseHeader.getBytes());
-            outputStream.write(responseBody);
             outputStream.flush();
         } catch (final IOException | UncheckedServletException e) {
             log.error(e.getMessage(), e);
@@ -96,20 +115,11 @@ public class Http11Processor implements Runnable, Processor {
         throw new UserNotFoundException();
     }
 
-    private byte[] getResponseBody(final HttpPath path) throws IOException {
-        if (path.isRoot()) {
-            return DEFAULT_MESSAGE.getBytes();
-        }
-
-        String filePath = path.getPath();
-        if (path.isLoginPath()) {
-            filePath += ContentType.HTML.getExtension();
-        }
-
-        final Resource resource = new Resource(PATH_PREFIX + filePath);
+    private Resource getResource(final HttpPath path) throws IOException {
+        final Resource resource = new Resource(PATH_PREFIX + path.getPath());
         if (resource.exists()) {
-            return resource.readAllBytes();
+            return resource;
         }
-        return new Resource(PATH_PREFIX + NOT_FOUND_PATH).readAllBytes();
+        return new Resource(PATH_PREFIX + NOT_FOUND_PATH);
     }
 }
