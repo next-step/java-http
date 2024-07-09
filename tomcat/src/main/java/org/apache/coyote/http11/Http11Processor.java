@@ -45,7 +45,25 @@ public class Http11Processor implements Runnable, Processor {
             final HttpPath path = requestLine.getPath();
 
             if (path.isLoginPath()) {
-                processLogin(requestLine);
+                try {
+                    processLogin(requestLine);
+                    final HttpHeaders headers = new HttpHeaders();
+                    headers.add("Location", "/index.html");
+                    final var responseHeader = String.join(System.lineSeparator(),
+                            StatusLine.createFound().convertToString(),
+                            headers.convertToString(),
+                            System.lineSeparator());
+                    outputStream.write(responseHeader.getBytes());
+                } catch (final UserNotFoundException e) {
+                    final HttpHeaders headers = new HttpHeaders();
+                    headers.add("Location", "/401.html");
+                    final var responseHeader = String.join(System.lineSeparator(),
+                            StatusLine.createFound().convertToString(),
+                            headers.convertToString(),
+                            System.lineSeparator());
+                    outputStream.write(responseHeader.getBytes());
+                }
+                return;
             }
 
             final var responseBody = getResponseBody(path);
