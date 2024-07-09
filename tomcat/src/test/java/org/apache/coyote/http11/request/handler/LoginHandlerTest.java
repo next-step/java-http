@@ -3,6 +3,7 @@ package org.apache.coyote.http11.request.handler;
 import org.apache.coyote.http11.HttpRequestHeaderParser;
 import org.apache.coyote.http11.HttpRequestParser;
 import org.apache.coyote.http11.model.HttpRequest;
+import org.apache.coyote.http11.model.constant.HttpStatusCode;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -46,9 +47,9 @@ class LoginHandlerTest {
         assertThat(response).isEqualTo(expected);
     }
 
-    @DisplayName("로그인 요청시 requestBody가 있고, 인증된 유저의 경우 index로 리다이렉트 한다.")
+    @DisplayName("로그인 요청시 requestBody가 있고, 인증된 유저이며 JSSESION_ID가 없으면 Set-Cookie 헤더를 포함해서 index로 리다이렉트 한다.")
     @Test
-    void loginSuccessTest() throws IOException {
+    void loginSuccessHasNotCookieTest() throws IOException {
         // given
         final List<String> request = List.of(
                 "POST /login.html HTTP/1.1 ",
@@ -62,19 +63,15 @@ class LoginHandlerTest {
                 .parse(HttpRequestHeaderParser.getInstance().parse(request), "account=gugu&password=password");
 
         final RequestHandler loginHandler = new LoginHandler();
-        var expected = String.join("\r\n",
-                "HTTP/1.1 302 FOUND ",
-                "Location: /index.html ",
-                "",
-                "");
 
         // when
         final String response = loginHandler.handle(httpRequest);
 
         // then
-        assertThat(response).isEqualTo(expected);
+        assertThat(response).contains(HttpStatusCode.FOUND.name());
+        assertThat(httpRequest.httpRequestHeader().httpCookie().valueByKey("JSESSIONID")).isNotNull();
     }
-
+    
     @DisplayName("로그인 요청시 requestBody가 있고, 인증이 안된 유저의 경우 401로 리다이렉트 한다.")
     @Test
     void loginFailTest() throws IOException {

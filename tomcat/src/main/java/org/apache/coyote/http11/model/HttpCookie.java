@@ -3,6 +3,7 @@ package org.apache.coyote.http11.model;
 import org.apache.coyote.http11.StringTokenizer;
 
 import java.util.HashMap;
+import java.util.Map;
 
 public class HttpCookie implements HttpHeaderLine {
     private static final String COOKIE_SEPARATOR = "; ";
@@ -11,9 +12,9 @@ public class HttpCookie implements HttpHeaderLine {
     private static final int KEY_INDEX = 0;
     private static final int VALUE_INDEX = 1;
 
-    private final HashMap<String, String> cookies;
+    private final Map<String, String> cookies;
 
-    public HttpCookie(final HashMap<String, String> cookies) {
+    public HttpCookie(final Map<String, String> cookies) {
         this.cookies = cookies;
     }
 
@@ -28,12 +29,16 @@ public class HttpCookie implements HttpHeaderLine {
         return new HttpCookie(map);
     }
 
+    public static HttpCookie empty() {
+        return new HttpCookie(new HashMap<>());
+    }
+
     public String valueByKey(final String key) {
         return cookies.get(key);
     }
 
-    public void addCookie(final String key, final String value) {
-        cookies.put(key, value);
+    public void addJSessionId(final String value) {
+        cookies.put(JSESSIONID_KEY, value);
     }
 
     @Override

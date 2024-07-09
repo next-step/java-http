@@ -24,6 +24,6 @@ public enum HttpStatusCode {
     }
 
     public String responseMessage() {
-        return HTTP_STRING + code + BLANK + name().replace(UNDERSCORE, BLANK) + BLANK;
+        return HTTP_STRING + code + BLANK + name().replace(UNDERSCORE, BLANK);
     }
 }

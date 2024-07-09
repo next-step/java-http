@@ -1,6 +1,7 @@
 package nextstep.org.apache.coyote.http11;
 
 import org.apache.coyote.http11.Http11Processor;
+import org.apache.coyote.http11.model.constant.HttpStatusCode;
 import org.junit.jupiter.api.Test;
 import support.StubSocket;
 
@@ -137,13 +138,9 @@ class Http11ProcessorTest {
         processor.process(socket);
 
         // then
-        var expected = String.join("\r\n",
-                "HTTP/1.1 302 FOUND ",
-                "Location: /index.html ",
-                "",
-                "");
-
-        assertThat(socket.output()).isEqualTo(expected);
+        assertThat(socket.output()).contains(HttpStatusCode.FOUND.name());
+        assertThat(socket.output()).contains("/index.html");
+        assertThat(socket.output()).contains("Set-Cookie: JSESSIONID=");
     }
 
     @Test
@@ -169,7 +166,6 @@ class Http11ProcessorTest {
                 "Location: /401.html ",
                 "",
                 "");
-
         assertThat(socket.output()).isEqualTo(expected);
     }
 }

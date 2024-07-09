@@ -27,6 +27,6 @@ class HttpStatusCodeTest {
         final String result = httpStatusCode.responseMessage();
 
         // then
-        assertThat(result).isEqualTo(expected + " ");
+        assertThat(result).isEqualTo(expected);
     }
 }

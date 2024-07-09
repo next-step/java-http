@@ -51,4 +51,16 @@ public class HttpRequestHeader {
     public HttpCookie httpCookie() {
         return (HttpCookie) headers.get(COOKIE_KEY);
     }
+
+    public void addJSessionId(final String uuid) {
+        if (!hasCookie()) {
+            headers.put(COOKIE_KEY, HttpCookie.empty());
+        }
+
+        httpCookie().addJSessionId(uuid);
+    }
+
+    public boolean hasJSessionIdCookie() {
+        return hasCookie() && httpCookie().valueByKey("JSESSIONID") != null;
+    }
 }

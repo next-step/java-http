@@ -28,4 +28,9 @@ abstract class AbstractRequestHandler implements RequestHandler {
         return new HttpResponse(HttpStatusCode.FOUND, httpRequestHeader)
                 .buildRedirectResponse(location);
     }
+
+    protected String buildRedirectSetCookieHttpResponse(final HttpRequestHeader httpRequestHeader, final String location, final String cookie) {
+        return new HttpResponse(HttpStatusCode.FOUND, httpRequestHeader)
+                .buildRedirectSetCookieResponse(location, cookie);
+    }
 }

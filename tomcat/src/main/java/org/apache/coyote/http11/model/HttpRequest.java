@@ -23,4 +23,8 @@ public class HttpRequest {
                 .isGetMethod()
                 && !requestBody.isEmpty();
     }
+
+    public void addJSessionIdCookie(final String uuid) {
+        requestHeader.addJSessionId(uuid);
+    }
 }
