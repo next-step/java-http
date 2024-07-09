@@ -1,5 +1,6 @@
 package org.apache.coyote.http11.request.handler;
 
+import org.apache.coyote.http11.HttpRequestHeaderParser;
 import org.apache.coyote.http11.HttpRequestParser;
 import org.apache.coyote.http11.model.HttpRequest;
 import org.junit.jupiter.api.DisplayName;
@@ -24,7 +25,8 @@ class NotFoundHandlerTest {
                 "");
 
         final HttpRequest httpRequest = HttpRequestParser.getInstance()
-                .parse(request);
+                .parse(HttpRequestHeaderParser.getInstance().parse(request), "");
+
         final RequestHandler notFoundHandler = new NotFoundHandler();
         var expected = String.join("\r\n",
                 "HTTP/1.1 200 OK ",

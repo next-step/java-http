@@ -8,7 +8,6 @@ import java.io.IOException;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
-import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -28,23 +27,15 @@ public class HttpRequestParser {
         return HttpRequestParser.SingletonHelper.SINGLETON;
     }
 
-    public HttpRequest parse(final List<String> lines) throws IOException {
-        final HttpRequestHeader requestHeader = HttpRequestHeaderParser.getInstance()
-                .parse(lines);
-
-        if (requestHeader.hasRequestBody()) {
-            final String requestBodyString = lastLine(lines);
-            final Map<String, String> resultMap = parseRequestBody(requestBodyString);
+    public HttpRequest parse(final HttpRequestHeader requestHeader, final String requestBodyLine) throws IOException {
+        if (requestBodyLine != null && !requestBodyLine.isEmpty() && !requestBodyLine.isBlank()) {
+            final Map<String, String> resultMap = parseRequestBody(requestBodyLine);
             final QueryParams queryParams = new QueryParams(resultMap);
 
             return new HttpRequest(requestHeader, queryParams);
         }
 
         return new HttpRequest(requestHeader, QueryParams.emtpy());
-    }
-
-    private String lastLine(List<String> lines) {
-        return lines.get(lines.size() - 1);
     }
 
     private Map<String, String> parseRequestBody(final String requestBodyString) {

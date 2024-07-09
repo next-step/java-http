@@ -20,18 +20,20 @@ public class LoginHandler extends AbstractRequestHandler {
     public String handle(final HttpRequest request) throws IOException {
         final RequestLine requestLine = request.httpRequestHeader()
                 .requestLine();
-        final QueryParams queryParams = requestLine.queryParams();
 
-        final String body = buildBodyFromReadFile(requestLine.url());
-
-        if (queryParams.isEmpty()) {
+        if (!request.hasRequestBody()) {
+            final String body = buildBodyFromReadFile(requestLine.url());
             return buildHttpOkResponse(body, requestLine.contentTypeText());
         }
 
-        final User user = InMemoryUserRepository.findByAccount(queryParams.valueBy(LOGIN_ACCOUNT_KEY))
+        return login(request.requestBody());
+    }
+
+    private String login(final QueryParams requestBody) {
+        final User user = InMemoryUserRepository.findByAccount(requestBody.valueBy(LOGIN_ACCOUNT_KEY))
                 .orElseThrow(NoSuchElementException::new);
 
-        if (user.checkPassword(queryParams.valueBy(LOGIN_PASSWORD_KEY))) {
+        if (user.checkPassword(requestBody.valueBy(LOGIN_PASSWORD_KEY))) {
             return buildRedirectResponse(SUCCESS_REDIRECT_PATH);
         }
 

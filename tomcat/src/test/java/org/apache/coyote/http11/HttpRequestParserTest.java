@@ -1,6 +1,7 @@
 package org.apache.coyote.http11;
 
 import org.apache.coyote.http11.model.HttpRequest;
+import org.apache.coyote.http11.model.HttpRequestHeader;
 import org.apache.coyote.http11.model.constant.HttpMethod;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -25,10 +26,13 @@ class HttpRequestParserTest {
                 "Accept: */* ",
                 "",
                 "account=gugu&password=password&email=hkkang%40woowahan.com");
-        final HttpRequestParser httpRequestParser = HttpRequestParser.getInstance();
+
+        final HttpRequestHeader httpRequestHeader = HttpRequestHeaderParser.getInstance()
+                .parse(request);
 
         // when
-        final HttpRequest result = httpRequestParser.parse(request);
+        final HttpRequest result = HttpRequestParser.getInstance()
+                .parse(httpRequestHeader, "account=gugu&password=password&email=hkkang%40woowahan.com");
 
         // then
         assertThat(result.httpRequestHeader().requestLine().httpMethod()).isEqualTo(HttpMethod.POST);
@@ -49,11 +53,13 @@ class HttpRequestParserTest {
                 "Accept: */* ",
                 "",
                 "");
-        final HttpRequestParser httpRequestParser = HttpRequestParser.getInstance();
+        final HttpRequestHeader httpRequestHeader = HttpRequestHeaderParser.getInstance()
+                .parse(request);
 
         // when
-        final HttpRequest result = httpRequestParser.parse(request);
 
+        final HttpRequest result = HttpRequestParser.getInstance()
+                .parse(httpRequestHeader, "");
         // then
         assertThat(result.httpRequestHeader().requestLine().httpMethod()).isEqualTo(HttpMethod.POST);
         assertThat(result.requestBody().isEmpty()).isTrue();

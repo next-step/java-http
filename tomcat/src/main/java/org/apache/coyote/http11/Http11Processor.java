@@ -3,7 +3,7 @@ package org.apache.coyote.http11;
 import camp.nextstep.exception.UncheckedServletException;
 import org.apache.coyote.Processor;
 import org.apache.coyote.http11.model.HttpRequest;
-import org.apache.coyote.http11.model.RequestLine;
+import org.apache.coyote.http11.model.HttpRequestHeader;
 import org.apache.coyote.http11.request.RequestHandlerMapper;
 import org.apache.coyote.http11.request.handler.RequestHandler;
 import org.slf4j.Logger;
@@ -16,6 +16,8 @@ import java.net.Socket;
 import java.util.List;
 
 public class Http11Processor implements Runnable, Processor {
+
+    private static final String EMPTY_STRING = "";
 
     private static final Logger log = LoggerFactory.getLogger(Http11Processor.class);
 
@@ -37,17 +39,23 @@ public class Http11Processor implements Runnable, Processor {
              final var outputStream = connection.getOutputStream();
              final BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream))) {
 
-            final List<String> requestLines = bufferedReader.lines()
+            final List<String> requestHeaderLines = bufferedReader.lines()
                     .takeWhile(line -> !line.isEmpty())
                     .toList();
 
+            final HttpRequestHeader httpRequestHeader = HttpRequestHeaderParser.getInstance()
+                    .parse(requestHeaderLines);
+
+            final String requestBodyLine = readRequestBodyLine(bufferedReader, httpRequestHeader);
+
             final HttpRequest httpRequest = HttpRequestParser.getInstance()
-                    .parse(requestLines);
-            final RequestLine requestLine = httpRequest.httpRequestHeader()
-                    .requestLine();
+                    .parse(httpRequestHeader, requestBodyLine);
 
             final RequestHandler handler = RequestHandlerMapper.getInstance()
-                    .getHandler(requestLine.url());
+                    .getHandler(httpRequest.httpRequestHeader()
+                            .requestLine()
+                            .url());
+
             final String response = handler.handle(httpRequest);
 
             outputStream.write(response.getBytes());
@@ -55,5 +63,18 @@ public class Http11Processor implements Runnable, Processor {
         } catch (IOException | UncheckedServletException e) {
             log.error(e.getMessage(), e);
         }
+    }
+
+    private String readRequestBodyLine(final BufferedReader bs, final HttpRequestHeader httpHeaders) throws IOException {
+        if (httpHeaders.hasRequestBody()) {
+            final int contentLength = httpHeaders.contentLength();
+
+            final char[] body = new char[contentLength];
+            bs.read(body);
+
+            return new String(body);
+        }
+
+        return EMPTY_STRING;
     }
 }

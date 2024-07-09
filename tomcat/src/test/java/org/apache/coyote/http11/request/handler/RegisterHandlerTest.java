@@ -2,6 +2,7 @@ package org.apache.coyote.http11.request.handler;
 
 import camp.nextstep.db.InMemoryUserRepository;
 import camp.nextstep.model.User;
+import org.apache.coyote.http11.HttpRequestHeaderParser;
 import org.apache.coyote.http11.HttpRequestParser;
 import org.apache.coyote.http11.model.HttpRequest;
 import org.junit.jupiter.api.DisplayName;
@@ -31,7 +32,7 @@ class RegisterHandlerTest {
                 "");
 
         final HttpRequest httpRequest = HttpRequestParser.getInstance()
-                .parse(request);
+                .parse(HttpRequestHeaderParser.getInstance().parse(request), "");
 
         final RequestHandler registerHandler = new RegisterHandler();
         final URL resource = getClass().getClassLoader().getResource("static/register.html");
@@ -64,7 +65,7 @@ class RegisterHandlerTest {
                 "account=gugu&password=password&email=hkkang%40woowahan.com");
 
         final HttpRequest httpRequest = HttpRequestParser.getInstance()
-                .parse(request);
+                .parse(HttpRequestHeaderParser.getInstance().parse(request), "account=gugu&password=password&email=hkkang%40woowahan.com");
 
         final RequestHandler registerHandler = new RegisterHandler();
         var expected = String.join("\r\n",
@@ -97,7 +98,7 @@ class RegisterHandlerTest {
                 "");
 
         final HttpRequest httpRequest = HttpRequestParser.getInstance()
-                .parse(request);
+                .parse(HttpRequestHeaderParser.getInstance().parse(request), "");
 
         final RequestHandler registerHandler = new RegisterHandler();
         var expected = String.join("\r\n",
