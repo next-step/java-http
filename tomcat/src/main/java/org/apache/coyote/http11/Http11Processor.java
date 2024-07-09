@@ -21,8 +21,6 @@ import java.net.Socket;
 import java.net.URISyntaxException;
 import java.util.Optional;
 
-import static java.util.Objects.nonNull;
-
 public class Http11Processor implements Runnable, Processor {
 
     private static final Logger log = LoggerFactory.getLogger(Http11Processor.class);
@@ -67,20 +65,22 @@ public class Http11Processor implements Runnable, Processor {
     }
 
     private void processRequest(String requestPath, OutputStream outputStream, Request request) throws IOException, URISyntaxException {
+        QueryParameters queryParameters = request.getRequestLine().getQueryParameters();
+
         if (requestPath.isEmpty() || requestPath.equals("/")) {
             handlePlainText(outputStream, "Hello world!");
 
-        } else if (requestPath.equals("/login")) {
-            QueryParameters queryParameters = request.getRequestLine().getQueryParameters();
-
+        } else if (requestPath.equals("/login")
+                && queryParameters.hasKey("account") && queryParameters.hasKey("password")) {
             String account = queryParameters.getString("account");
             String password = queryParameters.getString("password");
-            if (nonNull(account) && nonNull(password)) {
-                Optional<User> user = findUser(account, password);
-                if (user.isPresent()) {
-                    System.out.println("user: " + user);
-                }
-            }
+
+            Boolean found = InMemoryUserRepository.findByAccount(account)
+                    .map(acc -> acc.checkPassword(password)).orElse(false);
+            if (found) handle302RedirectTo(outputStream, "/index.html");
+            else handle302RedirectTo(outputStream, "/401.html");
+
+        } else if (requestPath.equals("/login")) {
             handleRenderStaticResource(outputStream, "/login.html");
 
         } else {
@@ -104,9 +104,20 @@ public class Http11Processor implements Runnable, Processor {
         render("200 OK", content, mimeType, outputStream);
     }
 
-    public void handle404(OutputStream outputStream) throws IOException {
+    private void handle404(OutputStream outputStream) throws IOException {
         final String content = staticResourceLoader.readAllLines("static/404.html");
+
         render("404 Not Found", content, "text/html", outputStream);
+    }
+
+    private void handle302RedirectTo(OutputStream outputStream, String redirectTo) throws IOException {
+        String responseStatus = "302 Found";
+        final String response = String.join("\r\n",
+                "HTTP/1.1 " + responseStatus + " ",
+                "Location: " + redirectTo + " ");
+
+        outputStream.write(response.getBytes());
+        outputStream.flush();
     }
 
     private void render(String responseStatus, String content, String mimeType, OutputStream outputStream) throws IOException {

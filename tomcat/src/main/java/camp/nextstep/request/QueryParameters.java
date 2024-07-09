@@ -11,6 +11,10 @@ public class QueryParameters {
         this.map = map;
     }
 
+    public boolean hasKey(String key) {
+        return map.containsKey(key);
+    }
+
     public Object get(String key) {
         return getOne(key).orElse(null);
     }
