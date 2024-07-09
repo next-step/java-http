@@ -6,11 +6,13 @@ public class HttpRequest {
 
     private final RequestLine requestLine;
     private final HttpHeaders httpHeaders;
+    private final HttpCookie httpCookie;
     private final HttpRequestBody httpRequestBody;
 
-    public HttpRequest(RequestLine requestLine, HttpHeaders httpHeaders, HttpRequestBody httpRequestBody) {
+    public HttpRequest(RequestLine requestLine, HttpHeaders httpHeaders, HttpCookie httpCookie, HttpRequestBody httpRequestBody) {
         this.requestLine = requestLine;
         this.httpHeaders = httpHeaders;
+        this.httpCookie = httpCookie;
         this.httpRequestBody = httpRequestBody;
     }
 

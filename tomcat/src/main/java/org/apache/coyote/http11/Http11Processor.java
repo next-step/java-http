@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.List;
 
 public class Http11Processor implements Runnable, Processor {
 
@@ -55,9 +56,13 @@ public class Http11Processor implements Runnable, Processor {
              final var outputStream = connection.getOutputStream()) {
 
             final var requestLine = new RequestLine(inputReader.readLine());
-            final var requestHeader = parseRequestHeader(inputReader);
+            final var requestHeaders = parseRequestHeader(inputReader);
+
+
+            final var requestHeader = HttpHeaders.from(requestHeaders);
+            final var requestCookie = HttpCookie.from(requestHeaders);
             final var requestBody = parseRequestBody(inputReader, requestHeader);
-            final var httpRequest = new HttpRequest(requestLine, requestHeader, requestBody);
+            final var httpRequest = new HttpRequest(requestLine, requestHeader, requestCookie, requestBody);
 
             final var response = createResponse(httpRequest);
 
@@ -68,7 +73,7 @@ public class Http11Processor implements Runnable, Processor {
         }
     }
 
-    private HttpHeaders parseRequestHeader(final BufferedReader inputReader) throws IOException {
+    private List<String> parseRequestHeader(final BufferedReader inputReader) throws IOException {
         final var requestHeaders = new ArrayList<String>();
         while (inputReader.ready()) {
             final var line = inputReader.readLine();
@@ -77,7 +82,7 @@ public class Http11Processor implements Runnable, Processor {
             }
             requestHeaders.add(line);
         }
-        return new HttpHeaders(requestHeaders);
+        return requestHeaders;
     }
 
     private HttpRequestBody parseRequestBody(final BufferedReader inputReader, final HttpHeaders requestHeaders) throws IOException {
