@@ -67,10 +67,4 @@ public class Http11Processor implements Runnable, Processor {
             log.error(e.getMessage(), e);
         }
     }
-    private void login(String account, String password) {
-        final User user = InMemoryUserRepository.findByAccount(account).orElseThrow(NoSuchElementException::new);
-        if (user.checkPassword(password)) {
-            log.info("user {}", user);
-        }
-    }
 }
