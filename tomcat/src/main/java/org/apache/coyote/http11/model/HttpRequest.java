@@ -16,4 +16,11 @@ public class HttpRequest {
     public QueryParams requestBody() {
         return this.requestBody;
     }
+
+    public boolean hasRequestBody() {
+        return !requestHeader.requestLine()
+                .httpMethod()
+                .isGetMethod()
+                && !requestBody.isEmpty();
+    }
 }

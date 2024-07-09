@@ -1,5 +1,7 @@
 package org.apache.coyote.http11.request.handler;
 
+import camp.nextstep.db.InMemoryUserRepository;
+import camp.nextstep.model.User;
 import org.apache.coyote.http11.HttpRequestParser;
 import org.apache.coyote.http11.model.HttpRequest;
 import org.junit.jupiter.api.DisplayName;
@@ -10,8 +12,10 @@ import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 class RegisterHandlerTest {
 
@@ -45,7 +49,7 @@ class RegisterHandlerTest {
         assertThat(response).isEqualTo(expected);
     }
 
-    @DisplayName("회원가입 페이지를 POST 메서드로 요청하면 index.html 페이지로 리다이렉트.")
+    @DisplayName("회원가입 페이지를 POST 메서드로 요청하면 회원가입되고, index.html 페이지로 리다이렉트.")
     @Test
     void requestPostMethodRegisterRedirectIndex() throws IOException {
         // given
@@ -71,9 +75,14 @@ class RegisterHandlerTest {
 
         // when
         final String response = registerHandler.handle(httpRequest);
+        final Optional<User> user = InMemoryUserRepository.findByAccount("gugu");
 
         // then
-        assertThat(response).isEqualTo(expected);
+        assertAll(
+                () -> assertThat(response).isEqualTo(expected),
+                () -> assertThat(user.isPresent()).isTrue(),
+                () -> assertThat(user.get().getAccount()).isEqualTo("gugu")
+        );
     }
 
     @DisplayName("회원가입 페이지를 GET,POST 이외의 메서드로 요청하면 404.html 페이지로 리다이렉트.")
