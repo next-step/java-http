@@ -28,6 +28,7 @@ public class Http11Processor implements Runnable, Processor {
     private static final String INDEX_PAGE_PATH = "/index.html";
     private static final String LOGIN_PAGE_PATH = "/login.html";
     private static final String UNAUTHORIZED_PAGE_PATH = "/401.html";
+    private static final String NOT_FOUND_PAGE_PATH = "/404.html";
 
     private static final String LOGIN_ACCOUNT_KEY = "account";
     private static final String LOGIN_PASSWORD_KEY = "password";
@@ -110,7 +111,7 @@ public class Http11Processor implements Runnable, Processor {
         if (httpRequest.isPostMethod()) {
             return handleLoginPostRequest(httpRequest);
         }
-        throw new RuntimeException();
+        return notFoundResponse(httpRequest);
     }
 
     private static HttpResponse handleLoginPostRequest(HttpRequest httpRequest) {
@@ -135,7 +136,7 @@ public class Http11Processor implements Runnable, Processor {
         if (httpRequest.isPostMethod()) {
             return handleRegisterPostRequest(httpRequest);
         }
-        throw new RuntimeException();
+        return notFoundResponse(httpRequest);
     }
 
     private static HttpResponse handleRegisterPostRequest(HttpRequest httpRequest) {
@@ -150,11 +151,14 @@ public class Http11Processor implements Runnable, Processor {
     }
 
     private HttpResponse handleRootPath(final HttpRequest httpRequest) {
-        return HttpResponse.ok(
-                httpRequest.getHttpProtocol(),
-                ContentType.TEXT_HTML,
-                ROOT_BODY
-        );
+        if (httpRequest.isGetMethod()) {
+            return HttpResponse.ok(
+                    httpRequest.getHttpProtocol(),
+                    ContentType.TEXT_HTML,
+                    ROOT_BODY
+            );
+        }
+        return notFoundResponse(httpRequest);
     }
 
     private HttpResponse handlePath(final HttpRequest httpRequest) {
@@ -163,6 +167,10 @@ public class Http11Processor implements Runnable, Processor {
                 parseContentType(httpRequest),
                 parseResponseBody(httpRequest)
         );
+    }
+
+    private HttpResponse notFoundResponse(final HttpRequest httpRequest) {
+        return HttpResponse.found(httpRequest.getHttpProtocol(), NOT_FOUND_PAGE_PATH);
     }
 
     private String parseResponseBody(final HttpRequest httpRequest) {
