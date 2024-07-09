@@ -42,6 +42,11 @@ public class HttpResponse {
         return new HttpResponse(httpProtocol, HttpStatus.FOUND, Map.of(LOCATION_HEADER_KEY, location), EMPTY_RESPONSE_BODY);
     }
 
+    public HttpResponse addCookie(HttpCookie cookie) {
+        httpHeaders.addCookie(cookie);
+        return this;
+    }
+
     public String buildResponse() {
         String response = buildBaseResponse();
         if (responseBody.isEmpty()) {

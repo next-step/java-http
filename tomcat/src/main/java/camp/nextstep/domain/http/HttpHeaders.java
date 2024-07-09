@@ -93,6 +93,10 @@ public class HttpHeaders {
         return generalHeaders.isEmpty() && httpCookie.isEmpty();
     }
 
+    public void addCookie(HttpCookie cookie) {
+        httpCookie.addCookie(cookie);
+    }
+
     public String buildHeaders() {
         return generateHeaders()
                 .map(header -> String.format(HEADER_FORMAT, header.getKey(), header.getValue()))

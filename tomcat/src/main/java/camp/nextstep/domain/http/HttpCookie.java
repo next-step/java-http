@@ -1,12 +1,7 @@
 package camp.nextstep.domain.http;
 
-import java.util.AbstractMap;
-import java.util.Arrays;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
-
-import static java.util.Collections.emptyMap;
 
 public class HttpCookie {
 
@@ -23,7 +18,7 @@ public class HttpCookie {
     private final Map<String, String> cookies;
 
     public HttpCookie() {
-        this.cookies = emptyMap();
+        this.cookies = new HashMap<>();
     }
 
     public HttpCookie(String cookies) {
@@ -53,6 +48,10 @@ public class HttpCookie {
             throw new IllegalStateException("session id가 없습니다.");
         }
         return cookies.get(SESSION_COOKIE_KEY);
+    }
+
+    public void addCookie(HttpCookie cookie) {
+        this.cookies.putAll(cookie.cookies);
     }
 
     public boolean isEmpty() {

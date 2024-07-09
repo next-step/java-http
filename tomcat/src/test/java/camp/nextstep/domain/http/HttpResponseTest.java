@@ -43,6 +43,14 @@ class HttpResponseTest {
     }
 
     @Test
+    void HttpHeader에_쿠키를_추가한다() {
+        Map<String, String> actual = HttpResponse.found(DEFAULT_HTTP_PROTOCOL, "/index.html")
+                .addCookie(new HttpCookie("name=jinyoung"))
+                .getHttpHeaders();
+        assertThat(actual).contains(Map.entry("Cookie", "name=jinyoung"));
+    }
+
+    @Test
     void response_format에_맞추어_response를_반환한다() {
         String actual = new HttpResponse(
                 DEFAULT_HTTP_PROTOCOL,
