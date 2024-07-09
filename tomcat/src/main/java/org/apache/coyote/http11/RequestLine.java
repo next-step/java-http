@@ -6,6 +6,7 @@ import java.util.Map;
 public class RequestLine {
 
     private final static String DELIMITER = " ";
+    private final static int REQUEST_LINE_CHUNK_LIMIT = 3;
 
     private HttpMethod method;
     private Path path;
@@ -14,7 +15,7 @@ public class RequestLine {
 
     public RequestLine(String requestLine) {
         String[] infos = split(requestLine);
-        if (infos.length != 3) {
+        if (infos.length != REQUEST_LINE_CHUNK_LIMIT) {
             throw new IllegalArgumentException("RequestLine is invalid: " + requestLine);
         }
         this.method = HttpMethod.from(infos[0]);

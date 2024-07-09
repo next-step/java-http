@@ -6,13 +6,17 @@ import java.util.stream.Collectors;
 
 public class Path {
 
+    private static final String PATH_QUERY_PARAM_SEPARATOR = "\\?";
+    private static final String QUERY_PARAM_DELIMITER = "&";
+    private static final String KEY_VALUE_PAIR_DELIMITER = "=";
+
     private final String path;
     private Map<String, Object> queryParamMap = Map.of();
 
     public Path(String fullPath) {
-        String[] values = fullPath.split("\\?");
+        String[] values = fullPath.split(PATH_QUERY_PARAM_SEPARATOR);
         this.path = values[0];
-        if (values.length > 1) {
+        if (hasQueryParam(values)) {
             this.queryParamMap = parseQueryParam(values[1]);
         }
     }
@@ -30,8 +34,13 @@ public class Path {
     }
 
 
+    private static boolean hasQueryParam(String[] values) {
+        return values.length > 1;
+    }
+
+
     private Map<String, Object> parseQueryParam(String rawQueryParam) {
-        return Arrays.stream(rawQueryParam.split("&"))
+        return Arrays.stream(rawQueryParam.split(QUERY_PARAM_DELIMITER))
                 .map(query -> {
                     String[] pair = parseKeyValue(query);
                     return Map.entry(pair[0], pair[1]);
@@ -40,6 +49,6 @@ public class Path {
     }
 
     private static String[] parseKeyValue(String query) {
-        return query.split("=");
+        return query.split(KEY_VALUE_PAIR_DELIMITER);
     }
 }
