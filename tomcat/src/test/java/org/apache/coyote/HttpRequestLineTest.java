@@ -1,5 +1,8 @@
 package org.apache.coyote;
 
+import org.apache.http.HttpMethod;
+import org.apache.http.HttpPath;
+import org.apache.http.HttpProtocol;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
@@ -10,10 +13,9 @@ class HttpRequestLineTest {
         final var request = new HttpRequestLine("GET /users HTTP/1.1 ");
 
         assertSoftly(softly -> {
-            softly.assertThat(request.method).isEqualTo(RequestMethod.GET);
-            softly.assertThat(request.path).isEqualTo("/users");
-            softly.assertThat(request.protocol).isEqualTo("HTTP");
-            softly.assertThat(request.protocolVersion).isEqualTo("1.1");
+            softly.assertThat(request.method).isEqualTo(HttpMethod.GET);
+            softly.assertThat(request.path).isEqualTo(new HttpPath("/users"));
+            softly.assertThat(request.protocol).isEqualTo(HttpProtocol.HTTP_11);
         });
     }
 
@@ -22,10 +24,9 @@ class HttpRequestLineTest {
         final var request = new HttpRequestLine("POST /users HTTP/1.1 ");
 
         assertSoftly(softly -> {
-            softly.assertThat(request.method).isEqualTo(RequestMethod.POST);
-            softly.assertThat(request.path).isEqualTo("/users");
-            softly.assertThat(request.protocol).isEqualTo("HTTP");
-            softly.assertThat(request.protocolVersion).isEqualTo("1.1");
+            softly.assertThat(request.method).isEqualTo(HttpMethod.POST);
+            softly.assertThat(request.path).isEqualTo(new HttpPath("/users"));
+            softly.assertThat(request.protocol).isEqualTo(HttpProtocol.HTTP_11);
         });
 
     }
@@ -35,13 +36,12 @@ class HttpRequestLineTest {
         final var request = new HttpRequestLine("GET /users?userId=javajigi&password=password&name=JaeSung HTTP/1.1 ");
 
         assertSoftly(softly -> {
-            softly.assertThat(request.method).isEqualTo(RequestMethod.GET);
-            softly.assertThat(request.path).isEqualTo("/users");
-            softly.assertThat(request.protocol).isEqualTo("HTTP");
-            softly.assertThat(request.protocolVersion).isEqualTo("1.1");
-            softly.assertThat(request.params.get("userId")).isEqualTo("javajigi");
-            softly.assertThat(request.params.get("password")).isEqualTo("password");
-            softly.assertThat(request.params.get("name")).isEqualTo("JaeSung");
+            softly.assertThat(request.method).isEqualTo(HttpMethod.GET);
+            softly.assertThat(request.path).isEqualTo(new HttpPath("/users"));
+            softly.assertThat(request.protocol).isEqualTo(HttpProtocol.HTTP_11);
+            softly.assertThat(request.params.get("userId")).get().isEqualTo("javajigi");
+            softly.assertThat(request.params.get("password")).get().isEqualTo("password");
+            softly.assertThat(request.params.get("name")).get().isEqualTo("JaeSung");
         });
     }
 }

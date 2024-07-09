@@ -1,7 +1,6 @@
 package org.apache.coyote.http11;
 
 import org.apache.coyote.handler.LoginHandler;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import support.StubLogger;

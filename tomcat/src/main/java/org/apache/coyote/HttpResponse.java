@@ -1,5 +1,7 @@
 package org.apache.coyote;
 
+import org.apache.http.header.HttpHeaders;
+
 import java.util.ArrayList;
 import java.util.Map;
 
@@ -7,26 +9,26 @@ import java.util.Map;
  * https://developer.mozilla.org/en-US/docs/Web/HTTP/Messages#http_responses
  */
 public class HttpResponse {
-    private final HttpResponseStatusLine statusLine;
-    private final Map<String, String> responseHeaders;
-    private final Map<String, String> representationHeaders;
-    private final String body;
+    private final static String DELIMITER = "\r\n";
 
-    public HttpResponse(HttpResponseStatusLine statusLine, Map<String, String> responseHeaders, Map<String, String> representationHeaders, String body) {
+    private HttpResponseStatusLine statusLine;
+    private HttpHeaders headers;
+    private String body;
+
+    public HttpResponse(HttpResponseStatusLine statusLine, HttpHeaders headers, String body) {
         this.statusLine = statusLine;
-        this.responseHeaders = responseHeaders;
-        this.representationHeaders = representationHeaders;
+        this.headers = headers;
         this.body = body;
     }
 
-    public byte[] toOutput() {
-        var result = new ArrayList<String>();
-        result.add(statusLine.toString());
-        result.addAll(representationHeaders.entrySet().stream().map(e -> e.getKey() + ": " + e.getValue() + " ").toList());
-        result.addAll(responseHeaders.entrySet().stream().map(e -> e.getKey() + ": " + e.getValue() + " ").toList());
-        result.add("");
-        result.add(body);
+    public HttpResponse(HttpHeaders headers, String body) {
+        this.statusLine = HttpResponseStatusLine.HTTP_11_OK;
+        this.headers = headers;
+        this.body = body;
+    }
 
-        return String.join("\r\n", result).getBytes();
+    @Override
+    public String toString() {
+        return String.join(DELIMITER, statusLine.toString(), headers.toString(), "", body);
     }
 }

@@ -1,13 +1,10 @@
 package org.apache.coyote.handler;
 
 import camp.nextstep.db.InMemoryUserRepository;
-import org.apache.catalina.startup.Tomcat;
 import org.apache.coyote.HttpRequest;
 import org.apache.coyote.HttpResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.Objects;
 
 public class LoginHandler implements Handler {
 
@@ -17,18 +14,27 @@ public class LoginHandler implements Handler {
 
     @Override
     public HttpResponse handle(HttpRequest request) {
-        if (!Objects.equals(request.requestLine.path, MAPPING_PATH)) throw new NotSupportHandlerException();
-
-        var params = request.requestLine.params;
-        login(params.getOrDefault("account", ""), params.getOrDefault("password", ""));
-        request.requestLine.path = STATIC_FILE_PATH;
+        if (!request.matchPath(MAPPING_PATH)) {
+            throw new NotSupportHandlerException();
+        }
+        login(request);
+        request.proxyPath(STATIC_FILE_PATH);
         return null;
     }
 
-    private void login(final String account, final String password) {
-        var user = InMemoryUserRepository.findByAccount(account).orElse(null);
-        if (user == null) return;
-        if (user.checkPassword(password)) {
+    private void login(final HttpRequest request) {
+        var account = request.getParam("account");
+        var password = request.getParam("password");
+
+        if (account.isEmpty() || password.isEmpty()) {
+            return;
+        }
+
+        var user = InMemoryUserRepository.findByAccount(account.get()).orElse(null);
+        if (user == null) {
+            return;
+        }
+        if (user.checkPassword(password.get())) {
             log.info(user.toString());
         }
     }

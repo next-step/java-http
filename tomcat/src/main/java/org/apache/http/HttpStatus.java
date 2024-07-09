@@ -1,4 +1,4 @@
-package org.apache.coyote;
+package org.apache.http;
 
 public enum HttpStatus {
     OK(200);
@@ -7,5 +7,10 @@ public enum HttpStatus {
 
     HttpStatus(int statusCode) {
         this.statusCode = statusCode;
+    }
+
+    @Override
+    public String toString() {
+        return statusCode + " " + name();
     }
 }

@@ -13,7 +13,6 @@ import java.net.Socket;
 import java.util.Collections;
 
 public class Http11Processor implements Runnable, Processor {
-
     private static final Logger log = LoggerFactory.getLogger(Http11Processor.class);
 
     private final Socket connection;
@@ -36,7 +35,7 @@ public class Http11Processor implements Runnable, Processor {
             final var request = new HttpRequest(Collections.singletonList(inputReader.readLine()));
             final var response = handlers.handle(request);
 
-            outputStream.write(response.toOutput());
+            outputStream.write(response.toString().getBytes());
             outputStream.flush();
         } catch (IOException | UncheckedServletException e) {
             log.error(e.getMessage(), e);
