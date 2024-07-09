@@ -78,4 +78,17 @@ public class HttpHeaders {
     public void add(final String key, final String value) {
         headers.put(key, value);
     }
+
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        final HttpHeaders that = (HttpHeaders) o;
+        return Objects.equals(headers, that.headers);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(headers);
+    }
 }

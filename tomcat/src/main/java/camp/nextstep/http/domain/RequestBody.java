@@ -1,6 +1,8 @@
 package camp.nextstep.http.domain;
 
+import java.util.Collections;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -12,6 +14,10 @@ public class RequestBody {
     private static final int VALUE_INDEX = 1;
 
     private final Map<String, String> params;
+
+    public RequestBody() {
+        this.params = Collections.emptyMap();
+    }
 
     public RequestBody(final String requestBody) {
         this.params = parseRequestBody(requestBody);
@@ -28,4 +34,16 @@ public class RequestBody {
         return params.get(key);
     }
 
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        final RequestBody that = (RequestBody) o;
+        return Objects.equals(params, that.params);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(params);
+    }
 }
