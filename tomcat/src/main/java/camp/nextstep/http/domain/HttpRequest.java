@@ -13,11 +13,11 @@ public class HttpRequest {
     private final RequestBody requestBody;
 
     public HttpRequest(final InputStream inputStream) throws IOException {
-        try (final BufferedReader br = new BufferedReader(new InputStreamReader(inputStream))) {
-            this.requestLine = new RequestLine(br.readLine());
-            this.headers = new HttpHeaders(extractHeaders(br));
-            this.requestBody = extractRequestBody(br, headers);
-        }
+        final BufferedReader br = new BufferedReader(new InputStreamReader(inputStream));
+        this.requestLine = new RequestLine(br.readLine());
+        this.headers = new HttpHeaders(extractHeaders(br));
+        this.requestBody = extractRequestBody(br, headers);
+
     }
 
     private RequestBody extractRequestBody(final BufferedReader br, final HttpHeaders requestHeaders) throws IOException {
