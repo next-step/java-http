@@ -1,4 +1,4 @@
-package org.apache.coyote.http11;
+package org.apache.coyote.http11.response;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import org.junit.jupiter.api.DisplayName;
@@ -32,7 +32,7 @@ class ResponseTest {
         @Test
         void create_NotFound_Response() {
             // given & when
-            final var result = Response.notFound();
+            final var result = Response.notFound("");
 
             // then
             var expected = String.join("\r\n",
@@ -41,6 +41,40 @@ class ResponseTest {
                 "Content-Length: 0 ",
                 "",
                 "");
+
+            assertThat(new String(result.toHttp11())).isEqualTo(expected);
+        }
+
+        @DisplayName("redirect Response 객체를 생성할 수 있다.")
+        @Test
+        void create_Redirect_Response() {
+            // given & when
+            final var result = Response.redirect("Redirect to /users");
+
+            // then
+            var expected = String.join("\r\n",
+                "HTTP/1.1 302 Found ",
+                "Content-Type: text/html ",
+                "Content-Length: 18 ",
+                "",
+                "Redirect to /users");
+
+            assertThat(new String(result.toHttp11())).isEqualTo(expected);
+        }
+
+        @DisplayName("unauthorized Response 객체를 생성할 수 있다.")
+        @Test
+        void create_Unauthorized_Response() {
+            // given & when
+            final var result = Response.unauthorized("Unauthorized");
+
+            // then
+            var expected = String.join("\r\n",
+                "HTTP/1.1 401 Unauthorized ",
+                "Content-Type: text/html ",
+                "Content-Length: 12 ",
+                "",
+                "Unauthorized");
 
             assertThat(new String(result.toHttp11())).isEqualTo(expected);
         }

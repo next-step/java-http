@@ -68,7 +68,7 @@ class Http11ProcessorTest {
 
         // given
         final String httpRequest = String.join("\r\n",
-            "GET /login?account=gugu&password=password HTTP/1.1 ",
+            "GET /login HTTP/1.1 ",
             "Host: localhost:8080 ",
             "Connection: keep-alive ",
             "",
@@ -86,6 +86,36 @@ class Http11ProcessorTest {
             "HTTP/1.1 200 OK ",
             "Content-Type: text/html ",
             "Content-Length: 3796 ",
+            "",
+            new String(Files.readAllBytes(new File(resource.getFile()).toPath())));
+
+        assertThat(socket.output()).isEqualTo(expected);
+    }
+
+    @DisplayName("login이 정상적으로 처리 될 경우 index.html을 읽어온다.")
+    @Test
+    void login_with_query_string() throws IOException {
+
+        // given
+        final String httpRequest = String.join("\r\n",
+            "GET /login?account=gugu&password=password HTTP/1.1 ",
+            "Host: localhost:8080 ",
+            "Connection: keep-alive ",
+            "",
+            "");
+
+        final var socket = new StubSocket(httpRequest);
+        final var processor = new Http11Processor(socket);
+
+        // when
+        processor.process(socket);
+
+        // then
+        final URL resource = getClass().getClassLoader().getResource("static/index.html");
+        var expected = String.join("\r\n",
+            "HTTP/1.1 302 Found ",
+            "Content-Type: text/html ",
+            "Content-Length: 5564 ",
             "",
             new String(Files.readAllBytes(new File(resource.getFile()).toPath())));
 
@@ -115,6 +145,35 @@ class Http11ProcessorTest {
             "HTTP/1.1 200 OK ",
             "Content-Type: text/css ",
             "Content-Length: 211991 ",
+            "",
+            new String(Files.readAllBytes(new File(resource.getFile()).toPath())));
+
+        assertThat(socket.output()).isEqualTo(expected);
+    }
+
+    @DisplayName("존재하지 않는 경로로 요청이 들어왔을 때 404.html을 응답한다.")
+    @Test
+    void not_found() throws IOException {
+        // given
+        final String httpRequest = String.join("\r\n",
+            "GET /notfound HTTP/1.1 ",
+            "Host: localhost:8080 ",
+            "Connection: keep-alive ",
+            "",
+            "");
+
+        final var socket = new StubSocket(httpRequest);
+        final var processor = new Http11Processor(socket);
+
+        // when
+        processor.process(socket);
+
+        // then
+        final URL resource = getClass().getClassLoader().getResource("static/404.html");
+        var expected = String.join("\r\n",
+            "HTTP/1.1 404 Not Found ",
+            "Content-Type: text/html ",
+            "Content-Length: 2426 ",
             "",
             new String(Files.readAllBytes(new File(resource.getFile()).toPath())));
 

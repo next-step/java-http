@@ -73,7 +73,7 @@ GET /users?userId=javajigi&password=password&name=JaeSung HTTP/1.1
 
 ## 🚀 3단계 - 로그인 구현하기
 
-- [ ] : 1. HTTP Status Code 302
+- [x] : 1. HTTP Status Code 302
 - [ ] : 2. POST 방식으로 회원가입
 - [ ] : 3. Cookie에 JSESSIONID 값 저장하기
 - [ ] : 4. Session 구현하기
