@@ -1,18 +1,18 @@
-package org.apache.coyote.http11;
+package org.apache.coyote.http11.request;
 
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public class Query {
+public class QueryString {
 
     private static final String DELIMITER = "&";
     private static final String KEY_VALUE_DELIMITER = "=";
 
     private final Map<String, Object> parameters;
 
-    private Query(Map<String, Object> parameters) {
+    private QueryString(Map<String, Object> parameters) {
         this.parameters = parameters;
     }
 
@@ -20,9 +20,9 @@ public class Query {
         return parameters.get(key);
     }
 
-    public static Query from(String queryString) {
+    public static QueryString from(String queryString) {
         if (queryString == null || queryString.isBlank()) {
-            return new Query(Collections.emptyMap());
+            return new QueryString(Collections.emptyMap());
         }
 
         String[] tokens = queryString.split(DELIMITER);
@@ -31,7 +31,7 @@ public class Query {
             .map(token -> token.split(KEY_VALUE_DELIMITER, 2))
             .collect(Collectors.toUnmodifiableMap(keyValue -> keyValue[0], keyValue -> keyValue[1]));
 
-        return new Query(parameter);
+        return new QueryString(parameter);
     }
 
     public Map<String, Object> getParameters() {

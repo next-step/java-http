@@ -1,4 +1,4 @@
-package org.apache.coyote.http11;
+package org.apache.coyote.http11.response;
 
 public class Response {
 
@@ -19,12 +19,16 @@ public class Response {
         return new Response(HttpStatus.OK, contentType, body);
     }
 
-    public static Response notFound() {
-        return new Response(HttpStatus.NOT_FOUND, ContentType.HTML, "");
+    public static Response notFound(String body) {
+        return new Response(HttpStatus.NOT_FOUND, ContentType.HTML, body);
     }
 
-    public static Response notFound(ContentType contentType, String body) {
-        return new Response(HttpStatus.NOT_FOUND, contentType, body);
+    public static Response redirect(String responseBody) {
+        return new Response(HttpStatus.FOUND, ContentType.HTML, responseBody);
+    }
+
+    public static Response unauthorized(String responseBody) {
+        return new Response(HttpStatus.UNAUTHORIZED, ContentType.HTML, responseBody);
     }
 
     public byte[] toHttp11() {

@@ -1,6 +1,7 @@
-package org.apache.coyote.http11;
+package org.apache.coyote.http11.request;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.coyote.http11.response.ContentType;
 
 public class HttpPath {
 
@@ -8,19 +9,18 @@ public class HttpPath {
     private static final int PATH_INDEX = 0;
     private static final int QUERY_INDEX = 1;
     private static final String DOT = ".";
-    private static final String ROOT_PATH = "/";
     private static final String DEFAULT_EXTENSION = ContentType.HTML.getExtension();
 
     private final String path;
-    private final Query query;
+    private final QueryString query;
 
-    private HttpPath(String path, Query query) {
+    private HttpPath(String path, QueryString query) {
         this.path = path;
         this.query = query;
     }
 
     private HttpPath(String path, String queryString) {
-        this(path, Query.from(queryString));
+        this(path, QueryString.from(queryString));
     }
 
     public static HttpPath from(String httpPath) {
@@ -36,7 +36,7 @@ public class HttpPath {
         return path;
     }
 
-    public Query getQuery() {
+    public QueryString getQuery() {
         return query;
     }
 
@@ -53,10 +53,6 @@ public class HttpPath {
             return path + DEFAULT_EXTENSION;
         }
         return path;
-    }
-
-    public boolean isRootPath() {
-        return path.equals(ROOT_PATH);
     }
 
     private boolean hasExtension() {
