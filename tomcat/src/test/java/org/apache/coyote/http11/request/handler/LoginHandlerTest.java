@@ -4,6 +4,7 @@ import org.apache.coyote.http11.HttpRequestHeaderParser;
 import org.apache.coyote.http11.HttpRequestParser;
 import org.apache.coyote.http11.model.HttpRequest;
 import org.apache.coyote.http11.model.constant.HttpStatusCode;
+import org.apache.coyote.http11.session.SessionManager;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -47,7 +48,55 @@ class LoginHandlerTest {
         assertThat(response).isEqualTo(expected);
     }
 
-    @DisplayName("로그인 요청시 requestBody가 있고, 인증된 유저이며 JSSESION_ID가 없으면 Set-Cookie 헤더를 포함해서 index로 리다이렉트 한다.")
+    @DisplayName("로그인 요청시 requestBody가 없지만 세션이 있는 경우 index로 리다이렉트 한다.")
+    @Test
+    void loginQueryParamEmptyHasSessionTest() throws IOException {
+        // given
+        final RequestHandler loginHandler = new LoginHandler();
+        final List<String> request = List.of(
+                "POST /login.html HTTP/1.1 ",
+                "Host: localhost:8080 ",
+                "Connection: keep-alive ",
+                "Content-Length: 31 ",
+                "",
+                "account=gugu&password=password");
+
+        final HttpRequest httpRequest = HttpRequestParser.getInstance()
+                .parse(HttpRequestHeaderParser.getInstance().parse(request), "account=gugu&password=password");
+        // 세션 생성
+        loginHandler.handle(httpRequest);
+
+        final List<String> requestAfter = List.of(
+                "GET /login.html HTTP/1.1 ",
+                "Host: localhost:8080 ",
+                "Connection: keep-alive ",
+                "Cookie: JSESSIONID=" + httpRequest.httpRequestHeader().httpCookie().valueByKey("JSESSIONID"),
+                "",
+                "");
+
+        final HttpRequest httpRequestAfter = HttpRequestParser.getInstance()
+                .parse(HttpRequestHeaderParser.getInstance().parse(requestAfter), "");
+
+        final URL resource = getClass().getClassLoader().getResource("static/login.html");
+        var expected = String.join("\r\n",
+                "HTTP/1.1 200 OK ",
+                "Content-Type: text/html;charset=utf-8 ",
+                "Content-Length: 3447 ",
+                "",
+                new String(Files.readAllBytes(new File(resource.getFile()).toPath())));
+
+        // when
+        final String response = loginHandler.handle(httpRequestAfter);
+
+        // then
+        assertThat(response).contains(HttpStatusCode.FOUND.name());
+        assertThat(httpRequest.httpRequestHeader().httpCookie().valueByKey("JSESSIONID")).isNotNull();
+
+        final String sessionId = httpRequest.httpRequestHeader().httpCookie().valueByKey("JSESSIONID");
+        assertThat(SessionManager.getInstance().findSession(sessionId)).isNotNull();
+    }
+
+    @DisplayName("로그인 요청시 requestBody가 있고, 인증된 유저이며 JSSESION_ID가 없으면 Set-Cookie 헤더를 포함하고 session에 등록, index로 리다이렉트 한다.")
     @Test
     void loginSuccessHasNotCookieTest() throws IOException {
         // given
@@ -70,8 +119,11 @@ class LoginHandlerTest {
         // then
         assertThat(response).contains(HttpStatusCode.FOUND.name());
         assertThat(httpRequest.httpRequestHeader().httpCookie().valueByKey("JSESSIONID")).isNotNull();
+
+        final String sessionId = httpRequest.httpRequestHeader().httpCookie().valueByKey("JSESSIONID");
+        assertThat(SessionManager.getInstance().findSession(sessionId)).isNotNull();
     }
-    
+
     @DisplayName("로그인 요청시 requestBody가 있고, 인증이 안된 유저의 경우 401로 리다이렉트 한다.")
     @Test
     void loginFailTest() throws IOException {

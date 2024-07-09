@@ -3,8 +3,9 @@ package org.apache.coyote.http11.request.handler;
 import camp.nextstep.db.InMemoryUserRepository;
 import camp.nextstep.model.User;
 import org.apache.coyote.http11.model.HttpRequest;
+import org.apache.coyote.http11.model.HttpSession;
 import org.apache.coyote.http11.model.QueryParams;
-import org.apache.coyote.http11.model.RequestLine;
+import org.apache.coyote.http11.session.SessionManager;
 
 import java.io.IOException;
 import java.util.NoSuchElementException;
@@ -16,20 +17,35 @@ public class LoginHandler extends AbstractRequestHandler {
     private static final String LOGIN_PASSWORD_KEY = "password";
     private static final String SUCCESS_REDIRECT_PATH = "/index.html";
     private static final String FAILED_REDIRECT_PATH = "/401.html";
-    private static final String JSESSIONID_KEY = "JSESSIONID=";
+    private static final String JSESSIONID_KEY = "JSESSIONID";
+    private static final String EQUAL = "=";
 
     @Override
     public String handle(final HttpRequest request) throws IOException {
-        final RequestLine requestLine = request.httpRequestHeader()
-                .requestLine();
-
         if (!request.hasRequestBody()) {
-            final String body = buildBodyFromReadFile(requestLine.url());
-            return buildOkHttpResponse(request.httpRequestHeader(), body);
+            return checkSessionLogin(request);
         }
 
         return login(request);
     }
+
+    private String checkSessionLogin(final HttpRequest request) throws IOException {
+        if (!request.httpRequestHeader().hasJSessionIdCookie()) {
+            final String body = buildBodyFromReadFile(request.httpRequestHeader().requestLine().url());
+            return buildOkHttpResponse(request.httpRequestHeader(), body);
+        }
+
+        final HttpSession session = (HttpSession) SessionManager.getInstance()
+                .findSession(request.httpRequestHeader().JSessionId());
+
+        if (session != null) {
+            return buildRedirectHttpResponse(request.httpRequestHeader(), SUCCESS_REDIRECT_PATH);
+        }
+
+        final String body = buildBodyFromReadFile(request.httpRequestHeader().requestLine().url());
+        return buildOkHttpResponse(request.httpRequestHeader(), body);
+    }
+
 
     private String login(final HttpRequest request) {
         final QueryParams requestBody = request.requestBody();
@@ -52,6 +68,10 @@ public class LoginHandler extends AbstractRequestHandler {
         final String uuid = UUID.randomUUID()
                 .toString();
         request.addJSessionIdCookie(uuid);
-        return buildRedirectSetCookieHttpResponse(request.httpRequestHeader(), SUCCESS_REDIRECT_PATH, JSESSIONID_KEY + uuid);
+
+        SessionManager.getInstance()
+                .add(new HttpSession(uuid));
+
+        return buildRedirectSetCookieHttpResponse(request.httpRequestHeader(), SUCCESS_REDIRECT_PATH, JSESSIONID_KEY + EQUAL + uuid);
     }
 }
