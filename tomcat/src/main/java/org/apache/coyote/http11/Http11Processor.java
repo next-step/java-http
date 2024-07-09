@@ -5,11 +5,9 @@ import camp.nextstep.exception.UncheckedServletException;
 import camp.nextstep.model.User;
 import org.apache.coyote.Processor;
 import org.apache.coyote.http11.request.ContentType;
-import org.apache.coyote.http11.request.QueryStrings;
 import org.apache.coyote.http11.request.RequestLine;
 import org.apache.coyote.http11.request.RequestLineParser;
 import org.apache.coyote.http11.response.ResponseResource;
-import org.apache.coyote.http11.util.UtilString;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,9 +51,7 @@ public class Http11Processor implements Runnable, Processor {
             ResponseResource responseResource = ResponseResource.of(requestLine.getPath());
 
             URL resource = responseResource.getResource();
-            String fileName = responseResource.getFileName();
-
-            String extension = UtilString.parseExtension(fileName);
+            String extension = responseResource.parseExtension();
             String contentType = ContentType.findByExtension(extension).getContentType();
             String responseBody = new String(Files.readAllBytes(new File(resource.getFile()).toPath()));
 

@@ -2,7 +2,6 @@ package org.apache.coyote.http11.response;
 
 import camp.nextstep.db.InMemoryUserRepository;
 import camp.nextstep.model.User;
-import org.apache.coyote.http11.Http11Processor;
 import org.apache.coyote.http11.request.Path;
 import org.apache.coyote.http11.request.QueryStrings;
 import org.slf4j.Logger;
@@ -44,14 +43,14 @@ public class ResponseResource {
 		return resource;
 	}
 
-	public String getFileName() {
-		return fileName;
-	}
-
 	public static void login(String account, String password) {
 		final User user = InMemoryUserRepository.findByAccount(account).orElseThrow(NoSuchElementException::new);
 		if (user.checkPassword(password)) {
 			log.info("user {}", user);
 		}
+	}
+
+	public String parseExtension() {
+		return fileName.substring(fileName.lastIndexOf("."));
 	}
 }
