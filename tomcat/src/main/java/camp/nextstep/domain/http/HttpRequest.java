@@ -24,6 +24,10 @@ public class HttpRequest {
         return requestLine.isPostMethod();
     }
 
+    public boolean containsSessionId() {
+        return httpCookie.containsSessionId();
+    }
+
     public String getHttpPath() {
         return requestLine.getHttpPath();
     }
@@ -38,6 +42,10 @@ public class HttpRequest {
 
     public Map<String, String> getQueryString() {
         return requestLine.getQueryString();
+    }
+
+    public HttpCookie getHttpCookie() {
+        return httpCookie;
     }
 
     public Map<String, String> getHttpRequestBody() {

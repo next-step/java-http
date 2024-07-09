@@ -2,6 +2,8 @@ package camp.nextstep.domain.http;
 
 import camp.nextstep.domain.session.Session;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 
 import java.util.List;
 import java.util.Map;
@@ -59,6 +61,13 @@ class HttpCookieTest {
         assertThatThrownBy(() -> new HttpCookie().getSessionId())
                 .isInstanceOf(IllegalStateException.class)
                 .hasMessage("session id가 없습니다.");
+    }
+
+    @ParameterizedTest
+    @CsvSource(value = {"Cookie: JSESSIONID=key,true", "Cookie: name=jinyoung,false"})
+    void session_id가_있는지_확인한다(String givenCookie, boolean expected) {
+        boolean actual = HttpCookie.from(List.of(givenCookie)).containsSessionId();
+        assertThat(actual).isEqualTo(expected);
     }
 
     @Test

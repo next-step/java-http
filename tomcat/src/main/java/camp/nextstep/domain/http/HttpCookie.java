@@ -64,8 +64,12 @@ public class HttpCookie {
         return new HttpCookie(Map.of(SESSION_COOKIE_KEY, session.getId()));
     }
 
+    public boolean containsSessionId() {
+        return cookies.containsKey(SESSION_COOKIE_KEY);
+    }
+
     public String getSessionId() {
-        if (!cookies.containsKey(SESSION_COOKIE_KEY)) {
+        if (!containsSessionId()) {
             throw new IllegalStateException("session id가 없습니다.");
         }
         return cookies.get(SESSION_COOKIE_KEY);
