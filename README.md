@@ -114,3 +114,9 @@ Location: /index.html
   - session id를 추출한다 (없으면 예외가 발생한다.)
 - 쿠키 포멧에 맞지 않게 값이 입력되면 예외가 발생한다.
 - response header에 cookie를 저장할 수 있다.
+
+### 4. Session 구현하기
+- 로그인에 성공하면 session을 쿠키에 넣어 반환한다.
+- 이미 로그인한 상태에서 `/login`에 들어오는 경우 index.html로 리다이랙한다.
+  - cookie에 저장된 session이 있는 session인지 확인할 수 있다.
+- 세션을 관리할 수 있다.
