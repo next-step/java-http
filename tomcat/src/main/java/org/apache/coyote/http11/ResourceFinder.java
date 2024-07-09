@@ -1,27 +1,17 @@
 package org.apache.coyote.http11;
 
 import java.io.File;
-import java.io.IOException;
 import java.net.URL;
-import java.nio.file.Files;
 
-public class ResourceReader {
+public class ResourceFinder {
     private static final String BASE_DIRECTORY = "static";
     private static final String FILE_EXTENSION_SEPARATOR = ".";
     private static final String HTML_FILE_EXTENSION = ".html";
 
-    public File readFile(final String path) {
+    public File findByPath(final String path) {
         URL resourceUrl = findResourceUrl(path);
-        if (resourceUrl == null) {
-            throw new IllegalArgumentException("파일을 찾을 수 없습니다.");
-        }
-
+        validate(resourceUrl);
         return new File(resourceUrl.getFile());
-    }
-
-    public String read(final String path) {
-        URL resourceUrl = findResourceUrl(path);
-        return findFileFrom(resourceUrl);
     }
 
     private URL findResourceUrl(final String path) {
@@ -53,15 +43,9 @@ public class ResourceReader {
         return path.equals("/");
     }
 
-    private String findFileFrom(final URL resourceUrl) {
+    private void validate(final URL resourceUrl) {
         if (resourceUrl == null) {
             throw new IllegalArgumentException("파일을 찾을 수 없습니다.");
-        }
-
-        try {
-            return new String(Files.readAllBytes(new File(resourceUrl.getFile()).toPath()));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
         }
     }
 }
