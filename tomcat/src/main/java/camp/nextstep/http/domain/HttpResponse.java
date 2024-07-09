@@ -73,6 +73,6 @@ public class HttpResponse {
     }
 
     public void setSession(final String string) {
-        headers.addCookie("JSESSIONID", string);
+        headers.addSessionCookie(string);
     }
 }

@@ -62,11 +62,11 @@ public class HttpRequest {
     }
 
     public boolean isSessionEmpty() {
-        return headers.getCookie("JESSIONID") == null;
+        return headers.getSessionCookie() == null;
     }
 
     public HttpSession getSession(final boolean create) {
-        HttpSession session = HttpSessionManager.findSession(headers.getCookie("JESSIONID"));
+        HttpSession session = HttpSessionManager.findSession(headers.getSessionCookie());
 
         if (session == null && create) {
             session = new HttpSession(UUID.randomUUID().toString());

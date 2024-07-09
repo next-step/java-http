@@ -21,6 +21,7 @@ public class HttpHeaders {
     private static final int EMPTY_CONTENT_LENGTH = 0;
     private static final String LOCATION = "Location";
     private static final String COOKIE_KEY = "Cookie";
+    public static final String JSESSIONID = "JSESSIONID";
 
     private final Map<String, String> headers;
     private final HttpCookies httpCookies;
@@ -98,10 +99,6 @@ public class HttpHeaders {
         return httpCookies.get(name);
     }
 
-    public void addCookie(final String name, final String value) {
-        httpCookies.add(name, value);
-    }
-
     public String convertToString() {
         return convertCookiesToString() +
                 headers.entrySet()
@@ -115,6 +112,14 @@ public class HttpHeaders {
             return "";
         }
         return httpCookies.convertToString() + System.lineSeparator();
+    }
+
+    public void addSessionCookie(final String value) {
+        httpCookies.add(JSESSIONID, value);
+    }
+
+    public String getSessionCookie() {
+        return httpCookies.get(JSESSIONID);
     }
 
     @Override
