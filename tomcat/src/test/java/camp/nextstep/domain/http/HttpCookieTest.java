@@ -16,6 +16,18 @@ class HttpCookieTest {
     }
 
     @Test
+    void headers를_가지고_생성할_때_쿠키가_없으면_빈_쿠키가_생성된다() {
+        HttpCookie actual = HttpCookie.from(Map.of("Content-Length", "123"));
+        assertThat(actual.getCookies()).isEmpty();
+    }
+
+    @Test
+    void header를_가지고_쿠키값을_추출하여_생성한다() {
+        HttpCookie actual = HttpCookie.from(Map.of("Content-Length", "123", "Cookie", "name=jinyoung"));
+        assertThat(actual.getCookies()).containsExactly(Map.entry("name", "jinyoung"));
+    }
+
+    @Test
     void key_value가_잘못된_형태로_입력된_경우_예외가_발생한다() {
         assertThatThrownBy(() -> HttpCookie.from("name=jin=young"))
                 .isInstanceOf(IllegalArgumentException.class)

@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 
 public class HttpCookie {
 
+    private static final String COOKIE_HEADER_KEY = "Cookie";
     private static final String SESSION_COOKIE_KEY = "JSESSIONID";
 
     private static final String HTTP_COOKIES_FORMAT_SPLIT_REGEX = "; ";
@@ -25,6 +26,13 @@ public class HttpCookie {
 
     public HttpCookie() {
         this(new HashMap<>());
+    }
+
+    public static HttpCookie from(Map<String, String> headers) {
+        if (headers.containsKey(COOKIE_HEADER_KEY)) {
+            return new HttpCookie(parseCookies(headers.get(COOKIE_HEADER_KEY)));
+        }
+        return new HttpCookie();
     }
 
     public static HttpCookie from(String cookies) {
