@@ -4,7 +4,10 @@ import org.apache.coyote.http11.RequestLine;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.util.Arrays;
 import java.util.Map;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -13,6 +16,10 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class HttpRequestTest {
     static public class HttpRequest {
+        private static final int REQUEST_LINE_INDEX = 0;
+        private static final int HEADER_START_INDEX = 1;
+        private static final String HEADER_KEY_VALUE_SEPARATOR = ":";
+
         private final RequestLine requestLine;
         private final Map<String, String> httpHeaderMap;
 
@@ -22,7 +29,17 @@ public class HttpRequestTest {
         }
 
         public static HttpRequest from(final String httpRequestMessage) {
-            return new HttpRequest(null, Map.of());
+            String[] httpRequestMessages = httpRequestMessage.split("\n");
+
+            Map<String, String> collect = Arrays.stream(httpRequestMessages, HEADER_START_INDEX, httpRequestMessages.length)
+                    .takeWhile(Predicate.not(String::isBlank))
+                    .map(httpHeader -> httpHeader.split(HEADER_KEY_VALUE_SEPARATOR, 2))
+                    .collect(Collectors.toUnmodifiableMap(
+                            httpHeader -> httpHeader[0],
+                            httpHeader -> httpHeader[1]
+                    ));
+
+            return new HttpRequest(RequestLine.from(httpRequestMessages[REQUEST_LINE_INDEX]), collect);
         }
     }
 
