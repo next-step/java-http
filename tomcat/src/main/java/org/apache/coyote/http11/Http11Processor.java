@@ -4,19 +4,15 @@ import camp.nextstep.db.InMemoryUserRepository;
 import camp.nextstep.exception.UncheckedServletException;
 import camp.nextstep.model.User;
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.InputStreamReader;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.HashMap;
+import java.io.OutputStream;
 import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.coyote.Processor;
+import org.apache.coyote.http11.request.HttpPath;
+import org.apache.coyote.http11.request.RequestLine;
+import org.apache.coyote.http11.response.ContentType;
+import org.apache.coyote.http11.response.Response;
+import org.apache.utils.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,6 +24,13 @@ public class Http11Processor implements Runnable, Processor {
     private static final Logger log = LoggerFactory.getLogger(Http11Processor.class);
     private static final String ROOT_PATH_BODY = "Hello world!";
     private static final String LOGIN_PATH = "/login";
+    private static final String ACCOUNT_PARAMETER = "account";
+    private static final String PASSWORD_PARAMETER = "password";
+    private static final String ROOT_PATH = "/";
+    private static final String INDEX_PATH = "/index.html";
+    private static final String NOT_FOUND_PATH = "/404.html";
+    private static final String UNAUTHORIZED_PATH = "/401.html";
+
     private static final String STATIC_PATH = "static";
 
     private final Socket connection;
@@ -47,18 +50,8 @@ public class Http11Processor implements Runnable, Processor {
         try (final var br = new BufferedReader(new InputStreamReader(connection.getInputStream()));
              final var outputStream = connection.getOutputStream()) {
             RequestLine requestLine = RequestLine.from(br.readLine());
-            HttpPath path = requestLine.getPath();
 
-            if (isLoginPath(path)) {
-                handleLogin(requestLine);
-            }
-
-            Response response = getResponseBody(path)
-                .map(responseBody -> Response.ok(
-                    ContentType.from(path.getExtension()),
-                    responseBody
-                ))
-                .orElse(Response.notFound());
+            Response response = handleMapping(requestLine);
 
             outputStream.write(response.toHttp11());
             outputStream.flush();
@@ -67,27 +60,69 @@ public class Http11Processor implements Runnable, Processor {
         }
     }
 
+    private Response handleMapping(RequestLine requestLine) throws IOException {
+        HttpPath path = requestLine.getPath();
+        if (isRootPath(path.getPath())) {
+            return Response.ok(ContentType.HTML, ROOT_PATH_BODY);
+        }
+
+        if (isLoginPath(path)) {
+            return handleLogin(requestLine);
+        }
+
+        String responseBody = getResponseBody(path);
+        if (responseBody.isEmpty()) {
+            return Response.notFound(getResponseBody(HttpPath.from(NOT_FOUND_PATH)));
+        }
+        return Response.ok(ContentType.from(path.getExtension()), getResponseBody(requestLine.getPath()));
+    }
+
+    private boolean isRootPath(String path) {
+        return path.equals(ROOT_PATH);
+    }
+
     private boolean isLoginPath(HttpPath path) {
         return LOGIN_PATH.equals(path.getPath());
     }
 
-    private void handleLogin(RequestLine requestLine) {
+    private Response handleLogin(RequestLine requestLine) throws IOException {
         Map<String, Object> parameters = requestLine.getParameters();
-        User user = InMemoryUserRepository.findByAccount(parameters.get("account").toString())
-            .orElseThrow(IllegalArgumentException::new);
 
-        user.checkPassword(parameters.get("password").toString());
-        log.info(user.toString());
+        if (parameters.isEmpty()) {
+            return Response.ok(ContentType.HTML, getResponseBody(requestLine.getPath()));
+        }
+
+        String account = parameters.get(ACCOUNT_PARAMETER).toString();
+        String password = parameters.get(PASSWORD_PARAMETER).toString();
+
+        return authenticateUser(account, password);
     }
 
-    private Optional<String> getResponseBody(HttpPath path) throws IOException {
-        if (path.isRootPath()) {
-            return Optional.of(ROOT_PATH_BODY);
+    private Response authenticateUser(String account, String password) throws IOException {
+        try {
+            User user = findUserByAccount(account);
+
+            if (!isPasswordValid(user, password)) {
+                throw new IllegalArgumentException();
+            }
+            log.info(user.toString());
+            return Response.redirect(getResponseBody(HttpPath.from(INDEX_PATH)));
+        } catch (IllegalArgumentException e) {
+            return Response.unauthorized(getResponseBody(HttpPath.from(UNAUTHORIZED_PATH)));
         }
-        File file = new File(ClassLoader.getSystemResource(STATIC_PATH).getPath() + path.getFilePath());
-        if (!file.exists()) {
-            return Optional.empty();
-        }
-        return Optional.of(Files.readString(file.toPath()));
+    }
+
+    private User findUserByAccount(String account) {
+        return InMemoryUserRepository.findByAccount(account)
+            .orElseThrow(IllegalArgumentException::new);
+    }
+
+    private boolean isPasswordValid(User user, String password) {
+        return user.checkPassword(password);
+    }
+
+    private String getResponseBody(HttpPath path) throws IOException {
+        String resourcePath = ClassLoader.getSystemResource(STATIC_PATH).getPath();
+        return FileUtils.readFileContent(resourcePath + path.getFilePath());
     }
 }
