@@ -54,6 +54,7 @@ public class ContentTypeTest {
     @CsvSource({
             "ttt.html, text/html",
             "ttt.css, text/css",
+            "ttt, text/plain",
     })
     void from(String fileName, String contentTypeValue) {
         StubFile htmlFile = new StubFile(fileName);
