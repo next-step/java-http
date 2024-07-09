@@ -140,3 +140,9 @@ X-Pad: avoid browser bug
 - Cookie 클래스를 추가하고 값들을 저장한다.
 - HTTP Request Header의 Cookie에 `JSESSIONID` 가 없으면 HTTP Response Header에 `JSESSIONID` 를 추가한다.
 - `JSESSIONID`는 UUID 를 이용한다.
+
+### 요구사항 4. Session 구현하기
+
+- 쿠키에서 전달 받은 `JSESSIONID` 의 값으로 로그인 여부를 체크할 수 있어야 한다.
+- 로그인 성공 시 Session 에 User 객체를 저장한다.
+- 로그인이 된 상태에서 `/login` 페이지에 HTTP GET 요청으로 접근하면 index.html 페이지로 리다이렉트 한다.
