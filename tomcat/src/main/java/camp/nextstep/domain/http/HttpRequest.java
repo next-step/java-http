@@ -5,12 +5,12 @@ import java.util.Map;
 public class HttpRequest {
 
     private final RequestLine requestLine;
-    private final HttpRequestHeaders httpRequestHeaders;
+    private final HttpHeaders httpHeaders;
     private final HttpRequestBody httpRequestBody;
 
-    public HttpRequest(RequestLine requestLine, HttpRequestHeaders httpRequestHeaders, HttpRequestBody httpRequestBody) {
+    public HttpRequest(RequestLine requestLine, HttpHeaders httpHeaders, HttpRequestBody httpRequestBody) {
         this.requestLine = requestLine;
-        this.httpRequestHeaders = httpRequestHeaders;
+        this.httpHeaders = httpHeaders;
         this.httpRequestBody = httpRequestBody;
     }
 

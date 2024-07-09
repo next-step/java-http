@@ -66,7 +66,7 @@ public class Http11Processor implements Runnable, Processor {
         }
     }
 
-    private HttpRequestHeaders parseRequestHeader(final BufferedReader inputReader) throws IOException {
+    private HttpHeaders parseRequestHeader(final BufferedReader inputReader) throws IOException {
         final var requestHeaders = new ArrayList<String>();
         while (inputReader.ready()) {
             final var line = inputReader.readLine();
@@ -75,10 +75,10 @@ public class Http11Processor implements Runnable, Processor {
             }
             requestHeaders.add(line);
         }
-        return new HttpRequestHeaders(requestHeaders);
+        return new HttpHeaders(requestHeaders);
     }
 
-    private HttpRequestBody parseRequestBody(final BufferedReader inputReader, final HttpRequestHeaders requestHeaders) throws IOException {
+    private HttpRequestBody parseRequestBody(final BufferedReader inputReader, final HttpHeaders requestHeaders) throws IOException {
         if (!requestHeaders.containsContentLength()) {
             return new HttpRequestBody();
         }

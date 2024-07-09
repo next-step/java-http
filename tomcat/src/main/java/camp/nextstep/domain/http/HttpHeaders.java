@@ -7,7 +7,7 @@ import java.util.stream.Collectors;
 
 import static java.lang.Integer.parseInt;
 
-public class HttpRequestHeaders {
+public class HttpHeaders {
 
     private static final String CONTENT_LENGTH_HEADER_KEY = "Content-Length";
 
@@ -19,7 +19,7 @@ public class HttpRequestHeaders {
 
     private final Map<String, String> headers;
 
-    public HttpRequestHeaders(List<String> headers) {
+    public HttpHeaders(List<String> headers) {
         this.headers = headers.stream()
                 .map(this::parseRequestHeader)
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
