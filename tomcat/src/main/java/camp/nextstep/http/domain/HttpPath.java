@@ -7,6 +7,7 @@ public class HttpPath {
     private static final String DOT = ".";
     private static final String ROOT_PATH = "/";
     private static final String LOGIN_PATH = "/login";
+    public static final String EMPTY_EXTENSION = "";
 
     private final String path;
 
@@ -19,11 +20,10 @@ public class HttpPath {
     }
 
     public String getExtension() {
-        final int lastDotIndex = path.lastIndexOf(DOT);
-        if (lastDotIndex == -1) {
-            return "";
+        if (path.contains(DOT)) {
+            return path.substring(path.lastIndexOf(DOT));
         }
-        return path.substring(lastDotIndex);
+        return EMPTY_EXTENSION;
     }
 
     public boolean isRoot() {
