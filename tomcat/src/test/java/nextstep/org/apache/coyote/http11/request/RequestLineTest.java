@@ -1,4 +1,4 @@
-package nextstep.org.apache.coyote.http11.requestline;
+package nextstep.org.apache.coyote.http11.request;
 
 import org.apache.coyote.http11.request.RequestLine;
 import org.apache.coyote.http11.request.RequestLineParser;
