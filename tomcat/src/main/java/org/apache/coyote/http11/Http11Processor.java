@@ -42,15 +42,9 @@ public class Http11Processor implements Runnable, Processor {
             File resource = new ResourceFinder().findByPath(path);
             MediaType mediaType = MediaType.from(resource);
             String responseBody = new String(Files.readAllBytes(resource.toPath()));
+            HttpResponse response = HttpResponse.from(httpRequest.getProtocol(), mediaType, responseBody);
 
-            String response = String.join("\r\n",
-                    "HTTP/1.1 200 OK ",
-                    "Content-Type: %s;charset=utf-8 ".formatted(mediaType.getValue()),
-                    "Content-Length: " + responseBody.getBytes().length + " ",
-                    "",
-                    responseBody);
-
-            outputStream.write(response.getBytes());
+            outputStream.write(response.createFormat().getBytes());
             outputStream.flush();
         } catch (IOException | UncheckedServletException e) {
             log.error(e.getMessage(), e);

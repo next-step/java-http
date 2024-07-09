@@ -34,4 +34,8 @@ public class HttpRequest {
     public Map<String, String> getQueryParamMap() {
         return requestLine.getQueryParamMap();
     }
+
+    public HttpProtocol getProtocol() {
+        return requestLine.getProtocol();
+    }
 }
