@@ -1,5 +1,9 @@
 package org.apache.coyote.http11.request.handler;
 
+import org.apache.coyote.http11.model.HttpRequestHeader;
+import org.apache.coyote.http11.model.HttpResponse;
+import org.apache.coyote.http11.model.constant.HttpStatusCode;
+
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
@@ -15,20 +19,13 @@ abstract class AbstractRequestHandler implements RequestHandler {
         return new String(Files.readAllBytes(html.toPath()));
     }
 
-    protected String buildHttpOkResponse(final String body, final String contentType) {
-        return String.join("\r\n",
-                "HTTP/1.1 200 OK ",
-                "Content-Type: " + contentType + ";charset=utf-8 ",
-                "Content-Length: " + body.getBytes().length + " ",
-                "",
-                body);
+    protected String buildOkHttpResponse(final HttpRequestHeader httpRequestHeader, final String body) {
+        return new HttpResponse(HttpStatusCode.OK, httpRequestHeader, body)
+                .buildOkResponse();
     }
 
-    protected String buildRedirectResponse(final String location) {
-        return String.join("\r\n",
-                "HTTP/1.1 302 FOUND ",
-                "Location: " + location + " ",
-                "",
-                "");
+    protected String buildRedirectHttpResponse(final HttpRequestHeader httpRequestHeader, final String location) {
+        return new HttpResponse(HttpStatusCode.FOUND, httpRequestHeader)
+                .buildRedirectResponse(location);
     }
 }

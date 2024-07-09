@@ -31,4 +31,26 @@ class HttpRequestHeaderTest {
         // then
         assertThat(result).isEqualTo(expected);
     }
+
+    @DisplayName("requestHeader에 Cookie가 존재하는지 확인한다.")
+    @ParameterizedTest
+    @CsvSource(
+            delimiter = ',',
+            value = {
+                    "Cookie, 80, true",
+                    "Cookie, 0, true",
+                    "Cookie, 2, true",
+                    "test, test, false",
+            }
+    )
+    void hasCookieTest(final String key, final String value, final boolean expected) {
+        // given
+        final HttpRequestHeader httpRequestHeader = new HttpRequestHeader(Map.of(key, value));
+
+        // when
+        final boolean result = httpRequestHeader.hasCookie();
+
+        // then
+        assertThat(result).isEqualTo(expected);
+    }
 }

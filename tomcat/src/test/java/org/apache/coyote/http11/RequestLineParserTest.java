@@ -81,6 +81,32 @@ class RequestLineParserTest {
         );
     }
 
+    @Test
+    void toLineTest() {
+        // given
+        final String request = createTestRequestString(GET_METHOD, TEST_PATH);
+        final RequestLine requestLine = requestLineParser.parse(request);
+
+        // when
+        final String result = requestLine.toLine();
+
+        // then
+        assertThat(result).isEqualTo("GET /users.html HTTP/1.1");
+    }
+
+    @Test
+    void toLineHasQueryStringTest() {
+        // given
+        final String request = createTestRequestString(GET_METHOD, TEST_PATH_QUERY_STRING);
+        final RequestLine requestLine = requestLineParser.parse(request);
+
+        // when
+        final String result = requestLine.toLine();
+
+        // then
+        assertThat(result).isEqualTo("GET /users.html?password=password&name=JaeSung&userId=javajigi HTTP/1.1");
+    }
+
     private String createTestRequestString(final String httpMethod, final String path) {
         return httpMethod + BLANK + path + BLANK + TEST_PROTOCOL + SLASH + TEST_VERSION;
     }

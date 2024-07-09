@@ -48,7 +48,7 @@ public class HttpRequestHeader {
         return headers.containsKey(COOKIE_KEY);
     }
 
-    public HttpCookieLine httpCookie() {
-        return (HttpCookieLine) headers.get(COOKIE_KEY);
+    public HttpCookie httpCookie() {
+        return (HttpCookie) headers.get(COOKIE_KEY);
     }
 }

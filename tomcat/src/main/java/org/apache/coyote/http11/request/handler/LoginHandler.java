@@ -23,20 +23,22 @@ public class LoginHandler extends AbstractRequestHandler {
 
         if (!request.hasRequestBody()) {
             final String body = buildBodyFromReadFile(requestLine.url());
-            return buildHttpOkResponse(body, requestLine.contentTypeText());
+            return buildOkHttpResponse(request.httpRequestHeader(), body);
         }
 
-        return login(request.requestBody());
+        return login(request);
     }
 
-    private String login(final QueryParams requestBody) {
+    private String login(final HttpRequest request) {
+        final QueryParams requestBody = request.requestBody();
+
         final User user = InMemoryUserRepository.findByAccount(requestBody.valueBy(LOGIN_ACCOUNT_KEY))
                 .orElseThrow(NoSuchElementException::new);
 
         if (user.checkPassword(requestBody.valueBy(LOGIN_PASSWORD_KEY))) {
-            return buildRedirectResponse(SUCCESS_REDIRECT_PATH);
+            return buildRedirectHttpResponse(request.httpRequestHeader(), SUCCESS_REDIRECT_PATH);
         }
 
-        return buildRedirectResponse(FAILED_REDIRECT_PATH);
+        return buildRedirectHttpResponse(request.httpRequestHeader(), FAILED_REDIRECT_PATH);
     }
 }

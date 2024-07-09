@@ -1,5 +1,6 @@
 package org.apache.coyote.http11;
 
+import org.apache.coyote.http11.model.HttpCookie;
 import org.apache.coyote.http11.model.HttpRequestHeader;
 import org.apache.coyote.http11.model.RequestLine;
 
@@ -10,6 +11,7 @@ import java.util.List;
 import static org.apache.coyote.http11.model.HttpRequestHeader.REQUEST_LINE_KEY;
 
 public class HttpRequestHeaderParser {
+    private static final String COOKIE_KEY = "Cookie";
     private static final String COLON_SPACE = ": ";
     private static final int REQUEST_LINE_INDEX = 0;
     private static final int HAS_NOT_OTHER_HEADER_SIZE = 1;
@@ -62,6 +64,12 @@ public class HttpRequestHeaderParser {
         }
 
         final String[] splitHeaderLine = StringTokenizer.token(headerLine, COLON_SPACE);
+
+        if (splitHeaderLine[KEY_INDEX].equals(COOKIE_KEY)) {
+            headerMap.put(splitHeaderLine[KEY_INDEX], HttpCookie.fromStringLine(splitHeaderLine[VALUE_INDEX].trim()));
+            return;
+        }
+
         headerMap.put(splitHeaderLine[KEY_INDEX], splitHeaderLine[VALUE_INDEX].trim());
     }
 

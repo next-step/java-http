@@ -11,6 +11,6 @@ public class DefaultHandler extends AbstractRequestHandler {
     public String handle(final HttpRequest request) throws IOException {
         final HttpRequestHeader httpRequestHeader = request.httpRequestHeader();
         final String body = buildBodyFromReadFile(httpRequestHeader.requestLine().url());
-        return buildHttpOkResponse(body, httpRequestHeader.requestLine().contentTypeText());
+        return buildOkHttpResponse(httpRequestHeader, body);
     }
 }

@@ -5,7 +5,6 @@ import camp.nextstep.model.User;
 import org.apache.coyote.http11.model.HttpRequest;
 import org.apache.coyote.http11.model.QueryParams;
 import org.apache.coyote.http11.model.RequestLine;
-import org.apache.coyote.http11.model.constant.HttpMethod;
 
 import java.io.IOException;
 
@@ -21,19 +20,18 @@ public class RegisterHandler extends AbstractRequestHandler {
     public String handle(final HttpRequest request) throws IOException {
         final RequestLine requestLine = request.httpRequestHeader()
                 .requestLine();
-        final HttpMethod httpMethod = requestLine.httpMethod();
 
-        if (httpMethod.isGetMethod()) {
+        if (requestLine.httpMethod().isGetMethod()) {
             final String body = buildBodyFromReadFile(requestLine.url());
-            return buildHttpOkResponse(body, requestLine.contentTypeText());
+            return buildOkHttpResponse(request.httpRequestHeader(), body);
         }
 
         if (request.hasRequestBody()) {
             saveUser(request.requestBody());
-            return buildRedirectResponse(POST_METHOD_REDIRECT_PATH);
+            return buildRedirectHttpResponse(request.httpRequestHeader(), POST_METHOD_REDIRECT_PATH);
         }
 
-        return buildRedirectResponse(OTHER_METHOD_REDIRECT_PATH);
+        return buildRedirectHttpResponse(request.httpRequestHeader(), OTHER_METHOD_REDIRECT_PATH);
     }
 
     private void saveUser(final QueryParams requestBody) {
