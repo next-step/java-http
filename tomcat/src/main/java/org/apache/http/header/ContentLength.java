@@ -6,14 +6,14 @@ package org.apache.http.header;
 public class ContentLength extends HttpHeader {
     private static final String HEADER_NAME = "Content-Length";
     
-    public final int length;
+    private final int length;
 
     public ContentLength(int length) {
         this.length = length;
     }
 
     @Override
-    public String getHeaderName() {
+    String getHeaderName() {
         return HEADER_NAME;
     }
 

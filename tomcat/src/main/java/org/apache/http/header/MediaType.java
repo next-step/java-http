@@ -8,9 +8,9 @@ public class MediaType {
     public static final MediaType TEXT_HTML = new MediaType("text/html");
     public static final MediaType TEXT_CSS = new MediaType("text/css");
 
-    protected final String contentType;
+    private final String contentType;
 
-    MediaType(String contentType) {
+    private MediaType(String contentType) {
         this.contentType = contentType;
     }
 
@@ -18,4 +18,8 @@ public class MediaType {
         this.contentType = Files.probeContentType(path);
     }
 
+    @Override
+    public String toString() {
+        return contentType;
+    }
 }

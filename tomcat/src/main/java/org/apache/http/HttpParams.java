@@ -8,10 +8,10 @@ import java.util.Optional;
 public class HttpParams {
     private Map<String, String> params = new HashMap<>();
 
-    protected HttpParams() {
+    HttpParams() {
     }
 
-    protected HttpParams(Map<String, String> params) {
+    HttpParams(Map<String, String> params) {
         this.params = params;
     }
 
