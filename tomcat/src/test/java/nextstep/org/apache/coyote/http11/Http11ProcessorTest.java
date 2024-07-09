@@ -1,8 +1,8 @@
 package nextstep.org.apache.coyote.http11;
 
-import support.StubSocket;
 import org.apache.coyote.http11.Http11Processor;
 import org.junit.jupiter.api.Test;
+import support.StubSocket;
 
 import java.io.File;
 import java.io.IOException;
@@ -23,6 +23,7 @@ class Http11ProcessorTest {
             "POST %s HTTP/1.1 \r\n" +
                     "Host: localhost:8080 \r\n" +
                     "Connection: keep-alive \r\n" +
+                    "Content-Length: %d \r\n" +
                     "\r\n" +
                     "%s";
 
@@ -59,11 +60,11 @@ class Http11ProcessorTest {
         // then
         final URL resource = getClass().getClassLoader().getResource("static/index.html");
         final var expected = String.join("\r\n",
-            "HTTP/1.1 200 OK ",
-            "Content-Type: text/html;charset=utf-8 ",
-            "Content-Length: 5670 ", // 운영체제 환경에 따라 다른 값이 나올 수 있음. 자신의 개발 환경에 맞춰 수정할 것.
-            "",
-            new String(Files.readAllBytes(new File(resource.getFile()).toPath())));
+                "HTTP/1.1 200 OK ",
+                "Content-Type: text/html;charset=utf-8 ",
+                "Content-Length: 5670 ", // 운영체제 환경에 따라 다른 값이 나올 수 있음. 자신의 개발 환경에 맞춰 수정할 것.
+                "",
+                new String(Files.readAllBytes(new File(resource.getFile()).toPath())));
 
         assertThat(socket.output()).isEqualTo(expected);
     }
@@ -81,11 +82,11 @@ class Http11ProcessorTest {
         // then
         final URL resource = getClass().getClassLoader().getResource("static/404.html");
         final var expected = String.join("\r\n",
-            "HTTP/1.1 200 OK ",
-            "Content-Type: text/html;charset=utf-8 ",
-            "Content-Length: 2477 ", // 운영체제 환경에 따라 다른 값이 나올 수 있음. 자신의 개발 환경에 맞춰 수정할 것.
-            "",
-            new String(Files.readAllBytes(new File(resource.getFile()).toPath())));
+                "HTTP/1.1 200 OK ",
+                "Content-Type: text/html;charset=utf-8 ",
+                "Content-Length: 2477 ", // 운영체제 환경에 따라 다른 값이 나올 수 있음. 자신의 개발 환경에 맞춰 수정할 것.
+                "",
+                new String(Files.readAllBytes(new File(resource.getFile()).toPath())));
 
         assertThat(socket.output()).isEqualTo(expected);
     }
@@ -137,7 +138,8 @@ class Http11ProcessorTest {
     @Test
     void process_login() {
         // given
-        final String httpRequest = String.format(HTTP_GET_REQUEST_TEMPLATE, "/login?account=gugu&password=password");
+        final String body = "/login?account=gugu&password=password";
+        final String httpRequest = String.format(HTTP_GET_REQUEST_TEMPLATE, body);
         final var socket = new StubSocket(httpRequest);
         final Http11Processor processor = new Http11Processor(socket);
 
@@ -199,7 +201,8 @@ class Http11ProcessorTest {
     @Test
     void process_register_post() {
         // given
-        final String httpRequest = String.format(HTTP_POST_REQUEST_TEMPLATE, "/register", "account=test&password=password&email=test@test.com");
+        final String body = "account=test&password=password&email=test@test.com";
+        final String httpRequest = String.format(HTTP_POST_REQUEST_TEMPLATE, "/register", body.length(), body);
         final var socket = new StubSocket(httpRequest);
         final Http11Processor processor = new Http11Processor(socket);
 

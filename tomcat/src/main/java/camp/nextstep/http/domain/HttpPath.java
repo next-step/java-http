@@ -8,6 +8,7 @@ public class HttpPath {
     private static final String ROOT_PATH = "/";
     private static final String LOGIN_PATH = "/login";
     public static final String EMPTY_EXTENSION = "";
+    public static final String REGISTER_PATH = "/register";
 
     private final String path;
 
@@ -32,6 +33,10 @@ public class HttpPath {
 
     public boolean isLoginPath() {
         return LOGIN_PATH.equals(path);
+    }
+
+    public boolean isRegisterPath() {
+        return REGISTER_PATH.equals(path);
     }
 
     @Override

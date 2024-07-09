@@ -18,6 +18,7 @@ public class Http11Processor implements Runnable, Processor {
     private static final String DEFAULT_MESSAGE = "Hello world!";
     private static final String ACCOUNT = "account";
     private static final String PASSWORD = "password";
+    private static final String EMAIL = "email";
 
     private final Socket connection;
 
@@ -40,23 +41,17 @@ public class Http11Processor implements Runnable, Processor {
             final HttpResponse httpResponse = new HttpResponse(outputStream);
             final HttpPath path = httpRequest.getPath();
             if (path.isRoot()) {
-                httpResponse.setContentType(ContentType.HTML);
-                httpResponse.forwardBody(DEFAULT_MESSAGE);
+                processRoot(httpResponse);
                 return;
             }
 
             if (path.isLoginPath()) {
-                final QueryParameters parameters = httpRequest.getQueryParameters();
-                final User user = InMemoryUserRepository.findByAccount(parameters.get(ACCOUNT))
-                        .orElseThrow(UserNotFoundException::new);
+                processLogin(httpRequest, httpResponse);
+                return;
+            }
 
-                if (user.checkPassword(parameters.get(PASSWORD))) {
-                    log.info("user : {}", user);
-                } else {
-                    httpResponse.sendRedirect("/401.html");
-                    return;
-                }
-                httpResponse.sendRedirect("/index.html");
+            if (path.isRegisterPath()) {
+                processRegister(httpRequest, httpResponse);
                 return;
             }
 
@@ -64,6 +59,40 @@ public class Http11Processor implements Runnable, Processor {
             httpResponse.forward(path.getPath());
         } catch (final IOException | UncheckedServletException e) {
             log.error(e.getMessage(), e);
+        }
+    }
+
+    private void processRoot(final HttpResponse httpResponse) throws IOException {
+        httpResponse.setContentType(ContentType.HTML);
+        httpResponse.forwardBody(DEFAULT_MESSAGE);
+    }
+
+    private void processLogin(final HttpRequest httpRequest, final HttpResponse httpResponse) throws IOException {
+        final QueryParameters parameters = httpRequest.getQueryParameters();
+        final User user = InMemoryUserRepository.findByAccount(parameters.get(ACCOUNT))
+                .orElseThrow(UserNotFoundException::new);
+
+        if (user.checkPassword(parameters.get(PASSWORD))) {
+            log.info("user : {}", user);
+        } else {
+            httpResponse.sendRedirect("/401.html");
+            return;
+        }
+        httpResponse.sendRedirect("/index.html");
+    }
+
+    private void processRegister(final HttpRequest httpRequest, final HttpResponse httpResponse) throws IOException {
+        if (httpRequest.isGetMethod()) {
+            httpResponse.setContentType(ContentType.HTML);
+            httpResponse.forward("/register.html");
+            return;
+        }
+        if (httpRequest.isPostMethod()) {
+            final RequestBody requestBody = httpRequest.getRequestBody();
+            InMemoryUserRepository.save(
+                    new User(requestBody.get(ACCOUNT), requestBody.get(PASSWORD), requestBody.get(EMAIL))
+            );
+            httpResponse.sendRedirect("/index.html");
         }
     }
 }
