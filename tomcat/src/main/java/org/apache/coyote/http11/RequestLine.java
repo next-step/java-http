@@ -7,7 +7,7 @@ public class RequestLine {
 
     private final static String DELIMITER = " ";
 
-    private String method;
+    private HttpMethod method;
     private Path path;
     private String protocol;
     private String version;
@@ -17,7 +17,7 @@ public class RequestLine {
         if (infos.length != 3) {
             throw new IllegalArgumentException("RequestLine is invalid: " + requestLine);
         }
-        this.method = infos[0];
+        this.method = HttpMethod.from(infos[0]);
         this.path = new Path(infos[1]);
 
         var protocols = infos[2].split("/");
@@ -29,7 +29,7 @@ public class RequestLine {
         return path.endsWith(value);
     }
 
-    public String getMethod() {
+    public HttpMethod getMethod() {
         return method;
     }
 
