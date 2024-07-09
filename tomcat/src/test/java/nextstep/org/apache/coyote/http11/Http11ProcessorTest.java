@@ -2,6 +2,7 @@ package nextstep.org.apache.coyote.http11;
 
 import camp.nextstep.http.domain.HttpSession;
 import camp.nextstep.http.domain.HttpSessionManager;
+import camp.nextstep.model.User;
 import org.apache.coyote.http11.Http11Processor;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -225,7 +226,9 @@ class Http11ProcessorTest {
     @DisplayName("로그인 get 요청시 로그인이 되어있으면 index.html 로 리다이렉트한다")
     void process_login_get_with_login() {
         // given
-        HttpSessionManager.add(new HttpSession(mockedUUID.toString()));
+        final HttpSession session = new HttpSession(mockedUUID.toString());
+        session.setAttribute("user", new User("test", "password", "email"));
+        HttpSessionManager.add(session);
         final String httpRequest = "GET /login HTTP/1.1 \r\n" +
                 String.format("Cookie: JSESSIONID=%s \r\n", mockedUUID) +
                 "Host: localhost:8080 \r\n" +

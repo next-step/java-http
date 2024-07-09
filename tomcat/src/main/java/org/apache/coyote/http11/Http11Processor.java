@@ -20,6 +20,7 @@ public class Http11Processor implements Runnable, Processor {
     private static final String ACCOUNT = "account";
     private static final String PASSWORD = "password";
     private static final String EMAIL = "email";
+    public static final String SESSION_USER_KEY = "user";
 
     private final Socket connection;
 
@@ -85,7 +86,8 @@ public class Http11Processor implements Runnable, Processor {
     }
 
     private void processLoginGet(final HttpRequest httpRequest, final HttpResponse httpResponse) throws IOException {
-        if (httpRequest.getSession(false) != null) {
+        final HttpSession session = httpRequest.getSession(false);
+        if (session != null && session.getAttribute(SESSION_USER_KEY) != null) {
             httpResponse.sendRedirect("/index.html");
             return;
         }
@@ -107,7 +109,7 @@ public class Http11Processor implements Runnable, Processor {
         if (user.checkPassword(requestBody.get(PASSWORD))) {
             log.info("user : {}", user);
             final HttpSession httpSession = httpRequest.getSession(true);
-            httpSession.setAttribute("user", user);
+            httpSession.setAttribute(SESSION_USER_KEY, user);
             httpResponse.setSession(httpSession.getId());
             httpResponse.sendRedirect("/index.html");
             return;
