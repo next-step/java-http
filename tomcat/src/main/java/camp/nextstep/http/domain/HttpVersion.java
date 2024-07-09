@@ -5,6 +5,8 @@ import camp.nextstep.http.exception.InvalidHttpVersionException;
 import java.util.Objects;
 
 public class HttpVersion {
+    public static final HttpVersion HTTP_11 = new HttpVersion("HTTP/1.1");
+
     private static final int REQUIRED_HTTP_VERSION_LENGTH = 2;
     private static final int PROTOCOL_INDEX = 0;
     private static final int VERSION_INDEX = 1;
