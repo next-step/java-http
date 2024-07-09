@@ -1,5 +1,6 @@
 package camp.nextstep.http.domain;
 
+import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
@@ -11,7 +12,7 @@ public class HttpResponse {
     private final HttpHeaders headers;
 
     public HttpResponse(final OutputStream outputStream) {
-        this.outputStream = outputStream;
+        this.outputStream = new BufferedOutputStream(outputStream);
         this.headers = new HttpHeaders();
     }
 
