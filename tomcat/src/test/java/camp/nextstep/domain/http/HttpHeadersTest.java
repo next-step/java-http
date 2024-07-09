@@ -7,6 +7,7 @@ import org.junit.jupiter.params.provider.CsvSource;
 import java.util.List;
 import java.util.Map;
 
+import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
@@ -24,6 +25,19 @@ class HttpHeadersTest {
         assertThatThrownBy(() -> new HttpHeaders(List.of("Content-Type: ERROR: ERROR")))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("Header값이 정상적으로 입력되지 않았습니다 - Content-Type: ERROR: ERROR");
+    }
+
+    @Test
+    void 헤더가_빈_객체를_생성할_수_있다() {
+        HttpHeaders actual = new HttpHeaders(emptyList());
+        assertThat(actual.getHeaders()).isEmpty();
+    }
+
+    @ParameterizedTest
+    @CsvSource(value = {"Content-Length: 55,false", "'',true"})
+    void 빈값인지_확인한다(String givenHeaders, boolean expected) {
+        boolean actual = new HttpHeaders(List.of(givenHeaders.trim())).isEmpty();
+        assertThat(actual).isEqualTo(expected);
     }
 
     @Test

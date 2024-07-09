@@ -55,6 +55,10 @@ public class HttpCookie {
         return cookies.get(SESSION_COOKIE_KEY);
     }
 
+    public boolean isEmpty() {
+        return cookies.isEmpty();
+    }
+
     public String getCookieHeaderFormat() {
         return cookies.entrySet()
                 .stream()

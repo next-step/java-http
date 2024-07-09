@@ -2,7 +2,6 @@ package camp.nextstep.domain.http;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 public class HttpResponse {
 
@@ -13,11 +12,10 @@ public class HttpResponse {
 
     private static final String RESPONSE_DELIMITER = "\r\n";
     private static final String RESPONSE_STATUS_LINE_FORMAT = "%s %s %s ";
-    private static final String RESPONSE_HEADER_FORMAT = "%s: %s ";
 
     private final HttpProtocol httpProtocol;
     private final HttpStatus httpStatus;
-    private final Map<String, String> httpHeaders;
+    private final HttpHeaders httpHeaders;
     private final String responseBody;
 
     public HttpResponse(HttpProtocol httpProtocol, HttpStatus httpStatus, Map<String, String> httpHeaders, String responseBody) {
@@ -27,13 +25,13 @@ public class HttpResponse {
         this.responseBody = responseBody;
     }
 
-    private Map<String, String> parseHttpHeaders(Map<String, String> httpHeaders, String responseBody) {
+    private HttpHeaders parseHttpHeaders(Map<String, String> httpHeaders, String responseBody) {
         if (responseBody.isEmpty()) {
-            return httpHeaders;
+            return new HttpHeaders(httpHeaders);
         }
         Map<String, String> headers = new LinkedHashMap<>(httpHeaders);
         headers.put(CONTENT_LENGTH_HEADER_KEY, String.valueOf(responseBody.getBytes().length));
-        return headers;
+        return new HttpHeaders(headers);
     }
 
     public static HttpResponse ok(HttpProtocol httpProtocol, ContentType contentType, String responseBody) {
@@ -64,10 +62,7 @@ public class HttpResponse {
     }
 
     private String buildHeaders() {
-        return httpHeaders.entrySet()
-                .stream()
-                .map(header -> String.format(RESPONSE_HEADER_FORMAT, header.getKey(), header.getValue()))
-                .collect(Collectors.joining(RESPONSE_DELIMITER));
+        return httpHeaders.buildHeaders();
     }
 
     public HttpStatus getHttpStatus() {
@@ -75,6 +70,6 @@ public class HttpResponse {
     }
 
     public Map<String, String> getHttpHeaders() {
-        return httpHeaders;
+        return httpHeaders.getHeaders();
     }
 }
