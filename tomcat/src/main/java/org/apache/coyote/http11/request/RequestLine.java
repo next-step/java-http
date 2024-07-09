@@ -1,4 +1,4 @@
-package org.apache.coyote.http11.requestline;
+package org.apache.coyote.http11.request;
 
 public class RequestLine {
     private final HttpMethod httpMethod;

@@ -4,10 +4,11 @@ import camp.nextstep.db.InMemoryUserRepository;
 import camp.nextstep.exception.UncheckedServletException;
 import camp.nextstep.model.User;
 import org.apache.coyote.Processor;
-import org.apache.coyote.http11.requestline.ContentType;
-import org.apache.coyote.http11.requestline.QueryStrings;
-import org.apache.coyote.http11.requestline.RequestLine;
-import org.apache.coyote.http11.requestline.RequestLineParser;
+import org.apache.coyote.http11.request.ContentType;
+import org.apache.coyote.http11.request.QueryStrings;
+import org.apache.coyote.http11.request.RequestLine;
+import org.apache.coyote.http11.request.RequestLineParser;
+import org.apache.coyote.http11.response.ResponseResource;
 import org.apache.coyote.http11.util.UtilString;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,30 +48,20 @@ public class Http11Processor implements Runnable, Processor {
                 throw new IllegalArgumentException("요청값이 빈값입니다.");
             }
             RequestLineParser requestLineParser = new RequestLineParser(bufferedReader.readLine());
-
             RequestLine requestLine = RequestLine.from(requestLineParser);
 
-            String urlPath = requestLine.getUrlPath();
+            ResponseResource responseResource = ResponseResource.of(requestLine.getPath());
 
-            urlPath = urlPath.equals("/") ? "/index.html" : urlPath;
+            URL resource = responseResource.getResource();
+            String fileName = responseResource.getFileName();
 
-            if (urlPath.equals("/login")) {
-                urlPath = "/login.html";
-                QueryStrings queryStrings = requestLine.getQueryStrings();
-                String account = queryStrings.getQueryStringValueByKey("account");
-                String password = queryStrings.getQueryStringValueByKey("password");
-                login(account, password);
-            }
-
-            URL resource = getClass().getClassLoader().getResource("static" + urlPath);
-
-            String extension = UtilString.parseExtension(urlPath);
-
-            final String responseBody = new String(Files.readAllBytes(new File(resource.getFile()).toPath()));
+            String extension = UtilString.parseExtension(fileName);
+            String contentType = ContentType.findByExtension(extension).getContentType();
+            String responseBody = new String(Files.readAllBytes(new File(resource.getFile()).toPath()));
 
             final var response = String.join("\r\n",
                     "HTTP/1.1 200 OK ",
-                    "Content-Type: " + ContentType.findByExtension(extension).getContentType() + ";charset=utf-8 ",
+                    "Content-Type: " + contentType + ";charset=utf-8 ",
                     "Content-Length: " + responseBody.getBytes().length + " ",
                     "",
                     responseBody);
