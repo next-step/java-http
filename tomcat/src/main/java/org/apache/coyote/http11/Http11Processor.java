@@ -24,6 +24,10 @@ public class Http11Processor implements Runnable, Processor {
     private static final String REGISTER_PATH = "/register";
     private static final String ROOT_BODY = "Hello world!";
 
+    private static final String INDEX_PAGE_PATH = "/index.html";
+    private static final String LOGIN_PAGE_PATH = "/login.html";
+    private static final String UNAUTHORIZED_PAGE_PATH = "/401.html";
+
     private static final String LOGIN_ACCOUNT_KEY = "account";
     private static final String LOGIN_PASSWORD_KEY = "password";
     private static final String REGISTER_ACCOUNT_KEY = "account";
@@ -107,17 +111,21 @@ public class Http11Processor implements Runnable, Processor {
             );
         }
         if (httpRequest.isPostMethod()) {
-            final var requestBody = httpRequest.getHttpRequestBody();
-            final var account = requestBody.get(LOGIN_ACCOUNT_KEY);
-            final var password = requestBody.get(LOGIN_PASSWORD_KEY);
-            final var user = InMemoryUserRepository.findByAccount(account)
-                    .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 account입니다."));
-            if (user.checkPassword(password)) {
-                return HttpResponse.found(httpRequest.getHttpProtocol(), "/index.html");
-            }
-            return HttpResponse.found(httpRequest.getHttpProtocol(), "/401.html");
+            return handleLoginPostRequest(httpRequest);
         }
         throw new RuntimeException();
+    }
+
+    private static HttpResponse handleLoginPostRequest(HttpRequest httpRequest) {
+        final var requestBody = httpRequest.getHttpRequestBody();
+        final var account = requestBody.get(LOGIN_ACCOUNT_KEY);
+        final var password = requestBody.get(LOGIN_PASSWORD_KEY);
+        final var user = InMemoryUserRepository.findByAccount(account)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 account입니다."));
+        if (user.checkPassword(password)) {
+            return HttpResponse.found(httpRequest.getHttpProtocol(), INDEX_PAGE_PATH);
+        }
+        return HttpResponse.found(httpRequest.getHttpProtocol(), UNAUTHORIZED_PAGE_PATH);
     }
 
     private HttpResponse handleRegisterPath(final HttpRequest httpRequest) {
@@ -129,16 +137,20 @@ public class Http11Processor implements Runnable, Processor {
             );
         }
         if (httpRequest.isPostMethod()) {
-            final var requestBody = httpRequest.getHttpRequestBody();
-            final var saveRequestUer = new User(
-                    requestBody.get(REGISTER_ACCOUNT_KEY),
-                    requestBody.get(REGISTER_PASSWORD_KEY),
-                    requestBody.get(REGISTER_EMAIL_KEY)
-            );
-            InMemoryUserRepository.save(saveRequestUer);
-            return HttpResponse.found(httpRequest.getHttpProtocol(), "/login.html");
+            return handleRegisterPostRequest(httpRequest);
         }
         throw new RuntimeException();
+    }
+
+    private static HttpResponse handleRegisterPostRequest(HttpRequest httpRequest) {
+        final var requestBody = httpRequest.getHttpRequestBody();
+        final var saveRequestUer = new User(
+                requestBody.get(REGISTER_ACCOUNT_KEY),
+                requestBody.get(REGISTER_PASSWORD_KEY),
+                requestBody.get(REGISTER_EMAIL_KEY)
+        );
+        InMemoryUserRepository.save(saveRequestUer);
+        return HttpResponse.found(httpRequest.getHttpProtocol(), LOGIN_PAGE_PATH);
     }
 
     private HttpResponse handleRootPath(final HttpRequest httpRequest) {
