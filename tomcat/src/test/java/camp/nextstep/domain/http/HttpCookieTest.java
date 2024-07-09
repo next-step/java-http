@@ -29,20 +29,20 @@ class HttpCookieTest {
 
     @Test
     void key_value가_잘못된_형태로_입력된_경우_예외가_발생한다() {
-        assertThatThrownBy(() -> HttpCookie.from("name=jin=young"))
+        assertThatThrownBy(() -> HttpCookie.from(Map.of("Cookie", "name=jin=young")))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("Cookie값이 정상적으로 입력되지 않았습니다 - name=jin=young");
     }
 
     @Test
     void query_string의_단일_cookie가_파싱된다() {
-        HttpCookie actual = HttpCookie.from("name=jinyoung");
+        HttpCookie actual = HttpCookie.from(Map.of("Cookie", "name=jinyoung"));
         assertThat(actual.getCookies()).isEqualTo(Map.of("name", "jinyoung"));
     }
 
     @Test
     void 여러_cookies를_파싱한다() {
-        HttpCookie actual = HttpCookie.from("name=jinyoung; password=1234");
+        HttpCookie actual = HttpCookie.from(Map.of("Cookie", "name=jinyoung; password=1234"));
         assertThat(actual.getCookies()).isEqualTo(Map.of("name", "jinyoung", "password", "1234"));
     }
 
@@ -68,7 +68,7 @@ class HttpCookieTest {
 
     @Test
     void 헤더포멧에_맞게_변환하여_반환한다() {
-        String actual = HttpCookie.from("name=jinyoung; password=1234").getCookieHeaderFormat();
+        String actual = HttpCookie.from(Map.of("Cookie", "name=jinyoung; password=1234")).getCookieHeaderFormat();
         assertThat(actual).isEqualTo("name=jinyoung; password=1234");
     }
 }

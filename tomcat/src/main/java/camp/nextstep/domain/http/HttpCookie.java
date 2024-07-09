@@ -35,10 +35,6 @@ public class HttpCookie {
         return new HttpCookie();
     }
 
-    public static HttpCookie from(String cookies) {
-        return new HttpCookie(parseCookies(cookies));
-    }
-
     private static Map<String, String> parseCookies(String cookies) {
         return Arrays.stream(cookies.split(HTTP_COOKIES_FORMAT_SPLIT_REGEX))
                 .map(HttpCookie::parseCookie)

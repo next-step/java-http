@@ -28,13 +28,13 @@ public class HttpHeaders {
 
     public HttpHeaders(Map<String, String> headers) {
         this.generalHeaders = parseGeneralHeaders(headers);
-        this.httpCookie = parseCookie(headers);
+        this.httpCookie = HttpCookie.from(headers);
     }
 
     public HttpHeaders(List<String> headers) {
         Map<String, String> parseHeaders = parseHeaders(headers);
         this.generalHeaders = parseGeneralHeaders(parseHeaders);
-        this.httpCookie = parseCookie(parseHeaders);
+        this.httpCookie = HttpCookie.from(parseHeaders);
     }
 
     private static Map<String, String> parseGeneralHeaders(Map<String, String> parseHeaders) {
@@ -70,13 +70,6 @@ public class HttpHeaders {
                 splitRequestHeader[REQUEST_HEADER_KEY_INDEX],
                 splitRequestHeader[REQUEST_HEADER_VALUE_INDEX]
         );
-    }
-
-    private HttpCookie parseCookie(Map<String, String> headers) {
-        if (headers.containsKey(COOKIE_HEADER_KEY)) {
-            return HttpCookie.from(headers.get(COOKIE_HEADER_KEY));
-        }
-        return new HttpCookie();
     }
 
     public boolean containsContentLength() {
