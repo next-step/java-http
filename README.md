@@ -120,3 +120,13 @@ Location: /index.html
 - 이미 로그인한 상태에서 `/login`에 들어오는 경우 index.html로 리다이랙한다.
   - cookie에 저장된 session이 있는 session인지 확인할 수 있다.
 - 세션을 관리할 수 있다.
+
+## 4단계 - 리팩터링
+### 3. Controller 인터페이스 추가하기
+- RequestMapping
+  - HttpRequest를 받아 path를 정리하여 처리할 Controller를 결정한다.
+- Controller
+  - HttpRequest 요청을 받아 처리한다.
+  - Get과 Post를 직접 확인하여 처리할 수 있다.
+  - LoginController, RootController, RegisterController, DefaultPathController
+    - Http11Processor에 구현된 값을 가져와 구현해 리팩터링한다.
