@@ -3,6 +3,7 @@ package org.apache.coyote.http11;
 import camp.nextstep.db.InMemoryUserRepository;
 import camp.nextstep.domain.http.*;
 import camp.nextstep.domain.session.Session;
+import camp.nextstep.domain.session.SessionManager;
 import camp.nextstep.exception.UncheckedServletException;
 import camp.nextstep.model.User;
 import camp.nextstep.util.FileUtil;
@@ -111,6 +112,12 @@ public class Http11Processor implements Runnable, Processor {
 
     private HttpResponse handleLoginPath(final HttpRequest httpRequest) {
         if (httpRequest.isGetMethod()) {
+            if (httpRequest.containsSessionId()) {
+                String sessionId = httpRequest.getHttpCookie().getSessionId();
+                if (SessionManager.findSession(sessionId).isPresent()) {
+                    return HttpResponse.found(httpRequest.getHttpProtocol(), INDEX_PAGE_PATH);
+                }
+            }
             return handlePath(httpRequest);
         }
         if (httpRequest.isPostMethod()) {
@@ -128,6 +135,7 @@ public class Http11Processor implements Runnable, Processor {
         if (user.checkPassword(password)) {
             Session session = Session.createNewSession();
             session.setAttribute("user", user);
+            SessionManager.add(session);
             return HttpResponse.found(httpRequest.getHttpProtocol(), INDEX_PAGE_PATH)
                     .addCookie(HttpCookie.sessionCookie(session));
         }
