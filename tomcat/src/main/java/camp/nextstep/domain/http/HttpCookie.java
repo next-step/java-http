@@ -9,6 +9,8 @@ import static java.util.Collections.emptyMap;
 
 public class HttpCookie {
 
+    private static final String SESSION_COOKIE_KEY = "JSESSIONID";
+
     private static final String HTTP_COOKIES_FORMAT_SPLIT_REGEX = "; ";
     private static final String HTTP_COOKIE_FORMAT_SPLIT_REGEX = "=";
 
@@ -37,6 +39,13 @@ public class HttpCookie {
                 splitCookie[HTTP_COOKIE_KEY_INDEX],
                 splitCookie[HTTP_COOKIE_VALUE_INDEX]
         );
+    }
+
+    public String getSessionId() {
+        if (!cookies.containsKey(SESSION_COOKIE_KEY)) {
+            throw new IllegalStateException("session id가 없습니다.");
+        }
+        return cookies.get(SESSION_COOKIE_KEY);
     }
 
     public Map<String, String> getCookies() {

@@ -111,5 +111,6 @@ Location: /index.html
 
 ### 3. Cookie에 JSESSIONID 값 저장하기
 - 쿠키 헤더에 있는 값을 읽어 저장한다.
+  - session id를 추출한다 (없으면 예외가 발생한다.)
 - 쿠키 포멧에 맞지 않게 값이 입력되면 예외가 발생한다.
 - response header에 cookie를 저장할 수 있다.

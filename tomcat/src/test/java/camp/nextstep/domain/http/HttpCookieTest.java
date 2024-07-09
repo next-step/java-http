@@ -32,4 +32,17 @@ class HttpCookieTest {
         HttpCookie actual = new HttpCookie("name=jinyoung; password=1234");
         assertThat(actual.getCookies()).isEqualTo(Map.of("name", "jinyoung", "password", "1234"));
     }
+
+    @Test
+    void session_id가_없는데_가져오려하는_경우_예외가_발생한다() {
+        assertThatThrownBy(() -> new HttpCookie().getSessionId())
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessage("session id가 없습니다.");
+    }
+
+    @Test
+    void session_id를_가져온다() {
+        String actual = new HttpCookie("JSESSIONID=656cef62-e3c4-40bc-a8df-94732920ed46").getSessionId();
+        assertThat(actual).isEqualTo("656cef62-e3c4-40bc-a8df-94732920ed46");
+    }
 }
