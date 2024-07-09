@@ -61,9 +61,9 @@
         - [X] 회원가입 페이지(register.html) GET 요청 조회
         - [X] 회원가입 버튼을 POST로 요청 /index.html로 리다이렉트
         - [X] 로그인도 POST 요청으로 리팩터링
-    - [ ] Cookie에 JSESSIONID 값 저장
-        - [ ] Cookie 클래스 추가
-        - [ ] Cookie에 JSESSIONID가 없으면 HTTP Response Header에 Set-Cookie를 반환
-    - [ ] Session 구현
-        - [ ] 로그인에 성공하면 Session 객체의 값으로 User 객체를 저장
-        - [ ] 로그인된 상태에서 /login 페이지에 HTTP GET method로 접근하면 index.html로 리다이렉트 처리
+    - [X] Cookie에 JSESSIONID 값 저장
+        - [X] Cookie 클래스 추가
+        - [X] Cookie에 JSESSIONID가 없으면 HTTP Response Header에 Set-Cookie를 반환
+    - [X] Session 구현
+        - [X] 로그인에 성공하면 Session 객체의 값으로 User 객체를 저장
+        - [X] 로그인된 상태에서 /login 페이지에 HTTP GET method로 접근하면 index.html로 리다이렉트 처리
