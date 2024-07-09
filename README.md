@@ -108,3 +108,8 @@ Location: /index.html
   - HttpRequestBody
 - HttpRequestBody
   - `Content-Type`이 `application/x-www-form-urlencoded`인 경우 &로 구분된 값을 파싱하여 저장한다.
+
+### 3. Cookie에 JSESSIONID 값 저장하기
+- 쿠키 헤더에 있는 값을 읽어 저장한다.
+- 쿠키 포멧에 맞지 않게 값이 입력되면 예외가 발생한다.
+- response header에 cookie를 저장할 수 있다.
