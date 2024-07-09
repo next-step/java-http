@@ -21,17 +21,4 @@ class FileUtilTest {
         String actual = FileUtil.readStaticPathFileResource("/nextstep.txt", getClass());
         assertThat(actual).isEqualTo("nextstep");
     }
-
-    @Test
-    void 파일의_확장자를_반환한다() {
-        String actual = FileUtil.parseExtension("/index.html");
-        assertThat(actual).isEqualTo(".html");
-    }
-
-    @Test
-    void 파일_확장자_구분자가_없는_경우_예외가_발생한다() {
-        assertThatThrownBy(() -> FileUtil.parseExtension("/index/test"))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("확장자 구분자가 존재하지 않아 확장자를 추출할 수 없습니다 - /index/test");
-    }
 }

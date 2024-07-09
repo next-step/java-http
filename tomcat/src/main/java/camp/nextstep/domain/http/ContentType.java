@@ -16,11 +16,11 @@ public enum ContentType {
         this.contentType = contentType;
     }
 
-    public static ContentType fromExtension(String extension) {
+    public static ContentType fromPath(String path) {
         return Arrays.stream(values())
-                .filter(value -> value.extension.equals(extension))
+                .filter(value -> path.endsWith(value.extension))
                 .findAny()
-                .orElseThrow(() -> new IllegalArgumentException("지원하지 않는 확장자입니다."));
+                .orElseThrow(() -> new IllegalArgumentException("확장자 구분자가 존재하지 않아 확장자를 추출할 수 없습니다 - " + path));
     }
 
     public static boolean isSupportableExtension(String path) {

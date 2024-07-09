@@ -170,7 +170,6 @@ public class Http11Processor implements Runnable, Processor {
     }
 
     private ContentType parseContentType(final HttpRequest httpRequest) {
-        String extension = FileUtil.parseExtension(httpRequest.getFilePath());
-        return ContentType.fromExtension(extension);
+        return ContentType.fromPath(httpRequest.getFilePath());
     }
 }
