@@ -75,6 +75,11 @@ public class Http11Processor implements Runnable, Processor {
 
     private void processLogin(final HttpRequest httpRequest, final HttpResponse httpResponse) throws IOException {
         if (httpRequest.isGetMethod()) {
+            if (httpRequest.getSession(false) != null) {
+                httpResponse.sendRedirect("/index.html");
+                return;
+            }
+
             httpResponse.setContentType(ContentType.HTML);
             httpResponse.forward("/login.html");
             return;
