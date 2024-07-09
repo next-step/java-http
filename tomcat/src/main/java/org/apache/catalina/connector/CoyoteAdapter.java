@@ -15,11 +15,12 @@ public class CoyoteAdapter {
     public void service(final Request request, final Response response) throws Exception {
         final Servlet servlet = servletMapping.getServlet(request);
 
-        try {
-            servlet.service(request, response);
-        } catch (NullPointerException e) {
+        if (servlet == null) {
             response.notFound();
+            return;
         }
+
+        servlet.service(request, response);
     }
 
 }
