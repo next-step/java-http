@@ -7,7 +7,6 @@ import java.util.stream.Collectors;
 
 public class HttpCookie {
 
-    private static final String COOKIE_HEADER_KEY = "Cookie";
     private static final String COOKIE_HEADER_PREFIX = "Cookie: ";
     private static final String SESSION_COOKIE_KEY = "JSESSIONID";
 
