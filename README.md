@@ -125,3 +125,11 @@ X-Pad: avoid browser bug
     - 응답 헤더에 `HttpStatusCode 302` 를 반환한다.
     - account 와 password 가 일치하면 `/index.html` 로 리다이렉트 한다.
     - 존재하지 않는 account 이거나 password 가 일치가 일치하지 않으면 `401.html`로 리다이렉트 한다.
+
+### 요구사항 2 - POST 방식으로 회원가입
+
+- http://localhost:8080/register 에 접근하면 register.html 를 OutputStream 에 쓴다
+    - 페이지 접근은 GET 을 사용한다.
+    - 회원가입 버튼을 누르면 POST 요청을 사용한다.
+    - 회원가입을 완료하면 `index.html` 로 리다이렉트 한다.
+- 로그인 페이지도 버튼을 눌렀을때 POST 방식으로 전송하도록 변경한다.
