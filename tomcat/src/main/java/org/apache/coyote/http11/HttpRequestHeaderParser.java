@@ -62,7 +62,7 @@ public class HttpRequestHeaderParser {
         }
 
         final String[] splitHeaderLine = StringTokenizer.token(headerLine, COLON_SPACE);
-        headerMap.put(splitHeaderLine[KEY_INDEX].toLowerCase(), splitHeaderLine[VALUE_INDEX].trim());
+        headerMap.put(splitHeaderLine[KEY_INDEX], splitHeaderLine[VALUE_INDEX].trim());
     }
 
     private boolean isNotHeaderLine(final String headerLine) {

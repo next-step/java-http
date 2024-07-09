@@ -15,9 +15,9 @@ class HttpRequestHeaderTest {
     @CsvSource(
             delimiter = ',',
             value = {
-                    "content-length, 80, true",
-                    "content-length, 0, false",
-                    "content-length, 2, true",
+                    "Content-Length, 80, true",
+                    "Content-Length, 0, false",
+                    "Content-Length, 2, true",
                     "test, test, false",
             }
     )

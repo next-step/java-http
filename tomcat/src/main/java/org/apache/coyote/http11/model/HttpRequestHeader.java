@@ -4,7 +4,8 @@ import java.util.Map;
 
 public class HttpRequestHeader {
     public static final String REQUEST_LINE_KEY = "request-line";
-    private static final String CONTENTS_LENGTH_KEY = "content-length";
+    private static final String CONTENTS_LENGTH_KEY = "Content-Length";
+    private static final String COOKIE_KEY = "Cookie";
     private static final int ZERO = 0;
 
     private final Map<String, Object> headers;
@@ -18,7 +19,7 @@ public class HttpRequestHeader {
     }
 
     public Object headerValueBy(final String key) {
-        return headers.get(key.toLowerCase());
+        return headers.get(key);
     }
 
     public int size() {
@@ -41,5 +42,13 @@ public class HttpRequestHeader {
         }
 
         return Integer.parseInt(contentLength);
+    }
+
+    public boolean hasCookie() {
+        return headers.containsKey(COOKIE_KEY);
+    }
+
+    public HttpCookieLine httpCookie() {
+        return (HttpCookieLine) headers.get(COOKIE_KEY);
     }
 }
