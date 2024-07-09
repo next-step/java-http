@@ -50,10 +50,9 @@ public class Http11Processor implements Runnable, Processor {
 
             ResponseResource responseResource = ResponseResource.of(requestLine.getPath());
 
-            URL resource = responseResource.getResource();
             String extension = responseResource.parseExtension();
             String contentType = ContentType.findByExtension(extension).getContentType();
-            String responseBody = new String(Files.readAllBytes(new File(resource.getFile()).toPath()));
+            String responseBody = responseResource.getResponseBody();
 
             final var response = String.join("\r\n",
                     "HTTP/1.1 200 OK ",

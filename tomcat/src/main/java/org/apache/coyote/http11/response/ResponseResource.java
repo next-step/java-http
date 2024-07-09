@@ -7,24 +7,28 @@ import org.apache.coyote.http11.request.QueryStrings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
+import java.io.IOException;
 import java.net.URL;
+import java.nio.file.Files;
 import java.util.NoSuchElementException;
 
 public class ResponseResource {
 
 	private static final Logger log = LoggerFactory.getLogger(ResponseResource.class);
 
-	private final URL resource;
+	private final String responseBody;
 	private final String fileName;
 
-	private ResponseResource(final URL resource, String fileName) {
-		this.resource = resource;
+	private ResponseResource(final String responseBody, String fileName) {
+		this.responseBody = responseBody;
 		this.fileName = fileName;
 	}
 
-	public static ResponseResource of(final Path path) {
+	public static ResponseResource of(final Path path) throws IOException {
 		if(path.urlPath().equals("/")) {
-			return new ResponseResource(ResponseResource.class.getClassLoader().getResource("static/index.html"),"index.html");
+			String responseBody = createResponseBody("index.html");
+			return new ResponseResource(responseBody, "index.html");
 		}
 
 		if (path.urlPath().equals("/login")) {
@@ -32,15 +36,16 @@ public class ResponseResource {
 			String account = queryStrings.getQueryStringValueByKey("account");
 			String password = queryStrings.getQueryStringValueByKey("password");
 			login(account, password);
-			URL resultResource = ResponseResource.class.getClassLoader().getResource("static/login.html");
-			return new ResponseResource(resultResource, "login.html");
+			String responseBody = createResponseBody("login.html");
+			return new ResponseResource(responseBody, "login.html");
 		}
-		URL resultResource = ResponseResource.class.getClassLoader().getResource("static" + path.urlPath());
-		return new ResponseResource(resultResource, path.urlPath());
+
+		String responseBody = createResponseBody(path.urlPath());
+		return new ResponseResource(responseBody, path.urlPath());
 	}
 
-	public URL getResource() {
-		return resource;
+	public String getResponseBody() {
+		return responseBody;
 	}
 
 	public static void login(String account, String password) {
@@ -52,5 +57,11 @@ public class ResponseResource {
 
 	public String parseExtension() {
 		return fileName.substring(fileName.lastIndexOf("."));
+	}
+
+	private static String createResponseBody(String urlPath) throws IOException {
+		URL resource = ResponseResource.class.getClassLoader().getResource("static/" + urlPath);
+		String responseBody = new String(Files.readAllBytes(new File(resource.getFile()).toPath()));
+		return responseBody;
 	}
 }
