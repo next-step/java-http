@@ -138,8 +138,8 @@ class Http11ProcessorTest {
     @Test
     void process_login() {
         // given
-        final String body = "/login?account=gugu&password=password";
-        final String httpRequest = String.format(HTTP_GET_REQUEST_TEMPLATE, body);
+        final String body = "account=gugu&password=password";
+        final String httpRequest = String.format(HTTP_POST_REQUEST_TEMPLATE, "/login", body.length(), body);
         final var socket = new StubSocket(httpRequest);
         final Http11Processor processor = new Http11Processor(socket);
 
@@ -159,7 +159,8 @@ class Http11ProcessorTest {
     @Test
     void process_login_failed() {
         // given
-        final String httpRequest = String.format(HTTP_GET_REQUEST_TEMPLATE, "/login?account=gugu&password=wrong");
+        final String body = "account=gugu&password=wrong";
+        final String httpRequest = String.format(HTTP_POST_REQUEST_TEMPLATE, "/login", body.length(), body);
         final var socket = new StubSocket(httpRequest);
         final Http11Processor processor = new Http11Processor(socket);
 

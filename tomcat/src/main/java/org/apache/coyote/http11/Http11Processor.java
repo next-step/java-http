@@ -4,13 +4,13 @@ import camp.nextstep.db.InMemoryUserRepository;
 import camp.nextstep.exception.UncheckedServletException;
 import camp.nextstep.http.domain.*;
 import camp.nextstep.model.User;
-import camp.nextstep.model.UserNotFoundException;
 import org.apache.coyote.Processor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.net.Socket;
+import java.util.Optional;
 
 public class Http11Processor implements Runnable, Processor {
 
@@ -68,17 +68,29 @@ public class Http11Processor implements Runnable, Processor {
     }
 
     private void processLogin(final HttpRequest httpRequest, final HttpResponse httpResponse) throws IOException {
-        final QueryParameters parameters = httpRequest.getQueryParameters();
-        final User user = InMemoryUserRepository.findByAccount(parameters.get(ACCOUNT))
-                .orElseThrow(UserNotFoundException::new);
-
-        if (user.checkPassword(parameters.get(PASSWORD))) {
-            log.info("user : {}", user);
-        } else {
-            httpResponse.sendRedirect("/401.html");
+        if (httpRequest.isGetMethod()) {
+            httpResponse.setContentType(ContentType.HTML);
+            httpResponse.forward("/login.html");
             return;
         }
-        httpResponse.sendRedirect("/index.html");
+
+        if (httpRequest.isPostMethod()) {
+            final RequestBody requestBody = httpRequest.getRequestBody();
+            final Optional<User> userOptional = InMemoryUserRepository.findByAccount(requestBody.get(ACCOUNT));
+
+            if (userOptional.isEmpty()) {
+                httpResponse.sendRedirect("/401.html");
+                return;
+            }
+
+            final User user = userOptional.get();
+            if (user.checkPassword(requestBody.get(PASSWORD))) {
+                log.info("user : {}", user);
+                httpResponse.sendRedirect("/index.html");
+                return;
+            }
+            httpResponse.sendRedirect("/401.html");
+        }
     }
 
     private void processRegister(final HttpRequest httpRequest, final HttpResponse httpResponse) throws IOException {
