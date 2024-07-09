@@ -25,6 +25,8 @@ public class Http11Processor implements Runnable, Processor {
     private static final Logger log = LoggerFactory.getLogger(Http11Processor.class);
     private static final String ROOT_PATH = "/";
     private static final String ROOT_CONTENT = "Hello world!";
+    public static final String LOGIN_PATH = "/login";
+    public static final String ACCOUNT_KEY = "account";
 
     private final Socket connection;
 
@@ -57,8 +59,8 @@ public class Http11Processor implements Runnable, Processor {
             String responseBody = findResponseBody(httpPath);
             MimeType mimeType = MimeType.from(httpPath);
 
-            if (null != requestLine.findQueryParam("account")) {
-                User account = InMemoryUserRepository.findByAccount(requestLine.findQueryParam("account"))
+            if (httpPath.endsWith(LOGIN_PATH)) {
+                User account = InMemoryUserRepository.findByAccount(requestLine.findQueryParam(ACCOUNT_KEY))
                         .orElseThrow(IllegalArgumentException::new);
                 log.info(account.toString());
             }
@@ -82,8 +84,8 @@ public class Http11Processor implements Runnable, Processor {
             return ROOT_CONTENT;
         }
         ClassLoader classLoader = getClass().getClassLoader();
-        if (!httpPath.contains(".")) {
-            httpPath += ".html";
+        if (httpPath.endsWith(LOGIN_PATH)) {
+            httpPath += MimeType.HTML.getFileExtension();
         }
         URL resource = classLoader.getResource("static" + httpPath);
         Path path = Path.of(Objects.requireNonNull(resource).getPath());

@@ -3,7 +3,7 @@ package org.apache.coyote.response;
 import java.util.Arrays;
 
 public enum MimeType {
-    HTML(".html", "text/html"),
+    HTML(".html", "text/html;charset=utf-8"),
     CSS(".css", "text/css"),
     JS(".js", "text/javascript"),
     ;
@@ -25,5 +25,9 @@ public enum MimeType {
 
     public String getContentType() {
         return contentType;
+    }
+
+    public String getFileExtension() {
+        return fileExtension;
     }
 }
