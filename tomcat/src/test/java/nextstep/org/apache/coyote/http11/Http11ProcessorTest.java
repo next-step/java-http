@@ -170,9 +170,10 @@ class Http11ProcessorTest {
         // then
         var expected = String.join("\r\n",
                 "HTTP/1.1 302 Found ",
-                "Location: /index.html ");
+                "Location: /index.html ",
+                "Set-Cookie: JSESSIONID=");
 
-        assertThat(socket.output()).isEqualTo(expected);
+        assertThat(socket.output()).startsWith(expected);
     }
 
     @Test

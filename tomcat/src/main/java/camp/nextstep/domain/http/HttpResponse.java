@@ -74,7 +74,7 @@ public class HttpResponse {
         return httpStatus;
     }
 
-    public Map<String, String> getHttpHeaders() {
-        return httpHeaders.getHeaders();
+    public HttpHeaders getHttpHeaders() {
+        return httpHeaders;
     }
 }

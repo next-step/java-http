@@ -1,5 +1,7 @@
 package camp.nextstep.domain.http;
 
+import camp.nextstep.domain.session.Session;
+
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -17,8 +19,12 @@ public class HttpCookie {
 
     private final Map<String, String> cookies;
 
+    public HttpCookie(Map<String, String> cookies) {
+        this.cookies = cookies;
+    }
+
     public HttpCookie() {
-        this.cookies = new HashMap<>();
+        this(new HashMap<>());
     }
 
     public HttpCookie(String cookies) {
@@ -41,6 +47,11 @@ public class HttpCookie {
                 splitCookie[HTTP_COOKIE_KEY_INDEX],
                 splitCookie[HTTP_COOKIE_VALUE_INDEX]
         );
+    }
+
+    // TODO test
+    public static HttpCookie sessionCookie(Session session) {
+        return new HttpCookie(Map.of(SESSION_COOKIE_KEY, session.getId()));
     }
 
     public String getSessionId() {

@@ -17,7 +17,7 @@ class HttpResponseTest {
         HttpResponse actual = HttpResponse.ok(DEFAULT_HTTP_PROTOCOL, ContentType.TEXT_HTML, "Hello world!");
         assertAll(
                 () -> assertThat(actual.getHttpStatus()).isEqualTo(HttpStatus.OK),
-                () -> assertThat(actual.getHttpHeaders()).contains(Map.entry("Content-Type", "text/html;charset=utf-8"))
+                () -> assertThat(actual.getHttpHeaders().getGeneralHeaders()).contains(Map.entry("Content-Type", "text/html;charset=utf-8"))
         );
     }
 
@@ -26,28 +26,29 @@ class HttpResponseTest {
         HttpResponse actual = HttpResponse.found(DEFAULT_HTTP_PROTOCOL, "/index.html");
         assertAll(
                 () -> assertThat(actual.getHttpStatus()).isEqualTo(HttpStatus.FOUND),
-                () -> assertThat(actual.getHttpHeaders()).contains(Map.entry("Location", "/index.html"))
+                () -> assertThat(actual.getHttpHeaders().getGeneralHeaders()).contains(Map.entry("Location", "/index.html"))
         );
     }
 
     @Test
     void header에_responseBody의_길이가_저장된다() {
         HttpResponse actual = new HttpResponse(DEFAULT_HTTP_PROTOCOL, HttpStatus.OK, emptyMap(), "Hello world!");
-        assertThat(actual.getHttpHeaders()).contains(Map.entry("Content-Length", "12"));
+        assertThat(actual.getHttpHeaders().getGeneralHeaders()).contains(Map.entry("Content-Length", "12"));
     }
 
     @Test
     void responseBody가_빈값인_경우_길이가_header에_저장되지_않는다() {
         HttpResponse actual = new HttpResponse(DEFAULT_HTTP_PROTOCOL, HttpStatus.OK, emptyMap(), "");
-        assertThat(actual.getHttpHeaders()).doesNotContainKey("Content-Length");
+        assertThat(actual.getHttpHeaders().getGeneralHeaders()).doesNotContainKey("Content-Length");
     }
 
     @Test
     void HttpHeader에_쿠키를_추가한다() {
-        Map<String, String> actual = HttpResponse.found(DEFAULT_HTTP_PROTOCOL, "/index.html")
+        HttpCookie actual = HttpResponse.found(DEFAULT_HTTP_PROTOCOL, "/index.html")
                 .addCookie(new HttpCookie("name=jinyoung"))
-                .getHttpHeaders();
-        assertThat(actual).contains(Map.entry("Cookie", "name=jinyoung"));
+                .getHttpHeaders()
+                .getHttpCookie();
+        assertThat(actual.getCookies()).contains(Map.entry("name", "jinyoung"));
     }
 
     @Test

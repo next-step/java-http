@@ -2,6 +2,7 @@ package org.apache.coyote.http11;
 
 import camp.nextstep.db.InMemoryUserRepository;
 import camp.nextstep.domain.http.*;
+import camp.nextstep.domain.session.Session;
 import camp.nextstep.exception.UncheckedServletException;
 import camp.nextstep.model.User;
 import camp.nextstep.util.FileUtil;
@@ -119,7 +120,8 @@ public class Http11Processor implements Runnable, Processor {
         final var user = InMemoryUserRepository.findByAccount(account)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 account입니다."));
         if (user.checkPassword(password)) {
-            return HttpResponse.found(httpRequest.getHttpProtocol(), INDEX_PAGE_PATH);
+            return HttpResponse.found(httpRequest.getHttpProtocol(), INDEX_PAGE_PATH)
+                    .addCookie(HttpCookie.sessionCookie(Session.createNewSession()));
         }
         return HttpResponse.found(httpRequest.getHttpProtocol(), UNAUTHORIZED_PAGE_PATH);
     }

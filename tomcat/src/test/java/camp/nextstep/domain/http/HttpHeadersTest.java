@@ -10,6 +10,7 @@ import java.util.Map;
 import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 class HttpHeadersTest {
 
@@ -30,7 +31,10 @@ class HttpHeadersTest {
     @Test
     void 헤더가_빈_객체를_생성할_수_있다() {
         HttpHeaders actual = new HttpHeaders(emptyList());
-        assertThat(actual.getHeaders()).isEmpty();
+        assertAll(
+                () -> assertThat(actual.getGeneralHeaders()).isEmpty(),
+                () -> assertThat(actual.getHttpCookie().isEmpty()).isTrue()
+        );
     }
 
     @ParameterizedTest
@@ -42,20 +46,19 @@ class HttpHeadersTest {
 
     @Test
     void 쿠키가_포함된_헤더값을_파싱하여_생성한다() {
-        Map<String, String> actual = new HttpHeaders(List.of("Content-Length: 55", "Content-Type: A", "Cookie: name=jinyoung; password=1234")).getHeaders();
-        assertThat(actual).contains(
-                Map.entry("Content-Length", "55"),
-                Map.entry("Content-Type", "A"),
-                Map.entry("Cookie", "name=jinyoung; password=1234")
+        HttpHeaders actual = new HttpHeaders(List.of("Content-Length: 55", "Content-Type: A", "Cookie: name=jinyoung; password=1234"));
+        assertAll(
+                () -> assertThat(actual.getGeneralHeaders()).contains(Map.entry("Content-Length", "55"), Map.entry("Content-Type", "A")),
+                () -> assertThat(actual.getHttpCookie().getCookies()).contains(Map.entry("name", "jinyoung"), Map.entry("password", "1234"))
         );
     }
 
     @Test
     void 쿠키가_포함되지_않은_헤더값을_파싱하여_생성한다() {
-        Map<String, String> actual = new HttpHeaders(List.of("Content-Length: 55", "Content-Type: A")).getHeaders();
-        assertThat(actual).contains(
-                Map.entry("Content-Length", "55"),
-                Map.entry("Content-Type", "A")
+        HttpHeaders actual = new HttpHeaders(List.of("Content-Length: 55", "Content-Type: A"));
+        assertAll(
+                () -> assertThat(actual.getGeneralHeaders()).contains(Map.entry("Content-Length", "55"), Map.entry("Content-Type", "A")),
+                () -> assertThat(actual.getHttpCookie().getCookies()).isEmpty()
         );
     }
 

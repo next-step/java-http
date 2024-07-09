@@ -13,6 +13,7 @@ public class HttpHeaders {
 
     private static final String CONTENT_LENGTH_HEADER_KEY = "Content-Length";
     private static final String COOKIE_HEADER_KEY = "Cookie";
+    private static final String COOKIE_RESPONSE_HEADER_KEY = "Set-Cookie";
 
     private static final String REQUEST_HEADER_FORMAT_SPLIT_REGEX = ": ";
     private static final String HEADER_FORMAT = "%s: %s ";
@@ -103,13 +104,17 @@ public class HttpHeaders {
                 .collect(Collectors.joining(HEADERS_DELIMITER));
     }
 
-    public Map<String, String> getHeaders() {
-        return generateHeaders().collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
-    }
-
     private Stream<Map.Entry<String, String>> generateHeaders() {
-        return Stream.of(generalHeaders, Map.of(COOKIE_HEADER_KEY, httpCookie.getCookieHeaderFormat()))
+        return Stream.of(generalHeaders, Map.of(COOKIE_RESPONSE_HEADER_KEY, httpCookie.getCookieHeaderFormat()))
                 .flatMap(map -> map.entrySet().stream())
                 .filter(header -> !header.getValue().isEmpty());
+    }
+
+    public Map<String, String> getGeneralHeaders() {
+        return generalHeaders;
+    }
+
+    public HttpCookie getHttpCookie() {
+        return httpCookie;
     }
 }
