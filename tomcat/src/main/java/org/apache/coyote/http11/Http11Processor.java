@@ -120,8 +120,10 @@ public class Http11Processor implements Runnable, Processor {
         final var user = InMemoryUserRepository.findByAccount(account)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 account입니다."));
         if (user.checkPassword(password)) {
+            Session session = Session.createNewSession();
+            session.setAttribute("user", user);
             return HttpResponse.found(httpRequest.getHttpProtocol(), INDEX_PAGE_PATH)
-                    .addCookie(HttpCookie.sessionCookie(Session.createNewSession()));
+                    .addCookie(HttpCookie.sessionCookie(session));
         }
         return HttpResponse.found(httpRequest.getHttpProtocol(), UNAUTHORIZED_PAGE_PATH);
     }
