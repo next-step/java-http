@@ -53,6 +53,7 @@ public class HttpResponse {
         final var response = String.join(System.lineSeparator(),
                 StatusLine.createFound().convertToString(),
                 headers.convertToString(),
+                "",
                 "");
 
         outputStream.write(response.getBytes());
@@ -65,5 +66,9 @@ public class HttpResponse {
             return resource;
         }
         return new Resource(PATH_PREFIX + NOT_FOUND_PATH);
+    }
+
+    public void setContentType(final ContentType contentType) {
+        headers.setContentType(contentType);
     }
 }
