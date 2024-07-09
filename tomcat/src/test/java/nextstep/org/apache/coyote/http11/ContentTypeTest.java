@@ -17,19 +17,35 @@ import static org.assertj.core.api.Assertions.assertThat;
  *   - text/html
  */
 public class ContentTypeTest {
-    static class ContentType {
+    enum ContentType {
+        HTML(".html", "text/html"),
+        CSS(".css", "text/css"),
+        TEXT("", "text/plain")
+        ;
+
+        private final String fileExtension;
         private final String value;
 
-        private ContentType(final String value) {
+        ContentType(final String fileExtension, final String value) {
+            this.fileExtension = fileExtension;
             this.value = value;
         }
 
         public static ContentType from(final File file) {
-            return new ContentType("");
+            String fileName = file.getName();
+            if (fileName.endsWith(HTML.fileExtension)) {
+                return HTML;
+            }
+
+            if (fileName.endsWith(CSS.fileExtension)) {
+                return CSS;
+            }
+
+            return TEXT;
         }
 
         public String getValue() {
-            return "";
+            return value;
         }
     }
 
