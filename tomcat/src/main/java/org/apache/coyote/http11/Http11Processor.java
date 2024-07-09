@@ -44,7 +44,7 @@ public class Http11Processor implements Runnable, Processor {
              final BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream))) {
 
             if (bufferedReader.lines() == null) {
-                return;
+                throw new IllegalArgumentException("요청값이 빈값입니다.");
             }
             RequestLineParser requestLineParser = new RequestLineParser(bufferedReader.readLine());
 
