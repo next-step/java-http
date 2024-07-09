@@ -71,4 +71,8 @@ public class HttpResponse {
     public void setContentType(final ContentType contentType) {
         headers.setContentType(contentType);
     }
+
+    public void setSession(final String string) {
+        headers.addCookie("JSESSIONID", string);
+    }
 }

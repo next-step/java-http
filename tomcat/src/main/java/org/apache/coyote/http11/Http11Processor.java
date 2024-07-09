@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.net.Socket;
 import java.util.Optional;
+import java.util.UUID;
 
 public class Http11Processor implements Runnable, Processor {
 
@@ -39,6 +40,11 @@ public class Http11Processor implements Runnable, Processor {
 
             final HttpRequest httpRequest = new HttpRequest(inputStream);
             final HttpResponse httpResponse = new HttpResponse(outputStream);
+
+            if (httpRequest.isSessionEmpty()) {
+                httpResponse.setSession(UUID.randomUUID().toString());
+            }
+
             final HttpPath path = httpRequest.getPath();
             if (path.isRoot()) {
                 processRoot(httpResponse);

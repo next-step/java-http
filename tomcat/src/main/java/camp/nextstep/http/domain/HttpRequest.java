@@ -59,4 +59,8 @@ public class HttpRequest {
     public boolean isPostMethod() {
         return requestLine.isPost();
     }
+
+    public boolean isSessionEmpty() {
+        return headers.getCookie("JESSIONID") == null;
+    }
 }

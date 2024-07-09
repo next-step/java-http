@@ -1,15 +1,21 @@
 package nextstep.org.apache.coyote.http11;
 
 import org.apache.coyote.http11.Http11Processor;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
 import support.StubSocket;
 
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Files;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.BDDMockito.given;
 
 class Http11ProcessorTest {
 
@@ -26,6 +32,20 @@ class Http11ProcessorTest {
                     "Content-Length: %d \r\n" +
                     "\r\n" +
                     "%s";
+    public static final UUID mockedUUID = UUID.fromString("656cef62-e3c4-40bc-a8df-94732920ed46");
+
+    private static MockedStatic<UUID> uuidMockedStatic;
+
+    @BeforeAll
+    static void beforeAll() {
+        uuidMockedStatic = Mockito.mockStatic(UUID.class);
+        given(UUID.randomUUID()).willReturn(mockedUUID);
+    }
+
+    @AfterAll
+    public static void afterAll() {
+        uuidMockedStatic.close();
+    }
 
     @Test
     void process() {
@@ -39,6 +59,7 @@ class Http11ProcessorTest {
         // then
         final var expected = String.join("\r\n",
                 "HTTP/1.1 200 OK ",
+                String.format("Set-Cookie: JSESSIONID=%s ", mockedUUID),
                 "Content-Type: text/html;charset=utf-8 ",
                 "Content-Length: 12 ",
                 "",
@@ -61,6 +82,7 @@ class Http11ProcessorTest {
         final URL resource = getClass().getClassLoader().getResource("static/index.html");
         final var expected = String.join("\r\n",
                 "HTTP/1.1 200 OK ",
+                String.format("Set-Cookie: JSESSIONID=%s ", mockedUUID),
                 "Content-Type: text/html;charset=utf-8 ",
                 "Content-Length: 5670 ", // 운영체제 환경에 따라 다른 값이 나올 수 있음. 자신의 개발 환경에 맞춰 수정할 것.
                 "",
@@ -83,6 +105,7 @@ class Http11ProcessorTest {
         final URL resource = getClass().getClassLoader().getResource("static/404.html");
         final var expected = String.join("\r\n",
                 "HTTP/1.1 200 OK ",
+                String.format("Set-Cookie: JSESSIONID=%s ", mockedUUID),
                 "Content-Type: text/html;charset=utf-8 ",
                 "Content-Length: 2477 ", // 운영체제 환경에 따라 다른 값이 나올 수 있음. 자신의 개발 환경에 맞춰 수정할 것.
                 "",
@@ -105,6 +128,7 @@ class Http11ProcessorTest {
         final URL resource = getClass().getClassLoader().getResource("static/css/styles.css");
         final var expected = String.join("\r\n",
                 "HTTP/1.1 200 OK ",
+                String.format("Set-Cookie: JSESSIONID=%s ", mockedUUID),
                 "Content-Type: text/css;charset=utf-8 ",
                 "Content-Length: 223255 ", // 운영체제 환경에 따라 다른 값이 나올 수 있음. 자신의 개발 환경에 맞춰 수정할 것.
                 "",
@@ -127,6 +151,7 @@ class Http11ProcessorTest {
         final URL resource = getClass().getClassLoader().getResource("static/js/scripts.js");
         final var expected = String.join("\r\n",
                 "HTTP/1.1 200 OK ",
+                String.format("Set-Cookie: JSESSIONID=%s ", mockedUUID),
                 "Content-Type: text/javascript;charset=utf-8 ",
                 "Content-Length: 1002 ", // 운영체제 환경에 따라 다른 값이 나올 수 있음. 자신의 개발 환경에 맞춰 수정할 것.
                 "",
@@ -149,11 +174,14 @@ class Http11ProcessorTest {
         // then
         final var expected = String.join("\r\n",
                 "HTTP/1.1 302 Found ",
+                String.format("Set-Cookie: JSESSIONID=%s ", mockedUUID),
                 "Location: /index.html ",
                 "",
                 "");
 
-        assertThat(socket.output()).isEqualTo(expected);
+        assertThat(socket.output())
+                .contains("Set-Cookie: JSESSIONID=")
+                .isEqualTo(expected);
     }
 
     @Test
@@ -170,6 +198,7 @@ class Http11ProcessorTest {
         // then
         final var expected = String.join("\r\n",
                 "HTTP/1.1 302 Found ",
+                String.format("Set-Cookie: JSESSIONID=%s ", mockedUUID),
                 "Location: /401.html ",
                 "",
                 "");
@@ -191,6 +220,7 @@ class Http11ProcessorTest {
         final URL resource = getClass().getClassLoader().getResource("static/register.html");
         final var expected = String.join("\r\n",
                 "HTTP/1.1 200 OK ",
+                String.format("Set-Cookie: JSESSIONID=%s ", mockedUUID),
                 "Content-Type: text/html;charset=utf-8 ",
                 "Content-Length: 4391 ", // 운영체제 환경에 따라 다른 값이 나올 수 있음. 자신의 개발 환경에 맞춰 수정할 것.
                 "",
@@ -213,6 +243,7 @@ class Http11ProcessorTest {
         // then
         final var expected = String.join("\r\n",
                 "HTTP/1.1 302 Found ",
+                String.format("Set-Cookie: JSESSIONID=%s ", mockedUUID),
                 "Location: /index.html ",
                 "",
                 "");
