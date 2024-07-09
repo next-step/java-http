@@ -47,7 +47,9 @@ public class Http11Processor implements Runnable, Processor {
             final var requestLine = new RequestLine(inputReader.readLine());
             final var requestHeader = parseRequestHeader(inputReader);
             final var requestBody = parseRequestBody(inputReader, requestHeader);
-            final var response = createResponse(requestLine);
+            final var httpRequest = new HttpRequest(requestLine, requestHeader, requestBody);
+
+            final var response = createResponse(httpRequest);
 
             outputStream.write(response.buildResponse().getBytes());
             outputStream.flush();
@@ -78,27 +80,27 @@ public class Http11Processor implements Runnable, Processor {
         return new HttpRequestBody(new String(buffer));
     }
 
-    private HttpResponse createResponse(final RequestLine requestLine) {
-        final var path = requestLine.getHttpPath();
+    private HttpResponse createResponse(final HttpRequest httpRequest) {
+        final var path = httpRequest.getHttpPath();
         if (path.equals(LOGIN_PATH)) {
-            return handleLoginPath(requestLine);
+            return handleLoginPath(httpRequest);
         }
         if (path.equals(REGISTER_PATH)) {
-            return handleRegisterPath(requestLine);
+            return handleRegisterPath(httpRequest);
         }
         if (path.equals(ROOT_PATH)) {
-            return handleRootPath(requestLine);
+            return handleRootPath(httpRequest);
         }
-        return handlePath(requestLine);
+        return handlePath(httpRequest);
     }
 
-    private HttpResponse handleLoginPath(final RequestLine requestLine) {
-        final var queryString = requestLine.getQueryString();
+    private HttpResponse handleLoginPath(final HttpRequest httpRequest) {
+        final var queryString = httpRequest.getQueryString();
         if (queryString.isEmpty()) {
             return HttpResponse.ok(
-                    requestLine.getHttpProtocol(),
-                    parseContentType(requestLine),
-                    parseResponseBody(requestLine)
+                    httpRequest.getHttpProtocol(),
+                    parseContentType(httpRequest),
+                    parseResponseBody(httpRequest)
             );
         }
         final var account = queryString.get(LOGIN_ACCOUNT_KEY);
@@ -106,44 +108,44 @@ public class Http11Processor implements Runnable, Processor {
         User user = InMemoryUserRepository.findByAccount(account)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 account입니다."));
         if (user.checkPassword(password)) {
-            return HttpResponse.found(requestLine.getHttpProtocol(), "/index.html");
+            return HttpResponse.found(httpRequest.getHttpProtocol(), "/index.html");
         }
-        return HttpResponse.found(requestLine.getHttpProtocol(), "/401.html");
+        return HttpResponse.found(httpRequest.getHttpProtocol(), "/401.html");
     }
 
-    private HttpResponse handleRegisterPath(final RequestLine requestLine) {
-        if (requestLine.isGetMethod()) {
+    private HttpResponse handleRegisterPath(final HttpRequest httpRequest) {
+        if (httpRequest.isGetMethod()) {
             return HttpResponse.ok(
-                    requestLine.getHttpProtocol(),
-                    parseContentType(requestLine),
-                    parseResponseBody(requestLine)
+                    httpRequest.getHttpProtocol(),
+                    parseContentType(httpRequest),
+                    parseResponseBody(httpRequest)
             );
         }
         throw new RuntimeException();
     }
 
-    private HttpResponse handleRootPath(final RequestLine requestLine) {
+    private HttpResponse handleRootPath(final HttpRequest httpRequest) {
         return HttpResponse.ok(
-                requestLine.getHttpProtocol(),
+                httpRequest.getHttpProtocol(),
                 ContentType.TEXT_HTML,
                 ROOT_BODY
         );
     }
 
-    private HttpResponse handlePath(final RequestLine requestLine) {
+    private HttpResponse handlePath(final HttpRequest httpRequest) {
         return HttpResponse.ok(
-                requestLine.getHttpProtocol(),
-                parseContentType(requestLine),
-                parseResponseBody(requestLine)
+                httpRequest.getHttpProtocol(),
+                parseContentType(httpRequest),
+                parseResponseBody(httpRequest)
         );
     }
 
-    private String parseResponseBody(final RequestLine requestLine) {
-        return FileUtil.readStaticPathFileResource(requestLine.getFilePath(), getClass());
+    private String parseResponseBody(final HttpRequest httpRequest) {
+        return FileUtil.readStaticPathFileResource(httpRequest.getFilePath(), getClass());
     }
 
-    private ContentType parseContentType(final RequestLine requestLine) {
-        String extension = FileUtil.parseExtension(requestLine.getFilePath());
+    private ContentType parseContentType(final HttpRequest httpRequest) {
+        String extension = FileUtil.parseExtension(httpRequest.getFilePath());
         return ContentType.fromExtension(extension);
     }
 }

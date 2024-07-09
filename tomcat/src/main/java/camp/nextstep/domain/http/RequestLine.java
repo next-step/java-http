@@ -38,6 +38,10 @@ public class RequestLine {
         return httpMethod == HttpMethod.GET;
     }
 
+    public boolean isPostMethod() {
+        return httpMethod == HttpMethod.POST;
+    }
+
     public HttpMethod getHttpMethod() {
         return httpMethod;
     }
