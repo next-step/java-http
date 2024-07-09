@@ -45,7 +45,7 @@ class HttpResponseTest {
     @Test
     void HttpHeader에_쿠키를_추가한다() {
         HttpCookie actual = HttpResponse.found(DEFAULT_HTTP_PROTOCOL, "/index.html")
-                .addCookie(new HttpCookie("name=jinyoung"))
+                .addCookie(new HttpCookie(Map.of("name", "jinyoung")))
                 .getHttpHeaders()
                 .getHttpCookie();
         assertThat(actual.getCookies()).contains(Map.entry("name", "jinyoung"));

@@ -20,20 +20,20 @@ public class HttpCookie {
     private final Map<String, String> cookies;
 
     public HttpCookie(Map<String, String> cookies) {
-        this.cookies = cookies;
+        this.cookies = new LinkedHashMap<>(cookies);
     }
 
     public HttpCookie() {
         this(new HashMap<>());
     }
 
-    public HttpCookie(String cookies) {
-        this.cookies = parseCookies(cookies);
+    public static HttpCookie from(String cookies) {
+        return new HttpCookie(parseCookies(cookies));
     }
 
-    private Map<String, String> parseCookies(String cookies) {
+    private static Map<String, String> parseCookies(String cookies) {
         return Arrays.stream(cookies.split(HTTP_COOKIES_FORMAT_SPLIT_REGEX))
-                .map(this::parseCookie)
+                .map(HttpCookie::parseCookie)
                 .collect(Collectors.toMap(
                         Map.Entry::getKey,
                         Map.Entry::getValue,
@@ -42,7 +42,7 @@ public class HttpCookie {
                 ));
     }
 
-    private Map.Entry<String, String> parseCookie(String cookie) {
+    private static Map.Entry<String, String> parseCookie(String cookie) {
         String[] splitCookie = cookie.split(HTTP_COOKIE_FORMAT_SPLIT_REGEX);
         if (splitCookie.length != HTTP_COOKIE_FORMAT_LENGTH) {
             throw new IllegalArgumentException("Cookie값이 정상적으로 입력되지 않았습니다 - " + cookie);

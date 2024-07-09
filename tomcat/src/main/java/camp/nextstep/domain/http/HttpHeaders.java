@@ -74,7 +74,7 @@ public class HttpHeaders {
 
     private HttpCookie parseCookie(Map<String, String> headers) {
         if (headers.containsKey(COOKIE_HEADER_KEY)) {
-            return new HttpCookie(headers.get(COOKIE_HEADER_KEY));
+            return HttpCookie.from(headers.get(COOKIE_HEADER_KEY));
         }
         return new HttpCookie();
     }
