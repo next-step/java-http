@@ -116,3 +116,12 @@ X-Pad: avoid browser bug
             - password 가 틀리면 예외를 던진다.
             - password 가 동일하면 콘솔에 User 객체를 출력한다
     - `login.html` 을 OutputStream 에 쓴다.
+
+## 3단계 - 로그인 구현하기
+
+### 요구사항 1 - HTTP Status Code 302
+
+- 로그인 여부에 따라 페이지를 이동한다
+    - 응답 헤더에 `HttpStatusCode 302` 를 반환한다.
+    - account 와 password 가 일치하면 `/index.html` 로 리다이렉트 한다.
+    - 존재하지 않는 account 이거나 password 가 일치가 일치하지 않으면 `401.html`로 리다이렉트 한다.
