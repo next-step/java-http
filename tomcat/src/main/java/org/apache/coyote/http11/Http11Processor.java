@@ -14,6 +14,7 @@ import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.coyote.Processor;
 import org.slf4j.Logger;
@@ -47,40 +48,46 @@ public class Http11Processor implements Runnable, Processor {
              final var outputStream = connection.getOutputStream()) {
             RequestLine requestLine = RequestLine.from(br.readLine());
             HttpPath path = requestLine.getPath();
-            String responseBody = getResponseBody(path);
 
-            String response = String.join("\r\n",
-                "HTTP/1.1 200 OK ",
-                "Content-Type: " + ContentType.from(requestLine.getExtension()).getValue() + " ",
-                "Content-Length: " + responseBody.getBytes().length + " ",
-                "",
-                responseBody);
-
-            if (path.equals(LOGIN_PATH)) {
-                Map<String, Object> parameters = requestLine.getParameters();
-                User user = InMemoryUserRepository.findByAccount(parameters.get("account").toString())
-                    .orElseThrow(IllegalArgumentException::new);
-                log.info(user.toString());
+            if (isLoginPath(path)) {
+                handleLogin(requestLine);
             }
 
-            outputStream.write(response.getBytes());
+            Response response = getResponseBody(path)
+                .map(responseBody -> Response.ok(
+                    ContentType.from(path.getExtension()),
+                    responseBody
+                ))
+                .orElse(Response.notFound());
+
+            outputStream.write(response.toHttp11());
             outputStream.flush();
         } catch (IOException | UncheckedServletException e) {
             log.error(e.getMessage(), e);
         }
     }
 
-    private String getResponseBody(HttpPath path) throws IOException {
+    private boolean isLoginPath(HttpPath path) {
+        return LOGIN_PATH.equals(path.getPath());
+    }
+
+    private void handleLogin(RequestLine requestLine) {
+        Map<String, Object> parameters = requestLine.getParameters();
+        User user = InMemoryUserRepository.findByAccount(parameters.get("account").toString())
+            .orElseThrow(IllegalArgumentException::new);
+
+        user.checkPassword(parameters.get("password").toString());
+        log.info(user.toString());
+    }
+
+    private Optional<String> getResponseBody(HttpPath path) throws IOException {
         if (path.isRootPath()) {
-            return ROOT_PATH_BODY;
+            return Optional.of(ROOT_PATH_BODY);
         }
-        StringBuilder pathBuilder = new StringBuilder(STATIC_PATH);
-        pathBuilder.append(path.getPath());
-
-        if (path.getExtension().equals(StringUtils.EMPTY)) {
-            pathBuilder.append(ContentType.HTML.getExtension());
+        File file = new File(ClassLoader.getSystemResource(STATIC_PATH).getPath() + path.getFilePath());
+        if (!file.exists()) {
+            return Optional.empty();
         }
-
-        return Files.readString(Path.of(ClassLoader.getSystemResource(pathBuilder.toString()).getFile()));
+        return Optional.of(Files.readString(file.toPath()));
     }
 }
