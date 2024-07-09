@@ -23,6 +23,11 @@ public enum ContentType {
                 .orElseThrow(() -> new IllegalArgumentException("지원하지 않는 확장자입니다."));
     }
 
+    public static boolean isSupportableExtension(String path) {
+        return Arrays.stream(values())
+                .anyMatch(value -> path.endsWith(value.extension));
+    }
+
     public String getExtension() {
         return extension;
     }

@@ -1,5 +1,7 @@
 package camp.nextstep.util;
 
+import camp.nextstep.domain.http.ContentType;
+
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
@@ -36,12 +38,8 @@ public class FileUtil {
         }
     }
 
-    public static boolean containsExtensionDelimiter(String path) {
-        return path.contains(FILE_EXTENSION_DELIMITER);
-    }
-
     public static String parseExtension(String filePath) {
-        if (!containsExtensionDelimiter(filePath)) {
+        if (!ContentType.isSupportableExtension(filePath)) {
             throw new IllegalArgumentException("확장자 구분자가 존재하지 않아 확장자를 추출할 수 없습니다 - " + filePath);
         }
         return filePath.substring(filePath.lastIndexOf(FILE_EXTENSION_DELIMITER));

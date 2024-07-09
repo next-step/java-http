@@ -24,6 +24,13 @@ class ContentTypeTest {
                 .hasMessage("지원하지 않는 확장자입니다.");
     }
 
+    @ParameterizedTest
+    @CsvSource(value = {"/index.html,true", "/index,false"})
+    void 파일의_확장자가_있는지_확인한다(String givenPath, boolean expected) {
+        boolean actual = ContentType.isSupportableExtension(givenPath);
+        assertThat(actual).isEqualTo(expected);
+    }
+
     @Test
     void utf8이_포함된_content_type을_반환한다() {
         String actual = TEXT_HTML.getUtf8ContentType();

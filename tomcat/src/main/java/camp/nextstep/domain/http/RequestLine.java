@@ -2,8 +2,6 @@ package camp.nextstep.domain.http;
 
 import java.util.Map;
 
-import static camp.nextstep.util.FileUtil.containsExtensionDelimiter;
-
 public class RequestLine {
 
     private static final String REQUEST_LINE_FORMAT_SPLIT_REGEX = " ";
@@ -51,7 +49,7 @@ public class RequestLine {
     }
 
     public String getFilePath() {
-        if (containsExtensionDelimiter(httpPath.getPath())) {
+        if (ContentType.isSupportableExtension(httpPath.getPath())) {
             return httpPath.getPath();
         }
         return httpPath.getPath() + DEFAULT_CONTENT_TYPE.getExtension();
