@@ -21,7 +21,7 @@ public class HttpPath {
         this.queryString = parseQueryString(httpPath, splitHttpPath);
     }
 
-    private static void validatePathFormat(String httpPath, String[] splitHttpPath) {
+    private void validatePathFormat(String httpPath, String[] splitHttpPath) {
         if (splitHttpPath.length != HTTP_PATH_EMPTY_QUERY_STRING_FORMAT_LENGTH && splitHttpPath.length != HTTP_PATH_EXIST_QUERY_STRING_FORMAT_LENGTH) {
             throw new IllegalArgumentException("HttpPath값이 정상적으로 입력되지 않았습니다 - " + httpPath);
         }
