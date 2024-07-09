@@ -1,5 +1,7 @@
 package camp.nextstep.staticresource;
 
+import camp.nextstep.exception.RequestNotFoundException;
+
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
@@ -9,8 +11,7 @@ public class StaticResourceLoader {
     public String readAllLines(String path) throws IOException {
         URL resource = getClass().getClassLoader().getResource(path);
         if (resource == null) {
-            // TODO: 404 NOT FOUND exception
-            throw new IllegalArgumentException("path 에 지정한 파일이 없습니다: " + path);
+            throw new RequestNotFoundException(path);
         }
         return readAllLines(resource);
     }

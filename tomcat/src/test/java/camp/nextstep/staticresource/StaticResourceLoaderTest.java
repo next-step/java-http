@@ -1,5 +1,6 @@
 package camp.nextstep.staticresource;
 
+import camp.nextstep.exception.RequestNotFoundException;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -19,7 +20,7 @@ class StaticResourceLoaderTest {
 
     @Test
     void readMissingFile() {
-        assertThrows(IllegalArgumentException.class,
+        assertThrows(RequestNotFoundException.class,
                 () -> staticResourceLoader.readAllLines("static/invalid-filename.html"));
     }
 }

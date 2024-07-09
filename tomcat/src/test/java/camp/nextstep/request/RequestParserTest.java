@@ -2,6 +2,8 @@ package camp.nextstep.request;
 
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
+
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 class RequestParserTest {
@@ -10,40 +12,52 @@ class RequestParserTest {
 
     @Test
     void parseGetRequest() {
-        String requestLine = "GET /docs/index.html HTTP/1.1";
+        String requestLineString = "GET /docs/index.html HTTP/1.1";
+        Request request = requestParser.parse(requestLineString);
+        RequestLine requestLine = request.getRequestLine();
 
-        Request request = requestParser.parse(requestLine);
-
-        assertThat(request.getMethod()).isEqualTo(RequestMethod.GET);
-        assertThat(request.getPath()).isEqualTo("/docs/index.html");
-        assertThat(request.getHttpVersion()).isEqualTo("HTTP/1.1");
+        assertThat(requestLine.getMethod()).isEqualTo(RequestMethod.GET);
+        assertThat(requestLine.getPath()).isEqualTo("/docs/index.html");
+        assertThat(requestLine.getHttpVersion()).isEqualTo("HTTP/1.1");
     }
 
     @Test
     void parsePostRequest() {
-        String requestLine = "POST /docs/index.html HTTP/1.1";
+        String requestLineString = "POST /docs/index.html HTTP/1.1";
+        Request request = requestParser.parse(requestLineString);
+        RequestLine requestLine = request.getRequestLine();
 
-        Request request = requestParser.parse(requestLine);
-
-        assertThat(request.getMethod()).isEqualTo(RequestMethod.POST);
-        assertThat(request.getPath()).isEqualTo("/docs/index.html");
-        assertThat(request.getQueryParameters("somekey")).isEqualTo(new String[]{});
-        assertThat(request.getHttpVersion()).isEqualTo("HTTP/1.1");
-        assertThat(request.getPredictedMimeType()).isEqualTo("text/html");
+        assertThat(requestLine.getMethod()).isEqualTo(RequestMethod.POST);
+        assertThat(requestLine.getPath()).isEqualTo("/docs/index.html");
+        assertThat(requestLine.getQueryParameter("somekey")).isEqualTo(null);
+        assertThat(requestLine.getHttpVersion()).isEqualTo("HTTP/1.1");
     }
 
     @Test
     void parseQueryString() {
-        String requestLine = "GET /users?userId=javajigi&password=password&name=JaeSung HTTP/1.1";
+        String requestLineString = "GET /users?userId=javajigi&password=password&name=JaeSung HTTP/1.1";
+        Request request = requestParser.parse(requestLineString);
+        RequestLine requestLine = request.getRequestLine();
+        QueryParameters queryParameters = requestLine.getQueryParameters();
 
-        Request request = requestParser.parse(requestLine);
+        assertThat(requestLine.getMethod()).isEqualTo(RequestMethod.GET);
+        assertThat(requestLine.getPath()).isEqualTo("/users");
+        assertThat(queryParameters.get("userId")).isEqualTo("javajigi");
+        assertThat(queryParameters.get("password")).isEqualTo("password");
+        assertThat(queryParameters.get("name")).isEqualTo("JaeSung");
+        assertThat(queryParameters.get("somekey")).isEqualTo(null);
+        assertThat(requestLine.getHttpVersion()).isEqualTo("HTTP/1.1");
+    }
 
-        assertThat(request.getMethod()).isEqualTo(RequestMethod.GET);
-        assertThat(request.getPath()).isEqualTo("/users");
-        assertThat(request.getQueryParameters("userId")).isEqualTo(new String[]{"javajigi"});
-        assertThat(request.getQueryParameters("password")).isEqualTo(new String[]{"password"});
-        assertThat(request.getQueryParameters("name")).isEqualTo(new String[]{"JaeSung"});
-        assertThat(request.getQueryParameters("somekey")).isEqualTo(new String[]{});
-        assertThat(request.getHttpVersion()).isEqualTo("HTTP/1.1");
+    @Test
+    void parseQueryString2() {
+        String requestLineString = "GET /users?userId=javajigi&userId=abc HTTP/1.1";
+        Request request = requestParser.parse(requestLineString);
+        QueryParameters queryParameters = request
+                .getRequestLine()
+                .getQueryParameters();
+
+        assertThat(queryParameters.get("userId")).isEqualTo("javajigi");
+        assertThat(queryParameters.getAll("userId")).isEqualTo(List.of("javajigi", "abc"));
     }
 }

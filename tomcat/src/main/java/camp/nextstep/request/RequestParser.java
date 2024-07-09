@@ -2,8 +2,7 @@ package camp.nextstep.request;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 public class RequestParser {
     private static final String REQUEST_LINE_SEPARATOR = " ";
@@ -20,7 +19,7 @@ public class RequestParser {
 
         RequestMethod method = parseRequestMethod(split[0]);
         String path = parsePath(split[1]);
-        List<String[]> queryParameters = parseQueryParameters(split[1]);
+        QueryParameters queryParameters = parseQueryParameters(split[1]);
         String httpVersion = split[2];
 
         return new Request(method, path, queryParameters, httpVersion);
@@ -34,12 +33,24 @@ public class RequestParser {
         return uri.split(QUERY_STRING_SEPARATOR)[0];
     }
 
-    private List<String[]> parseQueryParameters(String uri) {
+    // XXX: 여기 정리?
+    private QueryParameters parseQueryParameters(String uri) {
+        Map<String, List<Object>> map = new HashMap<>();
+
         String[] pathAndQueryString = uri.split(QUERY_STRING_SEPARATOR, 2);
         String queryString = pathAndQueryString.length == 2 ? pathAndQueryString[1] : "";
 
-        return Arrays.stream(queryString.split(QUERY_PARAMS_SEPARATOR))
-                .map(keyAndValue -> keyAndValue.split(QUERY_PARAMS_KEY_VALUE_SEPARATOR))
-                .toList();
+        Arrays.stream(queryString.split(QUERY_PARAMS_SEPARATOR))
+                .forEach(keyAndValue -> {
+                    if (keyAndValue.contains("=")) {
+                        String[] split = keyAndValue.split(QUERY_PARAMS_KEY_VALUE_SEPARATOR, 2);
+
+                        String key = split[0];
+                        String value = split[1];
+                        map.computeIfAbsent(key, s -> new ArrayList<>());
+                        map.get(key).add(value);
+                    }
+                });
+        return new QueryParameters(map);
     }
 }

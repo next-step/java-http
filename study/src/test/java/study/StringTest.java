@@ -19,4 +19,13 @@ class StringTest {
         assertThat(String.valueOf(str1)).isEqualTo("");
         assertThat(String.valueOf(str2)).isEqualTo("abc");
     }
+
+    @Test
+    void substringTest() {
+        String keyAndValue = "abc=";
+
+        int index = keyAndValue.indexOf("=");
+        assertThat(keyAndValue.substring(0, index)).isEqualTo("abc");
+        assertThat(keyAndValue.substring(index + 1)).isEqualTo("");
+    }
 }
