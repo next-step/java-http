@@ -5,14 +5,9 @@ import org.apache.coyote.Processor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.net.Socket;
-import java.net.URL;
 import java.nio.file.Files;
-import java.util.Objects;
 
 public class Http11Processor implements Runnable, Processor {
 
@@ -32,26 +27,19 @@ public class Http11Processor implements Runnable, Processor {
 
     @Override
     public void process(final Socket connection) {
-        try (final var inputStream = connection.getInputStream();
-             BufferedReader br = new BufferedReader(new InputStreamReader(inputStream));
-             final var outputStream = connection.getOutputStream()) {
+        try (BufferedReader br = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+             OutputStream outputStream = connection.getOutputStream()) {
 
             RequestLine requestLine = RequestLine.from(br.readLine());
             String path = requestLine.getPath();
 
-            if (Objects.equals(path, "/")) {
-                path = "/index.html";
-            }
+            File resource = new ResourceFinder().findByPath(path);
+            MediaType mediaType = MediaType.from(resource);
+            String responseBody = new String(Files.readAllBytes(resource.toPath()));
 
-            URL resource = getClass()
-                    .getClassLoader()
-                    .getResource("static" + path);
-
-            final var responseBody = new String(Files.readAllBytes(new File(resource.getFile()).toPath()));
-
-            final var response = String.join("\r\n",
+            String response = String.join("\r\n",
                     "HTTP/1.1 200 OK ",
-                    "Content-Type: text/%s;charset=utf-8 ".formatted(getFileExtension(path)),
+                    "Content-Type: %s;charset=utf-8 ".formatted(mediaType.getValue()),
                     "Content-Length: " + responseBody.getBytes().length + " ",
                     "",
                     responseBody);
@@ -61,13 +49,5 @@ public class Http11Processor implements Runnable, Processor {
         } catch (IOException | UncheckedServletException e) {
             log.error(e.getMessage(), e);
         }
-    }
-
-    public String getFileExtension(String path) {
-        if (path.contains(".")) {
-            String[] split = path.split("\\.");
-            return split[split.length - 1];
-        }
-        return "";
     }
 }
