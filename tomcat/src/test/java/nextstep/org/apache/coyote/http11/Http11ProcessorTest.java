@@ -19,6 +19,13 @@ class Http11ProcessorTest {
                     "Connection: keep-alive \r\n" +
                     "\r\n";
 
+    private static final String HTTP_POST_REQUEST_TEMPLATE =
+            "POST %s HTTP/1.1 \r\n" +
+                    "Host: localhost:8080 \r\n" +
+                    "Connection: keep-alive \r\n" +
+                    "\r\n" +
+                    "%s";
+
     @Test
     void process() {
         // given
@@ -161,6 +168,48 @@ class Http11ProcessorTest {
         final var expected = String.join("\r\n",
                 "HTTP/1.1 302 Found ",
                 "Location: /401.html ",
+                "",
+                "");
+
+        assertThat(socket.output()).isEqualTo(expected);
+    }
+
+    @Test
+    void process_register_get() throws IOException {
+        // given
+        final String httpRequest = String.format(HTTP_GET_REQUEST_TEMPLATE, "/register");
+        final var socket = new StubSocket(httpRequest);
+        final Http11Processor processor = new Http11Processor(socket);
+
+        // when
+        processor.process(socket);
+
+        // then
+        final URL resource = getClass().getClassLoader().getResource("static/register.html");
+        final var expected = String.join("\r\n",
+                "HTTP/1.1 200 OK ",
+                "Content-Type: text/html;charset=utf-8 ",
+                "Content-Length: 4391 ", // 운영체제 환경에 따라 다른 값이 나올 수 있음. 자신의 개발 환경에 맞춰 수정할 것.
+                "",
+                new String(Files.readAllBytes(new File(resource.getFile()).toPath())));
+
+        assertThat(socket.output()).isEqualTo(expected);
+    }
+
+    @Test
+    void process_register_post() {
+        // given
+        final String httpRequest = String.format(HTTP_POST_REQUEST_TEMPLATE, "/register", "account=test&password=password&email=test@test.com");
+        final var socket = new StubSocket(httpRequest);
+        final Http11Processor processor = new Http11Processor(socket);
+
+        // when
+        processor.process(socket);
+
+        // then
+        final var expected = String.join("\r\n",
+                "HTTP/1.1 302 Found ",
+                "Location: /index.html ",
                 "",
                 "");
 
