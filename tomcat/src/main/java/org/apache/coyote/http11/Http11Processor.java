@@ -64,8 +64,9 @@ public class Http11Processor implements Runnable, Processor {
     }
 
     private void handleLoginRequest(final String path, final HttpRequest httpRequest) {
-        if (path.contains("login")) {
-            Map<String, String> queryParamMap = httpRequest.getQueryParamMap();
+        Map<String, String> queryParamMap = httpRequest.getQueryParamMap();
+
+        if (path.contains("login") && !queryParamMap.isEmpty()) {
             User user = InMemoryUserRepository.findByAccount(queryParamMap.get("account"))
                     .orElseThrow();
             if (user.checkPassword(queryParamMap.get("password"))) {
