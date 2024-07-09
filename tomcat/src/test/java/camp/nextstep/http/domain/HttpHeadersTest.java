@@ -9,6 +9,7 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
 class HttpHeadersTest {
 
@@ -75,6 +76,23 @@ class HttpHeadersTest {
                         "Content-Length: 1000 "
                 )
         );
+    }
+
+    @Test
+    void HttpHeaders_를_List_String_으로_생성시_Cookie_는_분리된다() {
+        final HttpHeaders headers = new HttpHeaders(
+                List.of("Content-Type: text/html;charset=utf-8 ",
+                        "Content-Length: 1000 ",
+                        "Cookie: yummy_cookie=choco; tasty_cookie=strawberry; JSESSIONID=656cef62-e3c4-40bc-a8df-94732920ed46")
+        );
+
+        assertSoftly(softly -> {
+            softly.assertThat(headers.getContentLength()).isEqualTo(1000);
+            softly.assertThat(headers.getContentType()).isEqualTo(ContentType.HTML);
+            softly.assertThat(headers.getCookie("yummy_cookie")).isEqualTo("choco");
+            softly.assertThat(headers.getCookie("tasty_cookie")).isEqualTo("strawberry");
+            softly.assertThat(headers.getCookie("JSESSIONID")).isEqualTo("656cef62-e3c4-40bc-a8df-94732920ed46");
+        });
     }
 
 }

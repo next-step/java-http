@@ -6,6 +6,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 public class HttpHeaders {
@@ -18,23 +19,39 @@ public class HttpHeaders {
     private static final long MIN_CONTENT_LENGTH = 1L;
     private static final String CONTENT_LENGTH = "Content-Length";
     private static final int EMPTY_CONTENT_LENGTH = 0;
-    public static final String LOCATION = "Location";
+    private static final String LOCATION = "Location";
+    private static final String COOKIE_KEY = "Cookie";
 
     private final Map<String, String> headers;
+    private final HttpCookies httpCookies;
 
     public HttpHeaders() {
         headers = new LinkedHashMap<>();
+        httpCookies = new HttpCookies();
     }
 
     public HttpHeaders(final List<String> headers) {
         this.headers = headers.stream()
                 .map(this::splitHeader)
-                .collect(Collectors.toMap(
-                        header -> header[KEY_INDEX].trim(),
-                        header -> header[VALUE_INDEX].trim(),
-                        (existing, replacement) -> existing,
-                        LinkedHashMap::new
-                ));
+                .filter(header -> !containsCookie(header))
+                .collect(toLinkedHashMap());
+        this.httpCookies = new HttpCookies(headers.stream()
+                .map(this::splitHeader)
+                .filter(this::containsCookie)
+                .collect(toLinkedHashMap()).get(COOKIE_KEY));
+    }
+
+    private boolean containsCookie(final String[] header) {
+        return header[KEY_INDEX].equalsIgnoreCase(COOKIE_KEY);
+    }
+
+    private Collector<String[], ?, LinkedHashMap<String, String>> toLinkedHashMap() {
+        return Collectors.toMap(
+                header -> header[KEY_INDEX].trim(),
+                header -> header[VALUE_INDEX].trim(),
+                (existing, replacement) -> existing,
+                LinkedHashMap::new
+        );
     }
 
     private String[] splitHeader(final String headerLine) {
@@ -73,15 +90,31 @@ public class HttpHeaders {
         headers.put(LOCATION, location);
     }
 
-    public String convertToString() {
-        return headers.entrySet()
-                .stream()
-                .map(entry -> String.format("%s%s %s ", entry.getKey(), HEADER_DELIMITER, entry.getValue()))
-                .collect(Collectors.joining(System.lineSeparator()));
-    }
-
     public void add(final String key, final String value) {
         headers.put(key, value);
+    }
+
+    public String getCookie(final String name) {
+        return httpCookies.get(name);
+    }
+
+    public void addCookie(final String name, final String value) {
+        httpCookies.add(name, value);
+    }
+
+    public String convertToString() {
+        return convertCookiesToString() +
+                headers.entrySet()
+                        .stream()
+                        .map(entry -> String.format("%s%s %s ", entry.getKey(), HEADER_DELIMITER, entry.getValue()))
+                        .collect(Collectors.joining(System.lineSeparator()));
+    }
+
+    private String convertCookiesToString() {
+        if (httpCookies.isEmpty()) {
+            return "";
+        }
+        return httpCookies.convertToString() + System.lineSeparator();
     }
 
     @Override
