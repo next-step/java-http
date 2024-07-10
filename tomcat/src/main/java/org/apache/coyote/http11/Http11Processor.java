@@ -3,6 +3,7 @@ package org.apache.coyote.http11;
 import camp.nextstep.exception.UncheckedServletException;
 import camp.nextstep.http.domain.RequestLine;
 import camp.nextstep.http.domain.Resource;
+import camp.nextstep.http.domain.Response;
 import camp.nextstep.http.exception.InvalidHttpRequestSpecException;
 import camp.nextstep.http.exception.ResourceNotFoundException;
 import org.apache.coyote.Processor;
@@ -64,30 +65,13 @@ public class Http11Processor implements Runnable, Processor {
 
     private void writeDefaultResponse(OutputStream outputStream) throws IOException {
         final var responseBody = "Hello world!";
-
-        final var response = String.join(System.lineSeparator(),
-                "HTTP/1.1 200 OK ",
-                "Content-Type: text/html;charset=utf-8 ",
-                "Content-Length: " + responseBody.getBytes().length + " ",
-                "",
-                responseBody);
-        writeResponse(response, outputStream);
+        Response response = Response.createResponseByString(responseBody);
+        writeResponse(response.getResponseStr(), outputStream);
     }
 
     private void writeResponse(File file, OutputStream outputStream) throws IOException {
-        final String fileStr;
-        try (final BufferedReader bufferedReader = new BufferedReader(new FileReader(file));
-             final Stream<String> lines = bufferedReader.lines()) {
-            fileStr = lines.collect(Collectors.joining(System.lineSeparator()));
-            String response = String.join(System.lineSeparator(),
-                    "HTTP/1.1 200 OK ",
-                    "Content-Type: text/html;charset=utf-8 ",
-                    "Content-Length: " + fileStr.getBytes().length + " ",
-                    "",
-                    fileStr
-            );
-            writeResponse(response, outputStream);
-        }
+        Response response = Response.createResponseByFile(file);
+        writeResponse(response.getResponseStr(), outputStream);
     }
 
     private void writeResponse(String string, OutputStream outputStream) throws IOException {
