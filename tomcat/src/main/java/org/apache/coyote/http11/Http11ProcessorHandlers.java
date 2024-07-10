@@ -20,7 +20,9 @@ public class Http11ProcessorHandlers {
         HttpResponse response = null;
         for (Handler handler : handlers) {
             response = handle(handler, request);
-            if (response != null) break;
+            if (response != null) {
+                break;
+            }
         }
         return response;
     }
