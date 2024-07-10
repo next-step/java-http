@@ -1,10 +1,10 @@
 package camp.nextstep.http.domain;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class HttpSessionManager {
-    private static final Map<String, HttpSession> SESSIONS = new HashMap<>();
+    private static final Map<String, HttpSession> SESSIONS = new ConcurrentHashMap<>();
 
     private HttpSessionManager() {
     }
