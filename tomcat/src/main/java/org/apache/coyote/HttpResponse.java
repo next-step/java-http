@@ -23,7 +23,6 @@ public class HttpResponse {
     public HttpResponse(HttpHeaders headers, HttpBody body) {
         this.statusLine = new HttpResponseStatusLine(HttpStatus.OK);
         this.headers = body.addContentHeader(headers);
-        ;
         this.body = body;
     }
 
