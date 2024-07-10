@@ -104,4 +104,8 @@ public class HttpResponse {
     public HttpCookie getHttpCookie() {
         return httpCookie;
     }
+
+    public String getResponseBody() {
+        return responseBody;
+    }
 }

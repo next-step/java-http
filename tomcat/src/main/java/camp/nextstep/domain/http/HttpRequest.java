@@ -48,6 +48,10 @@ public class HttpRequest {
         return httpCookie;
     }
 
+    public String getSessionId() {
+        return httpCookie.getSessionId();
+    }
+
     public Map<String, String> getHttpRequestBody() {
         return httpRequestBody.getValues();
     }
