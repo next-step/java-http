@@ -281,7 +281,7 @@ class Http11ProcessorTest {
         // then
         var expected = String.join("\r\n",
                 "HTTP/1.1 302 Found ",
-                "Location: /login.html ");
+                "Location: /index.html ");
 
         assertAll(
                 () -> assertThat(socket.output()).isEqualTo(expected),

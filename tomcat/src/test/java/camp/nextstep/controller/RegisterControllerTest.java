@@ -47,7 +47,8 @@ class RegisterControllerTest {
         );
         HttpResponse actual = registerController.doPost(request);
         assertAll(
-                () -> assertThat(actual.getHttpHeaders().getHeaders()).contains(Map.entry("Location", "/login.html")),
+                () -> assertThat(actual.getHttpHeaders().getHeaders()).contains(Map.entry("Location", "/index.html")),
+                () -> assertThat(actual.getHttpCookie().getCookies()).containsKey("JSESSIONID"),
                 () -> assertThat(InMemoryUserRepository.findByAccount("jinyoung")).isNotEmpty()
         );
     }
