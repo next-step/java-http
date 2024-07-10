@@ -1,6 +1,7 @@
 package nextstep.org.apache.coyote.http11;
 
 import org.apache.coyote.http11.HttpProtocol;
+import org.apache.coyote.http11.InvalidHttpProtocolException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -23,7 +24,7 @@ public class HttpProtocolTest {
     @ValueSource(strings = {"FTP", "SMTP"})
     void fromException(String version) {
         assertThatThrownBy(() -> HttpProtocol.from(version))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(InvalidHttpProtocolException.class);
     }
 
     @DisplayName("지원하지 않는 버전이면 예외를 발생시킨다")
@@ -31,6 +32,6 @@ public class HttpProtocolTest {
     @ValueSource(strings = {"HTTP/0.9", "HTTP/2", "HTTP/3"})
     void fromException2(String version) {
         assertThatThrownBy(() -> HttpProtocol.from(version))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(InvalidHttpProtocolException.class);
     }
 }

@@ -17,7 +17,7 @@ public class HttpProtocol {
 
     private static void validate(final String version) {
         if (!SUPPORT_VERSION.equals(version)) {
-            throw new IllegalArgumentException("HTTP가 아니거나 지원하지 않는 HTTP 버전 입니다.");
+            throw new InvalidHttpProtocolException();
         }
     }
 
