@@ -28,6 +28,14 @@ public class Session {
         values.remove(name);
     }
 
+    @Override
+    public String toString() {
+        return "Session{" +
+                "id='" + id + '\'' +
+                ", values=" + values +
+                '}';
+    }
+
     //    public void invalidate() {
     //        ...
     //    }

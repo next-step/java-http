@@ -3,21 +3,35 @@ package camp.nextstep.request;
 import java.util.*;
 
 public class QueryParameters {
+    private static final String QUERY_PARAMS_REGEX_SEPARATOR = "&";
+    private static final String QUERY_PARAMS_KEY_VALUE_REGEX_SEPARATOR = "=";
+
     private static final QueryParameters EMPTY = new QueryParameters(Collections.unmodifiableMap(new HashMap<>()));
 
-    public static QueryParameters empty() {
-        return EMPTY;
+    public static QueryParameters parse(String queryString) {
+        if (queryString == null) return EMPTY;
+
+        Map<String, List<Object>> map = new HashMap<>();
+        for (String each : queryString.split(QUERY_PARAMS_REGEX_SEPARATOR)) {
+            String[] keyAndValue = each.split(QUERY_PARAMS_KEY_VALUE_REGEX_SEPARATOR, 2);
+
+            String key = keyAndValue[0];
+            String value = keyAndValue.length == 2 ? keyAndValue[1] : null;
+
+            map.computeIfAbsent(key, s -> new ArrayList<>()).add(value);
+        }
+
+        return new QueryParameters(map);
     }
 
-    // XXX: 변수명
-    private final Map<String, List<Object>> map;
+    private final Map<String, List<Object>> queryParamsMap;
 
-    public QueryParameters(Map<String, List<Object>> map) {
-        this.map = map;
+    private QueryParameters(Map<String, List<Object>> queryParamsMap) {
+        this.queryParamsMap = queryParamsMap;
     }
 
     public boolean hasKey(String key) {
-        return map.containsKey(key);
+        return queryParamsMap.containsKey(key);
     }
 
     public Object get(String key) {
@@ -29,16 +43,16 @@ public class QueryParameters {
     }
 
     private Optional<Object> getOne(String key) {
-        if (!map.containsKey(key)) {
+        if (!queryParamsMap.containsKey(key)) {
             return Optional.empty();
         }
 
-        return map.get(key)
+        return queryParamsMap.get(key)
                 .stream()
                 .findFirst();
     }
 
     public List<Object> getAll(String key) {
-        return map.get(key);
+        return queryParamsMap.get(key);
     }
 }

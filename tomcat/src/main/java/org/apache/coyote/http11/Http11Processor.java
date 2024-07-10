@@ -98,6 +98,13 @@ public class Http11Processor implements Runnable, Processor {
             return;
         }
 
+
+        if (requestPath.equals("/index.html")) {
+            processRenderStaticPage(request, outputStream);
+            log.debug("세션 조회: {}", request.getSession(sessionManager, false));
+            return;
+        }
+
         processRenderStaticPage(request, outputStream);
     }
 
@@ -141,7 +148,9 @@ public class Http11Processor implements Runnable, Processor {
 
     private void signInAs(User user, Request request) throws IOException {
         final var session = request.getSession(sessionManager, true);
+
         session.setAttribute("user", user);
+        log.debug("로그인: {}", user);
     }
 
     private void processGetRegister(Request request, OutputStream outputStream) throws IOException {
@@ -155,7 +164,10 @@ public class Http11Processor implements Runnable, Processor {
         final String email = requireNonNull(requestBody.getString("email"));
         final String password = requireNonNull(requestBody.getString("password"));
 
-        InMemoryUserRepository.save(new User(account, password, email));
+        User user = new User(account, password, email);
+        InMemoryUserRepository.save(user);
+        signInAs(user, request);
+        log.debug("사용자 생성 후 로그인: {}", user);
 
         redirectTo("/index.html", request, outputStream);
     }
