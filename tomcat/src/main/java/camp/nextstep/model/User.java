@@ -1,5 +1,7 @@
 package camp.nextstep.model;
 
+import org.apache.commons.lang3.StringUtils;
+
 public class User {
 
     private final Long id;
@@ -8,6 +10,7 @@ public class User {
     private final String email;
 
     public User(Long id, String account, String password, String email) {
+        validate(account, password, email);
         this.id = id;
         this.account = account;
         this.password = password;
@@ -34,5 +37,11 @@ public class User {
                 ", email='" + email + '\'' +
                 ", password='" + password + '\'' +
                 '}';
+    }
+
+    private static void validate(String account, String password, String email) {
+        if (StringUtils.isAnyBlank(account, password, email)) {
+            throw new IllegalArgumentException("account, password, email은 필수 값입니다.");
+        }
     }
 }

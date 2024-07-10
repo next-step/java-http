@@ -31,6 +31,10 @@ public class Response {
         return new Response(HttpStatus.UNAUTHORIZED, ContentType.HTML, responseBody);
     }
 
+    public static Response notAllowed() {
+        return new Response(HttpStatus.METHOD_NOT_ALLOWED, ContentType.HTML, "Method Not Allowed");
+    }
+
     public byte[] toHttp11() {
         String statusLine = String.format("%s %d %s ", HTTP11_VERSION, status.getCode(), status.getMessage());
         String contentTypeHeader = String.format("Content-Type: %s ", contentType.getValue());
