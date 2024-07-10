@@ -4,6 +4,7 @@ import camp.nextstep.db.InMemoryUserRepository;
 import camp.nextstep.exception.RequestNotFoundException;
 import camp.nextstep.exception.UncheckedServletException;
 import camp.nextstep.model.User;
+import camp.nextstep.request.Cookie;
 import camp.nextstep.request.QueryParameters;
 import camp.nextstep.request.Request;
 import camp.nextstep.request.RequestParser;
@@ -52,12 +53,11 @@ public class Http11Processor implements Runnable, Processor {
              final var bufferedReader = new BufferedReader(inputStreamReader);
              final var outputStream = connection.getOutputStream()
         ) {
+            Request request = requestParser.parse(bufferedReader);
             try {
-                Request request = requestParser.parse(bufferedReader);
-
-                processRequest(request.getPath(), outputStream, request);
+                processRequest(request, outputStream);
             } catch (RequestNotFoundException e) {
-                handle404(outputStream);
+                render404(request, outputStream);
                 throw e;
             }
         } catch (IOException | UncheckedServletException | URISyntaxException e) {
@@ -65,44 +65,47 @@ public class Http11Processor implements Runnable, Processor {
         }
     }
 
-    private void processRequest(String requestPath, OutputStream outputStream, Request request) throws IOException, URISyntaxException {
-        if (requestPath.isEmpty() || requestPath.equals("/")) {
-            processHelloWorld(outputStream);
+    private void processRequest(Request request, OutputStream outputStream) throws IOException, URISyntaxException {
+        String requestPath = request.getPath();
+
+        if (requestPath.equals("/")) {
+            processHelloWorld(request, outputStream);
             return;
         }
 
         if (requestPath.equals("/login") && request.isGET()) {
-            processGetLogin(outputStream);
+            processGetLogin(request, outputStream);
             return;
         }
 
         if (requestPath.equals("/login") && request.isPOST()) {
-            processPostLogin(outputStream, request.getRequestBody());
+            processPostLogin(request, outputStream);
             return;
         }
 
         if (requestPath.equals("/register") && request.isGET()) {
-            processGetRegister(outputStream);
+            processGetRegister(request, outputStream);
             return;
         }
 
         if (requestPath.equals("/register") && request.isPOST()) {
-            processPostRegister(outputStream, request.getRequestBody());
+            processPostRegister(request, outputStream);
             return;
         }
 
-        processRenderStaticPage(outputStream, requestPath);
+        processRenderStaticPage(request, outputStream);
     }
 
-    private void processHelloWorld(OutputStream outputStream) throws IOException {
-        handlePlainText(outputStream, "Hello world!");
+    private void processHelloWorld(Request request, OutputStream outputStream) throws IOException {
+        render("200 OK", "Hello world!", "text/html", request, outputStream);
     }
 
-    private void processGetLogin(OutputStream outputStream) throws IOException {
-        handleRenderStaticResource(outputStream, "/login.html");
+    private void processGetLogin(Request request, OutputStream outputStream) throws IOException {
+        renderStaticResource("/login.html", request, outputStream);
     }
 
-    private void processPostLogin(OutputStream outputStream, QueryParameters requestBody) throws IOException {
+    private void processPostLogin(Request request, OutputStream outputStream) throws IOException {
+        QueryParameters requestBody = request.getRequestBody();
         String account = requireNonNull(requestBody.getString("account"));
         String password = requireNonNull(requestBody.getString("password"));
 
@@ -110,76 +113,85 @@ public class Http11Processor implements Runnable, Processor {
                 .map(acc -> acc.checkPassword(password))
                 .orElse(false);
         if (!found) {
-            handle302RedirectTo("/401.html", outputStream);
+            redirectTo("/401.html", request, outputStream);
             return;
         }
 
-        handle302RedirectTo("/index.html", outputStream);
+        redirectTo("/index.html", request, outputStream);
     }
 
-    private void processGetRegister(OutputStream outputStream) throws IOException {
-        handleRenderStaticResource(outputStream, "/register.html");
+    private void processGetRegister(Request request, OutputStream outputStream) throws IOException {
+        renderStaticResource("/register.html", request, outputStream);
     }
 
-    private void processPostRegister(OutputStream outputStream, QueryParameters requestBody) throws IOException {
+    private void processPostRegister(Request request, OutputStream outputStream) throws IOException {
+        final QueryParameters requestBody = request.getRequestBody();
+
         final String account = requireNonNull(requestBody.getString("account"));
         final String email = requireNonNull(requestBody.getString("email"));
         final String password = requireNonNull(requestBody.getString("password"));
 
         InMemoryUserRepository.save(new User(account, password, email));
 
-        handle302RedirectTo("/index.html", outputStream);
+        redirectTo("/index.html", request, outputStream);
     }
 
-    private void processRenderStaticPage(OutputStream outputStream, String requestPath) throws IOException {
-        handleRenderStaticResource(outputStream, requestPath);
+    private void processRenderStaticPage(Request request, OutputStream outputStream) throws IOException {
+        renderStaticResource(request.getPath(), request, outputStream);
     }
 
-    private void handlePlainText(OutputStream outputStream, String content) throws IOException {
-        render("200 OK", content, "text/html", outputStream);
-    }
-
-    private void handleRenderStaticResource(OutputStream outputStream, String staticFilePath) throws IOException {
+    private void renderStaticResource(String staticFilePath, Request request, OutputStream outputStream) throws IOException {
         final String content = staticResourceLoader.readAllLines("static" + staticFilePath);
         final String mimeType = guessMimeTypeFromPath(staticFilePath);
 
-        render("200 OK", content, mimeType, outputStream);
+        render("200 OK", content, mimeType, request, outputStream);
     }
 
-    private void handle404(OutputStream outputStream) throws IOException {
+    private void render404(Request request, OutputStream outputStream) throws IOException {
         final String content = staticResourceLoader.readAllLines("static/404.html");
 
-        render("404 Not Found", content, "text/html", outputStream);
+        render("404 Not Found", content, "text/html", request, outputStream);
     }
 
-    private void handle302RedirectTo(String redirectTo, OutputStream outputStream) throws IOException {
+    private void redirectTo(String redirectTo, Request request, OutputStream outputStream) throws IOException {
         String responseStatus = "302 Found";
-        final String response = String.join("\r\n",
-                "HTTP/1.1 " + responseStatus + " ",
-                "Location: " + redirectTo + " ");
-
-        outputStream.write(response.getBytes());
+        StringBuilder responseBuilder = new StringBuilder();
+        responseBuilder.append("HTTP/1.1 ").append(responseStatus).append(" ").append("\r\n");
+        responseBuilder.append("Location: ").append(redirectTo).append(" ").append("\r\n");
+        if (!request.hasSessionCookie()) {
+            responseBuilder.append("Set-Cookie: ");
+            responseBuilder.append(Cookie.JSESSIONID_NAME).append("=").append(Cookie.randomJsessionId());
+            responseBuilder.append("; Path=/ ");
+            responseBuilder.append("\r\n");
+        }
+        outputStream.write(responseBuilder.toString().getBytes());
         outputStream.flush();
     }
 
-    private void render(String responseStatus, String content, String mimeType, OutputStream outputStream) throws IOException {
-        final String response = String.join("\r\n",
-                "HTTP/1.1 " + responseStatus + " ",
-                "Content-Type: " + mimeType + ";charset=utf-8 ",
-                "Content-Length: " + content.getBytes().length + " ",
-                "",
-                content);
+    private void render(String responseStatus,
+                        String content,
+                        String mimeType,
+                        Request request, OutputStream outputStream) throws IOException {
+        StringBuilder responseBuilder = new StringBuilder();
+        responseBuilder.append("HTTP/1.1 ").append(responseStatus).append(" ").append("\r\n");
+        responseBuilder.append("Content-Type: ").append(mimeType).append(";charset=utf-8 ").append("\r\n");
+        responseBuilder.append("Content-Length: ").append(content.getBytes().length).append(" ").append("\r\n");
+        if (!request.hasSessionCookie()) {
+            responseBuilder.append("Set-Cookie: ");
+            responseBuilder.append(Cookie.JSESSIONID_NAME).append("=").append(Cookie.randomJsessionId());
+            responseBuilder.append("; Path=/ ");
+            responseBuilder.append("\r\n");
+        }
+        responseBuilder.append("\r\n").append(content);
 
-        outputStream.write(response.getBytes());
+        outputStream.write(responseBuilder.toString().getBytes());
         outputStream.flush();
     }
 
     private String guessMimeTypeFromPath(String path) {
         final String FALLBACK_MIME_TYPE = "text/html";
 
-        if (path.equals("/")) {
-            return "text/html";
-        }
+        if (path.equals("/")) return "text/html";
 
         String extension = extractExtensionFromPath(path);
         if (extension == null) return FALLBACK_MIME_TYPE;
@@ -192,9 +204,8 @@ public class Http11Processor implements Runnable, Processor {
 
     private String extractExtensionFromPath(String path) {
         int lastPeriod = path.lastIndexOf(".");
-        if (lastPeriod < 0) {
-            return null;
-        }
+        if (lastPeriod < 0) return null;
+
         return path.substring(lastPeriod);
     }
 }

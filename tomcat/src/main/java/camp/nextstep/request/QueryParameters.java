@@ -3,11 +3,13 @@ package camp.nextstep.request;
 import java.util.*;
 
 public class QueryParameters {
-    private final Map<String, List<Object>> map;
+    private static final QueryParameters EMPTY = new QueryParameters(Collections.unmodifiableMap(new HashMap<>()));
 
     public static QueryParameters empty() {
-        return new QueryParameters(Collections.unmodifiableMap(new HashMap<>()));
+        return EMPTY;
     }
+
+    private final Map<String, List<Object>> map;
 
     public QueryParameters(Map<String, List<Object>> map) {
         this.map = map;

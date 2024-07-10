@@ -15,4 +15,8 @@ public class RequestHeaders {
 
         return Integer.parseInt(contentLength);
     }
+
+    public String getCookieHeader() {
+        return map.get("Cookie");
+    }
 }

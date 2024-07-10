@@ -8,10 +8,12 @@ import java.util.List;
 import java.util.Map;
 
 public class RequestParser {
-    private static final String REQUEST_LINE_SEPARATOR = " ";
-    private static final String QUERY_STRING_SEPARATOR = "\\?";
-    private static final String QUERY_PARAMS_SEPARATOR = "&";
-    private static final String QUERY_PARAMS_KEY_VALUE_SEPARATOR = "=";
+    private static final String REQUEST_LINE_REGEX_SEPARATOR = " ";
+    private static final String QUERY_STRING_REGEX_SEPARATOR = "\\?";
+    private static final String QUERY_PARAMS_REGEX_SEPARATOR = "&";
+    private static final String QUERY_PARAMS_KEY_VALUE_REGEX_SEPARATOR = "=";
+    private static final String COOKIE_KEY_VALUE_REGEX_SEPARATOR = "=";
+    private static final String COOKIES_REGEX_SEPARATOR = "; ";
 
     public Request parse(BufferedReader bufferedReader) throws IOException {
         String requestLineString = extractRequestLine(bufferedReader);
@@ -19,11 +21,12 @@ public class RequestParser {
 
         List<String> headers = extractHeaders(bufferedReader);
         RequestHeaders requestHeaders = parseHeaders(headers);
+        RequestCookies requestCookies = parseCookies(requestHeaders.getCookieHeader());
 
         String bodyString = extractBody(bufferedReader, requestHeaders.getContentLength());
         QueryParameters requestBody = parseRequestBody(bodyString);
 
-        return new Request(requestLine, requestHeaders, requestBody);
+        return new Request(requestLine, requestHeaders, requestCookies, requestBody);
     }
 
     private String extractRequestLine(BufferedReader bufferedReader) throws IOException {
@@ -31,7 +34,7 @@ public class RequestParser {
     }
 
     public RequestLine parseRequestLine(String requestLineString) {
-        final String[] split = requestLineString.split(REQUEST_LINE_SEPARATOR, 3);
+        final String[] split = requestLineString.split(REQUEST_LINE_REGEX_SEPARATOR, 3);
 
         final RequestMethod method = extractRequestMethod(split[0]);
         final String path = extractPath(split[1]);
@@ -43,7 +46,7 @@ public class RequestParser {
     }
 
     private String extractQueryStringFromUri(String path) {
-        final String[] split = path.split(QUERY_STRING_SEPARATOR, 2);
+        final String[] split = path.split(QUERY_STRING_REGEX_SEPARATOR, 2);
         if (split.length != 2) return null;
 
         return split[1];
@@ -72,6 +75,20 @@ public class RequestParser {
         return new RequestHeaders(map);
     }
 
+    private RequestCookies parseCookies(String cookieValue) {
+        if (cookieValue == null) return RequestCookies.empty();
+
+        Map<String, Cookie> map = new HashMap<>();
+
+        for (String eachCookieString : cookieValue.split(COOKIES_REGEX_SEPARATOR)) {
+            String[] keyAndValue = eachCookieString.split(COOKIE_KEY_VALUE_REGEX_SEPARATOR, 2);
+            String key = keyAndValue[0];
+            String value = keyAndValue[1];
+            map.put(key, new Cookie(key, value));
+        }
+
+        return new RequestCookies(map);
+    }
 
     private String extractBody(BufferedReader bufferedReader, Integer contentLength) throws IOException {
         String bodyString = null;
@@ -93,15 +110,15 @@ public class RequestParser {
     }
 
     private String extractPath(String uri) {
-        return uri.split(QUERY_STRING_SEPARATOR)[0];
+        return uri.split(QUERY_STRING_REGEX_SEPARATOR)[0];
     }
 
     private QueryParameters parseQueryString(String queryString) {
         if (queryString == null) return QueryParameters.empty();
 
         Map<String, List<Object>> map = new HashMap<>();
-        for (String each : queryString.split(QUERY_PARAMS_SEPARATOR)) {
-            String[] keyAndValue = each.split(QUERY_PARAMS_KEY_VALUE_SEPARATOR, 2);
+        for (String each : queryString.split(QUERY_PARAMS_REGEX_SEPARATOR)) {
+            String[] keyAndValue = each.split(QUERY_PARAMS_KEY_VALUE_REGEX_SEPARATOR, 2);
 
             String key = keyAndValue[0];
             String value = keyAndValue.length == 2 ? keyAndValue[1] : null;
