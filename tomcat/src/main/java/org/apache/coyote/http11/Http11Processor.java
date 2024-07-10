@@ -33,7 +33,11 @@ public class Http11Processor implements Runnable, Processor {
     public void process(final Socket connection) {
         try (final var inputReader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
              final var outputStream = connection.getOutputStream()) {
-            final var request = new HttpRequest(parseMessage(inputReader));
+            var requestMessage = parseMessage(inputReader);
+            if (requestMessage.isEmpty()) {
+                return;
+            }
+            final var request = new HttpRequest(requestMessage);
             final var response = handlers.handle(request);
 
             outputStream.write(response.toString().getBytes());
