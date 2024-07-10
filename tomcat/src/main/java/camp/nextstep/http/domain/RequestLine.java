@@ -50,4 +50,12 @@ public class RequestLine {
     public HttpPath getPath() {
         return requestURI.getPath();
     }
+
+    public boolean isPost() {
+        return method == HttpMethod.POST;
+    }
+
+    public boolean isGet() {
+        return method == HttpMethod.GET;
+    }
 }

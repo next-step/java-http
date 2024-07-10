@@ -13,6 +13,10 @@ public class StatusLine {
         return new StatusLine(HttpVersion.HTTP_11, HttpStatusCode.OK);
     }
 
+    public static StatusLine createFound() {
+        return new StatusLine(HttpVersion.HTTP_11, HttpStatusCode.FOUND);
+    }
+
     public HttpVersion getVersion() {
         return version;
     }

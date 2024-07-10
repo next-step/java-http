@@ -5,7 +5,7 @@ import camp.nextstep.http.exception.InvalidHttpStatusException;
 import java.util.Arrays;
 
 public enum HttpStatusCode {
-    OK(200, "OK");
+    OK(200, "OK"), FOUND(302, "Found");
 
     private static final int MAX_STATUS_CODE = 999;
     private static final int MIN_STATUS_CODE = 100;

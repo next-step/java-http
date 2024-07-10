@@ -4,25 +4,23 @@ import camp.nextstep.db.InMemoryUserRepository;
 import camp.nextstep.exception.UncheckedServletException;
 import camp.nextstep.http.domain.*;
 import camp.nextstep.model.User;
-import camp.nextstep.model.UserNotFoundException;
 import org.apache.coyote.Processor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.BufferedOutputStream;
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.net.Socket;
+import java.util.Optional;
+import java.util.UUID;
 
 public class Http11Processor implements Runnable, Processor {
 
     private static final Logger log = LoggerFactory.getLogger(Http11Processor.class);
     private static final String DEFAULT_MESSAGE = "Hello world!";
-    private static final String PATH_PREFIX = "static";
-    private static final String NOT_FOUND_PATH = "/404.html";
     private static final String ACCOUNT = "account";
     private static final String PASSWORD = "password";
+    private static final String EMAIL = "email";
+    public static final String SESSION_USER_KEY = "user";
 
     private final Socket connection;
 
@@ -38,60 +36,107 @@ public class Http11Processor implements Runnable, Processor {
 
     @Override
     public void process(final Socket connection) {
-        try (final var inputStreamReader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-             final var outputStream = new BufferedOutputStream(connection.getOutputStream())) {
+        try (final var inputStream = connection.getInputStream();
+             final var outputStream = connection.getOutputStream()) {
 
-            final RequestLine requestLine = new RequestLine(inputStreamReader.readLine());
-            final HttpPath path = requestLine.getPath();
+            final HttpRequest httpRequest = new HttpRequest(inputStream);
+            final HttpResponse httpResponse = new HttpResponse(outputStream);
 
-            if (path.isLoginPath()) {
-                processLogin(requestLine);
+            if (httpRequest.isSessionEmpty()) {
+                httpResponse.setSession(UUID.randomUUID().toString());
             }
 
-            final var responseBody = getResponseBody(path);
-            final HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(ContentType.from(path));
-            headers.setContentLength(responseBody.length);
+            final HttpPath path = httpRequest.getPath();
+            if (path.isRoot()) {
+                processRoot(httpResponse);
+                return;
+            }
 
-            final var responseHeader = String.join(System.lineSeparator(),
-                    StatusLine.createOk().convertToString(),
-                    headers.convertToString(),
-                    System.lineSeparator());
+            if (path.isLoginPath()) {
+                processLogin(httpRequest, httpResponse);
+                return;
+            }
 
-            outputStream.write(responseHeader.getBytes());
-            outputStream.write(responseBody);
-            outputStream.flush();
+            if (path.isRegisterPath()) {
+                processRegister(httpRequest, httpResponse);
+                return;
+            }
+
+            httpResponse.setContentType(ContentType.from(path));
+            httpResponse.forward(path.getPath());
         } catch (final IOException | UncheckedServletException e) {
             log.error(e.getMessage(), e);
         }
     }
 
-    private void processLogin(final RequestLine requestLine) {
-        final QueryParameters parameters = requestLine.getQueryParameters();
-        final User user = InMemoryUserRepository.findByAccount(parameters.get(ACCOUNT))
-                .orElseThrow(UserNotFoundException::new);
-
-        if (user.checkPassword(parameters.get(PASSWORD))) {
-            log.info("user : {}", user);
-            return;
-        }
-        throw new UserNotFoundException();
+    private void processRoot(final HttpResponse httpResponse) throws IOException {
+        httpResponse.setContentType(ContentType.HTML);
+        httpResponse.forwardBody(DEFAULT_MESSAGE);
     }
 
-    private byte[] getResponseBody(final HttpPath path) throws IOException {
-        if (path.isRoot()) {
-            return DEFAULT_MESSAGE.getBytes();
+    private void processLogin(final HttpRequest httpRequest, final HttpResponse httpResponse) throws IOException {
+        if (httpRequest.isGetMethod()) {
+            processLoginGet(httpRequest, httpResponse);
+            return;
         }
 
-        String filePath = path.getPath();
-        if (path.isLoginPath()) {
-            filePath += ContentType.HTML.getExtension();
+        if (httpRequest.isPostMethod()) {
+            processLoginPost(httpRequest, httpResponse);
+        }
+    }
+
+    private void processLoginGet(final HttpRequest httpRequest, final HttpResponse httpResponse) throws IOException {
+        final HttpSession session = httpRequest.getSession(false);
+        if (session != null && session.getAttribute(SESSION_USER_KEY) != null) {
+            httpResponse.sendRedirect("/index.html");
+            return;
         }
 
-        final Resource resource = new Resource(PATH_PREFIX + filePath);
-        if (resource.exists()) {
-            return resource.readAllBytes();
+        httpResponse.setContentType(ContentType.HTML);
+        httpResponse.forward("/login.html");
+    }
+
+    private void processLoginPost(final HttpRequest httpRequest, final HttpResponse httpResponse) throws IOException {
+        final RequestBody requestBody = httpRequest.getRequestBody();
+        final Optional<User> userOptional = InMemoryUserRepository.findByAccount(requestBody.get(ACCOUNT));
+
+        if (userOptional.isEmpty()) {
+            httpResponse.sendRedirect("/401.html");
+            return;
         }
-        return new Resource(PATH_PREFIX + NOT_FOUND_PATH).readAllBytes();
+
+        final User user = userOptional.get();
+        if (user.checkPassword(requestBody.get(PASSWORD))) {
+            log.info("user : {}", user);
+            final HttpSession httpSession = httpRequest.getSession(true);
+            httpSession.setAttribute(SESSION_USER_KEY, user);
+            httpResponse.setSession(httpSession.getId());
+            httpResponse.sendRedirect("/index.html");
+            return;
+        }
+        httpResponse.sendRedirect("/401.html");
+    }
+
+    private void processRegister(final HttpRequest httpRequest, final HttpResponse httpResponse) throws IOException {
+        if (httpRequest.isGetMethod()) {
+            processRegisterGet(httpResponse);
+            return;
+        }
+        if (httpRequest.isPostMethod()) {
+            processRegisterPost(httpRequest, httpResponse);
+        }
+    }
+
+    private void processRegisterGet(final HttpResponse httpResponse) throws IOException {
+        httpResponse.setContentType(ContentType.HTML);
+        httpResponse.forward("/register.html");
+    }
+
+    private void processRegisterPost(final HttpRequest httpRequest, final HttpResponse httpResponse) throws IOException {
+        final RequestBody requestBody = httpRequest.getRequestBody();
+        InMemoryUserRepository.save(
+                new User(requestBody.get(ACCOUNT), requestBody.get(PASSWORD), requestBody.get(EMAIL))
+        );
+        httpResponse.sendRedirect("/index.html");
     }
 }
