@@ -1,5 +1,10 @@
 package org.apache.http.header;
 
+import org.apache.file.MediaType;
+import org.apache.http.body.HttpBody;
+import org.apache.http.body.HttpFormBody;
+import org.apache.http.body.HttpTextBody;
+
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -29,6 +34,14 @@ public class HttpHeaders {
         final Map<HeaderName, HttpHeader> newHeaders = new HashMap<>(headers);
         newHeaders.put(header.getHeader().getKey(), header.getHeader().getValue());
         return new HttpHeaders(newHeaders);
+    }
+
+    public HttpBody parseBody(final String bodyMessages) {
+        var contentType = (ContentType) headers.get(HeaderName.CONTENT_TYPE);
+        if (contentType.match(MediaType.FORM_URL_ENCODED)) {
+            return new HttpFormBody(bodyMessages);
+        }
+        return new HttpTextBody(bodyMessages);
     }
 
     @Override
