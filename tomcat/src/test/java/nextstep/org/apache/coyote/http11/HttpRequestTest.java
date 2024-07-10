@@ -6,9 +6,6 @@ import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-/**
- * RequestLine 뿐만 아니라, Header까지 모두 파싱하여 가진 객체를 만들자
- */
 public class HttpRequestTest {
     @DisplayName("HTTP Request 메세지를 파싱하여 RequestLine과 httpHeaders를 가진다.")
     @Test

@@ -11,11 +11,6 @@ import org.junit.jupiter.params.provider.EnumSource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-/**
- * HTTP 요청을 파싱하는 RequestLine 구현
- * RequestLine = HTTP 요청의 첫 번째 라인을 의미
- * ex: GET /docs/index.html HTTP/1.1
- */
 public class RequestLineTest {
     @DisplayName("RequestLine 파싱 테스트")
     @Nested
