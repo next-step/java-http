@@ -58,4 +58,12 @@ public class RequestLine {
     public Map<String, Object> getParameters() {
         return path.getQuery().getParameters();
     }
+
+    public boolean isGet() {
+        return method.isGet();
+    }
+
+    public boolean isPost() {
+        return method.isPost();
+    }
 }
