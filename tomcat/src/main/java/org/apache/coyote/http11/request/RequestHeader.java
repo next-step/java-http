@@ -11,6 +11,7 @@ public class RequestHeader {
     private static final int KEY_INDEX = 0;
     private static final int VALUE_INDEX = 1;
     private static final String CONTENT_LENGTH = "Content-Length";
+    private static final String COOKIE = "Cookie";
     private final Map<String, String> headers;
 
 
@@ -34,5 +35,9 @@ public class RequestHeader {
 
     public int getContentLength() {
         return Integer.parseInt(headers.getOrDefault(CONTENT_LENGTH, "0"));
+    }
+
+    public String getCookies() {
+        return headers.getOrDefault(COOKIE, "");
     }
 }

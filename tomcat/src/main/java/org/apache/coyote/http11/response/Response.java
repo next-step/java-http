@@ -1,5 +1,7 @@
 package org.apache.coyote.http11.response;
 
+import org.apache.coyote.http11.request.HttpCookie;
+
 public class Response {
 
     private static final String DELIMITER = "\r\n";
@@ -44,6 +46,20 @@ public class Response {
             statusLine,
             contentTypeHeader,
             contentLengthHeader,
+            "",
+            body).getBytes();
+    }
+
+    public byte[] toHttp11(HttpCookie httpCookie) {
+        String statusLine = String.format("%s %d %s ", HTTP11_VERSION, status.getCode(), status.getMessage());
+        String contentTypeHeader = String.format("Content-Type: %s ", contentType.getValue());
+        String contentLengthHeader = String.format("Content-Length: %d ", body.getBytes().length);
+
+        return String.join(DELIMITER,
+            statusLine,
+            contentTypeHeader,
+            contentLengthHeader,
+            httpCookie.toCookieHeader(),
             "",
             body).getBytes();
     }

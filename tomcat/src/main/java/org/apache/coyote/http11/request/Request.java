@@ -7,11 +7,13 @@ public class Request {
 
     private final RequestLine requestLine;
     private final RequestHeader requestHeader;
+    private final HttpCookie cookies;
     private final RequestBody requestBody;
 
     public Request(BufferedReader br) throws IOException {
         this.requestLine = RequestLine.from(br.readLine());
         this.requestHeader = RequestHeader.from(br);
+        this.cookies = HttpCookie.from(requestHeader.getCookies());
         this.requestBody = RequestBody.from(br, requestHeader.getContentLength());
     }
 
@@ -25,5 +27,9 @@ public class Request {
 
     public RequestBody getRequestBody() {
         return requestBody;
+    }
+
+    public HttpCookie getCookies() {
+        return cookies;
     }
 }

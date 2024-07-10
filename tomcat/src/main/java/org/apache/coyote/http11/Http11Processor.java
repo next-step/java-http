@@ -37,7 +37,7 @@ public class Http11Processor implements Runnable, Processor {
             Request request = new Request(br);
             Response response = requestMapping.handleMapping(request);
 
-            outputStream.write(response.toHttp11());
+            outputStream.write(response.toHttp11(request.getCookies()));
             outputStream.flush();
         } catch (IOException | UncheckedServletException e) {
             log.error(e.getMessage(), e);
