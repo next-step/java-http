@@ -38,7 +38,11 @@ public class RequestTarget {
         return path;
     }
 
-    public Map<String, String> getQueryParamMap() {
-        return queryParamMap;
+    public boolean hasQueryParams() {
+        return !queryParamMap.isEmpty();
+    }
+
+    public String getQueryParamValue(final String queryParamKey) {
+        return queryParamMap.get(queryParamKey);
     }
 }

@@ -9,8 +9,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 
-import java.util.Map;
-
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
@@ -33,7 +31,7 @@ public class RequestLineTest {
             assertThat(requestLine.getMethod()).isEqualTo(method);
             assertThat(requestLine.getPath()).isEqualTo("/users");
             assertThat(requestLine.getVersion()).isEqualTo("HTTP/1.1");
-            assertThat(requestLine.getQueryParamMap()).isEmpty();
+            assertThat(requestLine.hasQueryParams()).isFalse();
         }
 
         @DisplayName("쿼리 스트링이 있는 경우")
@@ -43,11 +41,9 @@ public class RequestLineTest {
 
             RequestLine requestLine = RequestLine.from(request);
 
-            assertThat(requestLine.getQueryParamMap()).containsAllEntriesOf(Map.of(
-                    "userId", "javajigi",
-                    "password", "password",
-                    "name", "JaeSung"
-            ));
+            assertThat(requestLine.getQueryParamValue("userId")).isEqualTo("javajigi");
+            assertThat(requestLine.getQueryParamValue("password")).isEqualTo("password");
+            assertThat(requestLine.getQueryParamValue("name")).isEqualTo("JaeSung");
         }
     }
 }

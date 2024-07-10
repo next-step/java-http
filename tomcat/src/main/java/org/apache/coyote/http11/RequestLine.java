@@ -1,7 +1,5 @@
 package org.apache.coyote.http11;
 
-import java.util.Map;
-
 public class RequestLine {
     private static final String REQUEST_LINE_SEPARATOR = " ";
 
@@ -41,11 +39,15 @@ public class RequestLine {
         return httpProtocol.getVersion();
     }
 
-    public Map<String, String> getQueryParamMap() {
-        return requestTarget.getQueryParamMap();
-    }
-
     public HttpProtocol getProtocol() {
         return httpProtocol;
+    }
+
+    public boolean hasQueryParams() {
+        return requestTarget.hasQueryParams();
+    }
+
+    public String getQueryParamValue(final String queryParamKey) {
+        return requestTarget.getQueryParamValue(queryParamKey);
     }
 }

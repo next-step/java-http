@@ -2,7 +2,6 @@ package org.apache.coyote.http11;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 import java.util.function.Predicate;
 
 public class HttpRequest {
@@ -31,11 +30,15 @@ public class HttpRequest {
         return requestLine.getPath();
     }
 
-    public Map<String, String> getQueryParamMap() {
-        return requestLine.getQueryParamMap();
-    }
-
     public HttpProtocol getProtocol() {
         return requestLine.getProtocol();
+    }
+
+    public boolean hasQueryParams() {
+        return requestLine.hasQueryParams();
+    }
+
+    public String getQueryParamValue(final String queryParamKey) {
+        return requestLine.getQueryParamValue(queryParamKey);
     }
 }

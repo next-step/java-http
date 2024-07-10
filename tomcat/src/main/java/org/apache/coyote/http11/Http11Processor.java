@@ -10,7 +10,6 @@ import org.slf4j.LoggerFactory;
 import java.io.*;
 import java.net.Socket;
 import java.nio.file.Files;
-import java.util.Map;
 import java.util.StringJoiner;
 
 public class Http11Processor implements Runnable, Processor {
@@ -64,12 +63,10 @@ public class Http11Processor implements Runnable, Processor {
     }
 
     private void handleLoginRequest(final String path, final HttpRequest httpRequest) {
-        Map<String, String> queryParamMap = httpRequest.getQueryParamMap();
-
-        if (path.contains("login") && !queryParamMap.isEmpty()) {
-            User user = InMemoryUserRepository.findByAccount(queryParamMap.get("account"))
+        if (path.contains("login") && httpRequest.hasQueryParams()) {
+            User user = InMemoryUserRepository.findByAccount(httpRequest.getQueryParamValue("account"))
                     .orElseThrow();
-            if (user.checkPassword(queryParamMap.get("password"))) {
+            if (user.checkPassword(httpRequest.getQueryParamValue("password"))) {
                 log.info(user.toString());
             }
         }
