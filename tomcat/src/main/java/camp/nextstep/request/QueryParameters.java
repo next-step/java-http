@@ -1,11 +1,13 @@
 package camp.nextstep.request;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 public class QueryParameters {
     private final Map<String, List<Object>> map;
+
+    public static QueryParameters empty() {
+        return new QueryParameters(Collections.unmodifiableMap(new HashMap<>()));
+    }
 
     public QueryParameters(Map<String, List<Object>> map) {
         this.map = map;

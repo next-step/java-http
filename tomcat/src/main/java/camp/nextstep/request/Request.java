@@ -2,20 +2,32 @@ package camp.nextstep.request;
 
 public class Request {
     private final RequestLine requestLine;
+    private final RequestHeaders requestHeaders;
+    private final QueryParameters requestBody;
 
-    public Request(RequestMethod method, String path, QueryParameters queryParameters, String httpVersion) {
-        this.requestLine = new RequestLine(method, path, queryParameters, httpVersion);
+    public Request(RequestLine requestLine, RequestHeaders requestHeaders, QueryParameters requestBody) {
+        this.requestLine = requestLine;
+        this.requestHeaders = requestHeaders;
+        this.requestBody = requestBody;
     }
 
-    public RequestLine getRequestLine() {
-        return requestLine;
+    public boolean isGET() {
+        return requestLine.getMethod() == RequestMethod.GET;
     }
 
-    public RequestMethod getMethod() {
-        return requestLine.getMethod();
+    public boolean isPOST() {
+        return requestLine.getMethod() == RequestMethod.POST;
     }
 
     public String getPath() {
         return requestLine.getPath();
+    }
+
+    public RequestHeaders getRequestHeaders() {
+        return requestHeaders;
+    }
+
+    public QueryParameters getRequestBody() {
+        return requestBody;
     }
 }

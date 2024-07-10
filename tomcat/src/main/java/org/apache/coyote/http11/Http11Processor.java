@@ -19,7 +19,8 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.Socket;
 import java.net.URISyntaxException;
-import java.util.Optional;
+
+import static java.util.Objects.requireNonNull;
 
 public class Http11Processor implements Runnable, Processor {
 
@@ -65,36 +66,77 @@ public class Http11Processor implements Runnable, Processor {
     }
 
     private void processRequest(String requestPath, OutputStream outputStream, Request request) throws IOException, URISyntaxException {
-        QueryParameters queryParameters = request.getRequestLine().getQueryParameters();
-
         if (requestPath.isEmpty() || requestPath.equals("/")) {
-            handlePlainText(outputStream, "Hello world!");
-
-        } else if (requestPath.equals("/login")
-                && queryParameters.hasKey("account") && queryParameters.hasKey("password")) {
-            String account = queryParameters.getString("account");
-            String password = queryParameters.getString("password");
-
-            Boolean found = InMemoryUserRepository.findByAccount(account)
-                    .map(acc -> acc.checkPassword(password)).orElse(false);
-            if (found) handle302RedirectTo(outputStream, "/index.html");
-            else handle302RedirectTo(outputStream, "/401.html");
-
-        } else if (requestPath.equals("/login")) {
-            handleRenderStaticResource(outputStream, "/login.html");
-
-        } else {
-            handleRenderStaticResource(outputStream, requestPath);
+            processHelloWorld(outputStream);
+            return;
         }
+
+        if (requestPath.equals("/login") && request.isGET()) {
+            processGetLogin(outputStream);
+            return;
+        }
+
+        if (requestPath.equals("/login") && request.isPOST()) {
+            processPostLogin(outputStream, request.getRequestBody());
+            return;
+        }
+
+        if (requestPath.equals("/register") && request.isGET()) {
+            processGetRegister(outputStream);
+            return;
+        }
+
+        if (requestPath.equals("/register") && request.isPOST()) {
+            processPostRegister(outputStream, request.getRequestBody());
+            return;
+        }
+
+        processRenderStaticPage(outputStream, requestPath);
+    }
+
+    private void processHelloWorld(OutputStream outputStream) throws IOException {
+        handlePlainText(outputStream, "Hello world!");
+    }
+
+    private void processGetLogin(OutputStream outputStream) throws IOException {
+        handleRenderStaticResource(outputStream, "/login.html");
+    }
+
+    private void processPostLogin(OutputStream outputStream, QueryParameters requestBody) throws IOException {
+        String account = requireNonNull(requestBody.getString("account"));
+        String password = requireNonNull(requestBody.getString("password"));
+
+        Boolean found = InMemoryUserRepository.findByAccount(account)
+                .map(acc -> acc.checkPassword(password))
+                .orElse(false);
+        if (!found) {
+            handle302RedirectTo("/401.html", outputStream);
+            return;
+        }
+
+        handle302RedirectTo("/index.html", outputStream);
+    }
+
+    private void processGetRegister(OutputStream outputStream) throws IOException {
+        handleRenderStaticResource(outputStream, "/register.html");
+    }
+
+    private void processPostRegister(OutputStream outputStream, QueryParameters requestBody) throws IOException {
+        final String account = requireNonNull(requestBody.getString("account"));
+        final String email = requireNonNull(requestBody.getString("email"));
+        final String password = requireNonNull(requestBody.getString("password"));
+
+        InMemoryUserRepository.save(new User(account, password, email));
+
+        handle302RedirectTo("/index.html", outputStream);
+    }
+
+    private void processRenderStaticPage(OutputStream outputStream, String requestPath) throws IOException {
+        handleRenderStaticResource(outputStream, requestPath);
     }
 
     private void handlePlainText(OutputStream outputStream, String content) throws IOException {
         render("200 OK", content, "text/html", outputStream);
-    }
-
-    private Optional<User> findUser(String account, String password) {
-        return InMemoryUserRepository.findByAccount(account)
-                .filter(it -> it.checkPassword(password));
     }
 
     private void handleRenderStaticResource(OutputStream outputStream, String staticFilePath) throws IOException {
@@ -110,7 +152,7 @@ public class Http11Processor implements Runnable, Processor {
         render("404 Not Found", content, "text/html", outputStream);
     }
 
-    private void handle302RedirectTo(OutputStream outputStream, String redirectTo) throws IOException {
+    private void handle302RedirectTo(String redirectTo, OutputStream outputStream) throws IOException {
         String responseStatus = "302 Found";
         final String response = String.join("\r\n",
                 "HTTP/1.1 " + responseStatus + " ",

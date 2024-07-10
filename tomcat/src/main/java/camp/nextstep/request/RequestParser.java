@@ -2,7 +2,10 @@ package camp.nextstep.request;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class RequestParser {
     private static final String REQUEST_LINE_SEPARATOR = " ";
@@ -11,46 +14,100 @@ public class RequestParser {
     private static final String QUERY_PARAMS_KEY_VALUE_SEPARATOR = "=";
 
     public Request parse(BufferedReader bufferedReader) throws IOException {
-        return parse(bufferedReader.readLine());
+        String requestLineString = extractRequestLine(bufferedReader);
+        RequestLine requestLine = parseRequestLine(requestLineString);
+
+        List<String> headers = extractHeaders(bufferedReader);
+        RequestHeaders requestHeaders = parseHeaders(headers);
+
+        String bodyString = extractBody(bufferedReader, requestHeaders.getContentLength());
+        QueryParameters requestBody = parseRequestBody(bodyString);
+
+        return new Request(requestLine, requestHeaders, requestBody);
     }
 
-    public Request parse(String requestLine) {
-        String[] split = requestLine.split(REQUEST_LINE_SEPARATOR, 3);
-
-        RequestMethod method = parseRequestMethod(split[0]);
-        String path = parsePath(split[1]);
-        QueryParameters queryParameters = parseQueryParameters(split[1]);
-        String httpVersion = split[2];
-
-        return new Request(method, path, queryParameters, httpVersion);
+    private String extractRequestLine(BufferedReader bufferedReader) throws IOException {
+        return bufferedReader.readLine();
     }
 
-    private RequestMethod parseRequestMethod(String requestMethod) {
+    public RequestLine parseRequestLine(String requestLineString) {
+        final String[] split = requestLineString.split(REQUEST_LINE_SEPARATOR, 3);
+
+        final RequestMethod method = extractRequestMethod(split[0]);
+        final String path = extractPath(split[1]);
+        final String queryString = extractQueryStringFromUri(split[1]);
+        final QueryParameters queryParameters = parseQueryString(queryString);
+        final String httpVersion = split[2];
+
+        return new RequestLine(method, path, queryParameters, httpVersion);
+    }
+
+    private String extractQueryStringFromUri(String path) {
+        final String[] split = path.split(QUERY_STRING_SEPARATOR, 2);
+        if (split.length != 2) return null;
+
+        return split[1];
+    }
+
+    private List<String> extractHeaders(BufferedReader bufferedReader) throws IOException {
+        final List<String> headers = new ArrayList<>();
+        while (bufferedReader.ready()) {
+            var line = bufferedReader.readLine();
+            if (line.isEmpty()) break;
+
+            headers.add(line);
+        }
+        return headers;
+    }
+
+    private RequestHeaders parseHeaders(List<String> list) {
+        final Map<String, String> map = new HashMap<>();
+        list.forEach(line -> {
+            int index = line.indexOf(": ");
+            String key = line.substring(0, index);
+            String value = line.substring(index + 2);
+            map.put(key, value);
+        });
+
+        return new RequestHeaders(map);
+    }
+
+
+    private String extractBody(BufferedReader bufferedReader, Integer contentLength) throws IOException {
+        String bodyString = null;
+        if (contentLength != null && contentLength > 0 && bufferedReader.ready()) {
+            char[] buffer = new char[contentLength];
+            //noinspection ResultOfMethodCallIgnored
+            bufferedReader.read(buffer, 0, contentLength);
+            bodyString = new String(buffer);
+        }
+        return bodyString;
+    }
+
+    public QueryParameters parseRequestBody(String requestBody) {
+        return parseQueryString(requestBody);
+    }
+
+    private RequestMethod extractRequestMethod(String requestMethod) {
         return RequestMethod.valueOf(requestMethod);
     }
 
-    private String parsePath(String uri) {
+    private String extractPath(String uri) {
         return uri.split(QUERY_STRING_SEPARATOR)[0];
     }
 
-    // XXX: 여기 정리?
-    private QueryParameters parseQueryParameters(String uri) {
+    private QueryParameters parseQueryString(String queryString) {
+        if (queryString == null) return QueryParameters.empty();
+
         Map<String, List<Object>> map = new HashMap<>();
+        for (String each : queryString.split(QUERY_PARAMS_SEPARATOR)) {
+            String[] keyAndValue = each.split(QUERY_PARAMS_KEY_VALUE_SEPARATOR, 2);
 
-        String[] pathAndQueryString = uri.split(QUERY_STRING_SEPARATOR, 2);
-        String queryString = pathAndQueryString.length == 2 ? pathAndQueryString[1] : "";
+            String key = keyAndValue[0];
+            String value = keyAndValue.length == 2 ? keyAndValue[1] : null;
 
-        Arrays.stream(queryString.split(QUERY_PARAMS_SEPARATOR))
-                .forEach(keyAndValue -> {
-                    if (keyAndValue.contains("=")) {
-                        String[] split = keyAndValue.split(QUERY_PARAMS_KEY_VALUE_SEPARATOR, 2);
-
-                        String key = split[0];
-                        String value = split[1];
-                        map.computeIfAbsent(key, s -> new ArrayList<>());
-                        map.get(key).add(value);
-                    }
-                });
+            map.computeIfAbsent(key, s -> new ArrayList<>()).add(value);
+        }
         return new QueryParameters(map);
     }
 }
