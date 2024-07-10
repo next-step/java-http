@@ -42,11 +42,9 @@ public class Http11Processor implements Runnable, Processor {
              final var outputStream = connection.getOutputStream()) {
 
             final var requestLine = new RequestLine(inputReader.readLine());
-            final var requestHeaders = parseRequestHeader(inputReader);
 
-
-            final var requestHeader = HttpHeaders.from(requestHeaders);
-            final var requestCookie = HttpCookie.from(requestHeaders);
+            final var requestHeader = HttpHeaders.from(parseRequestHeader(inputReader));
+            final var requestCookie = HttpCookie.from(requestHeader);
             final var requestBody = parseRequestBody(inputReader, requestHeader);
             final var httpRequest = new HttpRequest(requestLine, requestHeader, requestCookie, requestBody);
 

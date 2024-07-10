@@ -41,13 +41,7 @@ class HttpHeadersTest {
     }
 
     @Test
-    void 쿠키가_필터링된_헤더값을_파싱하여_생성한다() {
-        HttpHeaders actual = HttpHeaders.from(List.of("Content-Length: 55", "Content-Type: A", "Cookie: name=jinyoung; password=1234"));
-        assertThat(actual.getHeaders()).containsExactly(Map.entry("Content-Length", "55"), Map.entry("Content-Type", "A"));
-    }
-
-    @Test
-    void 쿠키가_포함되지_않은_헤더값을_파싱하여_생성한다() {
+    void 헤더값을_파싱하여_생성한다() {
         HttpHeaders actual = HttpHeaders.from(List.of("Content-Length: 55", "Content-Type: A"));
         assertThat(actual.getHeaders()).containsExactly(Map.entry("Content-Length", "55"), Map.entry("Content-Type", "A"));
     }
@@ -65,6 +59,21 @@ class HttpHeadersTest {
                 .isInstanceOf(IllegalStateException.class)
                 .hasMessage("Content-Length가 존재하지 않습니다.");
     }
+
+    @ParameterizedTest
+    @CsvSource(value = {"Cookie: name=jinyoung,true", "Content-Type: A,false"})
+    void cookie_헤더를_가지는지_확인할_수_있다(String givenHeaders, boolean expected) {
+        boolean actual = HttpHeaders.from(List.of(givenHeaders)).containsCookie();
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
+    void cookie가_없는데_가져오려하면_예외가_발생한다() {
+        assertThatThrownBy(() -> HttpHeaders.from(List.of("Content-Type: A")).getCookie())
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessage("Cookie가 존재하지 않습니다.");
+    }
+
 
     @Test
     void content_length를_가져온다() {

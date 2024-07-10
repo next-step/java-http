@@ -34,7 +34,6 @@ public class HttpHeaders {
         return headers.stream()
                 .filter(header -> !header.isEmpty())
                 .map(HttpHeaders::parseHeader)
-                .filter(entry -> !COOKIE_HEADER_KEY.equals(entry.getKey()))
                 .collect(Collectors.toMap(
                         Map.Entry::getKey,
                         Map.Entry::getValue,
@@ -63,6 +62,17 @@ public class HttpHeaders {
             throw new IllegalStateException("Content-Length가 존재하지 않습니다.");
         }
         return parseInt(headers.get(CONTENT_LENGTH_HEADER_KEY));
+    }
+
+    public boolean containsCookie() {
+        return headers.containsKey(COOKIE_HEADER_KEY);
+    }
+
+    public String getCookie() {
+        if (!containsCookie()) {
+            throw new IllegalStateException("Cookie가 존재하지 않습니다.");
+        }
+        return headers.get(COOKIE_HEADER_KEY);
     }
 
     public boolean isEmpty() {
