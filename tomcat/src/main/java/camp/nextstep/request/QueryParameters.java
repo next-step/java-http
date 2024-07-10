@@ -9,6 +9,7 @@ public class QueryParameters {
         return EMPTY;
     }
 
+    // XXX: 변수명
     private final Map<String, List<Object>> map;
 
     public QueryParameters(Map<String, List<Object>> map) {

@@ -64,6 +64,7 @@ public class RequestParser {
     }
 
     private RequestHeaders parseHeaders(List<String> list) {
+        // XXX: 변수명
         final Map<String, String> map = new HashMap<>();
         list.forEach(line -> {
             int index = line.indexOf(": ");
@@ -78,6 +79,7 @@ public class RequestParser {
     private RequestCookies parseCookies(String cookieValue) {
         if (cookieValue == null) return RequestCookies.empty();
 
+        // XXX: 변수명
         Map<String, Cookie> map = new HashMap<>();
 
         for (String eachCookieString : cookieValue.split(COOKIES_REGEX_SEPARATOR)) {
@@ -116,6 +118,7 @@ public class RequestParser {
     private QueryParameters parseQueryString(String queryString) {
         if (queryString == null) return QueryParameters.empty();
 
+        // XXX: 변수명
         Map<String, List<Object>> map = new HashMap<>();
         for (String each : queryString.split(QUERY_PARAMS_REGEX_SEPARATOR)) {
             String[] keyAndValue = each.split(QUERY_PARAMS_KEY_VALUE_REGEX_SEPARATOR, 2);

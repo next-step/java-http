@@ -5,8 +5,8 @@ import java.util.UUID;
 public class Cookie {
     public static final String JSESSIONID_NAME = "JSESSIONID";
 
-    public static UUID randomJsessionId() {
-        return UUID.randomUUID();
+    public static String randomJsessionId() {
+        return UUID.randomUUID().toString();
     }
 
     private final String key;
@@ -15,5 +15,9 @@ public class Cookie {
     public Cookie(String key, String value) {
         this.key = key;
         this.value = value;
+    }
+
+    public String getValue() {
+        return value;
     }
 }

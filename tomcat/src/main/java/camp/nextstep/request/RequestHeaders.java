@@ -3,6 +3,7 @@ package camp.nextstep.request;
 import java.util.Map;
 
 public class RequestHeaders {
+    // XXX: 변수명
     private final Map<String, String> map;
 
     public RequestHeaders(Map<String, String> map) {

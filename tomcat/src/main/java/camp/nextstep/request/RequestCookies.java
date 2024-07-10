@@ -12,6 +12,7 @@ public class RequestCookies {
         return EMPTY_OBJECT;
     }
 
+    // XXX: 변수명
     private final Map<String, Cookie> map;
 
     public RequestCookies(Map<String, Cookie> map) {

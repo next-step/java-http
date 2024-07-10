@@ -9,6 +9,7 @@ import camp.nextstep.request.QueryParameters;
 import camp.nextstep.request.Request;
 import camp.nextstep.request.RequestParser;
 import camp.nextstep.staticresource.StaticResourceLoader;
+import org.apache.catalina.Session;
 import org.apache.coyote.Processor;
 import org.apache.util.MimeTypes;
 import org.slf4j.Logger;
@@ -20,6 +21,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.Socket;
 import java.net.URISyntaxException;
+import java.util.Optional;
 
 import static java.util.Objects.requireNonNull;
 
@@ -28,12 +30,15 @@ public class Http11Processor implements Runnable, Processor {
     private static final Logger log = LoggerFactory.getLogger(Http11Processor.class);
 
     private final Socket connection;
+    private final SessionManager sessionManager;
+
     private final RequestParser requestParser;
     private final StaticResourceLoader staticResourceLoader;
     private final MimeTypes mimeTypes;
 
     public Http11Processor(final Socket connection) {
         this.connection = connection;
+        this.sessionManager = SessionManager.INSTANCE;
 
         this.requestParser = new RequestParser();
         this.staticResourceLoader = new StaticResourceLoader();
@@ -101,7 +106,18 @@ public class Http11Processor implements Runnable, Processor {
     }
 
     private void processGetLogin(Request request, OutputStream outputStream) throws IOException {
+        if (isLoggedIn(request)) {
+            redirectTo("/index.html", request, outputStream);
+            return;
+        }
         renderStaticResource("/login.html", request, outputStream);
+    }
+
+    private boolean isLoggedIn(Request request) throws IOException {
+        Session session = request.getSession(sessionManager, false);
+        if (session == null) return false;
+
+        return session.getAttribute("user") != null;
     }
 
     private void processPostLogin(Request request, OutputStream outputStream) throws IOException {
@@ -109,7 +125,8 @@ public class Http11Processor implements Runnable, Processor {
         String account = requireNonNull(requestBody.getString("account"));
         String password = requireNonNull(requestBody.getString("password"));
 
-        Boolean found = InMemoryUserRepository.findByAccount(account)
+        Optional<User> user = InMemoryUserRepository.findByAccount(account);
+        Boolean found = user
                 .map(acc -> acc.checkPassword(password))
                 .orElse(false);
         if (!found) {
@@ -117,7 +134,14 @@ public class Http11Processor implements Runnable, Processor {
             return;
         }
 
+        signInAs(user.get(), request);
+
         redirectTo("/index.html", request, outputStream);
+    }
+
+    private void signInAs(User user, Request request) throws IOException {
+        final var session = request.getSession(sessionManager, true);
+        session.setAttribute("user", user);
     }
 
     private void processGetRegister(Request request, OutputStream outputStream) throws IOException {
@@ -158,14 +182,24 @@ public class Http11Processor implements Runnable, Processor {
         StringBuilder responseBuilder = new StringBuilder();
         responseBuilder.append("HTTP/1.1 ").append(responseStatus).append(" ").append("\r\n");
         responseBuilder.append("Location: ").append(redirectTo).append(" ").append("\r\n");
-        if (!request.hasSessionCookie()) {
-            responseBuilder.append("Set-Cookie: ");
-            responseBuilder.append(Cookie.JSESSIONID_NAME).append("=").append(Cookie.randomJsessionId());
-            responseBuilder.append("; Path=/ ");
-            responseBuilder.append("\r\n");
+        if (needToUpdateSessionId(request)) {
+            responseBuilder.append("Set-Cookie: ")
+                    .append(Cookie.JSESSIONID_NAME)
+                    .append("=")
+                    .append(request.getSession(sessionManager, true).getId())
+                    .append("; Path=/ ")
+                    .append("\r\n");
         }
         outputStream.write(responseBuilder.toString().getBytes());
         outputStream.flush();
+    }
+
+    private boolean needToUpdateSessionId(Request request) throws IOException {
+        String oldId = request.getSessionIdFromCookie();
+        if (oldId == null) return true;
+
+        String newId = request.getSession(sessionManager, true).getId();
+        return !oldId.equals(newId);
     }
 
     private void render(String responseStatus,
@@ -176,11 +210,13 @@ public class Http11Processor implements Runnable, Processor {
         responseBuilder.append("HTTP/1.1 ").append(responseStatus).append(" ").append("\r\n");
         responseBuilder.append("Content-Type: ").append(mimeType).append(";charset=utf-8 ").append("\r\n");
         responseBuilder.append("Content-Length: ").append(content.getBytes().length).append(" ").append("\r\n");
-        if (!request.hasSessionCookie()) {
-            responseBuilder.append("Set-Cookie: ");
-            responseBuilder.append(Cookie.JSESSIONID_NAME).append("=").append(Cookie.randomJsessionId());
-            responseBuilder.append("; Path=/ ");
-            responseBuilder.append("\r\n");
+        if (needToUpdateSessionId(request)) {
+            responseBuilder.append("Set-Cookie: ")
+                    .append(Cookie.JSESSIONID_NAME)
+                    .append("=")
+                    .append(request.getSession(sessionManager, true).getId())
+                    .append("; Path=/ ")
+                    .append("\r\n");
         }
         responseBuilder.append("\r\n").append(content);
 
