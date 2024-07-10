@@ -115,6 +115,6 @@ class RequestLineTest {
 
         //then
         assertNotNull(requestLine);
-        assertEquals(3, requestLine.getQueryParams().size());
+        assertEquals(3, requestLine.getPath().getQueryParams().size());
     }
 }
