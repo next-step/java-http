@@ -11,7 +11,8 @@ public class RequestMapping {
     private static final Pattern ROOT_PATH = Pattern.compile("/");
     private static final Pattern LOGIN_PATH = Pattern.compile("/login");
     private static final Pattern REGISTER_PATH = Pattern.compile("/register");
-    private static final Pattern STATIC_RESOURCE_PATH = Pattern.compile(".*\\.(html|css|js)$");
+
+    private static final Controller staticController = new StaticController();
 
     private final Map<Pattern, Controller> controllers;
 
@@ -23,8 +24,7 @@ public class RequestMapping {
         return new RequestMapping(Map.of(
                 ROOT_PATH, new RootController(),
                 LOGIN_PATH, new LoginController(),
-                REGISTER_PATH, new RegisterController(),
-                STATIC_RESOURCE_PATH, new StaticController()
+                REGISTER_PATH, new RegisterController()
         ));
     }
 
@@ -38,6 +38,6 @@ public class RequestMapping {
                 .filter(entry -> entry.getKey().matcher(httpRequest.getHttpPath()).matches())
                 .findAny()
                 .map(Map.Entry::getValue)
-                .orElseThrow(() -> new IllegalArgumentException("지원하지 않는 http path입니다."));
+                .orElse(staticController);
     }
 }
