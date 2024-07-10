@@ -14,6 +14,9 @@ public class HttpSessionManager {
     }
 
     public static HttpSession findSession(final String id) {
+        if (id == null) {
+            return null;
+        }
         return SESSIONS.get(id);
     }
 

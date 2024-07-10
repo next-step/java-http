@@ -65,11 +65,16 @@ public class HttpRequest {
         return headers.getSessionCookie() == null;
     }
 
+    public HttpSession getSession() {
+        return getSession(true);
+    }
+
     public HttpSession getSession(final boolean create) {
         HttpSession session = HttpSessionManager.findSession(headers.getSessionCookie());
 
         if (session == null && create) {
             session = new HttpSession(UUID.randomUUID().toString());
+            headers.addSessionCookie(session.getId());
             HttpSessionManager.add(session);
         }
 

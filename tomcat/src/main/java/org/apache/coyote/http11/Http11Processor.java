@@ -8,7 +8,6 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.net.Socket;
-import java.util.UUID;
 
 public class Http11Processor implements Runnable, Processor {
 
@@ -34,9 +33,7 @@ public class Http11Processor implements Runnable, Processor {
             final HttpRequest httpRequest = new HttpRequest(inputStream);
             final HttpResponse httpResponse = new HttpResponse(outputStream);
 
-            if (httpRequest.isSessionEmpty()) {
-                httpResponse.setSession(UUID.randomUUID().toString());
-            }
+            initSessionIfNecessary(httpRequest, httpResponse);
 
             final HttpPath path = httpRequest.getPath();
             final Controller controller = requestMapping.getController(path);
@@ -49,6 +46,13 @@ public class Http11Processor implements Runnable, Processor {
             resolveStaticRequest(httpRequest, httpResponse);
         } catch (final IOException | UncheckedServletException e) {
             log.error(e.getMessage(), e);
+        }
+    }
+
+    private void initSessionIfNecessary(final HttpRequest httpRequest, final HttpResponse httpResponse) {
+        if (httpRequest.isSessionEmpty()) {
+            final HttpSession session = httpRequest.getSession();
+            httpResponse.setSession(session.getId());
         }
     }
 
