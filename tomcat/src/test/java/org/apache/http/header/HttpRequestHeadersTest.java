@@ -3,6 +3,7 @@ package org.apache.http.header;
 import org.apache.file.MediaType;
 import org.apache.http.body.HttpFormBody;
 import org.apache.http.body.HttpTextBody;
+import org.apache.http.session.HttpSession;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -50,4 +51,21 @@ class HttpRequestHeadersTest {
         Assertions.assertThat(actual).isNull();
     }
 
+    @Test
+    void session_from_cookie() {
+        var headers = new HttpRequestHeaders(new Cookie("JSESSIONID=cookie"));
+
+        var actual = headers.getSession();
+
+        Assertions.assertThat(actual).isEqualTo(new HttpSession("cookie"));
+    }
+
+    @Test
+    void session_from_empty_cookie() {
+        var headers = new HttpRequestHeaders();
+
+        var actual = headers.getSession();
+
+        Assertions.assertThat(actual).isNull();
+    }
 }

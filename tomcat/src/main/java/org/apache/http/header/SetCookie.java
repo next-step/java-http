@@ -1,6 +1,6 @@
 package org.apache.http.header;
 
-import org.apache.http.cookie.HttpCookie;
+import org.apache.http.session.HttpCookie;
 
 import java.util.HashSet;
 import java.util.Objects;

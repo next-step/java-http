@@ -1,4 +1,4 @@
-package org.apache.http.cookie;
+package org.apache.http.session;
 
 public class HttpCookie {
     private static final String DELIMITER = "=";
@@ -17,6 +17,14 @@ public class HttpCookie {
         this.name = token[0];
         this.value = token.length > 1 ? token[1] : null;
     }
+
+    public HttpSession toSession() {
+        if (!name.equals(JSESSIONID)) {
+            return null;
+        }
+        return new HttpSession(value);
+    }
+
 
     @Override
     public String toString() {

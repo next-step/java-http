@@ -1,7 +1,8 @@
 package org.apache.http.header;
 
 import org.apache.commons.lang3.tuple.Pair;
-import org.apache.http.cookie.HttpCookie;
+import org.apache.http.session.HttpCookie;
+import org.apache.http.session.HttpSession;
 
 import java.util.HashSet;
 import java.util.Objects;
@@ -19,6 +20,16 @@ public class Cookie extends HttpRequestHeader {
         for (String cookie : cookies) {
             this.cookies.add(new HttpCookie(cookie));
         }
+    }
+
+    public HttpSession findSession() {
+        for (HttpCookie cookie : cookies) {
+            var session = cookie.toSession();
+            if (session != null) {
+                return session;
+            }
+        }
+        return null;
     }
 
     @Override

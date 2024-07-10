@@ -4,6 +4,7 @@ import org.apache.file.MediaType;
 import org.apache.http.body.HttpBody;
 import org.apache.http.body.HttpFormBody;
 import org.apache.http.body.HttpTextBody;
+import org.apache.http.session.HttpSession;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -46,6 +47,14 @@ public class HttpRequestHeaders {
             return -1;
         }
         return header.length;
+    }
+
+    public HttpSession getSession() {
+        var header = (Cookie) headers.get(RequestHeaderName.COOKIE);
+        if (header == null) {
+            return null;
+        }
+        return header.findSession();
     }
 
     @Override

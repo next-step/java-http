@@ -6,7 +6,7 @@ import org.apache.coyote.HttpResponse;
 import org.apache.file.FileReader;
 import org.apache.http.HttpPath;
 import org.apache.http.body.HttpFileBody;
-import org.apache.http.cookie.HttpCookie;
+import org.apache.http.session.HttpCookie;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
