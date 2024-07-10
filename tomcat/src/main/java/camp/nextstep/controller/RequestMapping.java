@@ -1,7 +1,7 @@
 package camp.nextstep.controller;
 
-import camp.nextstep.domain.http.HttpRequest;
-import camp.nextstep.domain.http.HttpResponse;
+import camp.nextstep.domain.http.request.HttpRequest;
+import camp.nextstep.domain.http.response.HttpResponse;
 
 import java.util.Map;
 import java.util.regex.Pattern;

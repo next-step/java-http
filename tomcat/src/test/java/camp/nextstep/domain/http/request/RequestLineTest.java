@@ -1,5 +1,7 @@
-package camp.nextstep.domain.http;
+package camp.nextstep.domain.http.request;
 
+import camp.nextstep.domain.http.HttpMethod;
+import camp.nextstep.domain.http.HttpProtocol;
 import org.junit.jupiter.api.Test;
 
 import java.util.Map;

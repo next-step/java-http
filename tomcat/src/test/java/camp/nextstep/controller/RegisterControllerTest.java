@@ -1,7 +1,12 @@
 package camp.nextstep.controller;
 
 import camp.nextstep.db.InMemoryUserRepository;
-import camp.nextstep.domain.http.*;
+import camp.nextstep.domain.http.HttpCookie;
+import camp.nextstep.domain.http.HttpHeaders;
+import camp.nextstep.domain.http.request.HttpRequest;
+import camp.nextstep.domain.http.request.HttpRequestBody;
+import camp.nextstep.domain.http.request.RequestLine;
+import camp.nextstep.domain.http.response.HttpResponse;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;

@@ -1,4 +1,8 @@
-package camp.nextstep.domain.http;
+package camp.nextstep.domain.http.request;
+
+import camp.nextstep.domain.http.ContentType;
+import camp.nextstep.domain.http.HttpMethod;
+import camp.nextstep.domain.http.HttpProtocol;
 
 import java.util.Map;
 

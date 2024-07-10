@@ -1,7 +1,11 @@
 package org.apache.coyote.http11;
 
 import camp.nextstep.controller.RequestMapping;
-import camp.nextstep.domain.http.*;
+import camp.nextstep.domain.http.HttpCookie;
+import camp.nextstep.domain.http.HttpHeaders;
+import camp.nextstep.domain.http.request.HttpRequest;
+import camp.nextstep.domain.http.request.HttpRequestBody;
+import camp.nextstep.domain.http.request.RequestLine;
 import camp.nextstep.exception.UncheckedServletException;
 import org.apache.coyote.Processor;
 import org.slf4j.Logger;

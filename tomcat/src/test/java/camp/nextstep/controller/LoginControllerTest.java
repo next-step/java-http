@@ -1,7 +1,13 @@
 package camp.nextstep.controller;
 
 import camp.nextstep.db.InMemoryUserRepository;
-import camp.nextstep.domain.http.*;
+import camp.nextstep.domain.http.HttpCookie;
+import camp.nextstep.domain.http.HttpHeaders;
+import camp.nextstep.domain.http.HttpStatus;
+import camp.nextstep.domain.http.request.HttpRequest;
+import camp.nextstep.domain.http.request.HttpRequestBody;
+import camp.nextstep.domain.http.request.RequestLine;
+import camp.nextstep.domain.http.response.HttpResponse;
 import camp.nextstep.domain.session.Session;
 import camp.nextstep.domain.session.SessionManager;
 import camp.nextstep.model.User;

@@ -1,4 +1,4 @@
-package camp.nextstep.domain.http;
+package camp.nextstep.domain.http.request;
 
 import org.junit.jupiter.api.Test;
 

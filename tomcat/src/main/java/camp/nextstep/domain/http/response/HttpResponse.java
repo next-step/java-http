@@ -1,4 +1,6 @@
-package camp.nextstep.domain.http;
+package camp.nextstep.domain.http.response;
+
+import camp.nextstep.domain.http.*;
 
 import java.util.LinkedHashMap;
 import java.util.Map;

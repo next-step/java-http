@@ -1,4 +1,8 @@
-package camp.nextstep.domain.http;
+package camp.nextstep.domain.http.request;
+
+import camp.nextstep.domain.http.HttpCookie;
+import camp.nextstep.domain.http.HttpHeaders;
+import camp.nextstep.domain.http.HttpProtocol;
 
 public class HttpRequest {
 
