@@ -1,9 +1,9 @@
 package org.apache.http.body;
 
+import org.apache.file.MediaType;
 import org.apache.http.header.ContentLength;
 import org.apache.http.header.ContentType;
 import org.apache.http.header.HttpHeaders;
-import org.apache.http.header.MediaType;
 
 public class HttpTextBody extends HttpBody {
     private final String body;
