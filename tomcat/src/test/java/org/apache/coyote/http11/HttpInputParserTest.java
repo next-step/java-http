@@ -1,5 +1,7 @@
 package org.apache.coyote.http11;
 
+import org.apache.coyote.http.HttpMethod;
+import org.apache.coyote.http.Request;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import support.StubSocket;
@@ -9,20 +11,20 @@ import java.util.Map;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
-class Http11InputTest {
+class HttpInputParserTest {
 
     @DisplayName("GET 요청의 RequestLine 을 파싱한다")
     @Test
     public void parseGetRequestLine() throws Exception {
         // given
         final var socket = new StubSocket();
-        final Http11Input http11Input = new Http11Input(socket.getInputStream());
+        final HttpInputParser httpInputParser = new HttpInputParser(socket.getInputStream());
 
         // when
-        http11Input.parseRequestLine();
+        httpInputParser.parseRequestLine();
 
         // then
-        final Request actual = http11Input.getRequest();
+        final Request actual = httpInputParser.getRequest();
         assertAll(
                 () -> assertThat(actual.getMethod()).isEqualTo(HttpMethod.GET),
                 () -> assertThat(actual.getPath()).isEqualTo("/"),
@@ -36,13 +38,13 @@ class Http11InputTest {
     public void parsePostRequestLine() throws Exception {
         // given
         final var socket = new StubSocket("POST / HTTP/1.1\r\nHost: localhost:8080\r\n\r\n");
-        final Http11Input http11Input = new Http11Input(socket.getInputStream());
+        final HttpInputParser httpInputParser = new HttpInputParser(socket.getInputStream());
 
         // when
-        http11Input.parseRequestLine();
+        httpInputParser.parseRequestLine();
 
         // then
-        final Request actual = http11Input.getRequest();
+        final Request actual = httpInputParser.getRequest();
         assertAll(
                 () -> assertThat(actual.getMethod()).isEqualTo(HttpMethod.POST),
                 () -> assertThat(actual.getPath()).isEqualTo("/"),
@@ -56,17 +58,17 @@ class Http11InputTest {
     public void parseRequestQueryString() throws Exception {
         // given
         final var socket = new StubSocket("GET /users?userId=djawnstj&password=password&name=JunSeo HTTP/1.1\r\nHost: localhost:8080\r\n\r\n");
-        final Http11Input http11Input = new Http11Input(socket.getInputStream());
+        final HttpInputParser httpInputParser = new HttpInputParser(socket.getInputStream());
 
         // when
-        http11Input.parseRequestLine();
+        httpInputParser.parseRequestLine();
 
         // then
-        final Request actual = http11Input.getRequest();
+        final Request actual = httpInputParser.getRequest();
         assertAll(
                 () -> assertThat(actual.getMethod()).isEqualTo(HttpMethod.GET),
                 () -> assertThat(actual.getPath()).isEqualTo("/users"),
-                () -> assertThat(actual.getQueryStringMapping()).hasSize(3)
+                () -> assertThat(actual.getParameters()).hasSize(3)
                         .containsExactlyInAnyOrderEntriesOf(Map.of("userId", "djawnstj", "password", "password", "name", "JunSeo")),
                 () -> assertThat(actual.getProtocol()).isEqualTo("HTTP"),
                 () -> assertThat(actual.getProtocolVersion()).isEqualTo("1.1")

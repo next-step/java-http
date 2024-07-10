@@ -1,4 +1,4 @@
-package org.apache.coyote.http11;
+package org.apache.coyote.http;
 
 import java.util.Arrays;
 
@@ -11,7 +11,7 @@ public enum HttpMethod {
         this.method = method;
     }
 
-    public static HttpMethod of(final String requestMethod) {
+    public static HttpMethod from(final String requestMethod) {
         return Arrays.stream(values())
                 .filter(method -> method.method.equals(requestMethod))
                 .findFirst()
