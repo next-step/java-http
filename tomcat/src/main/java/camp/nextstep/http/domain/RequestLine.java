@@ -5,8 +5,6 @@ import camp.nextstep.http.enums.HttpMethod;
 import camp.nextstep.http.enums.HttpVersion;
 import camp.nextstep.http.exception.InvalidHttpRequestSpecException;
 
-import java.util.regex.Pattern;
-
 import static camp.nextstep.http.enums.HttpVersion.NONE;
 import static camp.nextstep.http.enums.HttpVersion.getHttpVersionByVersion;
 import static camp.nextstep.util.EnumUtil.searchEnum;

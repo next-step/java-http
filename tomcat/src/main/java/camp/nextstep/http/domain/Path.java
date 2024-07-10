@@ -24,6 +24,10 @@ public class Path {
         return queryParams;
     }
 
+    public String getUrlPath() {
+        return urlPath;
+    }
+
     public static Path createPathByPathStr(String path) {
         String[] pathStrs = path.split("\\?");
         if (pathStrs.length == 2) {
