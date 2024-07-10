@@ -16,6 +16,8 @@ public class LoginController extends AbstractController {
     private static final String LOGIN_ACCOUNT_KEY = "account";
     private static final String LOGIN_PASSWORD_KEY = "password";
 
+    private static final String SESSION_USER_KEY = "user";
+
     @Override
     protected HttpResponse doPost(HttpRequest httpRequest) {
         String account = httpRequest.getHttpRequestBodyValue(LOGIN_ACCOUNT_KEY);
@@ -30,7 +32,7 @@ public class LoginController extends AbstractController {
 
     private HttpResponse handleLoginUser(HttpRequest httpRequest, User user) {
         Session session = Session.createNewSession();
-        session.setAttribute("user", user);
+        session.setAttribute(SESSION_USER_KEY, user);
         SessionManager.add(session);
         return HttpResponse.found(httpRequest.getHttpProtocol(), INDEX_PAGE_PATH)
                 .addCookie(HttpCookie.sessionCookie(session));
