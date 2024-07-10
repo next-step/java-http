@@ -38,6 +38,10 @@ public class RequestLine {
         return path.getQueryParamMap();
     }
 
+    public HttpProtocol getHttpProtocol() {
+        return protocol;
+    }
+
     public String getProtocol() {
         return protocol.getProtocol();
     }

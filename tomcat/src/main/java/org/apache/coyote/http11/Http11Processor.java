@@ -1,7 +1,6 @@
 package org.apache.coyote.http11;
 
 import camp.nextstep.exception.UncheckedServletException;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.coyote.Processor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,7 +10,6 @@ import java.net.Socket;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.util.List;
 
 public class Http11Processor implements Runnable, Processor {
 
@@ -37,27 +35,17 @@ public class Http11Processor implements Runnable, Processor {
             var requestLine = RequestParser.parse(inputStream, StandardCharsets.UTF_8);
             if (requestLine.pathEndsWith("/index.html")) {
                 final URL resource = getClass().getClassLoader().getResource("static/index.html");
-                final var response = String.join("\r\n",
-                        "HTTP/1.1 200 OK ",
-                        "Content-Type: text/html;charset=utf-8 ",
-                        "Content-Length: 5564 ", // 운영체제 환경에 따라 다른 값이 나올 수 있음. 자신의 개발 환경에 맞춰 수정할 것.
-                        "",
-                        new String(Files.readAllBytes(new File(resource.getFile()).toPath())));
-                outputStream.write(response.getBytes());
+                var response = new Response(requestLine.getHttpProtocol(), HttpStatusCode.OK, ContentType.TEXT_HTML, StandardCharsets.UTF_8, Files.readAllBytes(new File(resource.getFile()).toPath()));
+                outputStream.write(response.generateMessage().getBytes());
                 outputStream.flush();
                 return;
             }
 
             final var responseBody = "Hello world!";
 
-            final var response = String.join("\r\n",
-                    "HTTP/1.1 200 OK ",
-                    "Content-Type: text/html;charset=utf-8 ",
-                    "Content-Length: " + responseBody.getBytes().length + " ",
-                    "",
-                    responseBody);
+            var response2 = new Response(requestLine.getHttpProtocol(), HttpStatusCode.OK, ContentType.TEXT_HTML, StandardCharsets.UTF_8, responseBody.getBytes());
 
-            outputStream.write(response.getBytes());
+            outputStream.write(response2.generateMessage().getBytes());
             outputStream.flush();
         } catch (IOException | UncheckedServletException e) {
             log.error(e.getMessage(), e);
