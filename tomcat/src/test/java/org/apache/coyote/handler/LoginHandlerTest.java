@@ -1,11 +1,13 @@
 package org.apache.coyote.handler;
 
+import org.apache.coyote.HttpRequest;
 import org.apache.http.HttpPath;
 import org.junit.jupiter.api.Test;
 import support.StubHttpRequest;
 import support.StubLogger;
 
 import java.io.IOException;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static support.OutputTest.*;
@@ -16,15 +18,27 @@ class LoginHandlerTest {
     private final StubLogger<LoginHandler> logger = new StubLogger<>(LoginHandler.class);
 
     @Test
-    void default_login() throws IOException {
+    void get() throws IOException {
         var request = new StubHttpRequest(new HttpPath("/login"));
         var response = handler.handle(request);
         test_login_page(response.toString());
     }
 
     @Test
-    void correct_account_correct_password() {
+    void get_with_param() throws IOException {
         var request = new StubHttpRequest(new HttpPath("/login?account=gugu&password=password"));
+        var response = handler.handle(request);
+        test_login_page(response.toString());
+    }
+
+    @Test
+    void correct_account_correct_password() {
+        var request = new HttpRequest(List.of(
+                "POST /login HTTP/1.1 ",
+                "Content-Type: application/x-www-form-urlencoded ",
+                "",
+                "account=gugu&password=password"
+        ));
         var response = handler.handle(request);
         test_success_redirect(response.toString());
         test_log_user();
@@ -32,7 +46,12 @@ class LoginHandlerTest {
 
     @Test
     void correct_account_wrong_password() {
-        var request = new StubHttpRequest(new HttpPath("/login?account=gugu&password=wrong"));
+        var request = new HttpRequest(List.of(
+                "POST /login HTTP/1.1 ",
+                "Content-Type: application/x-www-form-urlencoded ",
+                "",
+                "account=gugu&password=wrong"
+        ));
         var response = handler.handle(request);
         test_fail_redirect(response.toString());
         test_doNotLog_user();
@@ -40,7 +59,12 @@ class LoginHandlerTest {
 
     @Test
     void wrong_account() {
-        var request = new StubHttpRequest(new HttpPath("/login?account=woo-yu&password=wrong"));
+        var request = new HttpRequest(List.of(
+                "POST /login HTTP/1.1 ",
+                "Content-Type: application/x-www-form-urlencoded ",
+                "",
+                "account=woo-yu&password=password"
+        ));
         var response = handler.handle(request);
         test_fail_redirect(response.toString());
         test_doNotLog_user();
