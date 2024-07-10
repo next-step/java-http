@@ -2,6 +2,8 @@ package org.apache.coyote.http11.request;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import org.apache.coyote.http11.session.Session;
+import org.apache.coyote.http11.session.SessionManager;
 
 public class Request {
 
@@ -15,6 +17,7 @@ public class Request {
         this.requestHeader = RequestHeader.from(br);
         this.cookies = HttpCookie.from(requestHeader.getCookies());
         this.requestBody = RequestBody.from(br, requestHeader.getContentLength());
+        SessionManager.addSession(new Session(cookies.getJSessionId()));
     }
 
     public RequestLine getRequestLine() {
@@ -31,5 +34,9 @@ public class Request {
 
     public HttpCookie getCookies() {
         return cookies;
+    }
+
+    public String getSessionId() {
+        return cookies.getJSessionId();
     }
 }

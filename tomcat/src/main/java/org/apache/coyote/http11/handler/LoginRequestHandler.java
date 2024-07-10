@@ -9,6 +9,7 @@ import org.apache.coyote.http11.request.RequestBody;
 import org.apache.coyote.http11.request.RequestLine;
 import org.apache.coyote.http11.response.ContentType;
 import org.apache.coyote.http11.response.Response;
+import org.apache.coyote.http11.session.SessionManager;
 import org.apache.utils.FileUtils;
 
 public class LoginRequestHandler implements RequestHandler {
@@ -25,23 +26,25 @@ public class LoginRequestHandler implements RequestHandler {
         }
 
         if (requestLine.isPost()) {
-            RequestBody requestBody = request.getRequestBody();
-            String account = requestBody.getParameter(ACCOUNT_PARAMETER).toString();
-            String password = requestBody.getParameter(PASSWORD_PARAMETER).toString();
-            return authenticateUser(account, password);
+            return authenticateUser(request);
         }
 
         return Response.notAllowed();
     }
 
-    private Response authenticateUser(String account, String password) throws IOException {
+    private Response authenticateUser(Request request) throws IOException {
         try {
+            RequestBody requestBody = request.getRequestBody();
+            String account = requestBody.getParameter(ACCOUNT_PARAMETER).toString();
+            String password = requestBody.getParameter(PASSWORD_PARAMETER).toString();
+
             User user = findUserByAccount(account);
 
             if (!isPasswordValid(user, password)) {
                 throw new IllegalArgumentException();
             }
-            log.info(user.toString());
+            SessionManager.getSession(request.getSessionId()).setAttribute("user", user);
+
             return Response.redirect(FileUtils.getStaticFileContent(HttpPath.from(INDEX_PATH)));
         } catch (IllegalArgumentException e) {
             return Response.unauthorized(FileUtils.getStaticFileContent(HttpPath.from(UNAUTHORIZED_PATH)));

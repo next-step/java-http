@@ -54,12 +54,12 @@ public class Response {
         String statusLine = String.format("%s %d %s ", HTTP11_VERSION, status.getCode(), status.getMessage());
         String contentTypeHeader = String.format("Content-Type: %s ", contentType.getValue());
         String contentLengthHeader = String.format("Content-Length: %d ", body.getBytes().length);
-
+        String cookieHeader = String.format("Set-Cookie: %s ", httpCookie.toCookieHeader());
         return String.join(DELIMITER,
             statusLine,
             contentTypeHeader,
             contentLengthHeader,
-            httpCookie.toCookieHeader(),
+            cookieHeader,
             "",
             body).getBytes();
     }
