@@ -53,9 +53,6 @@ public class RequestLine {
     }
 
     public String getFilePath() {
-        if (ContentType.isSupportableExtension(httpPath.getPath())) {
-            return httpPath.getPath();
-        }
         return httpPath.getPath() + DEFAULT_CONTENT_TYPE.getExtension();
     }
 

@@ -23,11 +23,6 @@ public enum ContentType {
                 .orElseThrow(() -> new IllegalArgumentException("확장자 구분자가 존재하지 않아 확장자를 추출할 수 없습니다 - " + path));
     }
 
-    public static boolean isSupportableExtension(String path) {
-        return Arrays.stream(values())
-                .anyMatch(value -> path.endsWith(value.extension));
-    }
-
     public String getExtension() {
         return extension;
     }

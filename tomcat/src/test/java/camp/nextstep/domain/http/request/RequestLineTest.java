@@ -42,12 +42,6 @@ class RequestLineTest {
     }
 
     @Test
-    void 파일확장자가_있는_경우_그대로_반환한다() {
-        String actual = new RequestLine("GET /docs/index.html HTTP/1.1").getFilePath();
-        assertThat(actual).isEqualTo("/docs/index.html");
-    }
-
-    @Test
     void 파일확장자가_없는_경우_디폴트_확장자를_추가하여_반환한다() {
         String actual = new RequestLine("GET /docs/index HTTP/1.1").getFilePath();
         assertThat(actual).isEqualTo("/docs/index.html");

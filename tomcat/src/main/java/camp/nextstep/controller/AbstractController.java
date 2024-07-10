@@ -28,13 +28,21 @@ public abstract class AbstractController implements Controller {
         return notFoundResponse(httpRequest);
     }
 
-    protected final HttpResponse handleStaticPath(HttpRequest httpRequest) {
-        String responseBody = FileUtil.readStaticPathFileResource(httpRequest.getFilePath(), getClass());
-        ContentType contentType = ContentType.fromPath(httpRequest.getFilePath());
-        return HttpResponse.ok(httpRequest.getHttpProtocol(), contentType, responseBody);
-    }
-
     private HttpResponse notFoundResponse(HttpRequest httpRequest) {
         return HttpResponse.found(httpRequest.getHttpProtocol(), NOT_FOUND_PAGE_PATH);
+    }
+
+    protected final HttpResponse handlePath(HttpRequest httpRequest) {
+        return handleRequest(httpRequest, httpRequest.getFilePath());
+    }
+
+    protected final HttpResponse handleStaticPath(HttpRequest httpRequest) {
+        return handleRequest(httpRequest, httpRequest.getHttpPath());
+    }
+
+    private HttpResponse handleRequest(HttpRequest httpRequest, String path) {
+        String responseBody = FileUtil.readStaticPathFileResource(path, getClass());
+        ContentType contentType = ContentType.fromPath(path);
+        return HttpResponse.ok(httpRequest.getHttpProtocol(), contentType, responseBody);
     }
 }
