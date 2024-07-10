@@ -1,7 +1,5 @@
 package camp.nextstep.domain.http;
 
-import java.util.Map;
-
 public class HttpRequest {
 
     private final RequestLine requestLine;
@@ -44,7 +42,7 @@ public class HttpRequest {
         return httpCookie.getSessionId();
     }
 
-    public Map<String, String> getHttpRequestBody() {
-        return httpRequestBody.getValues();
+    public String getHttpRequestBodyValue(String key) {
+        return httpRequestBody.getValue(key);
     }
 }

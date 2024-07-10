@@ -8,8 +8,6 @@ import camp.nextstep.domain.session.Session;
 import camp.nextstep.domain.session.SessionManager;
 import camp.nextstep.model.User;
 
-import java.util.Map;
-
 public class LoginController extends AbstractController {
 
     private static final String INDEX_PAGE_PATH = "/index.html";
@@ -20,9 +18,8 @@ public class LoginController extends AbstractController {
 
     @Override
     protected HttpResponse doPost(HttpRequest httpRequest) {
-        Map<String, String> requestBody = httpRequest.getHttpRequestBody();
-        String account = requestBody.get(LOGIN_ACCOUNT_KEY);
-        String password = requestBody.get(LOGIN_PASSWORD_KEY);
+        String account = httpRequest.getHttpRequestBodyValue(LOGIN_ACCOUNT_KEY);
+        String password = httpRequest.getHttpRequestBodyValue(LOGIN_PASSWORD_KEY);
         User user = InMemoryUserRepository.findByAccount(account)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 account입니다."));
         if (user.checkPassword(password)) {

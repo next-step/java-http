@@ -43,6 +43,13 @@ public class HttpRequestBody {
         );
     }
 
+    public String getValue(String key) {
+        if (values.containsKey(key)) {
+            return values.get(key);
+        }
+        throw new IllegalArgumentException("존재하지 않는 데이터입니다.");
+    }
+
     public Map<String, String> getValues() {
         return values;
     }
