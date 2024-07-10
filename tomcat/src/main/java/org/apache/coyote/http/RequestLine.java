@@ -1,36 +1,26 @@
-package org.apache.coyote;
+package org.apache.coyote.http;
 
 import java.util.Map;
 
-public class Request {
+public class RequestLine {
+    public static final String REQUEST_PATH_QUERY_SEPARATOR = "\\?";
+    private static final String REQUEST_PROTOCOL_SEPARATOR = "/";
+
     private HttpMethod method;
     private String path;
     private String protocol;
     private String protocolVersion;
-    private final ParamsMapping params = new ParamsMapping();
 
     public void setMethod(final String requestMethod) {
         this.method = HttpMethod.from(requestMethod);
     }
 
     public void setPath(final String path) {
-        final String[] requestPath = path.split("\\?");
-
-        this.path = requestPath[0];
-
-        if (method != HttpMethod.GET) {
-            return;
-        }
-
-        if (requestPath.length == 1) {
-            return;
-        }
-
-        this.params.toQueryStringMapping(requestPath[1]);
+        this.path = path;
     }
 
     public void setProtocol(final String protocol) {
-        final String[] protocolData = protocol.split("/");
+        final String[] protocolData = protocol.split(REQUEST_PROTOCOL_SEPARATOR);
 
         this.protocol = protocolData[0];
         this.protocolVersion = protocolData[1];
@@ -44,14 +34,6 @@ public class Request {
         return this.path;
     }
 
-    public Map<String, String> getParameters() {
-        return this.params.getParams();
-    }
-
-    public String getParameter(final String parameterName) {
-        return this.params.getParam(parameterName);
-    }
-
     public String getProtocol() {
         return this.protocol;
     }
@@ -59,4 +41,5 @@ public class Request {
     public String getProtocolVersion() {
         return this.protocolVersion;
     }
+
 }

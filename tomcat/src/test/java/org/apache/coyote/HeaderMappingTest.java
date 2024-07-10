@@ -1,5 +1,8 @@
 package org.apache.coyote;
 
+import org.apache.coyote.http.ContentType;
+import org.apache.coyote.http.HeaderMapping;
+import org.apache.coyote.http.HttpHeader;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -15,7 +18,7 @@ class HeaderMappingTest {
         final HeaderMapping headerMapping = new HeaderMapping();
 
         // when then
-        assertDoesNotThrow(() -> headerMapping.addHeader("Content-Type", "text/html"));
+        assertDoesNotThrow(() -> headerMapping.addHeader(HttpHeader.CONTENT_TYPE, "text/html"));
     }
 
     @DisplayName("헤더를 HTTP 양식에 알맞은 형식으로 변환한다")
@@ -24,8 +27,8 @@ class HeaderMappingTest {
         // given
         final HeaderMapping headerMapping = new HeaderMapping();
 
-        headerMapping.addHeader("Content-Type", "text/html");
-        headerMapping.addHeader("Content-Length", "12");
+        headerMapping.addHeader(HttpHeader.CONTENT_TYPE, ContentType.TEXT_HTML.type());
+        headerMapping.addHeader(HttpHeader.CONTENT_LENGTH, "12");
 
         // when
         final String actual = headerMapping.convertHttpHeaders();

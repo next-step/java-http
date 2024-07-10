@@ -1,7 +1,7 @@
 package org.apache.coyote.http11;
 
-import org.apache.coyote.HttpMethod;
-import org.apache.coyote.Request;
+import org.apache.coyote.http.HttpMethod;
+import org.apache.coyote.http.Request;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import support.StubSocket;
@@ -21,7 +21,7 @@ class HttpInputParserTest {
         final HttpInputParser httpInputParser = new HttpInputParser(socket.getInputStream());
 
         // when
-        httpInputParser.parseRequestLine(socket.getInputStream());
+        httpInputParser.parseRequestLine();
 
         // then
         final Request actual = httpInputParser.getRequest();
@@ -41,7 +41,7 @@ class HttpInputParserTest {
         final HttpInputParser httpInputParser = new HttpInputParser(socket.getInputStream());
 
         // when
-        httpInputParser.parseRequestLine(socket.getInputStream());
+        httpInputParser.parseRequestLine();
 
         // then
         final Request actual = httpInputParser.getRequest();
@@ -61,7 +61,7 @@ class HttpInputParserTest {
         final HttpInputParser httpInputParser = new HttpInputParser(socket.getInputStream());
 
         // when
-        httpInputParser.parseRequestLine(socket.getInputStream());
+        httpInputParser.parseRequestLine();
 
         // then
         final Request actual = httpInputParser.getRequest();

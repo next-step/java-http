@@ -1,8 +1,10 @@
 package org.apache.catalina.servlets;
 
 import com.javax.servlet.Servlet;
-import org.apache.coyote.Request;
-import org.apache.coyote.Response;
+import org.apache.coyote.http.Request;
+import org.apache.coyote.http.Response;
+import org.apache.coyote.view.StaticResource;
+import org.apache.coyote.view.StaticResourceResolver;
 
 public class DefaultServlet implements Servlet {
 
@@ -12,6 +14,7 @@ public class DefaultServlet implements Servlet {
     }
 
     private void serveResource(final Request request, final Response response) throws Exception {
-        response.setStaticResource(request.getPath());
+        final StaticResource staticResource = StaticResourceResolver.findStaticResource(request.getPath());
+        response.setBody(staticResource.getContent(), staticResource.getMimeType());
     }
 }

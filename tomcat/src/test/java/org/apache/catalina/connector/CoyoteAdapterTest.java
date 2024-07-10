@@ -1,8 +1,8 @@
 package org.apache.catalina.connector;
 
 import com.javax.servlet.Servlet;
-import org.apache.coyote.Request;
-import org.apache.coyote.Response;
+import org.apache.coyote.http.Request;
+import org.apache.coyote.http.Response;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 

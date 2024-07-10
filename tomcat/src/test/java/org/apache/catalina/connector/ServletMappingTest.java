@@ -2,7 +2,7 @@ package org.apache.catalina.connector;
 
 import com.javax.servlet.Servlet;
 import org.apache.catalina.servlets.DefaultServlet;
-import org.apache.coyote.Request;
+import org.apache.coyote.http.Request;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 

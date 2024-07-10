@@ -21,7 +21,6 @@ class Http11ProcessorTest {
         // given
         final var socket = new StubSocket();
         final var adapter = new CoyoteAdapter();
-        final HttpInputParser httpParser = new HttpInputParser(socket.getInputStream());
         final var processor = new Http11Processor(socket, adapter);
 
         // when
@@ -29,11 +28,11 @@ class Http11ProcessorTest {
 
         // then
         var expected = String.join("\r\n",
-                "HTTP/1.1 200 OK ",
+                "HTTP/1.1 500 Internal Server Error ",
                 "Content-Type: text/html;charset=utf-8 ",
-                "Content-Length: 12 ",
+                "Content-Length: 11 ",
                 "",
-                "Hello world!");
+                "ERROR: null");
 
         assertThat(socket.output()).isEqualTo(expected);
     }

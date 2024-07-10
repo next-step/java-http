@@ -3,12 +3,12 @@ package camp.nextstep.servlet;
 import camp.nextstep.db.InMemoryUserRepository;
 import camp.nextstep.model.User;
 import com.javax.servlet.Servlet;
-import org.apache.coyote.Request;
-import org.apache.coyote.Response;
+import org.apache.coyote.http.Request;
+import org.apache.coyote.http.Response;
+import org.apache.coyote.view.StaticResource;
+import org.apache.coyote.view.StaticResourceResolver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.Optional;
 
 public class LoginServlet implements Servlet {
 
@@ -16,7 +16,9 @@ public class LoginServlet implements Servlet {
 
     @Override
     public void service(final Request request, final Response response) throws Exception {
-        response.setStaticResource("login.html");
+        final StaticResource staticResource = StaticResourceResolver.findStaticResource("login.html");
+        response.setBody(staticResource.getContent(), staticResource.getMimeType());
+
         final String account = request.getParameter("account");
 
         if (account == null) {
