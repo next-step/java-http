@@ -9,7 +9,7 @@ public class Http11ProcessorHandlers {
     private final List<Handler> handlers;
 
     public Http11ProcessorHandlers() {
-        handlers = List.of(new LoginHandler(), new ResourceHandler(), new DefaultHandler());
+        handlers = List.of(new RegisterHandler(), new LoginHandler(), new ResourceHandler(), new DefaultHandler());
     }
 
     Http11ProcessorHandlers(List<Handler> handlers) {

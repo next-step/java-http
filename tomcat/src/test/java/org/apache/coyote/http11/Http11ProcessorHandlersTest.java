@@ -1,9 +1,6 @@
 package org.apache.coyote.http11;
 
-import org.apache.coyote.handler.DefaultHandler;
-import org.apache.coyote.handler.Handler;
-import org.apache.coyote.handler.LoginHandler;
-import org.apache.coyote.handler.ResourceHandler;
+import org.apache.coyote.handler.*;
 import org.apache.http.HttpPath;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -15,6 +12,7 @@ import static org.mockito.Mockito.*;
 
 class Http11ProcessorHandlersTest {
 
+    private Handler registerHandler;
     private Handler loginHandler;
     private Handler resourceHandler;
     private Handler defaultHandler;
@@ -22,10 +20,22 @@ class Http11ProcessorHandlersTest {
 
     @BeforeEach()
     void setUp() {
+        registerHandler = spy(RegisterHandler.class);
         loginHandler = spy(LoginHandler.class);
         resourceHandler = spy(ResourceHandler.class);
         defaultHandler = spy(DefaultHandler.class);
-        handlers = new Http11ProcessorHandlers(List.of(loginHandler, resourceHandler, defaultHandler));
+        handlers = new Http11ProcessorHandlers(List.of(registerHandler, loginHandler, resourceHandler, defaultHandler));
+    }
+
+    @Test
+    void register() {
+        var request = new StubHttpRequest(new HttpPath("/register"));
+
+        handlers.handle(request);
+        verify(registerHandler, atLeastOnce()).handle(request);
+        verify(loginHandler, never()).handle(request);
+        verify(resourceHandler, never()).handle(request);
+        verify(defaultHandler, never()).handle(request);
     }
 
     @Test

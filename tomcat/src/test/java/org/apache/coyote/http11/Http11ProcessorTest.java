@@ -100,4 +100,33 @@ class Http11ProcessorTest {
 
     }
 
+    @Nested
+    class Register {
+
+        @Test
+        void register_page() throws IOException {
+            final var httpRequest = new StubHttpRequest(new HttpPath("/register"));
+
+            final var socket = new StubSocket(httpRequest);
+            final Http11Processor processor = new Http11Processor(socket);
+
+            processor.process(socket);
+
+            test_register_page(socket.output());
+        }
+
+        @Test
+        void register() {
+            final var httpRequest = new StubHttpRequest("gugu", "password", "email");
+
+            final var socket = new StubSocket(httpRequest);
+            final Http11Processor processor = new Http11Processor(socket);
+
+            processor.process(socket);
+
+            test_success_redirect(socket.output());
+        }
+
+    }
+
 }
