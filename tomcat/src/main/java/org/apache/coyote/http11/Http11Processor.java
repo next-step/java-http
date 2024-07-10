@@ -1,12 +1,16 @@
 package org.apache.coyote.http11;
 
+import camp.nextstep.db.InMemoryUserRepository;
 import camp.nextstep.exception.UncheckedServletException;
+import camp.nextstep.model.User;
 import org.apache.coyote.Processor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
+import java.io.*;
 import java.net.Socket;
+import java.nio.file.Files;
+import java.util.StringJoiner;
 
 public class Http11Processor implements Runnable, Processor {
 
@@ -26,22 +30,50 @@ public class Http11Processor implements Runnable, Processor {
 
     @Override
     public void process(final Socket connection) {
-        try (final var inputStream = connection.getInputStream();
-             final var outputStream = connection.getOutputStream()) {
+        try (BufferedReader br = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+             OutputStream outputStream = connection.getOutputStream()) {
 
-            final var responseBody = "Hello world!";
+            String httpRequestMessage = readHttpRequestMessage(br);
+            HttpRequest httpRequest = HttpRequest.from(httpRequestMessage);
+            String path = httpRequest.getPath();
+            handleLoginRequest(path, httpRequest);
 
-            final var response = String.join("\r\n",
-                    "HTTP/1.1 200 OK ",
-                    "Content-Type: text/html;charset=utf-8 ",
-                    "Content-Length: " + responseBody.getBytes().length + " ",
-                    "",
-                    responseBody);
+            File resource = new ResourceFinder().findByPath(path);
+            MediaType mediaType = MediaType.from(resource);
+            String responseBody = new String(Files.readAllBytes(resource.toPath()));
+            HttpResponse response = HttpResponse.from(httpRequest.getProtocol(), HttpStatus.OK, mediaType, responseBody);
 
-            outputStream.write(response.getBytes());
+            outputStream.write(response.createFormat().getBytes());
             outputStream.flush();
         } catch (IOException | UncheckedServletException e) {
             log.error(e.getMessage(), e);
+        }
+    }
+
+    private String readHttpRequestMessage(final BufferedReader br) throws IOException {
+        StringJoiner stringJoiner = new StringJoiner("\n");
+        while (true) {
+            String line = br.readLine();
+            if (line == null || line.isEmpty()) {
+                break;
+            }
+            stringJoiner.add(line);
+        }
+        return stringJoiner.toString();
+    }
+
+    private void handleLoginRequest(final String path, final HttpRequest httpRequest) {
+        if (path.contains("login") && httpRequest.hasQueryParams()) {
+            checkUserPassword(httpRequest);
+        }
+    }
+
+    private void checkUserPassword(final HttpRequest httpRequest) {
+        User user = InMemoryUserRepository.findByAccount(httpRequest.getQueryParamValue("account"))
+                .orElseThrow();
+        String password = httpRequest.getQueryParamValue("password");
+        if (user.checkPassword(password)) {
+            log.info(user.toString());
         }
     }
 }
