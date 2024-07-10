@@ -1,9 +1,8 @@
 package org.apache.utils;
 
 import java.io.IOException;
-import java.net.URISyntaxException;
-import java.nio.file.Path;
-import static org.junit.jupiter.api.Assertions.*;
+import org.apache.coyote.http11.request.HttpPath;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -14,10 +13,10 @@ class FileUtilsTest {
     @Test
     void readFileContent_File_Not_Exists() throws IOException {
         // given
-        final var filePath = "not-exists.txt";
+        final var fileName = "not-exists.txt";
 
         // when
-        final var result = FileUtils.readFileContent(filePath);
+        final var result = FileUtils.getStaticFileContent(HttpPath.from(fileName));
 
         // then
         assertEquals("", result);
@@ -28,10 +27,9 @@ class FileUtilsTest {
     void readFileContent() throws IOException {
         // given
         final var fileName = "nextstep.txt";
-        final String filePath = ClassLoader.getSystemResource(fileName).getPath();
 
         // when
-        final var result = FileUtils.readFileContent(filePath);
+        final var result = FileUtils.getStaticFileContent(HttpPath.from(fileName));
 
         // then
         assertEquals("nextstep", result);
