@@ -2,12 +2,12 @@ package camp.nextstep.http;
 
 public class RequestLine {
 
-  private final String httpMethod;
+  private final HttpMethod httpMethod;
   private final String path;
   private final String protocol;
   private final String version;
 
-  public String getHttpMethod() {
+  public HttpMethod getHttpMethod() {
     return httpMethod;
   }
 
@@ -32,10 +32,10 @@ public class RequestLine {
     final String protocol = versionTokens[0];
     final String version = versionTokens[1];
 
-    return new RequestLine(httpMethod, path, protocol, version);
+    return new RequestLine(HttpMethod.valueOf(httpMethod), path, protocol, version);
   }
 
-  public RequestLine(String httpMethod, String path, String protocol, String version) {
+  public RequestLine(HttpMethod httpMethod, String path, String protocol, String version) {
     this.httpMethod = httpMethod;
     this.path = path;
     this.protocol = protocol;
