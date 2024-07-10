@@ -10,12 +10,8 @@ public class MediaType {
 
     private final String contentType;
 
-    private MediaType(String contentType) {
+    public MediaType(String contentType) {
         this.contentType = contentType;
-    }
-
-    public MediaType(Path path) throws IOException {
-        this.contentType = Files.probeContentType(path);
     }
 
     @Override

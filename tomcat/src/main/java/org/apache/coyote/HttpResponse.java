@@ -1,5 +1,6 @@
 package org.apache.coyote;
 
+import org.apache.http.body.HttpBody;
 import org.apache.http.header.HttpHeaders;
 
 import java.util.ArrayList;
@@ -13,22 +14,28 @@ public class HttpResponse {
 
     private HttpResponseStatusLine statusLine;
     private HttpHeaders headers;
-    private String body;
+    private HttpBody body;
 
-    public HttpResponse(HttpResponseStatusLine statusLine, HttpHeaders headers, String body) {
+    public HttpResponse(HttpResponseStatusLine statusLine, HttpHeaders headers, HttpBody body) {
         this.statusLine = statusLine;
         this.headers = headers;
         this.body = body;
     }
 
-    public HttpResponse(HttpHeaders headers, String body) {
+    public HttpResponse(HttpHeaders headers, HttpBody body) {
         this.statusLine = HttpResponseStatusLine.HTTP_11_OK;
         this.headers = headers;
         this.body = body;
     }
 
+    public HttpResponse(HttpBody body) {
+        this.statusLine = HttpResponseStatusLine.HTTP_11_OK;
+        this.headers = body.addContentHeader(new HttpHeaders());
+        this.body = body;
+    }
+
     @Override
     public String toString() {
-        return String.join(DELIMITER, statusLine.toString(), headers.toString(), "", body);
+        return String.join(DELIMITER, statusLine.toString(), headers.toString(), "", body.toString());
     }
 }

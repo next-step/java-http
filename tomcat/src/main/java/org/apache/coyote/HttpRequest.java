@@ -20,8 +20,8 @@ public class HttpRequest {
         return new HttpPath(path).equals(requestLine.path);
     }
 
-    public String resolveStringPath(final String prefix) {
-        return prefix + requestLine.path;
+    public String path() {
+        return requestLine.path.value();
     }
 
     public void proxyPath(final String to) {
