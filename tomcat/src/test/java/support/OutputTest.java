@@ -49,7 +49,7 @@ public class OutputTest {
         var expected = String.join("\r\n",
                 "HTTP/1.1 200 OK ",
                 "Content-Type: text/html;charset=utf-8 ",
-                "Content-Length: 3796 ", // 운영체제 환경에 따라 다른 값이 나올 수 있음. 자신의 개발 환경에 맞춰 수정할 것.
+                "Content-Length: 3797 ", // 운영체제 환경에 따라 다른 값이 나올 수 있음. 자신의 개발 환경에 맞춰 수정할 것.
                 "",
                 new String(Files.readAllBytes(new File(resource.getFile()).toPath())));
 

@@ -34,8 +34,8 @@ class LoginHandlerTest {
     @Test
     void correct_account_correct_password() {
         var request = new HttpRequest(List.of(
-                "POST /login HTTP/1.1 ",
-                "Content-Type: application/x-www-form-urlencoded ",
+                "POST /login HTTP/1.1",
+                "Content-Type: application/x-www-form-urlencoded",
                 "",
                 "account=gugu&password=password"
         ));
@@ -48,7 +48,7 @@ class LoginHandlerTest {
     void correct_account_wrong_password() {
         var request = new HttpRequest(List.of(
                 "POST /login HTTP/1.1 ",
-                "Content-Type: application/x-www-form-urlencoded ",
+                "Content-Type: application/x-www-form-urlencoded",
                 "",
                 "account=gugu&password=wrong"
         ));
@@ -60,8 +60,8 @@ class LoginHandlerTest {
     @Test
     void wrong_account() {
         var request = new HttpRequest(List.of(
-                "POST /login HTTP/1.1 ",
-                "Content-Type: application/x-www-form-urlencoded ",
+                "POST /login HTTP/1.1",
+                "Content-Type: application/x-www-form-urlencoded",
                 "",
                 "account=woo-yu&password=password"
         ));

@@ -35,12 +35,12 @@ public class LoginHandler implements Handler {
     }
 
     private LoginRequest toLoginRequest(final HttpRequest request) {
-        var account = request.getParam("account");
-        var password = request.getParam("password");
-        if (account.isEmpty() || password.isEmpty()) {
+        var account = request.getBodyValue("account");
+        var password = request.getBodyValue("password");
+        if (account == null || password == null || request.isGet()) {
             return null;
         }
-        return new LoginRequest(account.get(), password.get());
+        return new LoginRequest(account, password);
     }
 
     private HttpResponse toLoginPage() {
