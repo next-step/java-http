@@ -8,19 +8,26 @@ public class HttpHeaders {
     private final static List<Class<? extends HttpHeader>> OUTPUT_ORDERING_LIST = Arrays.asList(ContentType.class, ContentLength.class);
     private final static Comparator<HttpHeader> COMPARATOR = Comparator.comparingInt(a -> OUTPUT_ORDERING_LIST.indexOf(a.getClass()));
 
-    private final Map<String, HttpHeader> headers;
+    private final Map<HeaderName, HttpHeader> headers;
 
     public HttpHeaders() {
         this.headers = new HashMap<>();
     }
 
-    HttpHeaders(Map<String, HttpHeader> headers) {
+    public HttpHeaders(List<String> headerMessages) {
+        this.headers = headerMessages.stream()
+                .map(HeaderName::match)
+                .filter(Optional::isPresent)
+                .collect(Collectors.toMap(result -> result.get().getHeader().getKey(), result -> result.get().getHeader().getValue()));
+    }
+
+    HttpHeaders(Map<HeaderName, HttpHeader> headers) {
         this.headers = headers;
     }
 
     public HttpHeaders add(HttpHeader header) {
-        final Map<String, HttpHeader> newHeaders = new HashMap<>(headers);
-        newHeaders.put(header.getHeaderName(), header);
+        final Map<HeaderName, HttpHeader> newHeaders = new HashMap<>(headers);
+        newHeaders.put(header.getHeader().getKey(), header.getHeader().getValue());
         return new HttpHeaders(newHeaders);
     }
 

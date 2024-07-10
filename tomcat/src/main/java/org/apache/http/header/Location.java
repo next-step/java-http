@@ -1,12 +1,13 @@
 package org.apache.http.header;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.http.HttpPath;
 
 /**
  * https://developer.mozilla.org/ko/docs/Web/HTTP/Headers/Location
  */
 public class Location extends HttpHeader {
-    private static final String HEADER_NAME = "Location";
+    private static final HeaderName HEADER_NAME = HeaderName.LOCATION;
 
     private final HttpPath path;
 
@@ -15,13 +16,13 @@ public class Location extends HttpHeader {
     }
 
     @Override
-    public String getHeaderName() {
-        return HEADER_NAME;
+    public Pair<HeaderName, HttpHeader> getHeader() {
+        return Pair.of(HEADER_NAME, this);
     }
 
     @Override
     public String toString() {
-        return HEADER_NAME + ": " + path;
+        return HEADER_NAME + DELIMITER + path;
     }
 
 }
