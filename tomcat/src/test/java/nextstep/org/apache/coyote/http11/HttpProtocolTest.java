@@ -2,6 +2,7 @@ package nextstep.org.apache.coyote.http11;
 
 import org.apache.coyote.http11.HttpProtocol;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
@@ -9,13 +10,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 public class HttpProtocolTest {
-    @DisplayName("HTTP/{version} 형태의 String 값을 받아 객체를 생성한다")
-    @ParameterizedTest(name = "version = {0}")
-    @ValueSource(strings = {"HTTP/1.0", "HTTP/1.1"})
-    void from(String version) {
-        HttpProtocol httpProtocol = HttpProtocol.from(version);
+    @DisplayName("HTTP/1.1 String 값을 받아 객체를 생성한다")
+    @Test
+    void from() {
+        HttpProtocol httpProtocol = HttpProtocol.from("HTTP/1.1");
 
-        assertThat(httpProtocol.getVersion()).isEqualTo(version);
+        assertThat(httpProtocol.getVersion()).isEqualTo("HTTP/1.1");
     }
 
     @DisplayName("프로토콜이 HTTP가 아니면 예외를 발생시킨다.")

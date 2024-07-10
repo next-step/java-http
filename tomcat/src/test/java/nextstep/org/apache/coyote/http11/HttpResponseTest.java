@@ -2,6 +2,7 @@ package nextstep.org.apache.coyote.http11;
 
 import org.apache.coyote.http11.HttpProtocol;
 import org.apache.coyote.http11.HttpResponse;
+import org.apache.coyote.http11.HttpStatus;
 import org.apache.coyote.http11.MediaType;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -14,7 +15,7 @@ public class HttpResponseTest {
     void of() {
         HttpProtocol httpProtocol = HttpProtocol.from("HTTP/1.1");
 
-        HttpResponse httpResponse = HttpResponse.from(httpProtocol, MediaType.HTML, "responseBody!");
+        HttpResponse httpResponse = HttpResponse.from(httpProtocol, HttpStatus.OK, MediaType.HTML, "responseBody!");
 
         String expected = String.join("\r\n",
                 "HTTP/1.1 200 OK ",
