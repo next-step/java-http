@@ -3,9 +3,12 @@ package study;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.nio.file.Files;
 import java.util.List;
 import java.util.Objects;
@@ -54,24 +57,18 @@ class FileTest {
      * File, Files 클래스를 사용하여 파일의 내용을 읽어보자. + Path
      */
     @Test
-    void 파일의_내용을_읽는다() throws IOException {
+    void 파일의_내용을_읽는다() throws IOException, URISyntaxException {
 
         final String fileName = "nextstep.txt";
 
-
         // todo
-        final String currentDirectory = new File("").getAbsolutePath();
+        URL resource = getClass().getClassLoader().getResource(fileName);
+        assertThat(resource).isNotNull();
 
-        var file = new File(currentDirectory);
-        for (File foo: Objects.requireNonNull(file.listFiles())) {
-            File foundFile = findFile(foo, fileName);
-            if (foundFile != null) {
-                try(var bufferedReader = Files.newBufferedReader(foundFile.toPath())) {
-                    List<String> actual = bufferedReader.lines().collect(Collectors.toList());
-                    assertThat(actual).containsOnly("nextstep");
-                }
-                break;
-            }
+        try (
+            var br = Files.newBufferedReader(new File(resource.toURI()).toPath());
+        ) {
+            assertThat(br.readLine()).isEqualTo("nextstep");
         }
     }
 
