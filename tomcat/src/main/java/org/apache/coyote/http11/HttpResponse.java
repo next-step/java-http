@@ -19,7 +19,7 @@ public class HttpResponse {
 
     public String createFormat() {
         return String.join("\r\n",
-                "%s %d OK ".formatted(httpProtocol.getVersion(), status),
+                "%s %d OK ".formatted(httpProtocol.getVersion(), status),  //TODO statusLine
                 "Content-Type: %s;charset=utf-8 ".formatted(mediaType.getValue()),
                 "Content-Length: " + responseBody.getBytes().length + " ",
                 "",
