@@ -7,6 +7,7 @@ import camp.nextstep.http.exception.InvalidHttpRequestSpecException;
 
 import java.util.regex.Pattern;
 
+import static camp.nextstep.http.enums.HttpVersion.NONE;
 import static camp.nextstep.http.enums.HttpVersion.getHttpVersionByVersion;
 import static camp.nextstep.util.EnumUtil.searchEnum;
 
@@ -87,7 +88,7 @@ public class RequestLine {
 
     private static HttpVersion getHttpVersionFromStr(String httpVersionStr) {
         HttpVersion version = getHttpVersionByVersion(httpVersionStr);
-        if (version == null) {
+        if (version == NONE) {
             throw new InvalidHttpRequestSpecException("지원하는 버전이 아닙니다");
         }
         return version;
