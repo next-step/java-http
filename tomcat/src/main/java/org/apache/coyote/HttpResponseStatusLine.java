@@ -5,13 +5,12 @@ import org.apache.http.HttpStatus;
 
 public class HttpResponseStatusLine {
     private static final String DELIMITER = " ";
-    public static final HttpResponseStatusLine HTTP_11_OK = new HttpResponseStatusLine(HttpProtocol.HTTP_11, HttpStatus.OK);
 
     private final HttpProtocol protocol;
     private final HttpStatus status;
 
-    public HttpResponseStatusLine(HttpProtocol protocol, HttpStatus status) {
-        this.protocol = protocol;
+    public HttpResponseStatusLine(HttpStatus status) {
+        this.protocol = HttpProtocol.HTTP_11;
         this.status = status;
     }
 

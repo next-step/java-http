@@ -9,7 +9,7 @@ import java.util.Optional;
  * https://developer.mozilla.org/en-US/docs/Web/HTTP/Messages#http_requests
  */
 public class HttpRequest {
-    private HttpRequestLine requestLine;
+    private final HttpRequestLine requestLine;
     // TODO Headers, Body 추가
 
     public HttpRequest(final List<String> httpMessageLines) {
@@ -22,10 +22,6 @@ public class HttpRequest {
 
     public String path() {
         return requestLine.path.value();
-    }
-
-    public void proxyPath(final String to) {
-        requestLine.path = new HttpPath(to);
     }
 
     public Optional<String> getParam(final String key) {

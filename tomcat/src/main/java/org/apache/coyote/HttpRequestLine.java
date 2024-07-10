@@ -6,10 +6,10 @@ import org.apache.http.HttpPath;
 import org.apache.http.HttpProtocol;
 
 public class HttpRequestLine {
-    protected HttpMethod method;
-    protected HttpPath path;
-    protected HttpParams params;
-    protected HttpProtocol protocol;
+    protected final HttpMethod method;
+    protected final HttpPath path;
+    protected final HttpParams params;
+    protected final HttpProtocol protocol;
 
     public HttpRequestLine(final String requestLine) {
         final var tokens = requestLine.split(" ");

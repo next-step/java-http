@@ -1,10 +1,8 @@
 package org.apache.coyote;
 
+import org.apache.http.HttpStatus;
 import org.apache.http.body.HttpBody;
 import org.apache.http.header.HttpHeaders;
-
-import java.util.ArrayList;
-import java.util.Map;
 
 /**
  * https://developer.mozilla.org/en-US/docs/Web/HTTP/Messages#http_responses
@@ -12,30 +10,41 @@ import java.util.Map;
 public class HttpResponse {
     private final static String DELIMITER = "\r\n";
 
-    private HttpResponseStatusLine statusLine;
-    private HttpHeaders headers;
-    private HttpBody body;
+    private final HttpResponseStatusLine statusLine;
+    private final HttpHeaders headers;
+    private final HttpBody body;
 
-    public HttpResponse(HttpResponseStatusLine statusLine, HttpHeaders headers, HttpBody body) {
-        this.statusLine = statusLine;
+    public HttpResponse(HttpStatus status, HttpHeaders headers, HttpBody body) {
+        this.statusLine = new HttpResponseStatusLine(status);
         this.headers = headers;
         this.body = body;
     }
 
     public HttpResponse(HttpHeaders headers, HttpBody body) {
-        this.statusLine = HttpResponseStatusLine.HTTP_11_OK;
-        this.headers = headers;
+        this.statusLine = new HttpResponseStatusLine(HttpStatus.OK);
+        this.headers = body.addContentHeader(headers);
+        ;
         this.body = body;
     }
 
     public HttpResponse(HttpBody body) {
-        this.statusLine = HttpResponseStatusLine.HTTP_11_OK;
+        this.statusLine = new HttpResponseStatusLine(HttpStatus.OK);
         this.headers = body.addContentHeader(new HttpHeaders());
         this.body = body;
     }
 
+    public HttpResponse(HttpStatus status, HttpHeaders headers) {
+        this.statusLine = new HttpResponseStatusLine(status);
+        this.headers = headers;
+        this.body = null;
+    }
+
     @Override
     public String toString() {
-        return String.join(DELIMITER, statusLine.toString(), headers.toString(), "", body.toString());
+        if (body != null) {
+            return String.join(DELIMITER, statusLine.toString(), headers.toString(), "", body.toString());
+        } else {
+            return String.join(DELIMITER, statusLine.toString(), headers.toString());
+        }
     }
 }
