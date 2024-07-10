@@ -28,8 +28,8 @@ public class MockHttpRequestBuilder {
 
     private HttpMethod method;
     private String requestURI;
-    private Map<String, String> headers;
-    private Map<String, String> body;
+    private final Map<String, String> headers;
+    private final Map<String, String> body;
 
     public MockHttpRequestBuilder() {
         this.method = HttpMethod.GET;
