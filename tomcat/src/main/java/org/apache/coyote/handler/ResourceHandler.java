@@ -4,13 +4,6 @@ import org.apache.coyote.HttpRequest;
 import org.apache.coyote.HttpResponse;
 import org.apache.file.FileReader;
 import org.apache.http.body.HttpFileBody;
-import org.apache.http.header.ContentLength;
-import org.apache.http.header.ContentType;
-import org.apache.http.header.HttpHeaders;
-import org.apache.http.header.MediaType;
-
-import java.io.File;
-import java.nio.file.Files;
 
 public class ResourceHandler implements Handler {
     @Override
