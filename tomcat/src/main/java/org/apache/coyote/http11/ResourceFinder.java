@@ -45,7 +45,7 @@ public class ResourceFinder {
 
     private void validate(final URL resourceUrl) {
         if (resourceUrl == null) {
-            throw new IllegalArgumentException("파일을 찾을 수 없습니다.");
+            throw new ResourceNotFoundException();
         }
     }
 }

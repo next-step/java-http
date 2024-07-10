@@ -1,6 +1,7 @@
 package nextstep.org.apache.coyote.http11;
 
 import org.apache.coyote.http11.ResourceFinder;
+import org.apache.coyote.http11.ResourceNotFoundException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -39,6 +40,6 @@ public class ResourceFinderTest {
     void readException(String path) {
         ResourceFinder resourceFinder = new ResourceFinder();
         assertThatThrownBy(() -> resourceFinder.findByPath(path))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(ResourceNotFoundException.class);
     }
 }
