@@ -64,13 +64,4 @@ public class Http11Processor implements Runnable, Processor {
         }
     }
 
-
-    public String getRequestLine(InputStream is) {
-        final var br = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8));
-        final var lines = br.lines().toList();
-        if (!lines.isEmpty()) {
-            return lines.get(0);
-        }
-        throw new UncheckedServletException(new RuntimeException("Request is empty"));
-    }
 }
