@@ -5,6 +5,7 @@ import camp.nextstep.model.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.util.Optional;
 
 public class LoginController extends AbstractController {
@@ -14,7 +15,7 @@ public class LoginController extends AbstractController {
     private static final String PASSWORD = "password";
 
     @Override
-    protected void doGet(final HttpRequest request, final HttpResponse response) throws Exception {
+    protected void doGet(final HttpRequest request, final HttpResponse response) throws IOException {
         final HttpSession session = request.getSession(false);
         if (session != null && session.getAttribute(SESSION_USER_KEY) != null) {
             response.sendRedirect("/index.html");
@@ -26,7 +27,7 @@ public class LoginController extends AbstractController {
     }
 
     @Override
-    protected void doPost(final HttpRequest request, final HttpResponse response) throws Exception {
+    protected void doPost(final HttpRequest request, final HttpResponse response) throws IOException {
         final RequestBody requestBody = request.getRequestBody();
         final Optional<User> userOptional = InMemoryUserRepository.findByAccount(requestBody.get(ACCOUNT));
 
