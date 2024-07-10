@@ -34,7 +34,7 @@ class Http11ProcessorHandlersTest {
 
         handlers.handle(request);
         verify(loginHandler, atLeastOnce()).handle(request);
-        verify(resourceHandler, atLeastOnce()).handle(request);
+        verify(resourceHandler, never()).handle(request);
         verify(defaultHandler, never()).handle(request);
     }
 
