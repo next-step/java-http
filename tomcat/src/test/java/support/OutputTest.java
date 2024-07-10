@@ -56,6 +56,18 @@ public class OutputTest {
         assertThat(output).isEqualTo(expected);
     }
 
+    public static void test_register_page(final String output) throws IOException {
+        final URL resource = OutputTest.class.getClassLoader().getResource("static/register.html");
+        var expected = String.join("\r\n",
+                "HTTP/1.1 200 OK ",
+                "Content-Type: text/html;charset=utf-8 ",
+                "Content-Length: 4319 ", // 운영체제 환경에 따라 다른 값이 나올 수 있음. 자신의 개발 환경에 맞춰 수정할 것.
+                "",
+                new String(Files.readAllBytes(new File(resource.getFile()).toPath())));
+
+        assertThat(output).isEqualTo(expected);
+    }
+
     public static void test_success_redirect(final String output) {
         assertThat(output).isEqualTo("HTTP/1.1 302 Found \r\nLocation: /index.html");
     }

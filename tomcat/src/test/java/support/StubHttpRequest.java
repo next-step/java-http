@@ -26,6 +26,15 @@ public class StubHttpRequest extends HttpRequest {
         ));
     }
 
+    public StubHttpRequest(final String account, final String password, final String email) {
+        super(List.of(
+                "POST /register HTTP/1.1",
+                "Content-Type: application/x-www-form-urlencoded",
+                "",
+                "account=" + account + "&password=" + password + "&email=" + email
+        ));
+    }
+
     @Override
     public String toString() {
         return String.join("\r\n", requestLine.toString(), headers != null ? headers.toString() : "", "", body != null ? body.toString() : "");
