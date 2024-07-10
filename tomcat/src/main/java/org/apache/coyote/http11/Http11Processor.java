@@ -35,8 +35,7 @@ public class Http11Processor implements Runnable, Processor {
 
             initSessionIfNecessary(httpRequest, httpResponse);
 
-            final HttpPath path = httpRequest.getPath();
-            final Controller controller = requestMapping.getController(path);
+            final Controller controller = requestMapping.getController(httpRequest.getPath());
 
             if (controller != null) {
                 controller.service(httpRequest, httpResponse);
