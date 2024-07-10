@@ -29,6 +29,11 @@ public class HttpFormBody extends HttpBody {
     }
 
     @Override
+    public String getValue(String key) {
+        return params.get(key);
+    }
+
+    @Override
     public String toString() {
         return null;
     }

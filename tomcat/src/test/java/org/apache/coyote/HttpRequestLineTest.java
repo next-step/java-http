@@ -39,9 +39,9 @@ class HttpRequestLineTest {
             softly.assertThat(request.method).isEqualTo(HttpMethod.GET);
             softly.assertThat(request.path).isEqualTo(new HttpPath("/users"));
             softly.assertThat(request.protocol).isEqualTo(HttpProtocol.HTTP_11);
-            softly.assertThat(request.params.get("userId")).get().isEqualTo("javajigi");
-            softly.assertThat(request.params.get("password")).get().isEqualTo("password");
-            softly.assertThat(request.params.get("name")).get().isEqualTo("JaeSung");
+            softly.assertThat(request.params.get("userId")).isEqualTo("javajigi");
+            softly.assertThat(request.params.get("password")).isEqualTo("password");
+            softly.assertThat(request.params.get("name")).isEqualTo("JaeSung");
         });
     }
 }

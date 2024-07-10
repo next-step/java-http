@@ -36,11 +36,18 @@ public class HttpRequest {
         return requestLine.path.value();
     }
 
-    public Optional<String> getParam(final String key) {
+    public String getParam(final String key) {
         return requestLine.params.get(key);
     }
 
     public boolean isGet() {
         return requestLine.method == HttpMethod.GET;
+    }
+
+    public String getBodyValue(final String key) {
+        if (body == null) {
+            return null;
+        }
+        return body.getValue(key);
     }
 }

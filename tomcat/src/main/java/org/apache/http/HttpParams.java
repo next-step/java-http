@@ -22,8 +22,8 @@ public class HttpParams {
         parseQueryString(url.split("\\?")[1]);
     }
 
-    public Optional<String> get(final String key) {
-        return Optional.ofNullable(params.get(key));
+    public String get(final String key) {
+        return params.get(key);
     }
 
     private void parseQueryString(final String queryString) {
