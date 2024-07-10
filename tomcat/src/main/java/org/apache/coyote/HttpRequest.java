@@ -24,7 +24,7 @@ public class HttpRequest {
             this.body = null;
         } else {
             this.headers = new HttpHeaders(messages.subList(1, emptyLine));
-            this.body = headers.parseBody(String.join("\n", messages.subList(emptyLine, messages.size())));
+            this.body = headers.parseBody(String.join("\n", messages.subList(emptyLine + 1, messages.size())));
         }
     }
 
