@@ -1,12 +1,8 @@
 package org.apache.coyote.http11;
 
-import camp.nextstep.db.InMemoryUserRepository;
+import camp.nextstep.controller.RequestMapping;
 import camp.nextstep.domain.http.*;
-import camp.nextstep.domain.session.Session;
-import camp.nextstep.domain.session.SessionManager;
 import camp.nextstep.exception.UncheckedServletException;
-import camp.nextstep.model.User;
-import camp.nextstep.util.FileUtil;
 import org.apache.coyote.Processor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,6 +35,7 @@ public class Http11Processor implements Runnable, Processor {
     private static final String REGISTER_EMAIL_KEY = "email";
 
     private final Socket connection;
+    private final RequestMapping requestMapping = RequestMapping.create();
 
     public Http11Processor(final Socket connection) {
         this.connection = connection;
@@ -65,7 +62,7 @@ public class Http11Processor implements Runnable, Processor {
             final var requestBody = parseRequestBody(inputReader, requestHeader);
             final var httpRequest = new HttpRequest(requestLine, requestHeader, requestCookie, requestBody);
 
-            final var response = createResponse(httpRequest);
+            final var response = requestMapping.service(httpRequest);
 
             outputStream.write(response.buildResponse().getBytes());
             outputStream.flush();
@@ -94,103 +91,5 @@ public class Http11Processor implements Runnable, Processor {
         char[] buffer = new char[contentLength];
         inputReader.read(buffer, 0, contentLength);
         return HttpRequestBody.from(new String(buffer));
-    }
-
-    private HttpResponse createResponse(final HttpRequest httpRequest) {
-        final var path = httpRequest.getHttpPath();
-        if (path.equals(LOGIN_PATH)) {
-            return handleLoginPath(httpRequest);
-        }
-        if (path.equals(REGISTER_PATH)) {
-            return handleRegisterPath(httpRequest);
-        }
-        if (path.equals(ROOT_PATH)) {
-            return handleRootPath(httpRequest);
-        }
-        return handlePath(httpRequest);
-    }
-
-    private HttpResponse handleLoginPath(final HttpRequest httpRequest) {
-        if (httpRequest.isGetMethod()) {
-            if (httpRequest.containsSessionId()) {
-                String sessionId = httpRequest.getHttpCookie().getSessionId();
-                if (SessionManager.findSession(sessionId).isPresent()) {
-                    return HttpResponse.found(httpRequest.getHttpProtocol(), INDEX_PAGE_PATH);
-                }
-            }
-            return handlePath(httpRequest);
-        }
-        if (httpRequest.isPostMethod()) {
-            return handleLoginPostRequest(httpRequest);
-        }
-        return notFoundResponse(httpRequest);
-    }
-
-    private static HttpResponse handleLoginPostRequest(HttpRequest httpRequest) {
-        final var requestBody = httpRequest.getHttpRequestBody();
-        final var account = requestBody.get(LOGIN_ACCOUNT_KEY);
-        final var password = requestBody.get(LOGIN_PASSWORD_KEY);
-        final var user = InMemoryUserRepository.findByAccount(account)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 account입니다."));
-        if (user.checkPassword(password)) {
-            Session session = Session.createNewSession();
-            session.setAttribute("user", user);
-            SessionManager.add(session);
-            return HttpResponse.found(httpRequest.getHttpProtocol(), INDEX_PAGE_PATH)
-                    .addCookie(HttpCookie.sessionCookie(session));
-        }
-        return HttpResponse.found(httpRequest.getHttpProtocol(), UNAUTHORIZED_PAGE_PATH);
-    }
-
-    private HttpResponse handleRegisterPath(final HttpRequest httpRequest) {
-        if (httpRequest.isGetMethod()) {
-            return handlePath(httpRequest);
-        }
-        if (httpRequest.isPostMethod()) {
-            return handleRegisterPostRequest(httpRequest);
-        }
-        return notFoundResponse(httpRequest);
-    }
-
-    private static HttpResponse handleRegisterPostRequest(HttpRequest httpRequest) {
-        final var requestBody = httpRequest.getHttpRequestBody();
-        final var saveRequestUer = new User(
-                requestBody.get(REGISTER_ACCOUNT_KEY),
-                requestBody.get(REGISTER_PASSWORD_KEY),
-                requestBody.get(REGISTER_EMAIL_KEY)
-        );
-        InMemoryUserRepository.save(saveRequestUer);
-        return HttpResponse.found(httpRequest.getHttpProtocol(), LOGIN_PAGE_PATH);
-    }
-
-    private HttpResponse handleRootPath(final HttpRequest httpRequest) {
-        if (httpRequest.isGetMethod()) {
-            return HttpResponse.ok(
-                    httpRequest.getHttpProtocol(),
-                    ContentType.TEXT_HTML,
-                    ROOT_BODY
-            );
-        }
-        return notFoundResponse(httpRequest);
-    }
-
-    private HttpResponse handlePath(final HttpRequest httpRequest) {
-        return HttpResponse.ok(
-                httpRequest.getHttpProtocol(),
-                parseContentType(httpRequest),
-                parseResponseBody(httpRequest)
-        );
-    }
-
-    private HttpResponse notFoundResponse(final HttpRequest httpRequest) {
-        return HttpResponse.found(httpRequest.getHttpProtocol(), NOT_FOUND_PAGE_PATH);
-    }
-
-    private String parseResponseBody(final HttpRequest httpRequest) {
-        return FileUtil.readStaticPathFileResource(httpRequest.getFilePath(), getClass());
-    }
-
-    private ContentType parseContentType(final HttpRequest httpRequest) {
-        return ContentType.fromPath(httpRequest.getFilePath());
     }
 }
