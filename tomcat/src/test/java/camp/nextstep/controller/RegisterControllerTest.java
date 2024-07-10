@@ -1,5 +1,7 @@
-package camp.nextstep.http.domain;
+package camp.nextstep.controller;
 
+import camp.nextstep.http.domain.HttpMethod;
+import camp.nextstep.http.domain.HttpRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

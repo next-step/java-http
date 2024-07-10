@@ -1,6 +1,7 @@
-package camp.nextstep.http.domain;
+package camp.nextstep.controller;
 
 import camp.nextstep.db.InMemoryUserRepository;
+import camp.nextstep.http.domain.*;
 import camp.nextstep.model.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

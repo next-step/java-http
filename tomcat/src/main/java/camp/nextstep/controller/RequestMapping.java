@@ -1,4 +1,6 @@
-package camp.nextstep.http.domain;
+package camp.nextstep.controller;
+
+import camp.nextstep.http.domain.HttpPath;
 
 import java.util.Map;
 

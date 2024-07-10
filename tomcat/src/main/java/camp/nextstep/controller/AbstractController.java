@@ -1,4 +1,7 @@
-package camp.nextstep.http.domain;
+package camp.nextstep.controller;
+
+import camp.nextstep.http.domain.HttpRequest;
+import camp.nextstep.http.domain.HttpResponse;
 
 import java.io.IOException;
 
