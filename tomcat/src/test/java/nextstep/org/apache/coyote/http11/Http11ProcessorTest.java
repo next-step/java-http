@@ -152,7 +152,7 @@ class Http11ProcessorTest {
     }
 
     @Test
-    void login_get_already_login() throws IOException {
+    void login_get_already_login() {
         // given
         final Session session = new Session("key");
         SessionManager.add(session);
