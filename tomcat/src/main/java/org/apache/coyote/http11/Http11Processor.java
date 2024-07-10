@@ -64,11 +64,16 @@ public class Http11Processor implements Runnable, Processor {
 
     private void handleLoginRequest(final String path, final HttpRequest httpRequest) {
         if (path.contains("login") && httpRequest.hasQueryParams()) {
-            User user = InMemoryUserRepository.findByAccount(httpRequest.getQueryParamValue("account"))
-                    .orElseThrow();
-            if (user.checkPassword(httpRequest.getQueryParamValue("password"))) {
-                log.info(user.toString());
-            }
+            checkUserPassword(httpRequest);
+        }
+    }
+
+    private void checkUserPassword(final HttpRequest httpRequest) {
+        User user = InMemoryUserRepository.findByAccount(httpRequest.getQueryParamValue("account"))
+                .orElseThrow();
+        String password = httpRequest.getQueryParamValue("password");
+        if (user.checkPassword(password)) {
+            log.info(user.toString());
         }
     }
 }
