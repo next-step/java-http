@@ -71,7 +71,7 @@ class Http11ProcessorTest {
 
             processor.process(socket);
 
-            test_success_redirect(socket.output(), "cookie");
+            test_success_redirect(socket.output(), "JSESSIONID=cookie");
         }
 
         @Test

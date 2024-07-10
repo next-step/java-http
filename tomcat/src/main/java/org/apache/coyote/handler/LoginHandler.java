@@ -6,6 +6,7 @@ import org.apache.coyote.HttpResponse;
 import org.apache.file.FileReader;
 import org.apache.http.HttpPath;
 import org.apache.http.body.HttpFileBody;
+import org.apache.http.cookie.HttpCookie;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,7 +53,7 @@ public class LoginHandler implements Handler {
 
     private HttpResponse toLoginResponse(final LoginRequest request) {
         if (login(request)) {
-            return new HttpResponse(new HttpPath(SUCCESS_PAGE)).addCookie("cookie");
+            return new HttpResponse(new HttpPath(SUCCESS_PAGE)).addCookie(HttpCookie.ofJSessionId("cookie"));
         }
         return new HttpResponse(new HttpPath(FAIL_PAGE));
     }

@@ -6,7 +6,8 @@ import java.util.function.Function;
 
 public enum RequestHeaderName {
     CONTENT_TYPE("Content-Type", ContentType::new),
-    CONTENT_LENGTH("Content-Length", ContentLength::new);
+    CONTENT_LENGTH("Content-Length", ContentLength::new),
+    COOKIE("Cookie", Cookie::new);
 
     private final String name;
     private final Function<String, HttpRequestHeader> convertToHeader;

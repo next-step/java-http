@@ -33,7 +33,7 @@ class LoginHandlerTest {
     void correct_account_correct_password() {
         var request = new StubHttpRequest("gugu", "password");
         var response = handler.handle(request);
-        test_success_redirect(response.toString(), "cookie");
+        test_success_redirect(response.toString(), "JSESSIONID=cookie");
         test_log_user();
     }
 

@@ -3,6 +3,7 @@ package org.apache.coyote;
 import org.apache.http.HttpPath;
 import org.apache.http.HttpStatus;
 import org.apache.http.body.HttpBody;
+import org.apache.http.cookie.HttpCookie;
 import org.apache.http.header.HttpRequestHeaders;
 import org.apache.http.header.HttpResponseHeaders;
 import org.apache.http.header.Location;
@@ -40,8 +41,8 @@ public class HttpResponse {
         this.body = body;
     }
 
-    public HttpResponse addCookie(String cookie) {
-        return new HttpResponse(statusLine, headers.add(new SetCookie(cookie)), body);
+    public HttpResponse addCookie(HttpCookie cookie) {
+        return new HttpResponse(statusLine, headers.add(new SetCookie().addCookie(cookie)), body);
     }
 
     @Override
