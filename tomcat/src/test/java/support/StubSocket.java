@@ -19,6 +19,10 @@ public class StubSocket extends Socket {
         this.outputStream = new ByteArrayOutputStream();
     }
 
+    public StubSocket(final StubHttpRequest request) {
+        this(request.toString());
+    }
+
     public StubSocket() {
         this("GET / HTTP/1.1\r\nHost: localhost:8080\r\n\r\n");
     }

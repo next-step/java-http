@@ -2,7 +2,9 @@ package support;
 
 import org.apache.coyote.HttpRequest;
 import org.apache.http.HttpPath;
+import org.assertj.core.util.Lists;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -15,12 +17,17 @@ public class StubHttpRequest extends HttpRequest {
         super(Collections.singletonList("GET " + path + " HTTP/1.1 "));
     }
 
-    public static HttpRequest login(final String account, final String password) {
-        return new HttpRequest(List.of(
+    public StubHttpRequest(final String account, final String password) {
+        super(List.of(
                 "POST /login HTTP/1.1",
                 "Content-Type: application/x-www-form-urlencoded",
                 "",
                 "account=" + account + "&password=" + password
         ));
+    }
+
+    @Override
+    public String toString() {
+        return String.join("\r\n", requestLine.toString(), headers != null ? headers.toString() : "", "", body != null ? body.toString() : "");
     }
 }

@@ -31,7 +31,7 @@ class LoginHandlerTest {
 
     @Test
     void correct_account_correct_password() {
-        var request = StubHttpRequest.login("gugu", "password");
+        var request = new StubHttpRequest("gugu", "password");
         var response = handler.handle(request);
         test_success_redirect(response.toString());
         test_log_user();
@@ -39,7 +39,7 @@ class LoginHandlerTest {
 
     @Test
     void correct_account_wrong_password() {
-        var request = StubHttpRequest.login("gugu", "wrong");
+        var request = new StubHttpRequest("gugu", "wrong");
         var response = handler.handle(request);
         test_fail_redirect(response.toString());
         test_doNotLog_user();
@@ -47,7 +47,7 @@ class LoginHandlerTest {
 
     @Test
     void wrong_account() {
-        var request = StubHttpRequest.login("woo-yu", "wrong");
+        var request = new StubHttpRequest("woo-yu", "password");
         var response = handler.handle(request);
         test_fail_redirect(response.toString());
         test_doNotLog_user();

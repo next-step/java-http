@@ -1,7 +1,9 @@
 package org.apache.coyote.http11;
 
+import org.apache.http.HttpPath;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import support.StubHttpRequest;
 import support.StubSocket;
 
 import java.io.IOException;
@@ -22,12 +24,7 @@ class Http11ProcessorTest {
 
     @Test
     void index() throws IOException {
-        final String httpRequest = String.join("\r\n",
-                "GET /index.html HTTP/1.1 ",
-                "Host: localhost:8080 ",
-                "Connection: keep-alive ",
-                "",
-                "");
+        final var httpRequest = new StubHttpRequest();
 
         final var socket = new StubSocket(httpRequest);
         final Http11Processor processor = new Http11Processor(socket);
@@ -39,13 +36,7 @@ class Http11ProcessorTest {
 
     @Test
     void css() throws IOException {
-        final String httpRequest = String.join("\r\n",
-                "GET /css/styles.css HTTP/1.1 ",
-                "Host: localhost:8080 ",
-                "Accept: text/css,*/*;q=0.1",
-                "Connection: keep-alive ",
-                "",
-                "");
+        final var httpRequest = new StubHttpRequest(new HttpPath("/css/styles.css"));
 
         final var socket = new StubSocket(httpRequest);
         final Http11Processor processor = new Http11Processor(socket);
@@ -61,12 +52,7 @@ class Http11ProcessorTest {
 
         @Test
         void login_page() throws IOException {
-            final String httpRequest = String.join("\r\n",
-                    "GET /login HTTP/1.1 ",
-                    "Host: localhost:8080 ",
-                    "Connection: keep-alive ",
-                    "",
-                    "");
+            final var httpRequest = new StubHttpRequest(new HttpPath("/login"));
 
             final var socket = new StubSocket(httpRequest);
             final Http11Processor processor = new Http11Processor(socket);
@@ -78,12 +64,7 @@ class Http11ProcessorTest {
 
         @Test
         void correct_account_correct_password() {
-            final String httpRequest = String.join("\r\n",
-                    "GET /login?account=gugu&password=password HTTP/1.1 ",
-                    "Host: localhost:8080 ",
-                    "Connection: keep-alive ",
-                    "",
-                    "");
+            final var httpRequest = new StubHttpRequest("gugu", "password");
 
             final var socket = new StubSocket(httpRequest);
             final Http11Processor processor = new Http11Processor(socket);
@@ -95,12 +76,7 @@ class Http11ProcessorTest {
 
         @Test
         void correct_account_wrong_password() {
-            final String httpRequest = String.join("\r\n",
-                    "GET /login?account=gugu&password=wrong HTTP/1.1 ",
-                    "Host: localhost:8080 ",
-                    "Connection: keep-alive ",
-                    "",
-                    "");
+            final var httpRequest = new StubHttpRequest("gugu", "wrong");
 
             final var socket = new StubSocket(httpRequest);
             final Http11Processor processor = new Http11Processor(socket);
@@ -112,13 +88,7 @@ class Http11ProcessorTest {
 
         @Test
         void wrong_account() {
-            // given
-            final String httpRequest = String.join("\r\n",
-                    "GET /login?account=woo-yu&password=wrong HTTP/1.1 ",
-                    "Host: localhost:8080 ",
-                    "Connection: keep-alive ",
-                    "",
-                    "");
+            final var httpRequest = new StubHttpRequest("woo-yu", "wrong");
 
             final var socket = new StubSocket(httpRequest);
             final Http11Processor processor = new Http11Processor(socket);

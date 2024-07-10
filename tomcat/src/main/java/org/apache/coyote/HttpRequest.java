@@ -6,19 +6,19 @@ import org.apache.http.body.HttpBody;
 import org.apache.http.header.HttpHeaders;
 
 import java.util.List;
-import java.util.Optional;
 
 /**
  * https://developer.mozilla.org/en-US/docs/Web/HTTP/Messages#http_requests
  */
 public class HttpRequest {
-    private final HttpRequestLine requestLine;
-    private final HttpHeaders headers;
-    private final HttpBody body;
+    private static final String EMPTY_LINE = "";
+    protected final HttpRequestLine requestLine;
+    protected final HttpHeaders headers;
+    protected final HttpBody body;
 
     public HttpRequest(final List<String> messages) {
         this.requestLine = new HttpRequestLine(messages.get(0));
-        var emptyLine = messages.indexOf("");
+        var emptyLine = messages.indexOf(EMPTY_LINE);
         if (emptyLine == -1) {
             this.headers = null;
             this.body = null;
