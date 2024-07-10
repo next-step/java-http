@@ -29,7 +29,7 @@ public class Response {
     }
 
     public byte[] toBytes() {
-        return String.join(Constants.CR.getValue() + Constants.LF.getValue(),
+        return String.join(System.lineSeparator(),
                 responseLine.toResponseLine() + HeaderMapping.HEADER_SPACE,
                 headerMapping.convertHttpHeaders(),
                 "",

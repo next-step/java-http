@@ -21,6 +21,6 @@ public class HeaderMapping {
         return headerMapping.entrySet()
                 .stream()
                 .map(HeaderMapping::toHeaderLine)
-                .collect(Collectors.joining(Constants.CR.getValue() + Constants.LF.getValue()));
+                .collect(Collectors.joining(System.lineSeparator()));
     }
 }
