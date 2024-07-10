@@ -48,6 +48,10 @@ public class ResponseResource {
 		return responseBody;
 	}
 
+	public String getUrlPath() {
+		return urlPath;
+	}
+
 	public static void login(String account, String password) {
 		final User user = InMemoryUserRepository.findByAccount(account).orElseThrow(NoSuchElementException::new);
 		if (user.checkPassword(password)) {
@@ -67,12 +71,12 @@ public class ResponseResource {
 	}
 
 	private static String createResponseBody(String urlPath) throws IOException {
-		URL resource = ResponseResource.class.getClassLoader().getResource("static" + urlPath);
+		URL resource = createResource(urlPath);
 		String responseBody = new String(Files.readAllBytes(new File(resource.getFile()).toPath()));
 		return responseBody;
 	}
 
-	public String getUrlPath() {
-		return urlPath;
+	private static URL createResource(String urlPath) {
+		return ResponseResource.class.getClass().getClassLoader().getResource("static" + urlPath);
 	}
 }
