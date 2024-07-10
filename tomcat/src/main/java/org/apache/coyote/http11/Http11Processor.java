@@ -10,6 +10,7 @@ import java.net.Socket;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.Path;
 
 public class Http11Processor implements Runnable, Processor {
 
@@ -34,8 +35,8 @@ public class Http11Processor implements Runnable, Processor {
 
             var requestLine = RequestParser.parse(inputStream, StandardCharsets.UTF_8);
             if (requestLine.pathEndsWith("/index.html")) {
-                final URL resource = getClass().getClassLoader().getResource("static/index.html");
-                var response = new Response(requestLine.getHttpProtocol(), HttpStatusCode.OK, ContentType.TEXT_HTML, StandardCharsets.UTF_8, Files.readAllBytes(new File(resource.getFile()).toPath()));
+                Path filePath = FileLoader.read("static/index.html");
+                var response = new Response(requestLine.getHttpProtocol(), HttpStatusCode.OK, ContentType.TEXT_HTML, StandardCharsets.UTF_8, Files.readAllBytes(filePath));
                 outputStream.write(response.generateMessage().getBytes());
                 outputStream.flush();
                 return;
