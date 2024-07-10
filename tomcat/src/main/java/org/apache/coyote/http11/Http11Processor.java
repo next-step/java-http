@@ -35,8 +35,8 @@ public class Http11Processor implements Runnable, Processor {
 
             var requestLine = RequestParser.parse(inputStream, StandardCharsets.UTF_8);
             if (requestLine.pathEndsWith("/index.html")) {
-                Path filePath = FileLoader.read("static/index.html");
-                var response = new Response(requestLine.getHttpProtocol(), HttpStatusCode.OK, ContentType.TEXT_HTML, StandardCharsets.UTF_8, Files.readAllBytes(filePath));
+                byte[] readFile = FileLoader.read("static/index.html");
+                var response = new Response(requestLine.getHttpProtocol(), HttpStatusCode.OK, ContentType.TEXT_HTML, StandardCharsets.UTF_8, readFile);
                 outputStream.write(response.generateMessage().getBytes());
                 outputStream.flush();
                 return;
