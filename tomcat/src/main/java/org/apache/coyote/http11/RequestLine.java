@@ -10,8 +10,7 @@ public class RequestLine {
 
     private HttpMethod method;
     private Path path;
-    private String protocol;
-    private String version;
+    private HttpProtocol protocol;
 
     public RequestLine(String requestLine) {
         String[] infos = split(requestLine);
@@ -20,10 +19,7 @@ public class RequestLine {
         }
         this.method = HttpMethod.from(infos[0]);
         this.path = new Path(infos[1]);
-
-        var protocols = infos[2].split("/");
-        this.protocol = protocols[0];
-        this.version = protocols[1];
+        this.protocol = HttpProtocol.from(infos[2]);
     }
 
     public boolean pathEndsWith(String value) {
@@ -43,11 +39,11 @@ public class RequestLine {
     }
 
     public String getProtocol() {
-        return protocol;
+        return protocol.getProtocol();
     }
 
     public String getVersion() {
-        return version;
+        return protocol.getVersion();
     }
 
 
