@@ -22,8 +22,9 @@ public class RegisterRequestHandler implements RequestHandler {
 
     @Override
     public Response handle(Request request) throws IOException {
-        Session session = SessionManager.getSession(request.getSessionId());
+        Session session = request.getSession();
         User user = (User) session.getAttribute("user");
+
         if (user != null) {
             return Response.redirect(FileUtils.getStaticFileContent(HttpPath.from(INDEX_PATH)));
         }
@@ -49,7 +50,8 @@ public class RegisterRequestHandler implements RequestHandler {
 
             User user = new User(account, password, email);
             InMemoryUserRepository.save(user);
-            SessionManager.getSession(request.getSessionId()).setAttribute("user", user);
+            Session session = request.getSession();
+            session.setAttribute("user", user);
 
             return Response.redirect(FileUtils.getStaticFileContent(HttpPath.from(INDEX_PATH)));
         } catch (IllegalArgumentException e) {

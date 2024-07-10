@@ -9,6 +9,7 @@ import org.apache.coyote.http11.request.RequestBody;
 import org.apache.coyote.http11.request.RequestLine;
 import org.apache.coyote.http11.response.ContentType;
 import org.apache.coyote.http11.response.Response;
+import org.apache.coyote.http11.session.Session;
 import org.apache.coyote.http11.session.SessionManager;
 import org.apache.utils.FileUtils;
 
@@ -43,7 +44,8 @@ public class LoginRequestHandler implements RequestHandler {
             if (!isPasswordValid(user, password)) {
                 throw new IllegalArgumentException();
             }
-            SessionManager.getSession(request.getSessionId()).setAttribute("user", user);
+            Session session = request.getSession();
+            session.setAttribute("user", user);
 
             return Response.redirect(FileUtils.getStaticFileContent(HttpPath.from(INDEX_PATH)));
         } catch (IllegalArgumentException e) {

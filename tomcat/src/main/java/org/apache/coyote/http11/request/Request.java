@@ -36,7 +36,7 @@ public class Request {
         return cookies;
     }
 
-    public String getSessionId() {
-        return cookies.getJSessionId();
+    public Session getSession() {
+        return SessionManager.getSession(cookies.getJSessionId());
     }
 }
