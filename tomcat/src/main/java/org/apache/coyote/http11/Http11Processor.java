@@ -46,11 +46,16 @@ public class Http11Processor implements Runnable, Processor {
                 return;
             }
 
-            httpResponse.setContentType(ContentType.from(path));
-            httpResponse.forward(path.getPath());
+            resolveStaticRequest(httpRequest, httpResponse);
         } catch (final IOException | UncheckedServletException e) {
             log.error(e.getMessage(), e);
         }
+    }
+
+    private void resolveStaticRequest(final HttpRequest httpRequest, final HttpResponse httpResponse) throws IOException {
+        final HttpPath path = httpRequest.getPath();
+        httpResponse.setContentType(ContentType.from(path));
+        httpResponse.forward(path.getPath());
     }
 
 }
