@@ -43,7 +43,7 @@ public class LoginController extends AbstractController {
         if (httpRequest.containsSessionId() && isLoginSession(httpRequest)) {
             return HttpResponse.found(httpRequest.getHttpProtocol(), INDEX_PAGE_PATH);
         }
-        return handlePath(httpRequest);
+        return pathResponseGenerator.handlePath(httpRequest);
     }
 
     private boolean isLoginSession(HttpRequest httpRequest) {

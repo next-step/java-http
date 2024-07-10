@@ -35,6 +35,6 @@ public class RegisterController extends AbstractController {
 
     @Override
     protected HttpResponse doGet(HttpRequest httpRequest) {
-        return handlePath(httpRequest);
+        return pathResponseGenerator.handlePath(httpRequest);
     }
 }

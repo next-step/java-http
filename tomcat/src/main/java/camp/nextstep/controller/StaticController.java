@@ -7,6 +7,6 @@ public class StaticController extends AbstractController {
 
     @Override
     protected HttpResponse doGet(HttpRequest httpRequest) {
-        return handleStaticPath(httpRequest);
+        return pathResponseGenerator.handleStaticPath(httpRequest);
     }
 }
