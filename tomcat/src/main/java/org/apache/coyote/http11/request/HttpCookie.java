@@ -14,6 +14,7 @@ public class HttpCookie {
     private static final int VALUE_INDEX = 1;
     protected static final int SPLITERATOR_SIZE = 2;
     private static final String JSESSIONID_KEY = "JSESSIONID";
+    private static final String Path = "Path";
     private final Map<String, String> cookies;
 
     private HttpCookie(Map<String, String> cookies) {
@@ -21,8 +22,13 @@ public class HttpCookie {
     }
 
     public static HttpCookie from(String cookieHeader) {
-        Map<String, String> cookies = parseCookies(cookieHeader);
-        cookies.computeIfAbsent(JSESSIONID_KEY, key -> UUID.randomUUID().toString());
+        Map<String, String> cookies = new LinkedHashMap<>(parseCookies(cookieHeader));
+        if (!cookies.containsKey(JSESSIONID_KEY)) {
+            cookies.put(JSESSIONID_KEY, UUID.randomUUID().toString());
+        }
+        if (!cookies.containsKey(Path)) {
+            cookies.put(Path, "/");
+        }
         return new HttpCookie(cookies);
     }
 
@@ -44,6 +50,7 @@ public class HttpCookie {
         if (input == null || input.isBlank()) {
             return Map.of();
         }
+
         return Arrays.stream(input.split(COOKIES_DELIMITER))
             .map(entry -> entry.split(COOKIE_DELIMITER, SPLITERATOR_SIZE))
             .collect(Collectors.toMap(cookie -> cookie[KEY_INDEX], cookie -> cookie[VALUE_INDEX],
