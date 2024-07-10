@@ -1,13 +1,11 @@
 package org.apache.coyote.handler;
 
-import org.apache.coyote.HttpRequest;
 import org.apache.http.HttpPath;
 import org.junit.jupiter.api.Test;
 import support.StubHttpRequest;
 import support.StubLogger;
 
 import java.io.IOException;
-import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static support.OutputTest.*;
@@ -33,12 +31,7 @@ class LoginHandlerTest {
 
     @Test
     void correct_account_correct_password() {
-        var request = new HttpRequest(List.of(
-                "POST /login HTTP/1.1",
-                "Content-Type: application/x-www-form-urlencoded",
-                "",
-                "account=gugu&password=password"
-        ));
+        var request = StubHttpRequest.login("gugu", "password");
         var response = handler.handle(request);
         test_success_redirect(response.toString());
         test_log_user();
@@ -46,12 +39,7 @@ class LoginHandlerTest {
 
     @Test
     void correct_account_wrong_password() {
-        var request = new HttpRequest(List.of(
-                "POST /login HTTP/1.1 ",
-                "Content-Type: application/x-www-form-urlencoded",
-                "",
-                "account=gugu&password=wrong"
-        ));
+        var request = StubHttpRequest.login("gugu", "wrong");
         var response = handler.handle(request);
         test_fail_redirect(response.toString());
         test_doNotLog_user();
@@ -59,12 +47,7 @@ class LoginHandlerTest {
 
     @Test
     void wrong_account() {
-        var request = new HttpRequest(List.of(
-                "POST /login HTTP/1.1",
-                "Content-Type: application/x-www-form-urlencoded",
-                "",
-                "account=woo-yu&password=password"
-        ));
+        var request = StubHttpRequest.login("woo-yu", "wrong");
         var response = handler.handle(request);
         test_fail_redirect(response.toString());
         test_doNotLog_user();
