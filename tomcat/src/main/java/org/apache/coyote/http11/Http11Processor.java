@@ -41,7 +41,7 @@ public class Http11Processor implements Runnable, Processor {
             File resource = new ResourceFinder().findByPath(path);
             MediaType mediaType = MediaType.from(resource);
             String responseBody = new String(Files.readAllBytes(resource.toPath()));
-            HttpResponse response = HttpResponse.from(httpRequest.getProtocol(), mediaType, responseBody);
+            HttpResponse response = HttpResponse.from(httpRequest.getProtocol(), HttpStatus.OK, mediaType, responseBody);
 
             outputStream.write(response.createFormat().getBytes());
             outputStream.flush();
