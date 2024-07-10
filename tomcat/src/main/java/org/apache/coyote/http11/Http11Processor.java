@@ -10,7 +10,8 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.Socket;
-import java.util.Collections;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Http11Processor implements Runnable, Processor {
     private static final Logger log = LoggerFactory.getLogger(Http11Processor.class);
@@ -32,7 +33,7 @@ public class Http11Processor implements Runnable, Processor {
     public void process(final Socket connection) {
         try (final var inputReader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
              final var outputStream = connection.getOutputStream()) {
-            final var request = new HttpRequest(Collections.singletonList(inputReader.readLine()));
+            final var request = new HttpRequest(parseMessage(inputReader));
             final var response = handlers.handle(request);
 
             outputStream.write(response.toString().getBytes());
@@ -40,5 +41,13 @@ public class Http11Processor implements Runnable, Processor {
         } catch (IOException | UncheckedServletException e) {
             log.error(e.getMessage(), e);
         }
+    }
+
+    private List<String> parseMessage(BufferedReader reader) throws IOException {
+        var lines = new ArrayList<String>();
+        while (reader.ready()) {
+            lines.add(reader.readLine().trim());
+        }
+        return lines;
     }
 }
