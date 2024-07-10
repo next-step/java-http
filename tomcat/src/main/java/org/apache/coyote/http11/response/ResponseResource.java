@@ -56,7 +56,14 @@ public class ResponseResource {
 	}
 
 	public String parseExtension() {
+		if(hasNotExtension()) {
+			throw new NoSuchElementException("확장자가 없습니다.");
+		}
 		return urlPath.substring(urlPath.lastIndexOf("."));
+	}
+
+	private boolean hasNotExtension() {
+		return urlPath.lastIndexOf(".") < 0;
 	}
 
 	private static String createResponseBody(String urlPath) throws IOException {
