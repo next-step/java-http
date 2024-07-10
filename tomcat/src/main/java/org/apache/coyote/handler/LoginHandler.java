@@ -4,10 +4,8 @@ import camp.nextstep.db.InMemoryUserRepository;
 import org.apache.coyote.HttpRequest;
 import org.apache.coyote.HttpResponse;
 import org.apache.file.FileReader;
-import org.apache.http.HttpStatus;
+import org.apache.http.HttpPath;
 import org.apache.http.body.HttpFileBody;
-import org.apache.http.header.HttpHeaders;
-import org.apache.http.header.Location;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,13 +51,10 @@ public class LoginHandler implements Handler {
     }
 
     private HttpResponse toLoginResponse(final LoginRequest request) {
-        Location location;
         if (login(request)) {
-            location = new Location(SUCCESS_PAGE);
-        } else {
-            location = new Location(FAIL_PAGE);
+            return new HttpResponse(new HttpPath(SUCCESS_PAGE)).addCookie("cookie");
         }
-        return new HttpResponse(HttpStatus.Found, new HttpHeaders().add(location));
+        return new HttpResponse(new HttpPath(FAIL_PAGE));
     }
 
     private boolean login(final LoginRequest request) {

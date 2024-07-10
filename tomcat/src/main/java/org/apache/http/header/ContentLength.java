@@ -5,8 +5,8 @@ import org.apache.commons.lang3.tuple.Pair;
 /**
  * https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Length
  */
-public class ContentLength extends HttpHeader {
-    private static final HeaderName HEADER_NAME = HeaderName.CONTENT_LENGTH;
+public class ContentLength extends HttpRequestHeader implements HttpResponseHeader{
+    private static final RequestHeaderName HEADER_NAME = RequestHeaderName.CONTENT_LENGTH;
 
     protected final int length;
 
@@ -19,12 +19,12 @@ public class ContentLength extends HttpHeader {
     }
 
     @Override
-    Pair<HeaderName, HttpHeader> getHeader() {
+    Pair<RequestHeaderName, HttpRequestHeader> getHeader() {
         return Pair.of(HEADER_NAME, this);
     }
 
     @Override
     public String toString() {
-        return HEADER_NAME + DELIMITER + length + " ";
+        return HEADER_NAME + HttpResponseHeader.DELIMITER + length + " ";
     }
 }

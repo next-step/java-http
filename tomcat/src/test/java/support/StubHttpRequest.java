@@ -4,7 +4,7 @@ import org.apache.coyote.HttpRequest;
 import org.apache.coyote.HttpRequestLine;
 import org.apache.http.HttpPath;
 import org.apache.http.body.HttpFormBody;
-import org.apache.http.header.HttpHeaders;
+import org.apache.http.header.HttpRequestHeaders;
 
 import java.util.List;
 
@@ -20,7 +20,7 @@ public class StubHttpRequest extends HttpRequest {
     public StubHttpRequest(final String account, final String password) {
         super(
                 new HttpRequestLine("POST /login HTTP/1.1"),
-                new HttpHeaders(List.of("Content-Type: application/x-www-form-urlencoded", "Content-Length: " + ("account=" + account + "&password=" + password).getBytes().length)),
+                new HttpRequestHeaders(List.of("Content-Type: application/x-www-form-urlencoded", "Content-Length: " + ("account=" + account + "&password=" + password).getBytes().length)),
                 new HttpFormBody("account=" + account + "&password=" + password)
         );
     }
@@ -28,7 +28,7 @@ public class StubHttpRequest extends HttpRequest {
     public StubHttpRequest(final String account, final String password, final String email) {
         super(
                 new HttpRequestLine("POST /register HTTP/1.1"),
-                new HttpHeaders(List.of("Content-Type: application/x-www-form-urlencoded", "Content-Length: " + ("account=" + account + "&password=" + password + "&email=" + email).getBytes().length)),
+                new HttpRequestHeaders(List.of("Content-Type: application/x-www-form-urlencoded", "Content-Length: " + ("account=" + account + "&password=" + password + "&email=" + email).getBytes().length)),
                 new HttpFormBody("account=" + account + "&password=" + password + "&email=" + email)
 
         );

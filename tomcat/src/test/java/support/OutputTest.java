@@ -1,5 +1,7 @@
 package support;
 
+import org.apache.http.cookie.HttpCookie;
+
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
@@ -70,6 +72,10 @@ public class OutputTest {
 
     public static void test_success_redirect(final String output) {
         assertThat(output).isEqualTo("HTTP/1.1 302 Found \r\nLocation: /index.html");
+    }
+
+    public static void test_success_redirect(final String output, final String cookie) {
+        assertThat(output).isEqualTo("HTTP/1.1 302 Found \r\nLocation: /index.html\r\nSet-Cookie: " + cookie);
     }
 
     public static void test_fail_redirect(final String output) {

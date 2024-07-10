@@ -4,7 +4,7 @@ import camp.nextstep.exception.UncheckedServletException;
 import org.apache.coyote.HttpRequest;
 import org.apache.coyote.HttpRequestLine;
 import org.apache.coyote.Processor;
-import org.apache.http.header.HttpHeaders;
+import org.apache.http.header.HttpRequestHeaders;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,7 +36,7 @@ public class Http11Processor implements Runnable, Processor {
         try (final var inputReader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
              final var outputStream = connection.getOutputStream()) {
             final var requestLine = new HttpRequestLine(inputReader.readLine().trim());
-            final var headers = new HttpHeaders(parseHeaders(inputReader));
+            final var headers = new HttpRequestHeaders(parseHeaders(inputReader));
             final var body = headers.parseBody(parseBody(inputReader, headers.contentLength()));
             final var request = new HttpRequest(requestLine, headers, body);
 

@@ -3,19 +3,17 @@ package org.apache.coyote;
 import org.apache.http.HttpMethod;
 import org.apache.http.HttpPath;
 import org.apache.http.body.HttpBody;
-import org.apache.http.header.HttpHeaders;
-
-import java.util.List;
+import org.apache.http.header.HttpRequestHeaders;
 
 /**
  * https://developer.mozilla.org/en-US/docs/Web/HTTP/Messages#http_requests
  */
 public class HttpRequest {
     protected final HttpRequestLine requestLine;
-    protected final HttpHeaders headers;
+    protected final HttpRequestHeaders headers;
     protected final HttpBody body;
 
-    public HttpRequest(HttpRequestLine requestLine, HttpHeaders headers, HttpBody body) {
+    public HttpRequest(HttpRequestLine requestLine, HttpRequestHeaders headers, HttpBody body) {
         this.requestLine = requestLine;
         this.headers = headers;
         this.body = body;

@@ -6,8 +6,8 @@ import org.apache.file.MediaType;
 /**
  * https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Type
  */
-public class ContentType extends HttpHeader {
-    private static final HeaderName HEADER_NAME = HeaderName.CONTENT_TYPE;
+public class ContentType extends HttpRequestHeader implements HttpResponseHeader {
+    private static final RequestHeaderName HEADER_NAME = RequestHeaderName.CONTENT_TYPE;
     private static final String DEFAULT_CHARSET = ";charset=utf-8";
 
     private final MediaType mediaType;
@@ -25,12 +25,12 @@ public class ContentType extends HttpHeader {
     }
 
     @Override
-    public Pair<HeaderName, HttpHeader> getHeader() {
+    public Pair<RequestHeaderName, HttpRequestHeader> getHeader() {
         return Pair.of(HEADER_NAME, this);
     }
 
     @Override
     public String toString() {
-        return HEADER_NAME + DELIMITER + mediaType + DEFAULT_CHARSET + " ";
+        return HEADER_NAME + HttpResponseHeader.DELIMITER + mediaType + DEFAULT_CHARSET + " ";
     }
 }

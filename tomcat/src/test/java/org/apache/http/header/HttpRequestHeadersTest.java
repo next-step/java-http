@@ -8,34 +8,21 @@ import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
-class HttpHeadersTest {
-
-    @Test
-    void headers_string_consist_order() {
-        var headers = new HttpHeaders()
-                .add(new ContentType(MediaType.TEXT_HTML))
-                .add(new ContentLength(1));
-
-        var reverseHeaders = new HttpHeaders()
-                .add(new ContentLength(1))
-                .add(new ContentType(MediaType.TEXT_HTML));
-
-        Assertions.assertThat(headers.toString()).isEqualTo(reverseHeaders.toString());
-    }
+class HttpRequestHeadersTest {
 
     @Test
     void messages_to_headers() {
         var messages = List.of("Content-Type: application/x-www-form-urlencoded;charset=utf-8");
 
-        var actual = new HttpHeaders(messages);
+        var actual = new HttpRequestHeaders(messages);
 
-        var expected = new HttpHeaders().add(new ContentType(MediaType.FORM_URL_ENCODED));
+        var expected = new HttpRequestHeaders(new ContentType(MediaType.FORM_URL_ENCODED));
         Assertions.assertThat(actual).hasToString(expected.toString());
     }
 
     @Test
     void messages_parse_body_form() {
-        var headers = new HttpHeaders().add(new ContentType(MediaType.FORM_URL_ENCODED));
+        var headers = new HttpRequestHeaders(new ContentType(MediaType.FORM_URL_ENCODED));
         var messages = "test=hi";
 
         var actual = headers.parseBody(messages);
@@ -45,7 +32,7 @@ class HttpHeadersTest {
 
     @Test
     void messages_parse_body_text() {
-        var headers = new HttpHeaders().add(new ContentType(MediaType.TEXT_HTML));
+        var headers = new HttpRequestHeaders(new ContentType(MediaType.TEXT_HTML));
         var messages = "test=hi";
 
         var actual = headers.parseBody(messages);
@@ -55,7 +42,7 @@ class HttpHeadersTest {
 
     @Test
     void messages_parse_body_null() {
-        var headers = new HttpHeaders();
+        var headers = new HttpRequestHeaders();
         var messages = "test=hi";
 
         var actual = headers.parseBody(messages);

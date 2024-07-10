@@ -71,7 +71,7 @@ class Http11ProcessorTest {
 
             processor.process(socket);
 
-            test_success_redirect(socket.output());
+            test_success_redirect(socket.output(), "cookie");
         }
 
         @Test

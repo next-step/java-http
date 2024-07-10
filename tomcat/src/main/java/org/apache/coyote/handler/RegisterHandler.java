@@ -5,9 +5,10 @@ import camp.nextstep.model.User;
 import org.apache.coyote.HttpRequest;
 import org.apache.coyote.HttpResponse;
 import org.apache.file.FileReader;
+import org.apache.http.HttpPath;
 import org.apache.http.HttpStatus;
 import org.apache.http.body.HttpFileBody;
-import org.apache.http.header.HttpHeaders;
+import org.apache.http.header.HttpRequestHeaders;
 import org.apache.http.header.Location;
 
 import java.io.IOException;
@@ -52,8 +53,7 @@ public class RegisterHandler implements Handler {
     }
 
     private HttpResponse toLoginResponse() {
-        Location location = new Location(SUCCESS_PAGE);
-        return new HttpResponse(HttpStatus.Found, new HttpHeaders().add(location));
+        return new HttpResponse(new HttpPath(SUCCESS_PAGE));
     }
 
     private void register(final RegisterRequest request) {

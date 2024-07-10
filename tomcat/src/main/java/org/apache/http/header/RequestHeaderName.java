@@ -4,21 +4,20 @@ import java.util.Arrays;
 import java.util.Optional;
 import java.util.function.Function;
 
-public enum HeaderName {
+public enum RequestHeaderName {
     CONTENT_TYPE("Content-Type", ContentType::new),
-    CONTENT_LENGTH("Content-Length", ContentLength::new),
-    LOCATION("Location", Location::new);
+    CONTENT_LENGTH("Content-Length", ContentLength::new);
 
     private final String name;
-    private final Function<String, HttpHeader> convertToHeader;
+    private final Function<String, HttpRequestHeader> convertToHeader;
 
-    HeaderName(String name, Function<String, HttpHeader> converter) {
+    RequestHeaderName(String name, Function<String, HttpRequestHeader> converter) {
         this.name = name;
         this.convertToHeader = converter;
     }
 
-    public HttpHeader toHeader(final String fullHeader) {
-        var value = fullHeader.replace(name + HttpHeader.DELIMITER, "");
+    public HttpRequestHeader toHeader(final String fullHeader) {
+        var value = fullHeader.replace(name + HttpRequestHeader.DELIMITER, "");
         return convertToHeader.apply(value);
     }
 
@@ -27,7 +26,7 @@ public enum HeaderName {
         return name;
     }
 
-    public static Optional<HttpHeader> match(final String fullHeader) {
+    public static Optional<HttpRequestHeader> match(final String fullHeader) {
         return Arrays.stream(values())
                 .filter(type -> fullHeader.startsWith(type.name))
                 .findFirst()

@@ -3,7 +3,8 @@ package org.apache.http.body;
 import org.apache.file.MediaType;
 import org.apache.http.header.ContentLength;
 import org.apache.http.header.ContentType;
-import org.apache.http.header.HttpHeaders;
+import org.apache.http.header.HttpRequestHeaders;
+import org.apache.http.header.HttpResponseHeaders;
 
 public class HttpTextBody extends HttpBody {
     private final String body;
@@ -13,7 +14,7 @@ public class HttpTextBody extends HttpBody {
     }
 
     @Override
-    public HttpHeaders addContentHeader(HttpHeaders headers) {
+    public HttpResponseHeaders addContentHeader(HttpResponseHeaders headers) {
         return headers.add(new ContentType(MediaType.TEXT_HTML))
                 .add(new ContentLength(body.getBytes().length));
     }

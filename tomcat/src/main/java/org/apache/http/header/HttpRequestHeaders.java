@@ -8,36 +8,28 @@ import org.apache.http.body.HttpTextBody;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class HttpHeaders {
+public class HttpRequestHeaders {
     private final static String DELIMITER = "\r\n";
-    private final static List<Class<? extends HttpHeader>> OUTPUT_ORDERING_LIST = Arrays.asList(ContentType.class, ContentLength.class);
-    private final static Comparator<HttpHeader> COMPARATOR = Comparator.comparingInt(a -> OUTPUT_ORDERING_LIST.indexOf(a.getClass()));
 
-    private final Map<HeaderName, HttpHeader> headers;
+    private final Map<RequestHeaderName, HttpRequestHeader> headers;
 
-    public HttpHeaders() {
-        this.headers = new HashMap<>();
+    public HttpRequestHeaders() {
+        this.headers = Map.of();
     }
 
-    public HttpHeaders(List<String> headerMessages) {
+    public HttpRequestHeaders(HttpRequestHeader header) {
+        this.headers = Map.of(header.getHeader().getKey(), header.getHeader().getValue());
+    }
+
+    public HttpRequestHeaders(List<String> headerMessages) {
         this.headers = headerMessages.stream()
-                .map(HeaderName::match)
+                .map(RequestHeaderName::match)
                 .filter(Optional::isPresent)
                 .collect(Collectors.toMap(result -> result.get().getHeader().getKey(), result -> result.get().getHeader().getValue()));
     }
 
-    HttpHeaders(Map<HeaderName, HttpHeader> headers) {
-        this.headers = headers;
-    }
-
-    public HttpHeaders add(HttpHeader header) {
-        final Map<HeaderName, HttpHeader> newHeaders = new HashMap<>(headers);
-        newHeaders.put(header.getHeader().getKey(), header.getHeader().getValue());
-        return new HttpHeaders(newHeaders);
-    }
-
     public HttpBody parseBody(final String bodyMessages) {
-        var contentType = (ContentType) headers.get(HeaderName.CONTENT_TYPE);
+        var contentType = (ContentType) headers.get(RequestHeaderName.CONTENT_TYPE);
         if (contentType == null) {
             return null;
         }
@@ -49,7 +41,7 @@ public class HttpHeaders {
     }
 
     public int contentLength() {
-        var header = (ContentLength) headers.get(HeaderName.CONTENT_LENGTH);
+        var header = (ContentLength) headers.get(RequestHeaderName.CONTENT_LENGTH);
         if (header == null) {
             return -1;
         }
@@ -59,7 +51,6 @@ public class HttpHeaders {
     @Override
     public String toString() {
         return headers.values().stream()
-                .sorted(COMPARATOR)
                 .map(Object::toString)
                 .collect(Collectors.joining(DELIMITER));
     }
