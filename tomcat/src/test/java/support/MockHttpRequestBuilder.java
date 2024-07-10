@@ -1,5 +1,6 @@
 package support;
 
+import camp.nextstep.http.domain.HttpHeaders;
 import camp.nextstep.http.domain.HttpMethod;
 import camp.nextstep.http.domain.HttpRequest;
 
@@ -11,24 +12,30 @@ import java.util.stream.Collectors;
 
 public class MockHttpRequestBuilder {
     private static final String HTTP_REQUEST_TEMPLATE =
-            "%s %s HTTP/1.1 \r\n" +
+            "%s %s HTTP/1.1 " +
+                    System.lineSeparator() +
                     "%s" +
-                    "\r\n" +
+                    System.lineSeparator() +
+                    System.lineSeparator() +
                     "%s";
     private static final String DEFAULT_URI = "/";
     private static final Map<String, String> DEFAULT_HEADERS = Map.of("Host", "localhost:8080", "Connection", "keep-alive");
-    public static final String HEADER_DELIMITER = ": ";
+    private static final String HEADER_DELIMITER = ": ";
+    private static final String KEY_VALUE_DELIMITER = "=";
+    private static final String BODY_DELIMITER = "&";
+    private static final String CONTENT_LENGTH = "Content-Length";
+    private static final String COOKIE_KEY = "Cookie";
 
     private HttpMethod method;
     private String requestURI;
     private Map<String, String> headers;
-    private String body;
+    private Map<String, String> body;
 
     public MockHttpRequestBuilder() {
         this.method = HttpMethod.GET;
         this.requestURI = DEFAULT_URI;
         this.headers = new HashMap<>(DEFAULT_HEADERS);
-        this.body = "";
+        this.body = new HashMap<>();
     }
 
     public MockHttpRequestBuilder method(final HttpMethod method) {
@@ -46,13 +53,17 @@ public class MockHttpRequestBuilder {
         return this;
     }
 
-    public MockHttpRequestBuilder addHeaders(final Map<String, String> headers) {
-        this.headers.putAll(headers);
+    public MockHttpRequestBuilder addCookie(final String key, final String value) {
+        this.headers.put(COOKIE_KEY, String.join(KEY_VALUE_DELIMITER, key, value));
         return this;
     }
 
-    public MockHttpRequestBuilder body(final String body) {
-        this.body = body;
+    public MockHttpRequestBuilder addSessionCookie(final String value) {
+        return addCookie(HttpHeaders.JSESSIONID, value);
+    }
+
+    public MockHttpRequestBuilder addBody(final String key, final String value) {
+        this.body.put(key, value);
         return this;
     }
 
@@ -63,11 +74,23 @@ public class MockHttpRequestBuilder {
     }
 
     private String generateRequestString() {
+        final String bodyString = generateBodyString();
+
+        if (!bodyString.isEmpty()) {
+            headers.put(CONTENT_LENGTH, String.valueOf(bodyString.length()));
+        }
+
         final String headersString = headers.entrySet().stream()
                 .map(entry -> entry.getKey() + HEADER_DELIMITER + entry.getValue())
                 .collect(Collectors.joining(System.lineSeparator()));
 
-        return String.format(HTTP_REQUEST_TEMPLATE, method, requestURI, headersString, body);
+        return String.format(HTTP_REQUEST_TEMPLATE, method, requestURI, headersString, bodyString);
+    }
+
+    private String generateBodyString() {
+        return body.entrySet().stream()
+                .map(entry -> entry.getKey() + KEY_VALUE_DELIMITER + entry.getValue())
+                .collect(Collectors.joining(BODY_DELIMITER));
     }
 
 }
