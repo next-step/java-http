@@ -3,41 +3,75 @@ package org.apache.coyote.handler;
 import camp.nextstep.db.InMemoryUserRepository;
 import org.apache.coyote.HttpRequest;
 import org.apache.coyote.HttpResponse;
+import org.apache.file.FileReader;
+import org.apache.http.HttpStatus;
+import org.apache.http.body.HttpFileBody;
+import org.apache.http.header.HttpHeaders;
+import org.apache.http.header.Location;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class LoginHandler implements Handler {
+import java.io.IOException;
 
+public class LoginHandler implements Handler {
     private static final Logger log = LoggerFactory.getLogger(LoginHandler.class);
     private static final String MAPPING_PATH = "/login";
-    private static final String STATIC_FILE_PATH = "/login.html";
+    private static final String LOGIN_PAGE = "/login.html";
+    private static final String SUCCESS_PAGE = "/index.html";
+    private static final String FAIL_PAGE = "/401.html";
 
     @Override
     public HttpResponse handle(HttpRequest request) {
         if (!request.matchPath(MAPPING_PATH)) {
             throw new NotSupportHandlerException();
         }
-        login(request);
-        request.proxyPath(STATIC_FILE_PATH);
-        return null;
+
+        var loginRequest = toLoginRequest(request);
+        if (loginRequest == null) {
+            return toLoginPage();
+        }
+
+        return toLoginResponse(loginRequest);
     }
 
-    private void login(final HttpRequest request) {
+    private LoginRequest toLoginRequest(final HttpRequest request) {
         var account = request.getParam("account");
         var password = request.getParam("password");
-
         if (account.isEmpty() || password.isEmpty()) {
-            return;
+            return null;
         }
+        return new LoginRequest(account.get(), password.get());
+    }
 
-        var user = InMemoryUserRepository.findByAccount(account.get()).orElse(null);
-        if (user == null) {
-            return;
-        }
-        if (user.checkPassword(password.get())) {
-            log.info(user.toString());
+    private HttpResponse toLoginPage() {
+        try {
+            final var file = FileReader.read(LOGIN_PAGE);
+            return new HttpResponse(new HttpFileBody(file));
+        } catch (IOException e) {
+            throw new NotSupportHandlerException();
         }
     }
 
+    private HttpResponse toLoginResponse(final LoginRequest request) {
+        Location location;
+        if (login(request)) {
+            location = new Location(SUCCESS_PAGE);
+        } else {
+            location = new Location(FAIL_PAGE);
+        }
+        return new HttpResponse(HttpStatus.Found, new HttpHeaders().add(location));
+    }
 
+    private boolean login(final LoginRequest request) {
+        var user = InMemoryUserRepository.findByAccount(request.account()).orElse(null);
+        if (user != null && user.checkPassword(request.password())) {
+            log.info(user.toString());
+            return true;
+        }
+        return false;
+    }
+}
+
+
+record LoginRequest(String account, String password) {
 }
