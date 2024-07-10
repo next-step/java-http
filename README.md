@@ -128,5 +128,6 @@ Location: /index.html
 - Controller
   - HttpRequest 요청을 받아 처리한다.
   - Get과 Post를 직접 확인하여 처리할 수 있다.
+    - 지원하지 않는 경우 기본적으로 `/404.html`을 리턴할 수 있도록 한다.
   - LoginController, RootController, RegisterController, DefaultPathController
     - Http11Processor에 구현된 값을 가져와 구현해 리팩터링한다.

@@ -1,9 +1,6 @@
 package camp.nextstep.domain.http;
 
-import java.util.AbstractMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static java.lang.Integer.parseInt;
@@ -23,6 +20,10 @@ public class HttpHeaders {
 
     public HttpHeaders(Map<String, String> headers) {
         this.headers = headers;
+    }
+
+    public HttpHeaders() {
+        this(new HashMap<>());
     }
 
     public static HttpHeaders from(List<String> headers) {
