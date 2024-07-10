@@ -53,4 +53,14 @@ class HttpHeadersTest {
         Assertions.assertThat(actual).isInstanceOf(HttpTextBody.class);
     }
 
+    @Test
+    void messages_parse_body_null() {
+        var headers = new HttpHeaders();
+        var messages = "test=hi";
+
+        var actual = headers.parseBody(messages);
+
+        Assertions.assertThat(actual).isNull();
+    }
+
 }

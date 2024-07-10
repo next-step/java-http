@@ -38,6 +38,10 @@ public class HttpHeaders {
 
     public HttpBody parseBody(final String bodyMessages) {
         var contentType = (ContentType) headers.get(HeaderName.CONTENT_TYPE);
+        if (contentType == null) {
+            return null;
+        }
+
         if (contentType.match(MediaType.FORM_URL_ENCODED)) {
             return new HttpFormBody(bodyMessages);
         }
