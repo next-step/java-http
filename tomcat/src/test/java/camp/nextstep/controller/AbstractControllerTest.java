@@ -17,7 +17,8 @@ class AbstractControllerTest {
                 new HttpCookie(),
                 new HttpRequestBody()
         );
-        HttpResponse actual = new AbstractController() {}.doGet(httpRequest);
+        HttpResponse actual = new AbstractController() {
+        }.doGet(httpRequest);
         assertThat(actual.getHttpHeaders().getHeaders()).contains(Map.entry("Location", "/404.html"));
     }
 
@@ -29,7 +30,8 @@ class AbstractControllerTest {
                 new HttpCookie(),
                 new HttpRequestBody()
         );
-        HttpResponse actual = new AbstractController() {}.doGet(httpRequest);
+        HttpResponse actual = new AbstractController() {
+        }.doGet(httpRequest);
         assertThat(actual.getHttpHeaders().getHeaders()).contains(Map.entry("Location", "/404.html"));
     }
 
@@ -41,7 +43,8 @@ class AbstractControllerTest {
                 new HttpCookie(),
                 new HttpRequestBody()
         );
-        HttpResponse actual = new AbstractController() {}.doGet(httpRequest);
+        HttpResponse actual = new AbstractController() {
+        }.doGet(httpRequest);
         assertThat(actual.getHttpHeaders().getHeaders()).contains(Map.entry("Location", "/404.html"));
     }
 }

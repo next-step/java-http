@@ -40,14 +40,6 @@ public class HttpRequest {
         return requestLine.getHttpProtocol();
     }
 
-    public Map<String, String> getQueryString() {
-        return requestLine.getQueryString();
-    }
-
-    public HttpCookie getHttpCookie() {
-        return httpCookie;
-    }
-
     public String getSessionId() {
         return httpCookie.getSessionId();
     }

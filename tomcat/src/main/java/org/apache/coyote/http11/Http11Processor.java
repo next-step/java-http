@@ -18,22 +18,6 @@ public class Http11Processor implements Runnable, Processor {
 
     private static final Logger log = LoggerFactory.getLogger(Http11Processor.class);
 
-    private static final String ROOT_PATH = "/";
-    private static final String LOGIN_PATH = "/login";
-    private static final String REGISTER_PATH = "/register";
-    private static final String ROOT_BODY = "Hello world!";
-
-    private static final String INDEX_PAGE_PATH = "/index.html";
-    private static final String LOGIN_PAGE_PATH = "/login.html";
-    private static final String UNAUTHORIZED_PAGE_PATH = "/401.html";
-    private static final String NOT_FOUND_PAGE_PATH = "/404.html";
-
-    private static final String LOGIN_ACCOUNT_KEY = "account";
-    private static final String LOGIN_PASSWORD_KEY = "password";
-    private static final String REGISTER_ACCOUNT_KEY = "account";
-    private static final String REGISTER_PASSWORD_KEY = "password";
-    private static final String REGISTER_EMAIL_KEY = "email";
-
     private final Socket connection;
     private final RequestMapping requestMapping = RequestMapping.create();
 
