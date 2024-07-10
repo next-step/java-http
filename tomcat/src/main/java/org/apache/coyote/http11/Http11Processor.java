@@ -1,31 +1,24 @@
 package org.apache.coyote.http11;
 
-import camp.nextstep.db.InMemoryUserRepository;
 import camp.nextstep.exception.UncheckedServletException;
 import camp.nextstep.http.domain.*;
-import camp.nextstep.model.User;
 import org.apache.coyote.Processor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.net.Socket;
-import java.util.Optional;
 import java.util.UUID;
 
 public class Http11Processor implements Runnable, Processor {
 
     private static final Logger log = LoggerFactory.getLogger(Http11Processor.class);
-    private static final String DEFAULT_MESSAGE = "Hello world!";
-    private static final String ACCOUNT = "account";
-    private static final String PASSWORD = "password";
-    private static final String EMAIL = "email";
-    public static final String SESSION_USER_KEY = "user";
-
     private final Socket connection;
+    private final RequestMapping requestMapping;
 
     public Http11Processor(final Socket connection) {
         this.connection = connection;
+        this.requestMapping = new RequestMapping();
     }
 
     @Override
@@ -38,7 +31,6 @@ public class Http11Processor implements Runnable, Processor {
     public void process(final Socket connection) {
         try (final var inputStream = connection.getInputStream();
              final var outputStream = connection.getOutputStream()) {
-
             final HttpRequest httpRequest = new HttpRequest(inputStream);
             final HttpResponse httpResponse = new HttpResponse(outputStream);
 
@@ -47,18 +39,10 @@ public class Http11Processor implements Runnable, Processor {
             }
 
             final HttpPath path = httpRequest.getPath();
-            if (path.isRoot()) {
-                processRoot(httpResponse);
-                return;
-            }
+            final Controller controller = requestMapping.getController(path);
 
-            if (path.isLoginPath()) {
-                processLogin(httpRequest, httpResponse);
-                return;
-            }
-
-            if (path.isRegisterPath()) {
-                processRegister(httpRequest, httpResponse);
+            if (controller != null) {
+                controller.service(httpRequest, httpResponse);
                 return;
             }
 
@@ -69,74 +53,4 @@ public class Http11Processor implements Runnable, Processor {
         }
     }
 
-    private void processRoot(final HttpResponse httpResponse) throws IOException {
-        httpResponse.setContentType(ContentType.HTML);
-        httpResponse.forwardBody(DEFAULT_MESSAGE);
-    }
-
-    private void processLogin(final HttpRequest httpRequest, final HttpResponse httpResponse) throws IOException {
-        if (httpRequest.isGetMethod()) {
-            processLoginGet(httpRequest, httpResponse);
-            return;
-        }
-
-        if (httpRequest.isPostMethod()) {
-            processLoginPost(httpRequest, httpResponse);
-        }
-    }
-
-    private void processLoginGet(final HttpRequest httpRequest, final HttpResponse httpResponse) throws IOException {
-        final HttpSession session = httpRequest.getSession(false);
-        if (session != null && session.getAttribute(SESSION_USER_KEY) != null) {
-            httpResponse.sendRedirect("/index.html");
-            return;
-        }
-
-        httpResponse.setContentType(ContentType.HTML);
-        httpResponse.forward("/login.html");
-    }
-
-    private void processLoginPost(final HttpRequest httpRequest, final HttpResponse httpResponse) throws IOException {
-        final RequestBody requestBody = httpRequest.getRequestBody();
-        final Optional<User> userOptional = InMemoryUserRepository.findByAccount(requestBody.get(ACCOUNT));
-
-        if (userOptional.isEmpty()) {
-            httpResponse.sendRedirect("/401.html");
-            return;
-        }
-
-        final User user = userOptional.get();
-        if (user.checkPassword(requestBody.get(PASSWORD))) {
-            log.info("user : {}", user);
-            final HttpSession httpSession = httpRequest.getSession(true);
-            httpSession.setAttribute(SESSION_USER_KEY, user);
-            httpResponse.setSession(httpSession.getId());
-            httpResponse.sendRedirect("/index.html");
-            return;
-        }
-        httpResponse.sendRedirect("/401.html");
-    }
-
-    private void processRegister(final HttpRequest httpRequest, final HttpResponse httpResponse) throws IOException {
-        if (httpRequest.isGetMethod()) {
-            processRegisterGet(httpResponse);
-            return;
-        }
-        if (httpRequest.isPostMethod()) {
-            processRegisterPost(httpRequest, httpResponse);
-        }
-    }
-
-    private void processRegisterGet(final HttpResponse httpResponse) throws IOException {
-        httpResponse.setContentType(ContentType.HTML);
-        httpResponse.forward("/register.html");
-    }
-
-    private void processRegisterPost(final HttpRequest httpRequest, final HttpResponse httpResponse) throws IOException {
-        final RequestBody requestBody = httpRequest.getRequestBody();
-        InMemoryUserRepository.save(
-                new User(requestBody.get(ACCOUNT), requestBody.get(PASSWORD), requestBody.get(EMAIL))
-        );
-        httpResponse.sendRedirect("/index.html");
-    }
 }
