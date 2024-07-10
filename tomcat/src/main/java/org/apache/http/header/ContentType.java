@@ -17,11 +17,11 @@ public class ContentType extends HttpHeader {
     }
 
     public ContentType(String mediaType) {
-        this.mediaType = MediaType.match(mediaType.replace(DEFAULT_CHARSET, ""));
+        this.mediaType = new MediaType(mediaType.replace(DEFAULT_CHARSET, ""));
     }
 
     public boolean match(final MediaType type) {
-        return mediaType == type;
+        return mediaType.equals(type);
     }
 
     @Override
