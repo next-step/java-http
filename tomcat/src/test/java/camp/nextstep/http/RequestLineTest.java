@@ -17,11 +17,26 @@ class RequestLineTest {
     final RequestLine requestLine = RequestLine.parse(request);
 
     // then
-    assertThat(requestLine.getHttpMethod()).isEqualTo("GET");
+    assertThat(requestLine.getHttpMethod()).isEqualTo(HttpMethod.GET);
     assertThat(requestLine.getPath()).isEqualTo("/users");
     assertThat(requestLine.getProtocol()).isEqualTo("HTTP");
     assertThat(requestLine.getVersion()).isEqualTo("1.1");
+  }
 
+  @Test
+  @DisplayName(" HTTP POST 요청에 대한 RequestLine을 파싱한다.")
+  void parseHttpPostRequest() {
+    // given
+    final String request = "POST /users HTTP/1.1";
+
+    // when
+    final RequestLine requestLine = RequestLine.parse(request);
+
+    // then
+    assertThat(requestLine.getHttpMethod()).isEqualTo(HttpMethod.POST);
+    assertThat(requestLine.getPath()).isEqualTo("/users");
+    assertThat(requestLine.getProtocol()).isEqualTo("HTTP");
+    assertThat(requestLine.getVersion()).isEqualTo("1.1");
   }
 
 
