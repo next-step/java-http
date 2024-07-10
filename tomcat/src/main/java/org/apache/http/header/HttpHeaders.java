@@ -48,6 +48,14 @@ public class HttpHeaders {
         return new HttpTextBody(bodyMessages);
     }
 
+    public int contentLength() {
+        var header = (ContentLength) headers.get(HeaderName.CONTENT_LENGTH);
+        if (header == null) {
+            return -1;
+        }
+        return header.length;
+    }
+
     @Override
     public String toString() {
         return headers.values().stream()

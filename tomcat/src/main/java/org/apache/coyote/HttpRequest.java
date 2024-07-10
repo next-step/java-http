@@ -11,21 +11,14 @@ import java.util.List;
  * https://developer.mozilla.org/en-US/docs/Web/HTTP/Messages#http_requests
  */
 public class HttpRequest {
-    private static final String EMPTY_LINE = "";
     protected final HttpRequestLine requestLine;
     protected final HttpHeaders headers;
     protected final HttpBody body;
 
-    public HttpRequest(final List<String> messages) {
-        this.requestLine = new HttpRequestLine(messages.get(0));
-        var emptyLine = messages.indexOf(EMPTY_LINE);
-        if (emptyLine == -1) {
-            this.headers = null;
-            this.body = null;
-        } else {
-            this.headers = new HttpHeaders(messages.subList(1, emptyLine));
-            this.body = headers.parseBody(String.join("\n", messages.subList(emptyLine + 1, messages.size())));
-        }
+    public HttpRequest(HttpRequestLine requestLine, HttpHeaders headers, HttpBody body) {
+        this.requestLine = requestLine;
+        this.headers = headers;
+        this.body = body;
     }
 
     public boolean matchPath(final String path) {

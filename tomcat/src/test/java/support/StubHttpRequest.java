@@ -1,38 +1,37 @@
 package support;
 
 import org.apache.coyote.HttpRequest;
+import org.apache.coyote.HttpRequestLine;
 import org.apache.http.HttpPath;
-import org.assertj.core.util.Lists;
+import org.apache.http.body.HttpFormBody;
+import org.apache.http.header.HttpHeaders;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 public class StubHttpRequest extends HttpRequest {
     public StubHttpRequest() {
-        super(Collections.singletonList("GET /index.html HTTP/1.1 "));
+        super(new HttpRequestLine("GET /index.html HTTP/1.1 "), null, null);
     }
 
     public StubHttpRequest(final HttpPath path) {
-        super(Collections.singletonList("GET " + path + " HTTP/1.1 "));
+        super(new HttpRequestLine("GET " + path + " HTTP/1.1 "), null, null);
     }
 
     public StubHttpRequest(final String account, final String password) {
-        super(List.of(
-                "POST /login HTTP/1.1",
-                "Content-Type: application/x-www-form-urlencoded",
-                "",
-                "account=" + account + "&password=" + password
-        ));
+        super(
+                new HttpRequestLine("POST /login HTTP/1.1"),
+                new HttpHeaders(List.of("Content-Type: application/x-www-form-urlencoded", "Content-Length: " + ("account=" + account + "&password=" + password).getBytes().length)),
+                new HttpFormBody("account=" + account + "&password=" + password)
+        );
     }
 
     public StubHttpRequest(final String account, final String password, final String email) {
-        super(List.of(
-                "POST /register HTTP/1.1",
-                "Content-Type: application/x-www-form-urlencoded",
-                "",
-                "account=" + account + "&password=" + password + "&email=" + email
-        ));
+        super(
+                new HttpRequestLine("POST /register HTTP/1.1"),
+                new HttpHeaders(List.of("Content-Type: application/x-www-form-urlencoded", "Content-Length: " + ("account=" + account + "&password=" + password + "&email=" + email).getBytes().length)),
+                new HttpFormBody("account=" + account + "&password=" + password + "&email=" + email)
+
+        );
     }
 
     @Override

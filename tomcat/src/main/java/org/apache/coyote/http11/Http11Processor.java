@@ -2,7 +2,9 @@ package org.apache.coyote.http11;
 
 import camp.nextstep.exception.UncheckedServletException;
 import org.apache.coyote.HttpRequest;
+import org.apache.coyote.HttpRequestLine;
 import org.apache.coyote.Processor;
+import org.apache.http.header.HttpHeaders;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,11 +35,11 @@ public class Http11Processor implements Runnable, Processor {
     public void process(final Socket connection) {
         try (final var inputReader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
              final var outputStream = connection.getOutputStream()) {
-            var requestMessage = parseMessage(inputReader);
-            if (requestMessage.isEmpty()) {
-                return;
-            }
-            final var request = new HttpRequest(requestMessage);
+            final var requestLine = new HttpRequestLine(inputReader.readLine().trim());
+            final var headers = new HttpHeaders(parseHeaders(inputReader));
+            final var body = headers.parseBody(parseBody(inputReader, headers.contentLength()));
+            final var request = new HttpRequest(requestLine, headers, body);
+
             final var response = handlers.handle(request);
 
             outputStream.write(response.toString().getBytes());
@@ -47,11 +49,26 @@ public class Http11Processor implements Runnable, Processor {
         }
     }
 
-    private List<String> parseMessage(BufferedReader reader) throws IOException {
+    private List<String> parseHeaders(BufferedReader reader) throws IOException {
         var lines = new ArrayList<String>();
         while (reader.ready()) {
-            lines.add(reader.readLine().trim());
+            var line = reader.readLine();
+            if (line.isEmpty()) {
+                break;
+            }
+            lines.add(line.trim());
         }
         return lines;
+    }
+
+    private String parseBody(BufferedReader reader, int contentLength) throws IOException {
+        if (contentLength == -1) {
+            return null;
+        }
+
+        char[] body = new char[contentLength];
+        reader.read(body);
+
+        return new String(body);
     }
 }

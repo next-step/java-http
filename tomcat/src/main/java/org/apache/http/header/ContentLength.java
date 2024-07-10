@@ -8,7 +8,7 @@ import org.apache.commons.lang3.tuple.Pair;
 public class ContentLength extends HttpHeader {
     private static final HeaderName HEADER_NAME = HeaderName.CONTENT_LENGTH;
 
-    private final int length;
+    protected final int length;
 
     public ContentLength(int length) {
         this.length = length;

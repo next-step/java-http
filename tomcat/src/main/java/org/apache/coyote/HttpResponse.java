@@ -14,18 +14,6 @@ public class HttpResponse {
     private final HttpHeaders headers;
     private final HttpBody body;
 
-    public HttpResponse(HttpStatus status, HttpHeaders headers, HttpBody body) {
-        this.statusLine = new HttpResponseStatusLine(status);
-        this.headers = headers;
-        this.body = body;
-    }
-
-    public HttpResponse(HttpHeaders headers, HttpBody body) {
-        this.statusLine = new HttpResponseStatusLine(HttpStatus.OK);
-        this.headers = body.addContentHeader(headers);
-        this.body = body;
-    }
-
     public HttpResponse(HttpBody body) {
         this.statusLine = new HttpResponseStatusLine(HttpStatus.OK);
         this.headers = body.addContentHeader(new HttpHeaders());
@@ -43,7 +31,7 @@ public class HttpResponse {
         if (body != null) {
             return String.join(DELIMITER, statusLine.toString(), headers.toString(), "", body.toString());
         } else {
-            return String.join(DELIMITER, statusLine.toString(), headers.toString());
+            return statusLine + DELIMITER + headers;
         }
     }
 }
