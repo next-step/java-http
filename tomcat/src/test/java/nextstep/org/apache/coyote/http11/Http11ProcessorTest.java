@@ -30,9 +30,9 @@ class Http11ProcessorTest {
         var expected = String.join("\r\n",
                 "HTTP/1.1 500 Internal Server Error ",
                 "Content-Type: text/html;charset=utf-8 ",
-                "Content-Length: 11 ",
+                "Content-Length: 30 ",
                 "",
-                "ERROR: null");
+                "ERROR: Could not find resource");
 
         assertThat(socket.output()).isEqualTo(expected);
     }

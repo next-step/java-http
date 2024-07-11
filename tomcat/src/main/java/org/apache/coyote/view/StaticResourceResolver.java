@@ -39,7 +39,7 @@ public class StaticResourceResolver {
         final File file = new File(resource.getFile());
 
         if (!file.isFile()) {
-            throw new StaticResourceNotFoundException("Could not find resource - " + file.getPath());
+            throw new StaticResourceNotFoundException("Could not find resource");
         }
 
         return file;
