@@ -6,8 +6,6 @@ import camp.nextstep.http.exception.ResourceNotFoundException;
 import java.io.*;
 import java.nio.file.Files;
 import java.util.Optional;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class Response {
     private static final String SUCCESS_HEADER = "HTTP/1.1 200 OK ";
