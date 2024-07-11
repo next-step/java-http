@@ -184,4 +184,34 @@ class Http11ProcessorTest {
 
         assertThat(socket.output()).isEqualTo(expected);
     }
+
+    @DisplayName("/register + POST 요청은 성공 시 302 FOUND를 응답하고 Location으로 /index.html을 제공한다")
+    @Test
+    void register() {
+        // given
+        String body = "account=gugu&password=password";
+        final String httpRequest = String.join("\r\n",
+                "POST /register HTTP/1.1 ",
+                "Host: localhost:8080 ",
+                "Content-Length: %d ".formatted(body.getBytes().length),
+                "Connection: keep-alive ",
+                "",
+                body);
+
+        final var socket = new StubSocket(httpRequest);
+        final Http11Processor processor = new Http11Processor(socket);
+
+        // when
+        processor.process(socket);
+
+        // then
+        var expected = String.join("\r\n",
+                "HTTP/1.1 302 Found ",
+                "Location: /index.html ",
+                "Content-Length: 0 ",
+                "",
+                "");
+
+        assertThat(socket.output()).isEqualTo(expected);
+    }
 }
