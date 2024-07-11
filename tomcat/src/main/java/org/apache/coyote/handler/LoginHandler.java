@@ -7,14 +7,10 @@ import org.apache.file.FileReader;
 import org.apache.http.HttpPath;
 import org.apache.http.body.HttpFileBody;
 import org.apache.http.session.HttpCookie;
-import org.apache.http.session.HttpSession;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 
 public class LoginHandler implements Handler {
-    private static final Logger log = LoggerFactory.getLogger(LoginHandler.class);
     private static final String MAPPING_PATH = "/login";
     private static final String LOGIN_PAGE = "/login.html";
     private static final String SUCCESS_PAGE = "/index.html";
@@ -59,12 +55,13 @@ public class LoginHandler implements Handler {
 
     private HttpResponse login(final HttpRequest httpRequest, final LoginRequest request) {
         var user = InMemoryUserRepository.findByAccount(request.account()).orElse(null);
-        if (user != null && user.checkPassword(request.password())) {
-            var session = httpRequest.getSession(true);
-            session.setAttribute("user", user);
-            return new HttpResponse(new HttpPath(SUCCESS_PAGE)).addCookie(HttpCookie.ofSession(session));
+        if (user == null || !user.checkPassword(request.password())) {
+            return new HttpResponse(new HttpPath(FAIL_PAGE));
         }
-        return new HttpResponse(new HttpPath(FAIL_PAGE));
+
+        var session = httpRequest.getSession(true);
+        session.setAttribute("user", user);
+        return new HttpResponse(new HttpPath(SUCCESS_PAGE)).addCookie(HttpCookie.ofSession(session));
     }
 }
 
