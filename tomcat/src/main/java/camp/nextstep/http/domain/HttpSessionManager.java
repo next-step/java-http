@@ -22,7 +22,17 @@ public class HttpSessionManager {
         return SESSIONS.computeIfAbsent(sessionId, HttpSession::new);
     }
 
+    public static Optional<HttpSession> get(final String id) {
+        return Optional.ofNullable(SESSIONS.get(id));
+    }
+
     public static void remove(final HttpSession session) {
-        SESSIONS.remove(session.getId());
+        if (session != null) {
+            SESSIONS.remove(session.getId());
+        }
+    }
+
+    public static void clear() {
+        SESSIONS.clear();
     }
 }
