@@ -11,9 +11,6 @@ public class HttpParams {
 
     private Map<String, String> params = new HashMap<>();
 
-    HttpParams() {
-    }
-
     HttpParams(Map<String, String> params) {
         this.params = params;
     }

@@ -48,8 +48,8 @@ public class HttpResponse {
     public String toString() {
         if (body != null) {
             return String.join(DELIMITER, statusLine.toString(), headers.toString(), "", body.toString());
-        } else {
-            return statusLine + DELIMITER + headers;
         }
+        return statusLine + DELIMITER + headers;
     }
+
 }

@@ -14,7 +14,7 @@ class HttpParamsTest {
 
     @Test
     void noParams() {
-        Assertions.assertThat(new HttpParams("teshello")).isEqualTo(new HttpParams());
+        Assertions.assertThat(new HttpParams("teshello")).isEqualTo(new HttpParams(Map.of()));
     }
 
 }
