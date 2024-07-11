@@ -7,7 +7,8 @@ import java.util.Arrays;
 public enum ContentType {
     HTML("text/html;charset=utf-8", ".html"),
     CSS("text/css;charset=utf-8", ".css"),
-    JAVASCRIPT("text/javascript;charset=utf-8", ".js");
+    JAVASCRIPT("text/javascript;charset=utf-8", ".js"),
+    ICON("image/x-icon", ".ico");
 
     private final String type;
     private final String extension;
@@ -35,7 +36,4 @@ public enum ContentType {
         return type;
     }
 
-    public String getExtension() {
-        return extension;
-    }
 }
