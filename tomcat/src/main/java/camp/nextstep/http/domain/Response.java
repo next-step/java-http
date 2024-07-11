@@ -4,6 +4,7 @@ import camp.nextstep.http.enums.ContentType;
 import camp.nextstep.http.exception.ResourceNotFoundException;
 
 import java.io.*;
+import java.nio.file.Files;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -11,8 +12,8 @@ import java.util.stream.Stream;
 public class Response {
     private static final String SUCCESS_HEADER = "HTTP/1.1 200 OK ";
     private static final String NOTFOUND_HEADER = "HTTP/1.1 404 OK ";
-    private static final String DEFAULT_CHARSET = "charset=utf-8";
-    private static final String CONTENT_TYPE_FORMAT = "Content-Type: %s; %s";
+    private static final String DEFAULT_CHARSET = "charset=utf-8 ";
+    private static final String CONTENT_TYPE_FORMAT = "Content-Type: %s;%s";
     private static final String CONTENT_LENGTH_FORMAT = "Content-Length: %s ";
 
     private String responseStr;
@@ -31,25 +32,21 @@ public class Response {
 
         ContentType contentType = ContentType.findContentTypeByFileExt(fileExt);
 
-        final String fileStr;
-        try (final BufferedReader bufferedReader = new BufferedReader(new FileReader(file));
-             final Stream<String> lines = bufferedReader.lines()) {
-            fileStr = lines.collect(Collectors.joining(System.lineSeparator()));
+        String fileStr = new String(Files.readAllBytes(file.toPath()));
 
-            String contentTypeStr = getContentTypeHeader(
-                    contentType,
-                    DEFAULT_CHARSET
-            );
+        String contentTypeStr = getContentTypeHeader(
+                contentType,
+                DEFAULT_CHARSET
+        );
 
-            final var response = String.join(System.lineSeparator(),
-                    SUCCESS_HEADER,
-                    contentTypeStr,
-                    getContentLengthHeader(fileStr),
-                    "",
-                    fileStr);
+        final var response = String.join(System.lineSeparator(),
+                SUCCESS_HEADER,
+                contentTypeStr,
+                getContentLengthHeader(fileStr),
+                "",
+                fileStr);
 
-            return new Response(response);
-        }
+        return new Response(response);
     }
 
     public static Response createResponseByString(String responseBody) {
