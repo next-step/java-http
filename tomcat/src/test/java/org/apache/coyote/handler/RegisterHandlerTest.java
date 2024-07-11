@@ -4,7 +4,6 @@ import camp.nextstep.db.InMemoryUserRepository;
 import org.apache.http.HttpPath;
 import org.junit.jupiter.api.Test;
 import support.StubHttpRequest;
-import support.StubLogger;
 
 import java.io.IOException;
 

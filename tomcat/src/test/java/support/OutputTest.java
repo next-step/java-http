@@ -68,12 +68,12 @@ public class OutputTest {
         assertThat(output).isEqualTo(expected);
     }
 
-    public static void test_success_redirect(final String output) {
-        assertThat(output).isEqualTo("HTTP/1.1 302 Found \r\nLocation: /index.html");
+    public static void test_success_redirect_setCookie(final String output) {
+        assertThat(output).contains("HTTP/1.1 302 Found \r\nLocation: /index.html\r\nSet-Cookie: ");
     }
 
-    public static void test_success_redirect(final String output, final String cookie) {
-        assertThat(output).isEqualTo("HTTP/1.1 302 Found \r\nLocation: /index.html\r\nSet-Cookie: " + cookie);
+    public static void test_success_redirect(final String output) {
+        assertThat(output).isEqualTo("HTTP/1.1 302 Found \r\nLocation: /index.html");
     }
 
     public static void test_fail_redirect(final String output) {

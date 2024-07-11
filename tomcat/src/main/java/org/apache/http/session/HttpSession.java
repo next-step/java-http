@@ -16,6 +16,10 @@ public class HttpSession {
         values.put(name, value);
     }
 
+    public Object getAttribute(final String name) {
+        return values.get(name);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

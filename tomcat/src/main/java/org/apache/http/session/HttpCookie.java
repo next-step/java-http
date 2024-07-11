@@ -34,7 +34,7 @@ public class HttpCookie {
         return name;
     }
 
-    public static HttpCookie ofJSessionId(final String jSessionId) {
-        return new HttpCookie(JSESSIONID, jSessionId);
+    public static HttpCookie ofSession(final HttpSession session) {
+        return new HttpCookie(JSESSIONID, session.id);
     }
 }

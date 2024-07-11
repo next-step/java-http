@@ -7,6 +7,7 @@ import org.apache.file.FileReader;
 import org.apache.http.HttpPath;
 import org.apache.http.body.HttpFileBody;
 import org.apache.http.session.HttpCookie;
+import org.apache.http.session.HttpSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,12 +26,17 @@ public class LoginHandler implements Handler {
             throw new NotSupportHandlerException();
         }
 
+        var session = request.getSession(false);
+        if (session != null && session.getAttribute("user") != null) {
+            return new HttpResponse(new HttpPath(SUCCESS_PAGE));
+        }
+
         var loginRequest = toLoginRequest(request);
         if (loginRequest == null) {
             return toLoginPage();
         }
 
-        return toLoginResponse(loginRequest);
+        return login(request, loginRequest);
     }
 
     private LoginRequest toLoginRequest(final HttpRequest request) {
@@ -51,20 +57,14 @@ public class LoginHandler implements Handler {
         }
     }
 
-    private HttpResponse toLoginResponse(final LoginRequest request) {
-        if (login(request)) {
-            return new HttpResponse(new HttpPath(SUCCESS_PAGE)).addCookie(HttpCookie.ofJSessionId("cookie"));
-        }
-        return new HttpResponse(new HttpPath(FAIL_PAGE));
-    }
-
-    private boolean login(final LoginRequest request) {
+    private HttpResponse login(final HttpRequest httpRequest, final LoginRequest request) {
         var user = InMemoryUserRepository.findByAccount(request.account()).orElse(null);
         if (user != null && user.checkPassword(request.password())) {
-            log.info(user.toString());
-            return true;
+            var session = httpRequest.getSession(true);
+            session.setAttribute("user", user);
+            return new HttpResponse(new HttpPath(SUCCESS_PAGE)).addCookie(HttpCookie.ofSession(session));
         }
-        return false;
+        return new HttpResponse(new HttpPath(FAIL_PAGE));
     }
 }
 

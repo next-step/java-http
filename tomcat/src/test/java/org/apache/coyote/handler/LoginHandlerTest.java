@@ -1,19 +1,18 @@
 package org.apache.coyote.handler;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpPath;
+import org.apache.http.header.Cookie;
 import org.junit.jupiter.api.Test;
 import support.StubHttpRequest;
-import support.StubLogger;
 
 import java.io.IOException;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static support.OutputTest.*;
 
 class LoginHandlerTest {
 
     private final Handler handler = new LoginHandler();
-    private final StubLogger<LoginHandler> logger = new StubLogger<>(LoginHandler.class);
 
     @Test
     void get() throws IOException {
@@ -33,8 +32,7 @@ class LoginHandlerTest {
     void correct_account_correct_password() {
         var request = new StubHttpRequest("gugu", "password");
         var response = handler.handle(request);
-        test_success_redirect(response.toString(), "JSESSIONID=cookie");
-        test_log_user();
+        test_success_redirect_setCookie(response.toString());
     }
 
     @Test
@@ -42,7 +40,6 @@ class LoginHandlerTest {
         var request = new StubHttpRequest("gugu", "wrong");
         var response = handler.handle(request);
         test_fail_redirect(response.toString());
-        test_doNotLog_user();
     }
 
     @Test
@@ -50,15 +47,15 @@ class LoginHandlerTest {
         var request = new StubHttpRequest("woo-yu", "password");
         var response = handler.handle(request);
         test_fail_redirect(response.toString());
-        test_doNotLog_user();
     }
 
-    private void test_log_user() {
-        assertThat(logger.list.get(0).getMessage()).contains("gugu");
-    }
+    @Test
+    void login_cookie() {
+        var loginResult = handler.handle(new StubHttpRequest("gugu", "password")).toString();
+        var request = new StubHttpRequest(new Cookie(StringUtils.substringAfter(loginResult, "Cookie: ")));
 
-    private void test_doNotLog_user() {
-        assertThat(logger.list).isEmpty();
-    }
+        var response = handler.handle(request);
 
+        test_success_redirect(response.toString());
+    }
 }

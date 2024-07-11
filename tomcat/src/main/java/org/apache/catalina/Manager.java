@@ -48,6 +48,9 @@ public interface Manager {
      */
     HttpSession findSession(String id) throws IOException;
 
+
+    HttpSession findSession(HttpSession session) throws IOException;
+
     /**
      * Remove this Session from the active Sessions for this Manager.
      *

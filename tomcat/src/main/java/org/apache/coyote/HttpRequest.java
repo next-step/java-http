@@ -50,8 +50,8 @@ public class HttpRequest {
     }
 
     public HttpSession getSession(Boolean canCreate) {
-        if (this.session != null) {
-            return this.session;
+        if (session != null) {
+            return sessionManager.findSession(session);
         }
 
         if (!canCreate) {
