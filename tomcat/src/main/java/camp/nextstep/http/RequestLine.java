@@ -1,6 +1,7 @@
 package camp.nextstep.http;
 
 
+import camp.nextstep.exception.InvalidRequestException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -33,6 +34,11 @@ public class RequestLine {
   }
 
   public static RequestLine parse(String request) {
+
+    if(request == null || request.isEmpty()) {
+      throw new InvalidRequestException("request가 null이거나 비어있습니다. ");
+    }
+
     final String[] tokens = request.split(" ");
     final String httpMethod = tokens[0];
     final String path = tokens[1];
