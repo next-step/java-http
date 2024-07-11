@@ -36,7 +36,9 @@ public class Request {
     private void setQueryString(final String[] requestPath) {
         if (requestLine.getMethod() != HttpMethod.GET) {
             return;
-        } else if (requestPath.length == 1) {
+        }
+
+        if (requestPath.length == 1) {
             return;
         }
 
