@@ -53,7 +53,7 @@
 
 ### Mission 3
 
-- [ ] 로그인 구현
+- [X] 로그인 구현
     - [X] HTTP Status Code 302
         - [X] 로그인이 성공하면 302 Code를 반환하고, /index.html로 리다이렉트
         - [X] 로그인이 실패하면 302 Code를 반환하고, /401.html로 리다이렉트
@@ -67,3 +67,12 @@
     - [X] Session 구현
         - [X] 로그인에 성공하면 Session 객체의 값으로 User 객체를 저장
         - [X] 로그인된 상태에서 /login 페이지에 HTTP GET method로 접근하면 index.html로 리다이렉트 처리
+
+### Mission 4
+
+- [ ] HttpRequest 클래스 구현
+- [ ] HttpResponse 클래스 구현
+- [ ] Controller 인터페이스 추가
+    - 분기에 있는 로직마다 AbstractController를 상속한 구현체 구현
+        - [ ] LoginController 구현
+        - [ ] RegisterController 구현
