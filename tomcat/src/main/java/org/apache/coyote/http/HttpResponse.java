@@ -1,20 +1,20 @@
 package org.apache.coyote.http;
 
-public class Response {
+public class HttpResponse {
 
-    private final ResponseLine responseLine = new ResponseLine();
+    private final HttpResponseLine httpResponseLine = new HttpResponseLine();
     private final HeaderMapping headerMapping = new HeaderMapping();
     private final StringBuilder body = new StringBuilder();
 
     public void init() {
-        this.responseLine.setHttpVersion(HttpVersion.HTTP1_1);
-        this.responseLine.setStatusCode(StatusCode.OK);
+        this.httpResponseLine.setHttpVersion(HttpVersion.HTTP1_1);
+        this.httpResponseLine.setStatusCode(StatusCode.OK);
         this.headerMapping.addHeader(HttpHeader.CONTENT_TYPE, ContentType.TEXT_PLAIN.type() + ContentType.CHARSET_UTF_8.type());
     }
 
     public void setResponseLine(final HttpVersion httpVersion, final StatusCode statusCode) {
-        this.responseLine.setHttpVersion(httpVersion);
-        this.responseLine.setStatusCode(statusCode);
+        this.httpResponseLine.setHttpVersion(httpVersion);
+        this.httpResponseLine.setStatusCode(statusCode);
     }
 
     public void setBody(final String body) {
@@ -30,7 +30,7 @@ public class Response {
 
     public byte[] toBytes() {
         return String.join(System.lineSeparator(),
-                responseLine.toResponseLine() + HeaderMapping.HEADER_SPACE,
+                httpResponseLine.toResponseLine() + HeaderMapping.HEADER_SPACE,
                 headerMapping.convertHttpHeaders(),
                 "",
                 body.toString()).getBytes();

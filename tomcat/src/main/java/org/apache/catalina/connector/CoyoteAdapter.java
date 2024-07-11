@@ -1,8 +1,8 @@
 package org.apache.catalina.connector;
 
 import com.javax.servlet.Servlet;
-import org.apache.coyote.http.Request;
-import org.apache.coyote.http.Response;
+import org.apache.coyote.http.HttpRequest;
+import org.apache.coyote.http.HttpResponse;
 
 public class CoyoteAdapter {
 
@@ -12,10 +12,10 @@ public class CoyoteAdapter {
         this.servletMapping.addServlet(mapping, servlet);
     }
 
-    public void service(final Request request, final Response response) throws Exception {
-        final Servlet servlet = servletMapping.getServlet(request);
+    public void service(final HttpRequest httpRequest, final HttpResponse httpResponse) throws Exception {
+        final Servlet servlet = servletMapping.getServlet(httpRequest);
 
-        servlet.service(request, response);
+        servlet.service(httpRequest, httpResponse);
     }
 
 }

@@ -4,12 +4,12 @@ import org.apache.coyote.http11.HttpParseException;
 
 import java.util.Map;
 
-public class Request {
+public class HttpRequest {
 
     private static final int REQUEST_LINE_NUMBERS = 3;
     private static final String REQUEST_LINE_SEPARATOR = " ";
 
-    private final RequestLine requestLine = new RequestLine();
+    private final HttpRequestLine httpRequestLine = new HttpRequestLine();
     private final ParamsMapping params = new ParamsMapping();
 
     public void setRequestLine(final String requestLine) throws HttpParseException {
@@ -19,22 +19,22 @@ public class Request {
             throw new HttpParseException("Invalid request line: " + requestLine);
         }
 
-        this.requestLine.setMethod(requestLineMetaData[0]);
-        this.requestLine.setProtocol(requestLineMetaData[2]);
+        this.httpRequestLine.setMethod(requestLineMetaData[0]);
+        this.httpRequestLine.setProtocol(requestLineMetaData[2]);
 
         setPath(requestLineMetaData);
     }
 
     private void setPath(final String[] requestLineMetaData) {
         final String path = requestLineMetaData[1];
-        final String[] requestPath = path.split(RequestLine.REQUEST_PATH_QUERY_SEPARATOR);
+        final String[] requestPath = path.split(HttpRequestLine.REQUEST_PATH_QUERY_SEPARATOR);
 
-        requestLine.setPath(requestPath[0]);
+        httpRequestLine.setPath(requestPath[0]);
         setQueryString(requestPath);
     }
 
     private void setQueryString(final String[] requestPath) {
-        if (requestLine.getMethod() != HttpMethod.GET) {
+        if (httpRequestLine.getMethod() != HttpMethod.GET) {
             return;
         }
 
@@ -46,11 +46,11 @@ public class Request {
     }
 
     public HttpMethod getMethod() {
-        return this.requestLine.getMethod();
+        return this.httpRequestLine.getMethod();
     }
 
     public String getPath() {
-        return this.requestLine.getPath();
+        return this.httpRequestLine.getPath();
     }
 
     public Map<String, String> getParameters() {
@@ -62,10 +62,10 @@ public class Request {
     }
 
     public String getProtocol() {
-        return this.requestLine.getProtocol();
+        return this.httpRequestLine.getProtocol();
     }
 
     public String getProtocolVersion() {
-        return this.requestLine.getProtocolVersion();
+        return this.httpRequestLine.getProtocolVersion();
     }
 }

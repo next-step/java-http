@@ -1,6 +1,6 @@
 package org.apache.coyote.http11;
 
-import org.apache.coyote.http.Request;
+import org.apache.coyote.http.HttpRequest;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -9,7 +9,7 @@ import java.io.InputStreamReader;
 
 public class HttpInputParser {
 
-    private final Request request = new Request();
+    private final HttpRequest httpRequest = new HttpRequest();
     private final BufferedReader reader;
 
     public HttpInputParser(final InputStream inputStream) {
@@ -17,11 +17,11 @@ public class HttpInputParser {
     }
 
     void parseRequestLine() throws IOException, HttpParseException {
-        request.setRequestLine(reader.readLine());
+        httpRequest.setRequestLine(reader.readLine());
     }
 
-    public Request getRequest() {
-        return this.request;
+    public HttpRequest getRequest() {
+        return this.httpRequest;
     }
 
     public void close() throws IOException {

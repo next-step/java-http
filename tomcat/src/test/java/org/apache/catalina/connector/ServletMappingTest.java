@@ -2,7 +2,7 @@ package org.apache.catalina.connector;
 
 import com.javax.servlet.Servlet;
 import org.apache.catalina.servlets.DefaultServlet;
-import org.apache.coyote.http.Request;
+import org.apache.coyote.http.HttpRequest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -17,11 +17,11 @@ class ServletMappingTest {
     public void getServlet() throws Exception {
         // given
         final ServletMapping servletMapping = new ServletMapping();
-        final Request request = mock();
-        when(request.getPath()).thenReturn("/");
+        final HttpRequest httpRequest = mock();
+        when(httpRequest.getPath()).thenReturn("/");
 
         // when
-        final Servlet actual = servletMapping.getServlet(request);
+        final Servlet actual = servletMapping.getServlet(httpRequest);
 
         // then
         assertThat(actual).isNotNull().isInstanceOf(DefaultServlet.class);
@@ -33,15 +33,15 @@ class ServletMappingTest {
         // given
         final ServletMapping servletMapping = new ServletMapping();
         final Servlet servlet = mock(Servlet.class);
-        final Request request = mock();
+        final HttpRequest httpRequest = mock();
 
-        when(request.getPath()).thenReturn("/");
+        when(httpRequest.getPath()).thenReturn("/");
 
         // when
         servletMapping.addServlet("/*", servlet);
 
         // then
-        assertThat(servletMapping.getServlet(request)).isNotNull().isNotInstanceOf(DefaultServlet.class);
+        assertThat(servletMapping.getServlet(httpRequest)).isNotNull().isNotInstanceOf(DefaultServlet.class);
     }
 
 }

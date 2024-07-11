@@ -1,8 +1,8 @@
 package org.apache.catalina.connector;
 
 import com.javax.servlet.Servlet;
-import org.apache.coyote.http.Request;
-import org.apache.coyote.http.Response;
+import org.apache.coyote.http.HttpRequest;
+import org.apache.coyote.http.HttpResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -30,14 +30,14 @@ class CoyoteAdapterTest {
         final CoyoteAdapter adapter = new CoyoteAdapter();
         final Servlet servlet = mock();
         final String mapping = "/servlet";
-        final Request request = mock();
-        final Response response = mock();
+        final HttpRequest httpRequest = mock();
+        final HttpResponse httpResponse = mock();
 
         adapter.addServlet(mapping, servlet);
-        when(request.getPath()).thenReturn(mapping);
+        when(httpRequest.getPath()).thenReturn(mapping);
 
         // when then
-        assertDoesNotThrow(() -> adapter.service(request, response));
+        assertDoesNotThrow(() -> adapter.service(httpRequest, httpResponse));
     }
 
 }
