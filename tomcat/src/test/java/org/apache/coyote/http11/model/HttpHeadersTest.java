@@ -8,7 +8,7 @@ import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class HttpRequestHeaderTest {
+class HttpHeadersTest {
 
     @DisplayName("requestHeader에 Content-Length로 RequestBody가 존재하는지 확인한다.")
     @ParameterizedTest
@@ -23,10 +23,10 @@ class HttpRequestHeaderTest {
     )
     void hasRequestBodyTest(final String key, final String value, final boolean expected) {
         // given
-        final HttpRequestHeader httpRequestHeader = new HttpRequestHeader(Map.of(key, value));
+        final HttpHeaders httpHeaders = new HttpHeaders(Map.of(key, value));
 
         // when
-        final boolean result = httpRequestHeader.hasRequestBody();
+        final boolean result = httpHeaders.hasRequestBody();
 
         // then
         assertThat(result).isEqualTo(expected);
@@ -45,10 +45,10 @@ class HttpRequestHeaderTest {
     )
     void hasCookieTest(final String key, final String value, final boolean expected) {
         // given
-        final HttpRequestHeader httpRequestHeader = new HttpRequestHeader(Map.of(key, value));
+        final HttpHeaders httpHeaders = new HttpHeaders(Map.of(key, value));
 
         // when
-        final boolean result = httpRequestHeader.hasCookie();
+        final boolean result = httpHeaders.hasCookie();
 
         // then
         assertThat(result).isEqualTo(expected);

@@ -6,17 +6,17 @@ public class HttpResponse {
     private static final String BLANK_LINE = "\r\n";
     private static final String NEW_LINE = " " + BLANK_LINE;
     private final HttpStatusCode httpStatusCode;
-    private final HttpRequestHeader httpRequestHeader;
+    private final HttpHeaders httpHeaders;
     private final String body;
 
-    public HttpResponse(final HttpStatusCode httpStatusCode, final HttpRequestHeader httpRequestHeader, final String body) {
+    public HttpResponse(final HttpStatusCode httpStatusCode, final HttpHeaders httpHeaders, final String body) {
         this.httpStatusCode = httpStatusCode;
-        this.httpRequestHeader = httpRequestHeader;
+        this.httpHeaders = httpHeaders;
         this.body = body;
     }
 
-    public HttpResponse(final HttpStatusCode httpStatusCode, final HttpRequestHeader httpRequestHeader) {
-        this(httpStatusCode, httpRequestHeader, "");
+    public HttpResponse(final HttpStatusCode httpStatusCode, final HttpHeaders httpHeaders) {
+        this(httpStatusCode, httpHeaders, "");
     }
 
     private String buildStatusLine() {
@@ -32,7 +32,7 @@ public class HttpResponse {
     }
 
     private String buildContentTypeHeader() {
-        return "Content-Type: " + httpRequestHeader.requestLine().contentTypeText() + ";charset=utf-8" + NEW_LINE;
+        return "Content-Type: " + httpHeaders.requestLine().contentTypeText() + ";charset=utf-8" + NEW_LINE;
     }
 
     private String buildContentLengthHeader() {
@@ -40,8 +40,8 @@ public class HttpResponse {
     }
 
     private String buildCookieHeader() {
-        if (httpRequestHeader.hasCookie()) {
-            return httpRequestHeader.httpCookie().toLine() + NEW_LINE;
+        if (httpHeaders.hasCookie()) {
+            return httpHeaders.httpCookie().toLine() + NEW_LINE;
         }
 
         return "";

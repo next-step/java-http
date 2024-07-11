@@ -25,9 +25,9 @@ class HttpResponseTest {
                 "Accept: */* ",
                 "",
                 "test");
-        final HttpRequestHeader httpRequestHeader = HttpRequestHeaderParser.getInstance()
+        final HttpHeaders httpHeaders = HttpRequestHeaderParser.getInstance()
                 .parse(request);
-        final HttpResponse httpResponse = new HttpResponse(HttpStatusCode.OK, httpRequestHeader, "test");
+        final HttpResponse httpResponse = new HttpResponse(HttpStatusCode.OK, httpHeaders, "test");
 
         // when
         final String result = httpResponse.buildOkResponse();
@@ -55,9 +55,9 @@ class HttpResponseTest {
                 "Accept: */* ",
                 "",
                 "test");
-        final HttpRequestHeader httpRequestHeader = HttpRequestHeaderParser.getInstance()
+        final HttpHeaders httpHeaders = HttpRequestHeaderParser.getInstance()
                 .parse(request);
-        final HttpResponse httpResponse = new HttpResponse(HttpStatusCode.FOUND, httpRequestHeader, "test");
+        final HttpResponse httpResponse = new HttpResponse(HttpStatusCode.FOUND, httpHeaders, "test");
 
         // when
         final String result = httpResponse.buildRedirectResponse("http://localhost:8080/index.html");

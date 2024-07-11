@@ -1,6 +1,6 @@
 package org.apache.coyote.http11.request;
 
-import org.apache.coyote.http11.model.HttpRequestHeader;
+import org.apache.coyote.http11.model.HttpHeaders;
 import org.apache.coyote.http11.model.HttpResponse;
 import org.apache.coyote.http11.model.constant.HttpStatusCode;
 
@@ -19,18 +19,18 @@ public abstract class AbstractRequestHandler implements RequestHandler {
         return new String(Files.readAllBytes(html.toPath()));
     }
 
-    protected String buildOkHttpResponse(final HttpRequestHeader httpRequestHeader, final String body) {
-        return new HttpResponse(HttpStatusCode.OK, httpRequestHeader, body)
+    protected String buildOkHttpResponse(final HttpHeaders httpHeaders, final String body) {
+        return new HttpResponse(HttpStatusCode.OK, httpHeaders, body)
                 .buildOkResponse();
     }
 
-    protected String buildRedirectHttpResponse(final HttpRequestHeader httpRequestHeader, final String location) {
-        return new HttpResponse(HttpStatusCode.FOUND, httpRequestHeader)
+    protected String buildRedirectHttpResponse(final HttpHeaders httpHeaders, final String location) {
+        return new HttpResponse(HttpStatusCode.FOUND, httpHeaders)
                 .buildRedirectResponse(location);
     }
 
-    protected String buildRedirectSetCookieHttpResponse(final HttpRequestHeader httpRequestHeader, final String location, final String cookie) {
-        return new HttpResponse(HttpStatusCode.FOUND, httpRequestHeader)
+    protected String buildRedirectSetCookieHttpResponse(final HttpHeaders httpHeaders, final String location, final String cookie) {
+        return new HttpResponse(HttpStatusCode.FOUND, httpHeaders)
                 .buildRedirectSetCookieResponse(location, cookie);
     }
 }
