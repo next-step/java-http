@@ -39,6 +39,7 @@ public class Http11Processor implements Runnable, Processor {
         try (final var inputStream = connection.getInputStream();
              final var outputStream = connection.getOutputStream();
             final BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream))) {
+            // TODO 다 읽으면 응답이 내려가지않음 해결 필요
             // List<String> requestStrs = bufferedReader.lines().toList();
             List<String> requestStrs = List.of(bufferedReader.readLine());
             Response response = requestHandlerContainer.handleRequest(requestStrs);

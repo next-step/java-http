@@ -12,6 +12,7 @@ public class RequestHandlerContainer {
     public RequestHandlerContainer() {
         requestHandlers = List.of(
             new RootRequestHandler(),
+            new LoginRequestHandler(),
             new FileRequestHandler()
         );
     }

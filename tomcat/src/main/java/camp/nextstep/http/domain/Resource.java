@@ -22,10 +22,18 @@ public class Resource {
             RequestLine requestLine,
             ClassLoader classLoader
     ) {
+        return createResourceFromPath(
+                requestLine.getPath().getUrlPath(),
+                classLoader
+        );
+    }
+
+    public static Resource createResourceFromPath(
+            String path,
+            ClassLoader classLoader
+    ) {
         try {
-            final File file = new File(
-                    getUri(requestLine.getPath().getUrlPath(), classLoader)
-            );
+            final File file = new File(getUri(path, classLoader));
             if (!file.exists()) {
                 throw new ResourceNotFoundException("파일을 찾을 수 없습니다");
             }
@@ -36,7 +44,6 @@ public class Resource {
             return new Resource(new File("static/404.html"));
         }
     }
-
 
     private static URI getUri(
             String path,
