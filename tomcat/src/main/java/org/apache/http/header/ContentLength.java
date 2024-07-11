@@ -6,7 +6,7 @@ import org.apache.commons.lang3.tuple.Pair;
  * https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Length
  */
 public class ContentLength extends HttpRequestHeader implements HttpResponseHeader{
-    private static final RequestHeaderName HEADER_NAME = RequestHeaderName.CONTENT_LENGTH;
+    private static final RequestHeaderParser parser = RequestHeaderParser.CONTENT_LENGTH;
 
     protected final int length;
 
@@ -19,12 +19,12 @@ public class ContentLength extends HttpRequestHeader implements HttpResponseHead
     }
 
     @Override
-    Pair<RequestHeaderName, HttpRequestHeader> getHeader() {
-        return Pair.of(HEADER_NAME, this);
+    RequestHeaderParser getParser() {
+        return parser;
     }
 
     @Override
     public String toString() {
-        return HEADER_NAME + HttpResponseHeader.DELIMITER + length + " ";
+        return parser + HttpResponseHeader.DELIMITER + length + " ";
     }
 }

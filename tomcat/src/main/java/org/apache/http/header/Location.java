@@ -7,6 +7,7 @@ import org.apache.http.HttpPath;
  * https://developer.mozilla.org/ko/docs/Web/HTTP/Headers/Location
  */
 public class Location implements HttpResponseHeader {
+    private static final String NAME = "Location";
     private final HttpPath path;
 
     public Location(String path) {
@@ -19,7 +20,7 @@ public class Location implements HttpResponseHeader {
 
     @Override
     public String toString() {
-        return "Location" + DELIMITER + path;
+        return NAME + DELIMITER + path;
     }
 
 }

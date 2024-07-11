@@ -8,8 +8,10 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 public class SetCookie implements HttpResponseHeader {
-    private final Set<HttpCookie> cookies;
+    private static final String NAME = "Set-Cookie";
     private static final String COOKIE_DELIMITER = "; ";
+
+    private final Set<HttpCookie> cookies;
 
     public SetCookie() {
         this.cookies = new HashSet<>();
@@ -30,6 +32,6 @@ public class SetCookie implements HttpResponseHeader {
 
     @Override
     public String toString() {
-        return "Set-Cookie" + DELIMITER + cookies.stream().map(Objects::toString).collect(Collectors.joining(COOKIE_DELIMITER));
+        return NAME + DELIMITER + cookies.stream().map(Objects::toString).collect(Collectors.joining(COOKIE_DELIMITER));
     }
 }

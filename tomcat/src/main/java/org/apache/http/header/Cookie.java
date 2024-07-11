@@ -10,7 +10,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 public class Cookie extends HttpRequestHeader {
-    private static final RequestHeaderName headerName = RequestHeaderName.COOKIE;
+    private static final RequestHeaderParser parser = RequestHeaderParser.COOKIE;
     private static final String COOKIE_DELIMITER = "; ";
 
     private final Set<HttpCookie> cookies = new HashSet<>();
@@ -33,12 +33,12 @@ public class Cookie extends HttpRequestHeader {
     }
 
     @Override
-    Pair<RequestHeaderName, HttpRequestHeader> getHeader() {
-        return Pair.of(headerName, this);
+    RequestHeaderParser getParser() {
+        return parser;
     }
 
     @Override
     public String toString() {
-        return "Cookie" + DELIMITER + cookies.stream().map(Objects::toString).collect(Collectors.joining(COOKIE_DELIMITER));
+        return parser + DELIMITER + cookies.stream().map(Objects::toString).collect(Collectors.joining(COOKIE_DELIMITER));
     }
 }
