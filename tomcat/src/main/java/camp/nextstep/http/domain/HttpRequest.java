@@ -7,7 +7,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.LinkedHashMap;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 public class HttpRequest {
@@ -85,18 +84,8 @@ public class HttpRequest {
     }
 
     public HttpSession getSession() {
-        return getSession(true);
-    }
-
-    public HttpSession getSession(final boolean create) {
-        HttpSession session = HttpSessionManager.findSession(headers.getSessionCookie());
-
-        if (session == null && create) {
-            session = new HttpSession(UUID.randomUUID().toString());
-            headers.addSessionCookie(session.getId());
-            HttpSessionManager.add(session);
-        }
-
+        final HttpSession session = HttpSessionManager.computeIfAbsent(headers.getSessionCookie());
+        headers.addSessionCookie(session.getId());
         return session;
     }
 }

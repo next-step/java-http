@@ -68,6 +68,6 @@ class HttpRequestTest {
 
         final HttpRequest httpRequest = new HttpRequest(inputStream);
 
-        assertThat(httpRequest.getSession(false)).isEqualTo(new HttpSession("session"));
+        assertThat(httpRequest.getSession()).isEqualTo(new HttpSession("session"));
     }
 }
