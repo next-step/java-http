@@ -30,6 +30,7 @@ public class Http11Processor implements Runnable, Processor {
         process(connection);
     }
 
+    // TODO 리팩터링 !!
     @Override
     public void process(final Socket connection) {
         try (BufferedReader br = new BufferedReader(new InputStreamReader(connection.getInputStream()));
@@ -40,23 +41,7 @@ public class Http11Processor implements Runnable, Processor {
             HttpRequest httpRequest = HttpRequest.from(httpRequestMessage);
 
             // body를 읽는다
-            if (httpRequest.isPost()) {
-                String headerValue = httpRequest.getHeaderValue(HttpHeaderName.CONTENT_LENGTH.getValue());
-                long contentLength;
-                if (headerValue == null || headerValue.isBlank()) {
-                    contentLength = 0;
-                } else {
-                    contentLength = Long.parseLong(headerValue);
-                }
-
-                StringBuilder sb = new StringBuilder();
-                for (int i = 0; i < contentLength; i++) {
-                    int read = br.read();
-                    sb.append((char) read);
-                }
-                String body = sb.toString();
-                httpRequest.addRequestBody(body);
-            }
+            handleRequestBody(httpRequest, br);
 
             // 요청을 처리한다
             HttpResponse response = handleRequest(httpRequest);
@@ -66,6 +51,27 @@ public class Http11Processor implements Runnable, Processor {
             outputStream.flush();
         } catch (IOException | UncheckedServletException e) {
             log.error(e.getMessage(), e);
+        }
+    }
+
+    private void handleRequestBody(final HttpRequest httpRequest, final BufferedReader br) throws IOException {
+        if (httpRequest.isPost()) {
+            String headerValue = httpRequest.getHeaderValue(HttpHeaderName.CONTENT_LENGTH.getValue());
+            long contentLength;
+            if (headerValue == null || headerValue.isBlank()) {
+                contentLength = 0;
+            } else {
+                contentLength = Long.parseLong(headerValue);
+            }
+
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < contentLength; i++) {
+                int read = br.read();
+                sb.append((char) read);
+            }
+
+            String body = sb.toString();
+            httpRequest.addRequestBody(body);
         }
     }
 
@@ -84,6 +90,18 @@ public class Http11Processor implements Runnable, Processor {
             }
 
             List<HttpHeader> httpHeaders = List.of(HttpHeader.of(HttpHeaderName.LOCATION.getValue(), location));
+            return HttpResponse.of(httpRequest.getProtocol(), HttpStatus.FOUND, httpHeaders, "");
+        }
+
+        if (path.contains("/register") && httpRequest.isPost()) {
+            String account = httpRequest.getBodyValue("account");
+            String password = httpRequest.getBodyValue("password");
+            String email = httpRequest.getBodyValue("email");
+
+            User user = new User(InMemoryUserRepository.getAutoIncrement(), account, password, email);
+            InMemoryUserRepository.save(user);
+
+            List<HttpHeader> httpHeaders = List.of(HttpHeader.of(HttpHeaderName.LOCATION.getValue(), "/index.html"));
             return HttpResponse.of(httpRequest.getProtocol(), HttpStatus.FOUND, httpHeaders, "");
         }
 
