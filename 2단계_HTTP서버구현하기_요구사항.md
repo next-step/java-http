@@ -13,6 +13,10 @@ Connection: keep-alive
 Accept: */*
 ```
 
+[x] Http11Processor#process() 에서 http path 를 읽어오기 
+[x] Http11Processor 에서 파일 리소스 읽어오기
+[x] 파일 리소스가 없을 경우 exception 추가
+
 ### 2. CSS 지원하기
 ![img.png](img.png)
 
