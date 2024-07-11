@@ -18,8 +18,6 @@ public class LoginRequestHandler implements RequestHandler{
     private final String LOGIN_PATH = "/login";
     private final String LOGIN_PAGE_PATH = "/login.html";
     private final String ACCOUNT = "account";
-    private final String PASSWORD = "password";
-    private final String PRINT_FORMAT = "account = %s, email = %s, password = %s";
 
     @Override
     public boolean isMatchPathPattern(String path) {
