@@ -4,17 +4,18 @@ import org.apache.coyote.HttpRequest;
 import org.apache.coyote.HttpRequestLine;
 import org.apache.http.HttpPath;
 import org.apache.http.body.HttpFormBody;
+import org.apache.http.header.Cookie;
 import org.apache.http.header.HttpRequestHeaders;
 
 import java.util.List;
 
 public class StubHttpRequest extends HttpRequest {
     public StubHttpRequest() {
-        super(new HttpRequestLine("GET /index.html HTTP/1.1 "), null, null);
+        super(new HttpRequestLine("GET /index.html HTTP/1.1 "), new HttpRequestHeaders(), null);
     }
 
     public StubHttpRequest(final HttpPath path) {
-        super(new HttpRequestLine("GET " + path + " HTTP/1.1 "), null, null);
+        super(new HttpRequestLine("GET " + path + " HTTP/1.1 "), new HttpRequestHeaders(), null);
     }
 
     public StubHttpRequest(final String account, final String password) {
@@ -34,6 +35,13 @@ public class StubHttpRequest extends HttpRequest {
         );
     }
 
+    public StubHttpRequest(final Cookie cookie) {
+        super(
+                new HttpRequestLine("GET / HTTP/1.1"),
+                new HttpRequestHeaders(cookie),
+                null
+        );
+    }
     @Override
     public String toString() {
         return String.join("\r\n", requestLine.toString(), headers != null ? headers.toString() : "", "", body != null ? body.toString() : "");
