@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.stream.Collectors;
 
 public enum ContentType {
+    NONE(""),
     TEXT_PLAIN("text/plain"),
     TEXT_HTML("text/html"),
     TEXT_JSON("text/json"),
@@ -28,6 +29,6 @@ public enum ContentType {
     }
 
     public static ContentType from(final String mimeType) {
-        return Arrays.stream(values()).filter(contentType -> contentType.type.contains(mimeType)).findFirst().orElse(null);
+        return Arrays.stream(values()).filter(contentType -> contentType.type.contains(mimeType)).findFirst().orElse(NONE);
     }
 }
