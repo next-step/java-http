@@ -35,7 +35,7 @@ public class RequestLine {
 
   public static RequestLine parse(String request) {
 
-    if(request == null || request.isEmpty()) {
+    if (request == null || request.isEmpty()) {
       throw new InvalidRequestException("request가 null이거나 비어있습니다. ");
     }
 
