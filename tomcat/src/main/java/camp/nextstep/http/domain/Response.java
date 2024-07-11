@@ -10,6 +10,7 @@ import java.util.stream.Stream;
 
 public class Response {
     private static final String SUCCESS_HEADER = "HTTP/1.1 200 OK ";
+    private static final String NOTFOUND_HEADER = "HTTP/1.1 404 OK ";
     private static final String DEFAULT_CHARSET = "charset=utf-8";
     private static final String CONTENT_TYPE_FORMAT = "Content-Type: %s; %s";
     private static final String CONTENT_LENGTH_FORMAT = "Content-Length: %s ";
@@ -57,12 +58,38 @@ public class Response {
                 DEFAULT_CHARSET
         );
 
+        return createResponse(
+            contentTypeStr,
+            responseBody,
+            SUCCESS_HEADER
+        );
+    }
+
+    public static Response createNotFoundResponseByString() {
+        String responseBody = "NOT FOUND";
+        String contentTypeStr = getContentTypeHeader(
+            ContentType.TEXT_HTML,
+            DEFAULT_CHARSET
+        );
+
+        return createResponse(
+            contentTypeStr,
+            responseBody,
+            NOTFOUND_HEADER
+        );
+    }
+
+    private static Response createResponse(
+        String contentTypeStr,
+        String responseBody,
+        String header
+    ) {
         final var response = String.join(System.lineSeparator(),
-                SUCCESS_HEADER,
-                contentTypeStr,
-                getContentLengthHeader(responseBody),
-                "",
-                responseBody);
+            header,
+            contentTypeStr,
+            getContentLengthHeader(responseBody),
+            "",
+            responseBody);
 
         return new Response(response);
     }

@@ -33,7 +33,7 @@ public class Resource {
             return new Resource(file);
         }  catch (Exception exception) {
             exception.printStackTrace();
-            throw new ResourceNotFoundException(exception.getMessage());
+            return new Resource(new File("static/404.html"));
         }
     }
 
