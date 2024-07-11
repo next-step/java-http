@@ -19,8 +19,9 @@ public class HttpRequest {
         public static HttpRequest from(final String httpRequestMessage) {
             String[] httpRequestMessages = httpRequestMessage.split("\n");
 
-            List<String> httpHeaders = Arrays.stream(httpRequestMessages, HEADER_START_INDEX, httpRequestMessages.length)
+            List<HttpHeader> httpHeaders = Arrays.stream(httpRequestMessages, HEADER_START_INDEX, httpRequestMessages.length)
                     .takeWhile(Predicate.not(String::isBlank))
+                    .map(HttpHeader::from)
                     .toList();
 
             return new HttpRequest(RequestLine.from(httpRequestMessages[REQUEST_LINE_INDEX]), HttpHeaders.from(httpHeaders));

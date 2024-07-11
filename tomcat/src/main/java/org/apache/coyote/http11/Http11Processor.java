@@ -40,10 +40,10 @@ public class Http11Processor implements Runnable, Processor {
 
             File resource = new ResourceFinder().findByPath(path);
             MediaType mediaType = MediaType.from(resource);
+            List<HttpHeader> httpHeaders = List.of(HttpHeader.of(HttpHeaderName.CONTENT_TYPE.getValue(), mediaType.getValue() + ";charset=utf-8"));
             String responseBody = new String(Files.readAllBytes(resource.toPath()));
-            HttpResponse response = HttpResponse.from(httpRequest.getProtocol(), HttpStatus.OK, mediaType, responseBody);
-
-            outputStream.write(response.createFormat().getBytes());
+            HttpResponse response = HttpResponse.of(httpRequest.getProtocol(), HttpStatus.OK, httpHeaders, responseBody);
+            outputStream.write(response.createFormat().getBytes());  // 바디에 응답이 될 때도 있지만 되지 않을 때도 있다
             outputStream.flush();
         } catch (IOException | UncheckedServletException e) {
             log.error(e.getMessage(), e);

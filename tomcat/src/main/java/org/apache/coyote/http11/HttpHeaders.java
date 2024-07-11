@@ -1,19 +1,29 @@
 package org.apache.coyote.http11;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class HttpHeaders {
-    private final List<HttpHeader> values;
+    private static final String CRLF = "\r\n";
+
+    private final List<HttpHeader> values = new ArrayList<>();
 
     private HttpHeaders(final List<HttpHeader> values) {
-        this.values = values;
+        this.values.addAll(values);
     }
 
-    public static HttpHeaders from(final List<String> httpHeaders) {
-        List<HttpHeader> values = httpHeaders.stream()
-                .map(HttpHeader::from)
-                .toList();
+    public static HttpHeaders from(final List<HttpHeader> httpHeaders) {
+        return new HttpHeaders(httpHeaders);
+    }
 
-        return new HttpHeaders(values);
+    public void addHeader(HttpHeader httpHeader) {
+        values.add(httpHeader);
+    }
+
+    public String createMessage() {
+        return values.stream()
+                .map(HttpHeader::createMessage)
+                .collect(Collectors.joining(CRLF));
     }
 }
