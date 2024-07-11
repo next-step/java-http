@@ -1,5 +1,7 @@
-package camp.nextstep.domain.http;
+package camp.nextstep.domain.http.request;
 
+import camp.nextstep.domain.http.HttpMethod;
+import camp.nextstep.domain.http.HttpProtocol;
 import org.junit.jupiter.api.Test;
 
 import java.util.Map;
@@ -37,12 +39,6 @@ class RequestLineTest {
                 () -> assertThat(actual.getProtocol()).isEqualTo("HTTP"),
                 () -> assertThat(actual.getVersion()).isEqualTo("1.1")
         );
-    }
-
-    @Test
-    void 파일확장자가_있는_경우_그대로_반환한다() {
-        String actual = new RequestLine("GET /docs/index.html HTTP/1.1").getFilePath();
-        assertThat(actual).isEqualTo("/docs/index.html");
     }
 
     @Test

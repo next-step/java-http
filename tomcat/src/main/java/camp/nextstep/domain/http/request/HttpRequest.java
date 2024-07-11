@@ -1,16 +1,20 @@
-package camp.nextstep.domain.http;
+package camp.nextstep.domain.http.request;
 
-import java.util.Map;
+import camp.nextstep.domain.http.HttpCookie;
+import camp.nextstep.domain.http.HttpHeaders;
+import camp.nextstep.domain.http.HttpProtocol;
 
 public class HttpRequest {
 
     private final RequestLine requestLine;
     private final HttpHeaders httpHeaders;
+    private final HttpCookie httpCookie;
     private final HttpRequestBody httpRequestBody;
 
-    public HttpRequest(RequestLine requestLine, HttpHeaders httpHeaders, HttpRequestBody httpRequestBody) {
+    public HttpRequest(RequestLine requestLine, HttpHeaders httpHeaders, HttpCookie httpCookie, HttpRequestBody httpRequestBody) {
         this.requestLine = requestLine;
         this.httpHeaders = httpHeaders;
+        this.httpCookie = httpCookie;
         this.httpRequestBody = httpRequestBody;
     }
 
@@ -20,6 +24,10 @@ public class HttpRequest {
 
     public boolean isPostMethod() {
         return requestLine.isPostMethod();
+    }
+
+    public boolean containsSessionId() {
+        return httpCookie.containsSessionId();
     }
 
     public String getHttpPath() {
@@ -34,11 +42,11 @@ public class HttpRequest {
         return requestLine.getHttpProtocol();
     }
 
-    public Map<String, String> getQueryString() {
-        return requestLine.getQueryString();
+    public String getSessionId() {
+        return httpCookie.getSessionId();
     }
 
-    public Map<String, String> getHttpRequestBody() {
-        return httpRequestBody.getValues();
+    public String getHttpRequestBodyValue(String key) {
+        return httpRequestBody.getValue(key);
     }
 }

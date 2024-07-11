@@ -1,4 +1,4 @@
-package camp.nextstep.domain.http;
+package camp.nextstep.domain.http.request;
 
 import java.util.AbstractMap.SimpleEntry;
 import java.util.Arrays;
@@ -18,17 +18,21 @@ public class QueryString {
 
     private final Map<String, String> queryParameters;
 
+    public QueryString(Map<String, String> queryParameters) {
+        this.queryParameters = queryParameters;
+    }
+
     public QueryString() {
-        this.queryParameters = emptyMap();
+        this(emptyMap());
     }
 
-    public QueryString(String queryString) {
-        this.queryParameters = Arrays.stream(queryString.split(QUERY_STRING_FORMAT_SPLIT_REGEX))
-                .map(this::parseQueryParameter)
-                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+    public static QueryString from(String queryString) {
+        return new QueryString(Arrays.stream(queryString.split(QUERY_STRING_FORMAT_SPLIT_REGEX))
+                .map(QueryString::parseQueryParameter)
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue)));
     }
 
-    private Map.Entry<String, String> parseQueryParameter(String queryParameter) {
+    private static Map.Entry<String, String> parseQueryParameter(String queryParameter) {
         String[] splitQueryParameter = queryParameter.split(QUERY_PARAMETER_FORMAT_SPLIT_REGEX);
         if (splitQueryParameter.length != QUERY_PARAMETER_FORMAT_LENGTH) {
             throw new IllegalArgumentException("QueryParameter값이 정상적으로 입력되지 않았습니다 - " + queryParameter);

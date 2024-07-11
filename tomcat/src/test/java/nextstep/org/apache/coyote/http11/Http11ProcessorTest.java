@@ -1,6 +1,8 @@
 package nextstep.org.apache.coyote.http11;
 
 import camp.nextstep.db.InMemoryUserRepository;
+import camp.nextstep.domain.session.Session;
+import camp.nextstep.domain.session.SessionManager;
 import org.apache.coyote.http11.Http11Processor;
 import org.junit.jupiter.api.Test;
 import support.StubSocket;
@@ -150,6 +152,33 @@ class Http11ProcessorTest {
     }
 
     @Test
+    void login_get_already_login() {
+        // given
+        final Session session = new Session("key");
+        SessionManager.add(session);
+        final String httpRequest = String.join("\r\n",
+                "GET /login HTTP/1.1 ",
+                "Host: localhost:8080 ",
+                "Connection: keep-alive ",
+                "Cookie: JSESSIONID=key",
+                "",
+                "");
+
+        final var socket = new StubSocket(httpRequest);
+        final Http11Processor processor = new Http11Processor(socket);
+
+        // when
+        processor.process(socket);
+
+        // then
+        var expected = String.join("\r\n",
+                "HTTP/1.1 302 Found ",
+                "Location: /index.html ");
+
+        assertThat(socket.output()).isEqualTo(expected);
+    }
+
+    @Test
     void login_post_success() {
         // given
         final String httpRequest = String.join("\r\n",
@@ -252,10 +281,11 @@ class Http11ProcessorTest {
         // then
         var expected = String.join("\r\n",
                 "HTTP/1.1 302 Found ",
-                "Location: /login.html ");
+                "Location: /index.html ",
+                "Set-Cookie: JSESSIONID=");
 
         assertAll(
-                () -> assertThat(socket.output()).isEqualTo(expected),
+                () -> assertThat(socket.output()).startsWith(expected),
                 () -> assertThat(InMemoryUserRepository.findByAccount("jinyoung")).isNotNull()
         );
     }
