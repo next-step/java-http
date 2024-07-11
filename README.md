@@ -131,3 +131,12 @@ Location: /index.html
     - 지원하지 않는 경우 기본적으로 `/404.html`을 리턴할 수 있도록 한다.
   - LoginController, RootController, RegisterController, DefaultPathController
     - Http11Processor에 구현된 값을 가져와 구현해 리팩터링한다.
+
+## 5단계 - 동시성 확장하기
+- `acceptCount`와 `maxThreads`는 각각 어떤 설정일까?
+  - acceptCount : 웹 요청에서 실행가능한 스레드가 생길때까지 대기할 수 있는 요청 수. 모든 스레드가 실행중이면 acceptCount가 올라감
+  - coreThreads : 기본적으로 유지되는 유휴 스레드
+  - maxThreads : 어플리케이션 내에서 최대로 실행가능한 단위(스레드). 유휴 스레드수가 넘어가면 maxThreads 갯수까지 스레드를 생성하여 실행 
+- 최대 ThradPool의 크기는 250, 모든 Thread가 사용 중인(Busy) 상태이면 100명까지 대기 상태로 만들려면 어떻게 할까?
+  - `ThreadPoolExecutor`를 직접 정의하고 queueCapacity로 100인 `ArrayBlockingQueue`를 구성
+  - 실행 중인 스레드가 maxThread가 되면 해당 queue에 쌓이게되고 대기가 100개가 넘어가면 `AbortPolicy`로 핸들링
