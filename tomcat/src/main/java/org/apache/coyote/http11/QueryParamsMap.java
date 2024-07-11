@@ -5,12 +5,12 @@ import org.apache.commons.lang3.ObjectUtils;
 import java.util.HashMap;
 import java.util.Map;
 
-public record HttpQueryParams(Map<String,String> value) {
+public record QueryParamsMap(Map<String,String> value) {
 
     public static final String QUERY_PARAM_DELIMITER = "&";
     public static final String KEY_VALUE_DELIMITER = "=";
 
-    public static HttpQueryParams from(String queryString) {
+    public static QueryParamsMap from(String queryString) {
         if(ObjectUtils.isEmpty(queryString)) return null;
 
         Map<String, String> result = new HashMap<>();
@@ -23,6 +23,6 @@ public record HttpQueryParams(Map<String,String> value) {
             result.put(key, value);
         }
 
-        return new HttpQueryParams(result);
+        return new QueryParamsMap(result);
     }
 }

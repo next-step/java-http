@@ -16,7 +16,7 @@ class HttpQueryParamsTest {
         void success() {
             String input = "userId=javajigi&password=password&name=JaeSung";
 
-            HttpQueryParams result = HttpQueryParams.from(input);
+            QueryParamsMap result = QueryParamsMap.from(input);
 
             assertThat(result.value().get("userId")).isEqualTo("javajigi");
             assertThat(result.value().get("password")).isEqualTo("password");
