@@ -2,6 +2,7 @@ package camp.nextstep.http;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.Map;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -39,5 +40,34 @@ class RequestLineTest {
     assertThat(requestLine.getVersion()).isEqualTo("1.1");
   }
 
+  @Test
+  @DisplayName(" HTTP 요청의 Query String으로 전달되는 데이터를 파싱한다.")
+  void parseHttpQueryStringRequest() {
+    // given
+    final String request = "GET /users?userId=javajigi&password=password&name=JaeSung HTTP/1.1";
+
+    // when
+    final RequestLine requestLine = RequestLine.parse(request);
+
+    // then
+    assertThat(requestLine.getHttpMethod()).isInstanceOf(HttpMethod.class);
+    assertThat(requestLine.getQueryString()).isEqualTo(
+        Map.of("userId", "javajigi", "password", "password", "name", "JaeSung"));
+  }
+
+  @Test
+  @DisplayName(" HTTP 요청의 Query String으로 전달되는 데이터를 파싱한다.")
+  void parseHttpSingleQueryStringRequest() {
+    // given
+    final String request = "GET /users?userId=javajigi HTTP/1.1";
+
+    // when
+    final RequestLine requestLine = RequestLine.parse(request);
+
+    // then
+    assertThat(requestLine.getHttpMethod()).isInstanceOf(HttpMethod.class);
+    assertThat(requestLine.getQueryString()).isEqualTo(
+        Map.of("userId", "javajigi"));
+  }
 
 }
