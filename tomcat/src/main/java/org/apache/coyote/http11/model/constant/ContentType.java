@@ -1,6 +1,7 @@
 package org.apache.coyote.http11.model.constant;
 
 import java.util.Arrays;
+import java.util.List;
 
 public enum ContentType {
     TEXT_HTML(".html", "text/html"),
@@ -20,6 +21,15 @@ public enum ContentType {
                 .filter(it -> extension.equals(it.extension))
                 .findAny()
                 .orElseThrow(() -> new IllegalArgumentException("do not find ContentType"));
+    }
+
+    public static boolean isStaticType(final String path) {
+        return staticTypes().stream()
+                .anyMatch(type -> path.contains(type.extension));
+    }
+
+    private static List<ContentType> staticTypes() {
+        return List.of(TEXT_CSS, APPLICATION_JAVASCRIPT);
     }
 
     public String contentType() {

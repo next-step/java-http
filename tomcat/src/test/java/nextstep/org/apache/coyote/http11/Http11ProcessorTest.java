@@ -1,6 +1,9 @@
 package nextstep.org.apache.coyote.http11;
 
+import camp.nextstep.request.handler.LoginHandler;
 import org.apache.coyote.http11.Http11Processor;
+import org.apache.coyote.http11.model.constant.HttpStatusCode;
+import org.apache.coyote.http11.request.RequestHandlerMapper;
 import org.junit.jupiter.api.Test;
 import support.StubSocket;
 
@@ -116,6 +119,59 @@ class Http11ProcessorTest {
                 "",
                 new String(Files.readAllBytes(new File(resource.getFile()).toPath())));
 
+        assertThat(socket.output()).isEqualTo(expected);
+    }
+
+    @Test
+    void loginSuccess() {
+        // given
+        final String httpRequest = String.join("\r\n",
+                "POST /login.html HTTP/1.1 ",
+                "Host: localhost:8080 ",
+                "Connection: keep-alive ",
+                "Content-Length: 30 ",
+                "",
+                "account=gugu&password=password");
+
+        final var socket = new StubSocket(httpRequest);
+        RequestHandlerMapper.getInstance()
+                .addHandler("/login.html", new LoginHandler());
+        final Http11Processor processor = new Http11Processor(socket);
+
+        // when
+        processor.process(socket);
+
+        // then
+        assertThat(socket.output()).contains(HttpStatusCode.FOUND.name());
+        assertThat(socket.output()).contains("/index.html");
+        assertThat(socket.output()).contains("Set-Cookie: JSESSIONID=");
+    }
+
+    @Test
+    void loginFailed() {
+        // given
+        final String httpRequest = String.join("\r\n",
+                "POST /login.html HTTP/1.1 ",
+                "Host: localhost:8080 ",
+                "Connection: keep-alive ",
+                "Content-Length: 31 ",
+                "",
+                "account=gugu&password=password1");
+
+        final var socket = new StubSocket(httpRequest);
+        RequestHandlerMapper.getInstance()
+                .addHandler("/login.html", new LoginHandler());
+        final Http11Processor processor = new Http11Processor(socket);
+
+        // when
+        processor.process(socket);
+
+        // then
+        var expected = String.join("\r\n",
+                "HTTP/1.1 302 FOUND ",
+                "Location: /401.html ",
+                "",
+                "");
         assertThat(socket.output()).isEqualTo(expected);
     }
 }

@@ -39,4 +39,22 @@ class ContentTypeTest {
         // then
         assertThat(result).isEqualTo(expect);
     }
+
+    @DisplayName("ContentType에 존재하는 정적 타입을 path로 탐색한다.")
+    @ParameterizedTest
+    @CsvSource(
+            delimiter = ',',
+            value = {
+                    "swe.js, true",
+                    "wewe.html, false",
+                    "wewe.css, true"
+            }
+    )
+    void validateStaticTypeTest(final String pathString, final boolean expect) {
+        // given // when
+        final boolean result = ContentType.isStaticType(pathString);
+
+        // then
+        assertThat(result).isEqualTo(expect);
+    }
 }
