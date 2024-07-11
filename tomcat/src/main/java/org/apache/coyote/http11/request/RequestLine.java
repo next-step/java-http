@@ -13,14 +13,6 @@ public class RequestLine {
         this.version = version;
     }
 
-    public static RequestLine from(RequestLineParser requestLineParser) {
-        HttpMethod httpMethod = requestLineParser.getHttpMethod();
-        Path path = requestLineParser.getPath();
-        String protocol = requestLineParser.getProtocol();
-        String version = requestLineParser.getVersion();
-        return new RequestLine(httpMethod, path, protocol, version);
-    }
-
     public HttpMethod getHttpMethod() {
         return httpMethod;
     }

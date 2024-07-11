@@ -2,6 +2,7 @@ package org.apache.coyote.http11.response;
 
 import camp.nextstep.db.InMemoryUserRepository;
 import camp.nextstep.model.User;
+import org.apache.coyote.http11.request.HttpMethod;
 import org.apache.coyote.http11.request.Path;
 import org.apache.coyote.http11.request.QueryStrings;
 import org.slf4j.Logger;
@@ -24,7 +25,18 @@ public class ResponseResource {
 		this.statusCode = statusCode;
 	}
 
-	public static ResponseResource of(final Path path) throws IOException {
+	public static ResponseResource of(final Path path, final HttpMethod httpMethod) throws IOException {
+		if (HttpMethod.POST.name().equals(httpMethod.name())) {
+			return postResponseResource(path);
+		}
+		return getResponseResource(path);
+	}
+
+	private static ResponseResource postResponseResource(Path path) {
+		return null;
+	}
+
+	private static ResponseResource getResponseResource(Path path) throws IOException {
 		if(isRootPath(path)) {
 			String filePath = "/index.html";
 			String responseBody = new ResponseBody(filePath).getResponseBody();
@@ -45,7 +57,6 @@ public class ResponseResource {
 			String filePath = "/401.html";
 			String responseBody = new ResponseBody(filePath).getResponseBody();
 			return new ResponseResource(responseBody, filePath, StatusCode.NOT_FOUND);
-
 		}
 
 		String responseBody = new ResponseBody(path.urlPath()).getResponseBody();

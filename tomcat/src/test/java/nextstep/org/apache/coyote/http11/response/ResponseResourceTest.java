@@ -17,11 +17,10 @@ class ResponseResourceTest {
 	@Test
 	void getRandingPage() throws IOException {
 		// given
-		RequestLineParser requestLineParser = new RequestLineParser("GET / HTTP/1.1");
-		RequestLine requestLine = RequestLine.from(requestLineParser);
+		RequestLine requestLine = RequestLineParser.createRequestLine("GET / HTTP/1.1");
 
 		// when
-		ResponseResource responseResource = ResponseResource.of(requestLine.getPath());
+		ResponseResource responseResource = ResponseResource.of(requestLine.getPath(), requestLine.getHttpMethod());
 
 		// then
 		assertThat(responseResource.getFilePath()).isEqualTo("/index.html");
@@ -31,11 +30,10 @@ class ResponseResourceTest {
 	@Test
 	void getMain() throws IOException {
 		// given
-		RequestLineParser requestLineParser = new RequestLineParser("GET /index.html HTTP/1.1");
-		RequestLine requestLine = RequestLine.from(requestLineParser);
+		RequestLine requestLine = RequestLineParser.createRequestLine("GET /index.html HTTP/1.1");
 
 		// when
-		ResponseResource responseResource = ResponseResource.of(requestLine.getPath());
+		ResponseResource responseResource = ResponseResource.of(requestLine.getPath(), requestLine.getHttpMethod());
 
 		// then
 		assertThat(responseResource.getFilePath()).isEqualTo("/index.html");
@@ -47,11 +45,10 @@ class ResponseResourceTest {
 		// given
 		String account = "gugu";
 		String password = "password";
-		RequestLineParser requestLineParser = new RequestLineParser("GET /login?account=" + account + "&password=" + password + " HTTP/1.1");
-		RequestLine requestLine = RequestLine.from(requestLineParser);
+		RequestLine requestLine = RequestLineParser.createRequestLine("GET /login?account=" + account + "&password=" + password + " HTTP/1.1");
 
 		// when
-		ResponseResource responseResource = ResponseResource.of(requestLine.getPath());
+		ResponseResource responseResource = ResponseResource.of(requestLine.getPath(), requestLine.getHttpMethod());
 
 		// then
 		assertAll(
@@ -66,11 +63,10 @@ class ResponseResourceTest {
 		// given
 		String account = "gugu";
 		String password = "password1212";
-		RequestLineParser requestLineParser = new RequestLineParser("GET /login?account=" + account + "&password=" + password + " HTTP/1.1");
-		RequestLine requestLine = RequestLine.from(requestLineParser);
+		RequestLine requestLine = RequestLineParser.createRequestLine("GET /login?account=" + account + "&password=" + password + " HTTP/1.1");
 
 		// when
-		ResponseResource responseResource = ResponseResource.of(requestLine.getPath());
+		ResponseResource responseResource = ResponseResource.of(requestLine.getPath(), requestLine.getHttpMethod());
 
 		// then
 		assertAll(

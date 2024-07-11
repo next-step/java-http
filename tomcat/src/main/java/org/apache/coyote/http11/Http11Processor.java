@@ -1,25 +1,20 @@
 package org.apache.coyote.http11;
 
-import camp.nextstep.db.InMemoryUserRepository;
 import camp.nextstep.exception.UncheckedServletException;
-import camp.nextstep.model.User;
 import org.apache.coyote.Processor;
-import org.apache.coyote.http11.request.ContentType;
+import org.apache.coyote.http11.request.RequestHeader;
+import org.apache.coyote.http11.request.RequestHeaderParser;
 import org.apache.coyote.http11.request.RequestLine;
-import org.apache.coyote.http11.request.RequestLineParser;
 import org.apache.coyote.http11.response.Response;
 import org.apache.coyote.http11.response.ResponseResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.Socket;
-import java.net.URL;
-import java.nio.file.Files;
-import java.util.NoSuchElementException;
+import java.util.List;
 
 public class Http11Processor implements Runnable, Processor {
 
@@ -46,10 +41,11 @@ public class Http11Processor implements Runnable, Processor {
             if (bufferedReader.lines() == null) {
                 throw new IllegalArgumentException("요청값이 빈값입니다.");
             }
-            RequestLineParser requestLineParser = new RequestLineParser(bufferedReader.readLine());
-            RequestLine requestLine = RequestLine.from(requestLineParser);
+            List<String> requestHeaders = bufferedReader.lines().takeWhile(line -> !line.isEmpty()).toList();
+            RequestHeader requestHeader = RequestHeaderParser.createRequestHeader(requestHeaders);
+            RequestLine requestLine = requestHeader.getRequestLine();
 
-            ResponseResource responseResource = ResponseResource.of(requestLine.getPath());
+            ResponseResource responseResource = ResponseResource.of(requestLine.getPath(), requestLine.getHttpMethod());
 
             Response response = Response.createResponse(responseResource);
 

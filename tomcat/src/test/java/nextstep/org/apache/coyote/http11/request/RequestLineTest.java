@@ -16,8 +16,7 @@ class RequestLineTest {
         //given
         String request = "GET /users HTTP/1.1";
         //when
-        RequestLineParser requestLineParser = new RequestLineParser(request);
-        RequestLine requestLine = RequestLine.from(requestLineParser);
+        RequestLine requestLine = RequestLineParser.createRequestLine(request);
         //then
         assertAll(
                 () -> assertThat(requestLine.getHttpMethod()).isEqualTo(GET),
@@ -33,8 +32,7 @@ class RequestLineTest {
         //given
         String request = "POST /users HTTP/1.1";
         //when
-        RequestLineParser requestLineParser = new RequestLineParser(request);
-        RequestLine requestLine = RequestLine.from(requestLineParser);
+        RequestLine requestLine = RequestLineParser.createRequestLine(request);
         //then
         assertAll(
                 () -> assertThat(requestLine.getHttpMethod()).isEqualTo(POST),
@@ -50,8 +48,7 @@ class RequestLineTest {
         //given
         String request = "GET /users?userId=javajigi&password=password&name=JaeSung HTTP/1.1";
         //when
-        RequestLineParser requestLineParser = new RequestLineParser(request);
-        RequestLine requestLine = RequestLine.from(requestLineParser);
+        RequestLine requestLine = RequestLineParser.createRequestLine(request);
         //then
         assertAll(
                 () -> assertThat(requestLine.getHttpMethod()).isEqualTo(GET),
