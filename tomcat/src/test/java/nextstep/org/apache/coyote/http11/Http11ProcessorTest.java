@@ -118,7 +118,7 @@ class Http11ProcessorTest {
         var expected = String.join("\r\n",
                 "HTTP/1.1 200 OK ",
                 "Content-Type: text/html;charset=utf-8 ",
-                "Content-Length: 3796 ",
+                "Content-Length: 3797 ",
                 "",
                 responseBody);
 
@@ -129,12 +129,14 @@ class Http11ProcessorTest {
     @Test
     void postLogin() {
         // given
+        String body = "account=gugu&password=password";
         final String httpRequest = String.join("\r\n",
                 "POST /login HTTP/1.1 ",
                 "Host: localhost:8080 ",
+                "Content-Length: %d ".formatted(body.getBytes().length),
                 "Connection: keep-alive ",
                 "",
-                "account=gugu&password=password");
+                body);
 
         final var socket = new StubSocket(httpRequest);
         final Http11Processor processor = new Http11Processor(socket);
@@ -144,9 +146,9 @@ class Http11ProcessorTest {
 
         // then
         var expected = String.join("\r\n",
-                "HTTP/1.1 302 FOUND ",
-                "Content-Length: 0 ",
+                "HTTP/1.1 302 Found ",
                 "Location: /index.html ",
+                "Content-Length: 0 ",
                 "",
                 "");
 
@@ -157,12 +159,14 @@ class Http11ProcessorTest {
     @Test
     void postLoginFail() {
         // given
+        String body = "account=gugu&password=passwordddd!";
         final String httpRequest = String.join("\r\n",
                 "POST /login HTTP/1.1 ",
                 "Host: localhost:8080 ",
+                "Content-Length: %d ".formatted(body.getBytes().length),
                 "Connection: keep-alive ",
                 "",
-                "account=gugu&password=passwordddd!");
+                body);
 
         final var socket = new StubSocket(httpRequest);
         final Http11Processor processor = new Http11Processor(socket);
@@ -172,9 +176,9 @@ class Http11ProcessorTest {
 
         // then
         var expected = String.join("\r\n",
-                "HTTP/1.1 302 FOUND ",
-                "Content-Length: 0 ",
+                "HTTP/1.1 302 Found ",
                 "Location: /401.html ",
+                "Content-Length: 0 ",
                 "",
                 "");
 

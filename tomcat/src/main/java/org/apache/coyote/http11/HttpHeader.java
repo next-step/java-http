@@ -24,4 +24,12 @@ public class HttpHeader {
     public String createMessage() {
         return MESSAGE_FORMAT.formatted(name, value);
     }
+
+    public boolean equalsName(final String otherName) {
+        return name.equals(otherName);
+    }
+
+    public String getValue() {
+        return value;
+    }
 }

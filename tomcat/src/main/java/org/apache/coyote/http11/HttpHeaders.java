@@ -26,4 +26,12 @@ public class HttpHeaders {
                 .map(HttpHeader::createMessage)
                 .collect(Collectors.joining(CRLF));
     }
+
+    public String getHeaderValue(final String name) {
+        return values.stream()
+                .filter(httpHeader -> httpHeader.equalsName(name))
+                .findAny()
+                .map(HttpHeader::getValue)
+                .orElse("");
+    }
 }
