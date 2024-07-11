@@ -1,19 +1,19 @@
 package camp.nextstep.request;
 
-public class RequestLine {
+public class HttpRequestLine {
     private static final String REQUEST_LINE_REGEX_SEPARATOR = " ";
     private static final String QUERY_STRING_REGEX_SEPARATOR = "\\?";
 
-    public static RequestLine parse(String requestLineString) {
+    public static HttpRequestLine parse(String requestLineString) {
         final String[] split = requestLineString.split(REQUEST_LINE_REGEX_SEPARATOR, 3);
 
-        final RequestMethod method = RequestMethod.valueOf(split[0]);
+        final HttpRequestMethod method = HttpRequestMethod.valueOf(split[0]);
         final String path = split[1].split(QUERY_STRING_REGEX_SEPARATOR)[0];
         final String queryString = extractQueryStringFromUri(split[1]);
-        final QueryParameters queryParameters = QueryParameters.parse(queryString);
+        final HttpQueryParameters queryParameters = HttpQueryParameters.parse(queryString);
         final String httpVersion = split[2];
 
-        return new RequestLine(method, path, queryParameters, httpVersion);
+        return new HttpRequestLine(method, path, queryParameters, httpVersion);
     }
 
     private static String extractQueryStringFromUri(String path) {
@@ -23,19 +23,19 @@ public class RequestLine {
         return split[1];
     }
 
-    private final RequestMethod method;
+    private final HttpRequestMethod method;
     private final String path;
-    private final QueryParameters queryParameters;
+    private final HttpQueryParameters queryParameters;
     private final String httpVersion;
 
-    private RequestLine(RequestMethod method, String path, QueryParameters queryParameters, String httpVersion) {
+    private HttpRequestLine(HttpRequestMethod method, String path, HttpQueryParameters queryParameters, String httpVersion) {
         this.method = method;
         this.path = path;
         this.queryParameters = queryParameters;
         this.httpVersion = httpVersion;
     }
 
-    public RequestMethod getMethod() {
+    public HttpRequestMethod getMethod() {
         return method;
     }
 
@@ -43,7 +43,7 @@ public class RequestLine {
         return path;
     }
 
-    public QueryParameters getQueryParameters() {
+    public HttpQueryParameters getQueryParameters() {
         return queryParameters;
     }
 

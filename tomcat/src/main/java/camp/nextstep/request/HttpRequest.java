@@ -5,53 +5,53 @@ import org.apache.coyote.http11.SessionManager;
 
 import java.io.IOException;
 
-import static camp.nextstep.request.Cookie.JSESSIONID_NAME;
+import static camp.nextstep.request.HttpRequestCookie.JSESSIONID_NAME;
 
-public class Request {
-    private final RequestLine requestLine;
-    private final RequestHeaders requestHeaders;
-    private final RequestCookies requestCookies;
-    private final QueryParameters requestBody;
+public class HttpRequest {
+    private final HttpRequestLine requestLine;
+    private final HttpRequestHeaders requestHeaders;
+    private final HttpRequestCookies cookies;
+    private final HttpQueryParameters requestBody;
     private Session newSession;
 
-    public Request(RequestLine requestLine,
-                   RequestHeaders requestHeaders,
-                   RequestCookies requestCookies,
-                   QueryParameters requestBody) {
+    public HttpRequest(HttpRequestLine requestLine,
+                       HttpRequestHeaders requestHeaders,
+                       HttpRequestCookies cookies,
+                       HttpQueryParameters requestBody) {
         this.requestLine = requestLine;
         this.requestHeaders = requestHeaders;
-        this.requestCookies = requestCookies;
+        this.cookies = cookies;
         this.requestBody = requestBody;
 
         this.newSession = null;
     }
 
     public boolean isGET() {
-        return requestLine.getMethod() == RequestMethod.GET;
+        return requestLine.getMethod() == HttpRequestMethod.GET;
     }
 
     public boolean isPOST() {
-        return requestLine.getMethod() == RequestMethod.POST;
+        return requestLine.getMethod() == HttpRequestMethod.POST;
     }
 
     public String getPath() {
         return requestLine.getPath();
     }
 
-    public RequestHeaders getRequestHeaders() {
+    public HttpRequestHeaders getRequestHeaders() {
         return requestHeaders;
     }
 
-    public QueryParameters getRequestBody() {
+    public HttpQueryParameters getRequestBody() {
         return requestBody;
     }
 
-    public RequestCookies getRequestCookies() {
-        return requestCookies;
+    public HttpRequestCookies getCookies() {
+        return cookies;
     }
 
     public String getSessionIdFromCookie() {
-        Cookie cookie = getRequestCookies().get(JSESSIONID_NAME);
+        HttpRequestCookie cookie = cookies.get(JSESSIONID_NAME);
         if (cookie == null) return null;
 
         return cookie.getValue();
@@ -72,7 +72,7 @@ public class Request {
         Session currentSessionOrNull = sessionManager.findSession(getSessionIdFromCookie());
         if (currentSessionOrNull != null) return currentSessionOrNull;
 
-        newSession = new Session(Cookie.randomJsessionId());
+        newSession = new Session(HttpRequestCookie.randomJsessionId());
         sessionManager.add(newSession);
         return newSession;
     }

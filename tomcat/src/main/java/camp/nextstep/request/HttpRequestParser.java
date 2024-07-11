@@ -5,21 +5,21 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class RequestParser {
+public class HttpRequestParser {
 
-    public Request parse(BufferedReader bufferedReader) throws IOException {
+    public HttpRequest parse(BufferedReader bufferedReader) throws IOException {
         String requestLineString = extractRequestLine(bufferedReader);
-        RequestLine requestLine = RequestLine.parse(requestLineString);
+        HttpRequestLine requestLine = HttpRequestLine.parse(requestLineString);
 
         List<String> headers = extractHeaders(bufferedReader);
-        RequestHeaders requestHeaders = RequestHeaders.parse(headers);
+        HttpRequestHeaders requestHeaders = HttpRequestHeaders.parse(headers);
         String cookieValue = requestHeaders.getCookieHeader();
-        RequestCookies requestCookies = RequestCookies.parse(cookieValue);
+        HttpRequestCookies cookies = HttpRequestCookies.parse(cookieValue);
 
         String bodyString = extractBody(bufferedReader, requestHeaders.getContentLength());
-        QueryParameters requestBody = QueryParameters.parse(bodyString);
+        HttpQueryParameters requestBody = HttpQueryParameters.parse(bodyString);
 
-        return new Request(requestLine, requestHeaders, requestCookies, requestBody);
+        return new HttpRequest(requestLine, requestHeaders, cookies, requestBody);
     }
 
     private String extractRequestLine(BufferedReader bufferedReader) throws IOException {

@@ -2,7 +2,7 @@ package camp.nextstep.request;
 
 import java.util.UUID;
 
-public class Cookie {
+public class HttpRequestCookie {
     public static final String JSESSIONID_NAME = "JSESSIONID";
 
     public static String randomJsessionId() {
@@ -12,7 +12,7 @@ public class Cookie {
     private final String key;
     private final String value;
 
-    public Cookie(String key, String value) {
+    public HttpRequestCookie(String key, String value) {
         this.key = key;
         this.value = value;
     }
