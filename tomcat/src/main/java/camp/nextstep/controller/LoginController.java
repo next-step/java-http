@@ -20,8 +20,8 @@ public class LoginController extends AbstractController {
 
     @Override
     protected void doGet(final HttpRequest request, final HttpResponse response) throws IOException {
-        final HttpSession session = request.getSession(false);
-        if (session != null && session.getAttribute(SESSION_USER_KEY) != null) {
+        final HttpSession session = request.getSession();
+        if (session.getAttribute(SESSION_USER_KEY) != null) {
             response.sendRedirect(INDEX_PATH);
             return;
         }
@@ -50,7 +50,7 @@ public class LoginController extends AbstractController {
 
     private void processLogin(final HttpRequest request, final HttpResponse response, final User user) throws IOException {
         log.info("user : {}", user);
-        final HttpSession httpSession = request.getSession(true);
+        final HttpSession httpSession = request.getSession();
         httpSession.setAttribute(SESSION_USER_KEY, user);
         response.setSession(httpSession.getId());
         response.sendRedirect(INDEX_PATH);

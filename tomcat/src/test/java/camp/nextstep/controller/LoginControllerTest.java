@@ -46,6 +46,7 @@ class LoginControllerTest {
     @Test
     @DisplayName("로그인이 안되어 있을때 get 요청시 로그인 페이지 응답을 반환한다.")
     void getWithoutLoginTest() throws Exception {
+        HttpSessionManager.clear();
         final HttpRequest httpRequest = new MockHttpRequestBuilder()
                 .requestURI("/login")
                 .method(HttpMethod.GET)
@@ -86,7 +87,7 @@ class LoginControllerTest {
                 "");
         assertSoftly(softly -> {
             softly.assertThat(httpResponse.getOutputAsString()).isEqualTo(expected);
-            softly.assertThat(HttpSessionManager.findSession(mockedUUID.toString())).isNotNull();
+            softly.assertThat(HttpSessionManager.computeIfAbsent(mockedUUID.toString())).isNotNull();
         });
     }
 
@@ -111,7 +112,7 @@ class LoginControllerTest {
                 "");
         assertSoftly(softly -> {
             softly.assertThat(httpResponse.getOutputAsString()).isEqualTo(expected);
-            softly.assertThat(HttpSessionManager.findSession(mockedUUID.toString())).isNotNull();
+            softly.assertThat(HttpSessionManager.computeIfAbsent(mockedUUID.toString())).isNotNull();
         });
     }
 }
