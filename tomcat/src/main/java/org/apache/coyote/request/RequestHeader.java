@@ -24,6 +24,10 @@ public class RequestHeader {
         return new RequestHeader(headerParts[REQUEST_HEADER_KEY_INDEX], headerParts[REQUEST_HEADER_VALUE_INDEX]);
     }
 
+    public boolean is(String key) {
+        return this.key.equals(key);
+    }
+
     public String getValue() {
         return value;
     }

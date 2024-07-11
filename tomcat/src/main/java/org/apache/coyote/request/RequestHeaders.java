@@ -15,4 +15,12 @@ public class RequestHeaders {
                 .map(RequestHeader::parse)
                 .toList());
     }
+
+    public String getHeader(String key) {
+        return headers.stream()
+                .filter(header -> header.is(key))
+                .findFirst()
+                .map(RequestHeader::getValue)
+                .orElse(null);
+    }
 }
