@@ -2,6 +2,7 @@ package org.apache.coyote.http11;
 
 import camp.nextstep.exception.UncheckedServletException;
 import org.apache.coyote.Processor;
+import org.apache.coyote.support.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -13,16 +14,16 @@ import java.net.Socket;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.List;
-import java.util.Objects;
-import java.util.StringJoiner;
 
 public class Http11Processor implements Runnable, Processor {
 
     private static final Logger log = LoggerFactory.getLogger(Http11Processor.class);
 
     private final Socket connection;
-    private final RequestLineParser RequestLineParser = new RequestLineParser();
+    private final RequestLineParser requestLineParser = new RequestLineParser();
+    private final ResourceFinder resourceFinder = new ResourceFinder();
+
+    private static final String ROOT_PATH = "/";
 
     public Http11Processor(final Socket connection) {
         this.connection = connection;
@@ -40,28 +41,44 @@ public class Http11Processor implements Runnable, Processor {
              final var outputStream = connection.getOutputStream()) {
 
             final String httpRequestMessage = readHttpRequestMessage(br);
-            final HttpRequest httpRequest = RequestLineParser.parse(httpRequestMessage);
+            final HttpRequest httpRequest = requestLineParser.parse(httpRequestMessage);
 
-            final URL resource = getClass().getClassLoader().getResource("static" + httpRequest.httpPath());
-            if(resource == null) {
-                throw new ResourceNotFoundException();
-            }
-            final String content = new String(Files.readAllBytes(new File(resource.getFile()).toPath()));
-
-            final var responseBody = "Hello world!";
-
-            final var response = String.join("\r\n",
-                    "HTTP/1.1 200 OK ",
-                    "Content-Type: text/html;charset=utf-8 ",
-                    "Content-Length: " + content.getBytes().length + " ",
-                    "",
-                    content);
+            final var response = createResponse(httpRequest);
 
             outputStream.write(response.getBytes());
             outputStream.flush();
         } catch (IOException | UncheckedServletException e) {
             log.error(e.getMessage(), e);
         }
+    }
+
+    private String createResponse(HttpRequest httpRequest) throws IOException {
+        if (httpRequest.httpPath().equals(ROOT_PATH)) {
+            return defaultResponse();
+        }
+
+        final Path filePath = resourceFinder.findFilePath(httpRequest.httpPath());
+        final String extension = FileUtils.extractExtension(filePath.toString());
+        final ContentType contentType = ContentType.fromExtension(extension);
+        final String content = resourceFinder.findContent(httpRequest.httpPath());
+
+        return String.join("\r\n",
+                "HTTP/1.1 200 OK ",
+                "Content-Type: " + contentType.getType() + ";charset=utf-8 ",
+                "Content-Length: " + content.getBytes().length + " ",
+                "",
+                content);
+    }
+
+    private String defaultResponse() {
+        final String content = "Hello world!";
+
+        return String.join("\r\n",
+                "HTTP/1.1 200 OK ",
+                "Content-Type: "+ ContentType.TEXT_HTML.getType() +";charset=utf-8 ",
+                "Content-Length: " + content.getBytes().length + " ",
+                "",
+                content);
     }
 
     private String readHttpRequestMessage(final BufferedReader br) throws IOException {
