@@ -9,7 +9,6 @@ import org.apache.util.MimeTypes;
 import java.io.IOException;
 import java.io.OutputStream;
 
-// XXX: 테스트 코드
 public class HttpResponse {
     private static final MimeTypes mimeTypes = new MimeTypes();
 
@@ -26,6 +25,8 @@ public class HttpResponse {
     }
 
     public void renderStaticResource(String staticFilePath) throws IOException {
+        assert staticFilePath.startsWith("/");
+
         final String content = staticResourceLoader.readAllLines("static" + staticFilePath);
         final String mimeType = guessMimeTypeFromPath(staticFilePath);
 
@@ -55,6 +56,12 @@ public class HttpResponse {
         outputStream.flush();
     }
 
+    public void renderText(String content) throws IOException {
+        render("200 OK", content, "text/html");
+    }
+
+    // ----------------------------------------------------------------------
+
     private boolean needToUpdateSessionId(HttpRequest request) throws IOException {
         String oldId = request.getSessionIdFromCookie();
         if (oldId == null) return true;
@@ -62,12 +69,6 @@ public class HttpResponse {
         String newId = request.getSession(sessionManager, true).getId();
         return !oldId.equals(newId);
     }
-
-    public void renderText(String content) throws IOException {
-        render("200 OK", content, "text/html");
-    }
-
-    // -----------------------------------------------------
 
     private void render(String responseStatus,
                         String content,
@@ -89,7 +90,6 @@ public class HttpResponse {
         outputStream.write(responseBuilder.toString().getBytes());
         outputStream.flush();
     }
-
 
     private String guessMimeTypeFromPath(String path) {
         final String FALLBACK_MIME_TYPE = "text/html";

@@ -1,6 +1,5 @@
 package nextstep.org.apache.coyote.http11;
 
-import camp.nextstep.exception.RequestNotFoundException;
 import org.apache.catalina.Session;
 import org.apache.coyote.http11.Http11Processor;
 import org.apache.coyote.http11.SessionManager;
@@ -15,7 +14,6 @@ import java.nio.file.Files;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class Http11ProcessorTest {
 
@@ -152,8 +150,7 @@ class Http11ProcessorTest {
         final Http11Processor processor = new Http11Processor(socket);
 
         // when
-        assertThrows(RequestNotFoundException.class,
-                () -> processor.process(socket));
+        processor.process(socket);
 
         // then
         final URL resource = getClass().getClassLoader().getResource("static/404.html");
