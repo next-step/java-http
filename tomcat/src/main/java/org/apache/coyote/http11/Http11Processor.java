@@ -7,6 +7,7 @@ import org.apache.coyote.Processor;
 import org.apache.coyote.http11.request.ContentType;
 import org.apache.coyote.http11.request.RequestLine;
 import org.apache.coyote.http11.request.RequestLineParser;
+import org.apache.coyote.http11.response.Response;
 import org.apache.coyote.http11.response.ResponseResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,16 +51,7 @@ public class Http11Processor implements Runnable, Processor {
 
             ResponseResource responseResource = ResponseResource.of(requestLine.getPath());
 
-            String extension = responseResource.parseExtension();
-            String contentType = ContentType.findByExtension(extension).getContentType();
-            String responseBody = responseResource.getResponseBody();
-
-            final var response = String.join("\r\n",
-                    "HTTP/1.1 200 OK ",
-                    "Content-Type: " + contentType + ";charset=utf-8 ",
-                    "Content-Length: " + responseBody.getBytes().length + " ",
-                    "",
-                    responseBody);
+            Response response = Response.createResponse(responseResource);
 
             outputStream.write(response.getBytes());
             outputStream.flush();

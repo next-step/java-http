@@ -7,10 +7,7 @@ import org.apache.coyote.http11.request.QueryStrings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
 import java.io.IOException;
-import java.net.URL;
-import java.nio.file.Files;
 import java.util.NoSuchElementException;
 
 public class ResponseResource {
@@ -18,65 +15,76 @@ public class ResponseResource {
 	private static final Logger log = LoggerFactory.getLogger(ResponseResource.class);
 
 	private final String responseBody;
-	private final String urlPath;
+	private final String filePath;
+	private final StatusCode statusCode;
 
-	private ResponseResource(final String responseBody, String urlPath) {
+	private ResponseResource(final String responseBody, String filePath, StatusCode statusCode) {
 		this.responseBody = responseBody;
-		this.urlPath = urlPath;
+		this.filePath = filePath;
+		this.statusCode = statusCode;
 	}
 
 	public static ResponseResource of(final Path path) throws IOException {
-		if(path.urlPath().equals("/")) {
-			String responseBody = createResponseBody("/index.html");
-			return new ResponseResource(responseBody, "/index.html");
+		if(isRootPath(path)) {
+			String filePath = "/index.html";
+			String responseBody = new ResponseBody(filePath).getResponseBody();
+			return new ResponseResource(responseBody, filePath, StatusCode.OK);
 		}
 
+		UrlPath.findUrlPath(path.urlPath());
 		if (path.urlPath().equals("/login")) {
 			QueryStrings queryStrings = path.queryStrings();
 			String account = queryStrings.getQueryStringValueByKey("account");
 			String password = queryStrings.getQueryStringValueByKey("password");
-			login(account, password);
-			String responseBody = createResponseBody("/login.html");
-			return new ResponseResource(responseBody, "/login.html");
+			boolean loginSuccess = login(account, password);
+			if (loginSuccess) {
+				String filePath = "/index.html";
+				String responseBody = new ResponseBody(filePath).getResponseBody();
+				return new ResponseResource(responseBody, filePath, StatusCode.FOUND);
+			}
+			String filePath = "/401.html";
+			String responseBody = new ResponseBody(filePath).getResponseBody();
+			return new ResponseResource(responseBody, filePath, StatusCode.NOT_FOUND);
+
 		}
 
-		String responseBody = createResponseBody(path.urlPath());
-		return new ResponseResource(responseBody, path.urlPath());
+		String responseBody = new ResponseBody(path.urlPath()).getResponseBody();
+		return new ResponseResource(responseBody, path.urlPath(), StatusCode.OK);
 	}
 
 	public String getResponseBody() {
 		return responseBody;
 	}
 
-	public String getUrlPath() {
-		return urlPath;
+	public String getFilePath() {
+		return filePath;
 	}
 
-	public static void login(String account, String password) {
-		final User user = InMemoryUserRepository.findByAccount(account).orElseThrow(NoSuchElementException::new);
-		if (user.checkPassword(password)) {
-			log.info("user {}", user);
-		}
+	public StatusCode getStatusCode() {
+		return statusCode;
 	}
 
 	public String parseExtension() {
 		if(hasNotExtension()) {
 			throw new NoSuchElementException("확장자가 없습니다.");
 		}
-		return urlPath.substring(urlPath.lastIndexOf("."));
+		return filePath.substring(filePath.lastIndexOf("."));
+	}
+
+	private static boolean login(String account, String password) {
+		final User user = InMemoryUserRepository.findByAccount(account).orElseThrow(NoSuchElementException::new);
+		if (user.checkPassword(password)) {
+			log.info("user {}", user);
+			return true;
+		}
+		return false;
+	}
+
+	private static boolean isRootPath(final Path path) {
+		return path.urlPath().equals("/");
 	}
 
 	private boolean hasNotExtension() {
-		return urlPath.lastIndexOf(".") < 0;
-	}
-
-	private static String createResponseBody(String urlPath) throws IOException {
-		URL resource = createResource(urlPath);
-		String responseBody = new String(Files.readAllBytes(new File(resource.getFile()).toPath()));
-		return responseBody;
-	}
-
-	private static URL createResource(String urlPath) {
-		return ResponseResource.class.getClass().getClassLoader().getResource("static" + urlPath);
+		return filePath.lastIndexOf(".") < 0;
 	}
 }

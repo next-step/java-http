@@ -73,7 +73,7 @@
   - http://localhost:8080/login?account=gugu&password=password으로 접속하면 로그인 페이지(login.html)를 보여주도록 만들자.
   - 그리고 로그인 페이지에 접속했을 때 Query String을 파싱해서 아이디, 비밀번호가 일치하면 콘솔창에 로그로 회원을 조회한 결과가 나오도록 만들자.
 ### 3단계 - HTTP 서버 구현하기
-- [ ] 요구사항 1 - HTTP Status Code 302를 이용해 Redirection 구현
+- [x] 요구사항 1 - HTTP Status Code 302를 이용해 Redirection 구현
   - /login 페이지에서 아이디는 gugu, 비밀번호는 password를 입력하자. 
   - 로그인에 성공하면 응답 헤더에 http status code를 302로 반환하고 /index.html로 리다이렉트 한다. 
   - 로그인에 실패하면 401.html로 리다이렉트한다.
