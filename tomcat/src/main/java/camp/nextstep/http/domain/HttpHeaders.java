@@ -27,8 +27,8 @@ public class HttpHeaders {
     private final HttpCookies httpCookies;
 
     public HttpHeaders() {
-        headers = new LinkedHashMap<>();
-        httpCookies = new HttpCookies();
+        this.headers = new LinkedHashMap<>();
+        this.httpCookies = new HttpCookies();
     }
 
     public HttpHeaders(final List<String> headers) {
