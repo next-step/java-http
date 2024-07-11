@@ -20,6 +20,9 @@ public class SessionManager implements Manager {
 
     @Override
     public HttpSession findSession(HttpSession session) {
+        if (session == null) {
+            return null;
+        }
         return SESSIONS.get(session.id);
     }
 

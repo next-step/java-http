@@ -23,7 +23,8 @@ public class HttpRequest {
         this.requestLine = requestLine;
         this.headers = headers;
         this.body = body;
-        this.session = headers.getSession();
+        var session = headers.getSession();
+        this.session = sessionManager.findSession(session);
     }
 
     public boolean matchPath(final String path) {
@@ -51,7 +52,7 @@ public class HttpRequest {
 
     public HttpSession getSession(Boolean canCreate) {
         if (session != null) {
-            return sessionManager.findSession(session);
+            return session;
         }
 
         if (!canCreate) {
