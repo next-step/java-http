@@ -42,7 +42,7 @@ public class Http11Processor implements Runnable, Processor {
             final String httpRequestMessage = readHttpRequestMessage(br);
             final HttpRequest httpRequest = RequestLineParser.parse(httpRequestMessage);
 
-            final URL resource = getClass().getClassLoader().getResource("static/" + httpRequest.httpPath());
+            final URL resource = getClass().getClassLoader().getResource("static" + httpRequest.httpPath());
             if(resource == null) {
                 throw new ResourceNotFoundException();
             }
