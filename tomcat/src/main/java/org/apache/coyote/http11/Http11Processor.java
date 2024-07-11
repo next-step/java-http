@@ -6,19 +6,16 @@ import camp.nextstep.exception.UncheckedServletException;
 import camp.nextstep.model.User;
 import camp.nextstep.request.HttpQueryParameters;
 import camp.nextstep.request.HttpRequest;
-import camp.nextstep.request.HttpRequestCookie;
 import camp.nextstep.request.HttpRequestParser;
-import camp.nextstep.staticresource.StaticResourceLoader;
+import camp.nextstep.response.HttpResponse;
 import org.apache.catalina.Session;
 import org.apache.coyote.Processor;
-import org.apache.util.MimeTypes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.net.Socket;
 import java.net.URISyntaxException;
 import java.util.Optional;
@@ -33,16 +30,12 @@ public class Http11Processor implements Runnable, Processor {
     private final SessionManager sessionManager;
 
     private final HttpRequestParser requestParser;
-    private final StaticResourceLoader staticResourceLoader;
-    private final MimeTypes mimeTypes;
 
     public Http11Processor(final Socket connection) {
         this.connection = connection;
         this.sessionManager = SessionManager.INSTANCE;
 
         this.requestParser = new HttpRequestParser();
-        this.staticResourceLoader = new StaticResourceLoader();
-        this.mimeTypes = new MimeTypes();
     }
 
     @Override
@@ -59,10 +52,11 @@ public class Http11Processor implements Runnable, Processor {
              final var outputStream = connection.getOutputStream()
         ) {
             HttpRequest request = requestParser.parse(bufferedReader);
+            HttpResponse response = new HttpResponse(request, sessionManager, outputStream);
             try {
-                processRequest(request, outputStream);
+                processRequest(request, response);
             } catch (RequestNotFoundException e) {
-                render404(request, outputStream);
+                response.render404();
                 throw e;
             }
         } catch (IOException | UncheckedServletException | URISyntaxException e) {
@@ -70,56 +64,57 @@ public class Http11Processor implements Runnable, Processor {
         }
     }
 
-    private void processRequest(HttpRequest request, OutputStream outputStream) throws IOException, URISyntaxException {
+    private void processRequest(HttpRequest request, HttpResponse response) throws IOException, URISyntaxException {
         String requestPath = request.getPath();
 
         if (requestPath.equals("/")) {
-            processHelloWorld(request, outputStream);
+            processHelloWorld(response);
             return;
         }
 
         if (requestPath.equals("/login") && request.isGET()) {
-            processGetLogin(request, outputStream);
+            processGetLogin(request, response);
             return;
         }
 
         if (requestPath.equals("/login") && request.isPOST()) {
-            processPostLogin(request, outputStream);
+            processPostLogin(request, response);
             return;
         }
 
         if (requestPath.equals("/register") && request.isGET()) {
-            processGetRegister(request, outputStream);
+            processGetRegister(response);
             return;
         }
 
         if (requestPath.equals("/register") && request.isPOST()) {
-            processPostRegister(request, outputStream);
+            processPostRegister(request, response);
             return;
         }
 
 
         if (requestPath.equals("/index.html")) {
-            processRenderStaticPage(request, outputStream);
+            processRenderStaticPage(request, response);
             log.debug("세션 조회: {}", request.getSession(sessionManager, false));
             return;
         }
 
-        processRenderStaticPage(request, outputStream);
+        processRenderStaticPage(request, response);
     }
 
-    private void processHelloWorld(HttpRequest request, OutputStream outputStream) throws IOException {
-        render("200 OK", "Hello world!", "text/html", request, outputStream);
+    private void processHelloWorld(HttpResponse response) throws IOException {
+        response.renderText("Hello world!");
     }
 
-    private void processGetLogin(HttpRequest request, OutputStream outputStream) throws IOException {
+    private void processGetLogin(HttpRequest request, HttpResponse response) throws IOException {
         if (isLoggedIn(request)) {
-            redirectTo("/index.html", request, outputStream);
+            response.redirectTo("/index.html");
             return;
         }
-        renderStaticResource("/login.html", request, outputStream);
+        response.renderStaticResource("/login.html");
     }
 
+    // XXX: request 로
     private boolean isLoggedIn(HttpRequest request) throws IOException {
         Session session = request.getSession(sessionManager, false);
         if (session == null) return false;
@@ -127,7 +122,7 @@ public class Http11Processor implements Runnable, Processor {
         return session.getAttribute("user") != null;
     }
 
-    private void processPostLogin(HttpRequest request, OutputStream outputStream) throws IOException {
+    private void processPostLogin(HttpRequest request, HttpResponse response) throws IOException {
         HttpQueryParameters requestBody = request.getRequestBody();
         String account = requireNonNull(requestBody.getString("account"));
         String password = requireNonNull(requestBody.getString("password"));
@@ -137,15 +132,16 @@ public class Http11Processor implements Runnable, Processor {
                 .map(acc -> acc.checkPassword(password))
                 .orElse(false);
         if (!found) {
-            redirectTo("/401.html", request, outputStream);
+            response.redirectTo("/401.html");
             return;
         }
 
         signInAs(user.get(), request);
 
-        redirectTo("/index.html", request, outputStream);
+        response.redirectTo("/index.html");
     }
 
+    // XXX: request 로
     private void signInAs(User user, HttpRequest request) throws IOException {
         final var session = request.getSession(sessionManager, true);
 
@@ -153,11 +149,11 @@ public class Http11Processor implements Runnable, Processor {
         log.debug("로그인: {}", user);
     }
 
-    private void processGetRegister(HttpRequest request, OutputStream outputStream) throws IOException {
-        renderStaticResource("/register.html", request, outputStream);
+    private void processGetRegister(HttpResponse response) throws IOException {
+        response.renderStaticResource("/register.html");
     }
 
-    private void processPostRegister(HttpRequest request, OutputStream outputStream) throws IOException {
+    private void processPostRegister(HttpRequest request, HttpResponse response) throws IOException {
         final HttpQueryParameters requestBody = request.getRequestBody();
 
         final String account = requireNonNull(requestBody.getString("account"));
@@ -169,91 +165,10 @@ public class Http11Processor implements Runnable, Processor {
         signInAs(user, request);
         log.debug("사용자 생성 후 로그인: {}", user);
 
-        redirectTo("/index.html", request, outputStream);
+        response.redirectTo("/index.html");
     }
 
-    private void processRenderStaticPage(HttpRequest request, OutputStream outputStream) throws IOException {
-        renderStaticResource(request.getPath(), request, outputStream);
-    }
-
-    private void renderStaticResource(String staticFilePath, HttpRequest request, OutputStream outputStream) throws IOException {
-        final String content = staticResourceLoader.readAllLines("static" + staticFilePath);
-        final String mimeType = guessMimeTypeFromPath(staticFilePath);
-
-        render("200 OK", content, mimeType, request, outputStream);
-    }
-
-    private void render404(HttpRequest request, OutputStream outputStream) throws IOException {
-        final String content = staticResourceLoader.readAllLines("static/404.html");
-
-        render("404 Not Found", content, "text/html", request, outputStream);
-    }
-
-    private void redirectTo(String redirectTo, HttpRequest request, OutputStream outputStream) throws IOException {
-        String responseStatus = "302 Found";
-        StringBuilder responseBuilder = new StringBuilder();
-        responseBuilder.append("HTTP/1.1 ").append(responseStatus).append(" ").append("\r\n");
-        responseBuilder.append("Location: ").append(redirectTo).append(" ").append("\r\n");
-        if (needToUpdateSessionId(request)) {
-            responseBuilder.append("Set-Cookie: ")
-                    .append(HttpRequestCookie.JSESSIONID_NAME)
-                    .append("=")
-                    .append(request.getSession(sessionManager, true).getId())
-                    .append("; Path=/ ")
-                    .append("\r\n");
-        }
-        outputStream.write(responseBuilder.toString().getBytes());
-        outputStream.flush();
-    }
-
-    private boolean needToUpdateSessionId(HttpRequest request) throws IOException {
-        String oldId = request.getSessionIdFromCookie();
-        if (oldId == null) return true;
-
-        String newId = request.getSession(sessionManager, true).getId();
-        return !oldId.equals(newId);
-    }
-
-    private void render(String responseStatus,
-                        String content,
-                        String mimeType,
-                        HttpRequest request, OutputStream outputStream) throws IOException {
-        StringBuilder responseBuilder = new StringBuilder();
-        responseBuilder.append("HTTP/1.1 ").append(responseStatus).append(" ").append("\r\n");
-        responseBuilder.append("Content-Type: ").append(mimeType).append(";charset=utf-8 ").append("\r\n");
-        responseBuilder.append("Content-Length: ").append(content.getBytes().length).append(" ").append("\r\n");
-        if (needToUpdateSessionId(request)) {
-            responseBuilder.append("Set-Cookie: ")
-                    .append(HttpRequestCookie.JSESSIONID_NAME)
-                    .append("=")
-                    .append(request.getSession(sessionManager, true).getId())
-                    .append("; Path=/ ")
-                    .append("\r\n");
-        }
-        responseBuilder.append("\r\n").append(content);
-
-        outputStream.write(responseBuilder.toString().getBytes());
-        outputStream.flush();
-    }
-
-    private String guessMimeTypeFromPath(String path) {
-        final String FALLBACK_MIME_TYPE = "text/html";
-
-        if (path.equals("/")) return "text/html";
-
-        String extension = extractExtensionFromPath(path);
-        if (extension == null) return FALLBACK_MIME_TYPE;
-
-        String mimeType = mimeTypes.guessByExtension(extension);
-        if (mimeType == null) return FALLBACK_MIME_TYPE;
-
-        return mimeType;
-    }
-
-    private String extractExtensionFromPath(String path) {
-        int lastPeriod = path.lastIndexOf(".");
-        if (lastPeriod < 0) return null;
-
-        return path.substring(lastPeriod);
+    private void processRenderStaticPage(HttpRequest request, HttpResponse response) throws IOException {
+        response.renderStaticResource(request.getPath());
     }
 }
