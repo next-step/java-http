@@ -1,7 +1,10 @@
 package camp.nextstep.http;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.catchThrowable;
 
+import camp.nextstep.exception.InvalidRequestException;
 import java.util.Map;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -38,6 +41,20 @@ class RequestLineTest {
     assertThat(requestLine.getPath()).isEqualTo("/users");
     assertThat(requestLine.getProtocol()).isEqualTo("HTTP");
     assertThat(requestLine.getVersion()).isEqualTo("1.1");
+  }
+
+  @Test
+  @DisplayName(" HTTP 요청이 빈 값일때 InvalidRequestException 에러를 리턴한다.")
+  void parseEmptyRequest() {
+    // given
+    final String request = "";
+
+    // when
+    Throwable thrown = catchThrowable(() -> RequestLine.parse(request));
+
+    // then
+    assertThat(thrown)
+        .isInstanceOf(InvalidRequestException.class);
   }
 
   @Test
