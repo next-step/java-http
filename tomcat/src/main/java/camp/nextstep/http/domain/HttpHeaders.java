@@ -3,63 +3,31 @@ package camp.nextstep.http.domain;
 import camp.nextstep.http.exception.InvalidHttpHeaderException;
 
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 public class HttpHeaders {
 
-    private static final int KEY_INDEX = 0;
-    private static final int VALUE_INDEX = 1;
-    private static final String HEADER_DELIMITER = ":";
-    private static final int SPLIT_LIMIT = 2;
+    public static final String DELIMITER = ":";
+    public static final String JSESSIONID = "JSESSIONID";
     private static final String CONTENT_TYPE = "Content-Type";
     private static final long MIN_CONTENT_LENGTH = 1L;
     private static final String CONTENT_LENGTH = "Content-Length";
     private static final int EMPTY_CONTENT_LENGTH = 0;
     private static final String LOCATION = "Location";
     private static final String COOKIE_KEY = "Cookie";
-    public static final String JSESSIONID = "JSESSIONID";
 
     private final Map<String, String> headers;
     private final HttpCookies httpCookies;
 
     public HttpHeaders() {
-        this.headers = new LinkedHashMap<>();
-        this.httpCookies = new HttpCookies();
+        this(new LinkedHashMap<>());
     }
 
-    public HttpHeaders(final List<String> headers) {
-        this.headers = headers.stream()
-                .map(this::splitHeader)
-                .filter(header -> !containsCookie(header))
-                .collect(toLinkedHashMap());
-        this.httpCookies = new HttpCookies(headers.stream()
-                .map(this::splitHeader)
-                .filter(this::containsCookie)
-                .collect(toLinkedHashMap()).get(COOKIE_KEY));
-    }
-
-    private boolean containsCookie(final String[] header) {
-        return header[KEY_INDEX].equalsIgnoreCase(COOKIE_KEY);
-    }
-
-    private Collector<String[], ?, LinkedHashMap<String, String>> toLinkedHashMap() {
-        return Collectors.toMap(
-                header -> header[KEY_INDEX].trim(),
-                header -> header[VALUE_INDEX].trim(),
-                (existing, replacement) -> existing,
-                LinkedHashMap::new
-        );
-    }
-
-    private String[] splitHeader(final String headerLine) {
-        if (headerLine.contains(HEADER_DELIMITER)) {
-            return headerLine.split(HEADER_DELIMITER, SPLIT_LIMIT);
-        }
-        throw new InvalidHttpHeaderException("Invalid HTTP header line: " + headerLine);
+    public HttpHeaders(final Map<String, String> headers) {
+        this.headers = headers;
+        this.httpCookies = new HttpCookies(headers.get(COOKIE_KEY));
     }
 
     public void setContentType(final ContentType contentType) {
@@ -103,7 +71,7 @@ public class HttpHeaders {
         return convertCookiesToString() +
                 headers.entrySet()
                         .stream()
-                        .map(entry -> String.format("%s%s %s ", entry.getKey(), HEADER_DELIMITER, entry.getValue()))
+                        .map(entry -> String.format("%s%s %s ", entry.getKey(), DELIMITER, entry.getValue()))
                         .collect(Collectors.joining(System.lineSeparator()));
     }
 
