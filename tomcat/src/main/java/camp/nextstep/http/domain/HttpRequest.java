@@ -31,8 +31,8 @@ public class HttpRequest {
                 .takeWhile(line -> !line.isEmpty())
                 .map(this::splitHeader)
                 .collect(Collectors.toMap(
-                        header1 -> header1[HEADER_KEY_INDEX].trim(),
-                        header1 -> header1[HEADER_VALUE_INDEX].trim(),
+                        header -> header[HEADER_KEY_INDEX].trim(),
+                        header -> header[HEADER_VALUE_INDEX].trim(),
                         (existing, replacement) -> existing,
                         LinkedHashMap::new
                 )));
