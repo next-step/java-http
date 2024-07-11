@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class HttpPathTest {
+class RequestTargetTest {
 
     @Test
     @DisplayName("HttpPath 객체를 생성한다")
