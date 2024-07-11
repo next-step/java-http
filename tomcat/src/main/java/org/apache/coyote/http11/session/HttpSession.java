@@ -1,6 +1,4 @@
-package org.apache.coyote.http11.model;
-
-import org.apache.coyote.http11.session.Session;
+package org.apache.coyote.http11.session;
 
 import java.util.HashMap;
 import java.util.Map;

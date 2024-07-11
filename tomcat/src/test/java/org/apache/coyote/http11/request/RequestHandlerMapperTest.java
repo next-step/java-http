@@ -1,9 +1,7 @@
 package org.apache.coyote.http11.request;
 
 import org.apache.coyote.http11.request.handler.DefaultHandler;
-import org.apache.coyote.http11.request.handler.LoginHandler;
 import org.apache.coyote.http11.request.handler.NotFoundHandler;
-import org.apache.coyote.http11.request.handler.RequestHandler;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -18,7 +16,6 @@ class RequestHandlerMapperTest {
     static Stream<Arguments> methodSource() {
         return Stream.of(
                 Arguments.of("/index.html", new DefaultHandler()),
-                Arguments.of("/login.html", new LoginHandler()),
                 Arguments.of("/static.css", new DefaultHandler()),
                 Arguments.of("/js.js", new DefaultHandler()),
                 Arguments.of("", new NotFoundHandler())
@@ -33,7 +30,7 @@ class RequestHandlerMapperTest {
         final RequestHandlerMapper requestHandlerMapper = RequestHandlerMapper.getInstance();
 
         // when
-        final RequestHandler result = requestHandlerMapper.getHandler(path);
+        final RequestHandler result = requestHandlerMapper.findHandler(path);
 
         // then
         assertThat(result.getClass()).isEqualTo(expect.getClass());

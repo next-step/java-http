@@ -1,7 +1,9 @@
 package nextstep.org.apache.coyote.http11;
 
+import camp.nextstep.request.handler.LoginHandler;
 import org.apache.coyote.http11.Http11Processor;
 import org.apache.coyote.http11.model.constant.HttpStatusCode;
+import org.apache.coyote.http11.request.RequestHandlerMapper;
 import org.junit.jupiter.api.Test;
 import support.StubSocket;
 
@@ -132,6 +134,8 @@ class Http11ProcessorTest {
                 "account=gugu&password=password");
 
         final var socket = new StubSocket(httpRequest);
+        RequestHandlerMapper.getInstance()
+                .addHandler("/login.html", new LoginHandler());
         final Http11Processor processor = new Http11Processor(socket);
 
         // when
@@ -155,6 +159,8 @@ class Http11ProcessorTest {
                 "account=gugu&password=password1");
 
         final var socket = new StubSocket(httpRequest);
+        RequestHandlerMapper.getInstance()
+                .addHandler("/login.html", new LoginHandler());
         final Http11Processor processor = new Http11Processor(socket);
 
         // when

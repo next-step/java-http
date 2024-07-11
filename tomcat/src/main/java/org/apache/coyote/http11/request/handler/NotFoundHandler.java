@@ -2,6 +2,7 @@ package org.apache.coyote.http11.request.handler;
 
 import org.apache.coyote.http11.model.HttpRequest;
 import org.apache.coyote.http11.model.constant.ContentType;
+import org.apache.coyote.http11.request.AbstractRequestHandler;
 
 import java.io.IOException;
 

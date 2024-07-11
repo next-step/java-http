@@ -1,10 +1,11 @@
-package org.apache.coyote.http11.request.handler;
+package camp.nextstep.request.handler;
 
 import camp.nextstep.db.InMemoryUserRepository;
 import camp.nextstep.model.User;
 import org.apache.coyote.http11.model.HttpRequest;
 import org.apache.coyote.http11.model.QueryParams;
 import org.apache.coyote.http11.model.RequestLine;
+import org.apache.coyote.http11.request.AbstractRequestHandler;
 
 import java.io.IOException;
 

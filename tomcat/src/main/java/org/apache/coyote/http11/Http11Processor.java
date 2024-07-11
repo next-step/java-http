@@ -5,7 +5,6 @@ import org.apache.coyote.Processor;
 import org.apache.coyote.http11.model.HttpRequest;
 import org.apache.coyote.http11.model.HttpRequestHeader;
 import org.apache.coyote.http11.request.RequestHandlerMapper;
-import org.apache.coyote.http11.request.handler.RequestHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -51,12 +50,8 @@ public class Http11Processor implements Runnable, Processor {
             final HttpRequest httpRequest = HttpRequestParser.getInstance()
                     .parse(httpRequestHeader, requestBodyLine);
 
-            final RequestHandler handler = RequestHandlerMapper.getInstance()
-                    .getHandler(httpRequest.httpRequestHeader()
-                            .requestLine()
-                            .url());
-
-            final String response = handler.handle(httpRequest);
+            final String response = RequestHandlerMapper.getInstance()
+                    .response(httpRequest);
 
             outputStream.write(response.getBytes());
             outputStream.flush();

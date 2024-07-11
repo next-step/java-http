@@ -1,4 +1,4 @@
-package org.apache.coyote.http11.request.handler;
+package org.apache.coyote.http11.request;
 
 import org.apache.coyote.http11.model.HttpRequestHeader;
 import org.apache.coyote.http11.model.HttpResponse;
@@ -9,7 +9,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Files;
 
-abstract class AbstractRequestHandler implements RequestHandler {
+public abstract class AbstractRequestHandler implements RequestHandler {
     private static final String STATIC_PATH = "static";
 
     protected String buildBodyFromReadFile(final String pathString) throws IOException {

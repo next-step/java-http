@@ -29,7 +29,7 @@ class DefaultHandlerTest {
 
         final HttpRequest httpRequest = HttpRequestParser.getInstance()
                 .parse(HttpRequestHeaderParser.getInstance().parse(request), "");
-        
+
         final DefaultHandler defaultHandler = new DefaultHandler();
         final URL resource = getClass().getClassLoader().getResource("static/index.html");
         var expected = String.join("\r\n",
