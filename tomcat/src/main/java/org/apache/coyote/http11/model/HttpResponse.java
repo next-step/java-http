@@ -5,24 +5,18 @@ import org.apache.coyote.http11.model.constant.HttpStatusCode;
 public class HttpResponse {
     private static final String BLANK_LINE = "\r\n";
     private static final String NEW_LINE = " " + BLANK_LINE;
-    private static final String SET_COOKIE_KEY = "Set-Cookie: ";
-    private static final String LOCATION_KEY = "Location: ";
-    private static final String CONTENT_TYPE_KEY = "Content-Type: ";
-    private static final String CONTENT_LENGTH_KEY = "Content-Length: ";
-    private static final String CHARSET = ";charset=utf-8";
-    private static final String EMPTY = "";
     private final HttpStatusCode httpStatusCode;
-    private final HttpHeaders httpHeaders;
+    private final HttpRequestHeader httpRequestHeader;
     private final String body;
 
-    public HttpResponse(final HttpStatusCode httpStatusCode, final HttpHeaders httpHeaders, final String body) {
+    public HttpResponse(final HttpStatusCode httpStatusCode, final HttpRequestHeader httpRequestHeader, final String body) {
         this.httpStatusCode = httpStatusCode;
-        this.httpHeaders = httpHeaders;
+        this.httpRequestHeader = httpRequestHeader;
         this.body = body;
     }
 
-    public HttpResponse(final HttpStatusCode httpStatusCode, final HttpHeaders httpHeaders) {
-        this(httpStatusCode, httpHeaders, EMPTY);
+    public HttpResponse(final HttpStatusCode httpStatusCode, final HttpRequestHeader httpRequestHeader) {
+        this(httpStatusCode, httpRequestHeader, "");
     }
 
     private String buildStatusLine() {
@@ -30,27 +24,27 @@ public class HttpResponse {
     }
 
     private String buildLocationHeader(final String location) {
-        return LOCATION_KEY + location + NEW_LINE;
+        return "Location: " + location + NEW_LINE;
     }
 
     private String buildSetCookieHeader(final String cookie) {
-        return SET_COOKIE_KEY + cookie + NEW_LINE;
+        return "Set-Cookie: " + cookie + NEW_LINE;
     }
 
     private String buildContentTypeHeader() {
-        return CONTENT_TYPE_KEY + httpHeaders.requestLine().contentTypeText() + CHARSET + NEW_LINE;
+        return "Content-Type: " + httpRequestHeader.requestLine().contentTypeText() + ";charset=utf-8" + NEW_LINE;
     }
 
     private String buildContentLengthHeader() {
-        return CONTENT_LENGTH_KEY + body.getBytes().length + NEW_LINE;
+        return "Content-Length: " + body.getBytes().length + NEW_LINE;
     }
 
     private String buildCookieHeader() {
-        if (httpHeaders.hasCookie()) {
-            return httpHeaders.httpCookie().toLine() + NEW_LINE;
+        if (httpRequestHeader.hasCookie()) {
+            return httpRequestHeader.httpCookie().toLine() + NEW_LINE;
         }
 
-        return EMPTY;
+        return "";
     }
 
     public String buildRedirectResponse(final String location) {

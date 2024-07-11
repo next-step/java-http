@@ -1,15 +1,15 @@
 package org.apache.coyote.http11.model;
 
 public class HttpRequest {
-    private final HttpHeaders requestHeader;
+    private final HttpRequestHeader requestHeader;
     private final QueryParams requestBody;
 
-    public HttpRequest(final HttpHeaders requestHeader, final QueryParams requestBody) {
+    public HttpRequest(final HttpRequestHeader requestHeader, final QueryParams requestBody) {
         this.requestHeader = requestHeader;
         this.requestBody = requestBody;
     }
 
-    public HttpHeaders httpRequestHeader() {
+    public HttpRequestHeader httpRequestHeader() {
         return this.requestHeader;
     }
 

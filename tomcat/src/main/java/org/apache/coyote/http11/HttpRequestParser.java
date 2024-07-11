@@ -1,7 +1,7 @@
 package org.apache.coyote.http11;
 
-import org.apache.coyote.http11.model.HttpHeaders;
 import org.apache.coyote.http11.model.HttpRequest;
+import org.apache.coyote.http11.model.HttpRequestHeader;
 import org.apache.coyote.http11.model.QueryParams;
 
 import java.io.IOException;
@@ -27,7 +27,7 @@ public class HttpRequestParser {
         return HttpRequestParser.SingletonHelper.SINGLETON;
     }
 
-    public HttpRequest parse(final HttpHeaders requestHeader, final String requestBodyLine) throws IOException {
+    public HttpRequest parse(final HttpRequestHeader requestHeader, final String requestBodyLine) throws IOException {
         if (requestBodyLine != null && !requestBodyLine.isEmpty() && !requestBodyLine.isBlank()) {
             final Map<String, String> resultMap = parseRequestBody(requestBodyLine);
             final QueryParams queryParams = new QueryParams(resultMap);

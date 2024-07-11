@@ -1,14 +1,14 @@
 package org.apache.coyote.http11;
 
 import org.apache.coyote.http11.model.HttpCookie;
-import org.apache.coyote.http11.model.HttpHeaders;
+import org.apache.coyote.http11.model.HttpRequestHeader;
 import org.apache.coyote.http11.model.RequestLine;
 
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 
-import static org.apache.coyote.http11.model.HttpHeaders.REQUEST_LINE_KEY;
+import static org.apache.coyote.http11.model.HttpRequestHeader.REQUEST_LINE_KEY;
 
 public class HttpRequestHeaderParser {
     private static final String COOKIE_KEY = "Cookie";
@@ -25,17 +25,17 @@ public class HttpRequestHeaderParser {
         return SingletonHelper.SINGLETON;
     }
 
-    public HttpHeaders parse(final List<String> lines) throws IOException {
+    public HttpRequestHeader parse(final List<String> lines) throws IOException {
         final HashMap<String, Object> headerMap = new HashMap<>();
 
         if (lines.isEmpty()) {
-            return new HttpHeaders(headerMap);
+            return new HttpRequestHeader(headerMap);
         }
 
         requestLineParsing(lines, headerMap);
         otherHeadersParsing(lines, headerMap);
 
-        return new HttpHeaders(headerMap);
+        return new HttpRequestHeader(headerMap);
     }
 
     private void requestLineParsing(final List<String> lines, final HashMap<String, Object> headerMap) {
