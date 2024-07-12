@@ -9,6 +9,8 @@ import java.nio.file.Path;
 public class ResourceFinder {
 
     private static final String ROOT_RESOURCE_PATH = "static";
+    private static final String LOGIN_PATH = "/login";
+    private static final String LOGIN_RESOURCE_PATH = "/login.html";
 
     public String findContent(String httpPath) throws IOException {
         final URL resource = getResource(httpPath);
@@ -16,6 +18,10 @@ public class ResourceFinder {
     }
 
     public Path findFilePath(String httpPath) {
+        if(httpPath.equals(LOGIN_PATH)) {
+            return getFilePath(getResource(LOGIN_RESOURCE_PATH));
+        }
+
         final URL resource = getResource(httpPath);
         return getFilePath(resource);
     }

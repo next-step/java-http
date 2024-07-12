@@ -21,6 +21,7 @@ public class Http11Processor implements Runnable, Processor {
     private final ResourceFinder resourceFinder = new ResourceFinder();
 
     private static final String ROOT_PATH = "/";
+    private static final String LOGIN_PATH = "/login";
 
     public Http11Processor(final Socket connection) {
         this.connection = connection;
@@ -50,14 +51,18 @@ public class Http11Processor implements Runnable, Processor {
     }
 
     private String createResponse(HttpRequest httpRequest) throws IOException {
+        String httpPath = "";
+
         if (httpRequest.httpPath().equals(ROOT_PATH)) {
             return defaultResponse();
+        } else if (httpRequest.httpPath().equals(LOGIN_PATH)) {
+            httpPath = "/login.html";
         }
 
-        final Path filePath = resourceFinder.findFilePath(httpRequest.httpPath());
+        final Path filePath = resourceFinder.findFilePath(httpPath);
         final String extension = FileUtils.extractExtension(filePath.toString());
         final ContentType contentType = ContentType.fromExtension(extension);
-        final String content = resourceFinder.findContent(httpRequest.httpPath());
+        final String content = resourceFinder.findContent(httpPath);
 
         return String.join("\r\n",
                 "HTTP/1.1 200 OK ",
