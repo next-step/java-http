@@ -28,12 +28,11 @@ public class RegisterController extends AbstractController {
 
     @Override
     protected HttpResponse doGet(HttpRequest request) throws Exception {
-        final String body = buildBodyFromReadFile(request.httpRequestHeader().requestLine().url());
-        return buildOkHttpResponse(request, body);
+        return buildOkHttpResponse(request);
     }
 
     @Override
-    protected HttpResponse doPost(HttpRequest request) throws Exception {
+    protected HttpResponse doPost(HttpRequest request) {
         if (request.hasRequestBody()) {
             saveUser(request.requestBody());
             return buildRedirectHttpResponse(request, POST_METHOD_REDIRECT_PATH);
