@@ -79,5 +79,5 @@
 
 ### Mission 5
 
-- [ ] ExecutorService를 이용한 스레드풀 구현
-- [ ] 동시성 컬렉션 적용
+- [X] ExecutorService를 이용한 스레드풀 구현
+- [X] 동시성 컬렉션 적용
