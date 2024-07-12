@@ -1,5 +1,10 @@
 package org.apache.coyote.http11.request;
 
+import org.apache.coyote.http11.request.model.HttpMethod;
+import org.apache.coyote.http11.request.model.Path;
+import org.apache.coyote.http11.request.model.QueryStrings;
+import org.apache.coyote.http11.request.model.RequestLine;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -10,7 +15,7 @@ public class RequestLineParser {
     public static final String QUERY_STRING_DELIMITER_CHARACTER = "&";
     public static final String KEY_AND_VALUE_DELIMITER_CHARACTER = "=";
 
-    public static RequestLine createRequestLine(String request) {
+    public static RequestLine parse(String request) {
         HttpMethod httpMethod = getHttpMethod(request);
         Path path = getPath(request);
         String protocol = getProtocol(request);

@@ -2,9 +2,9 @@ package org.apache.coyote.http11;
 
 import camp.nextstep.exception.UncheckedServletException;
 import org.apache.coyote.Processor;
-import org.apache.coyote.http11.request.RequestHeader;
+import org.apache.coyote.http11.request.model.RequestHeader;
 import org.apache.coyote.http11.request.RequestHeaderParser;
-import org.apache.coyote.http11.request.RequestLine;
+import org.apache.coyote.http11.request.model.RequestLine;
 import org.apache.coyote.http11.response.Response;
 import org.apache.coyote.http11.response.ResponseResource;
 import org.slf4j.Logger;
@@ -42,10 +42,10 @@ public class Http11Processor implements Runnable, Processor {
                 throw new IllegalArgumentException("요청값이 빈값입니다.");
             }
             List<String> requestHeaders = bufferedReader.lines().takeWhile(line -> !line.isEmpty()).toList();
-            RequestHeader requestHeader = RequestHeaderParser.createRequestHeader(requestHeaders);
+            RequestHeader requestHeader = RequestHeaderParser.parse(bufferedReader, requestHeaders);
             RequestLine requestLine = requestHeader.getRequestLine();
 
-            ResponseResource responseResource = ResponseResource.of(requestLine.getPath(), requestLine.getHttpMethod());
+            ResponseResource responseResource = ResponseResource.of(requestLine.getPath(),  requestHeader.getRequestBodies(), requestLine.getHttpMethod());
 
             Response response = Response.createResponse(responseResource);
 

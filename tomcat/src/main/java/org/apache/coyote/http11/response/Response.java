@@ -1,6 +1,6 @@
 package org.apache.coyote.http11.response;
 
-import org.apache.coyote.http11.request.ContentType;
+import org.apache.coyote.http11.request.model.ContentType;
 
 public class Response {
 	private final String response;

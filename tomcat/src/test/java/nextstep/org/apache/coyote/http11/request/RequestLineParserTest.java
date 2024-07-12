@@ -1,6 +1,9 @@
 package nextstep.org.apache.coyote.http11.request;
 
 import org.apache.coyote.http11.request.*;
+import org.apache.coyote.http11.request.model.HttpMethod;
+import org.apache.coyote.http11.request.model.QueryStrings;
+import org.apache.coyote.http11.request.model.RequestLine;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -15,7 +18,7 @@ public class RequestLineParserTest {
     @Test
     public void getHttpMethod() {
         //given
-        RequestLine requestLine = RequestLineParser.createRequestLine(REQUEST_WITH_STRING_QUERY);
+        RequestLine requestLine = RequestLineParser.parse(REQUEST_WITH_STRING_QUERY);
 
         //when
         HttpMethod result = requestLine.getHttpMethod();
@@ -28,7 +31,7 @@ public class RequestLineParserTest {
     @Test
     public void getProtocol() {
         //given
-        RequestLine requestLine = RequestLineParser.createRequestLine(REQUEST_WITH_STRING_QUERY);
+        RequestLine requestLine = RequestLineParser.parse(REQUEST_WITH_STRING_QUERY);
 
         //when
         String result = requestLine.getProtocol();
@@ -41,7 +44,7 @@ public class RequestLineParserTest {
     @Test
     public void getVersion() {
         //given
-        RequestLine requestLine = RequestLineParser.createRequestLine(REQUEST_WITH_STRING_QUERY);
+        RequestLine requestLine = RequestLineParser.parse(REQUEST_WITH_STRING_QUERY);
 
         //when
         String result = requestLine.getVersion();
@@ -54,7 +57,7 @@ public class RequestLineParserTest {
     @Test
     public void getRequestPath() {
         //given
-        RequestLine requestLine = RequestLineParser.createRequestLine(REQUEST);
+        RequestLine requestLine = RequestLineParser.parse(REQUEST);
 
         //when
         String result = requestLine.getUrlPath();
@@ -67,7 +70,7 @@ public class RequestLineParserTest {
     @Test
     public void getRequestPathWithStringQuery() {
         //given
-        RequestLine requestLine = RequestLineParser.createRequestLine(REQUEST_WITH_STRING_QUERY);
+        RequestLine requestLine = RequestLineParser.parse(REQUEST_WITH_STRING_QUERY);
 
         //when
         String result = requestLine.getUrlPath();
@@ -80,7 +83,7 @@ public class RequestLineParserTest {
     @Test
     public void getStringQuery() {
         //given
-        RequestLine requestLine = RequestLineParser.createRequestLine(REQUEST_WITH_STRING_QUERY);
+        RequestLine requestLine = RequestLineParser.parse(REQUEST_WITH_STRING_QUERY);
 
         //when
         QueryStrings result = requestLine.getQueryStrings();

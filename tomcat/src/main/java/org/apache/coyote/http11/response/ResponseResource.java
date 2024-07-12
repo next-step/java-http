@@ -2,9 +2,10 @@ package org.apache.coyote.http11.response;
 
 import camp.nextstep.db.InMemoryUserRepository;
 import camp.nextstep.model.User;
-import org.apache.coyote.http11.request.HttpMethod;
-import org.apache.coyote.http11.request.Path;
-import org.apache.coyote.http11.request.QueryStrings;
+import org.apache.coyote.http11.request.model.HttpMethod;
+import org.apache.coyote.http11.request.model.Path;
+import org.apache.coyote.http11.request.model.QueryStrings;
+import org.apache.coyote.http11.request.model.RequestBodies;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,15 +26,24 @@ public class ResponseResource {
 		this.statusCode = statusCode;
 	}
 
-	public static ResponseResource of(final Path path, final HttpMethod httpMethod) throws IOException {
+	public static ResponseResource of(final Path path, final RequestBodies requestBodies, final HttpMethod httpMethod) throws IOException {
 		if (HttpMethod.POST.name().equals(httpMethod.name())) {
-			return postResponseResource(path);
+			return postResponseResource(path, requestBodies);
 		}
 		return getResponseResource(path);
 	}
 
-	private static ResponseResource postResponseResource(Path path) {
-		return null;
+	private static ResponseResource postResponseResource(Path path, RequestBodies requestBodies) throws IOException {
+		if (path.urlPath().equals("/register")) {
+			String account = requestBodies.getRequestBodyValueByKey("account");
+			String password = requestBodies.getRequestBodyValueByKey("password");
+			String email = requestBodies.getRequestBodyValueByKey("email");
+			InMemoryUserRepository.save(new User(account, password, email));
+			String responseBody = new ResponseBody("/index.html").getResponseBody();
+			return new ResponseResource(responseBody, "/index.html", StatusCode.FOUND);
+		}
+		String responseBody = new ResponseBody(path.urlPath()).getResponseBody();
+		return new ResponseResource(responseBody, path.urlPath(), StatusCode.OK);
 	}
 
 	private static ResponseResource getResponseResource(Path path) throws IOException {
@@ -61,6 +71,12 @@ public class ResponseResource {
 			String filePath = "/401.html";
 			String responseBody = new ResponseBody(filePath).getResponseBody();
 			return new ResponseResource(responseBody, filePath, StatusCode.NOT_FOUND);
+		}
+
+		if (path.urlPath().equals("/register")) {
+				String filePath = "/register.html";
+				String responseBody = new ResponseBody(filePath).getResponseBody();
+				return new ResponseResource(responseBody, filePath, StatusCode.OK);
 		}
 
 		String responseBody = new ResponseBody(path.urlPath()).getResponseBody();
