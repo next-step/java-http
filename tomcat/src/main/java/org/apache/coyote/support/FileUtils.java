@@ -1,6 +1,9 @@
 package org.apache.coyote.support;
 
-public class FileUtils {
+public final class FileUtils {
+
+    private FileUtils() {
+    }
 
     private static final String FILE_EXTENSION_DELIMITER = ".";
 
