@@ -207,11 +207,7 @@ public class Http11Processor implements Runnable, Processor {
     }
 
     private boolean needToUpdateSessionId(Request request) throws IOException {
-        String oldId = request.getSessionIdFromCookie();
-        if (oldId == null) return true;
-
-        String newId = request.getSession(sessionManager, true).getId();
-        return !oldId.equals(newId);
+        return request.getSession(sessionManager, false) == null;
     }
 
     private void render(String responseStatus,

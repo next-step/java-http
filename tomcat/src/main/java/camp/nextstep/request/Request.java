@@ -50,13 +50,6 @@ public class Request {
         return requestCookies;
     }
 
-    public String getSessionIdFromCookie() {
-        Cookie cookie = getRequestCookies().get(JSESSIONID_NAME);
-        if (cookie == null) return null;
-
-        return cookie.getValue();
-    }
-
     /**
      * 쿠키에 있는 세션 ID 로 조회되는 세션을 리턴합니다.
      *
@@ -75,5 +68,12 @@ public class Request {
         newSession = new Session(Cookie.randomJsessionId());
         sessionManager.add(newSession);
         return newSession;
+    }
+
+    private String getSessionIdFromCookie() {
+        Cookie cookie = getRequestCookies().get(JSESSIONID_NAME);
+        if (cookie == null) return null;
+
+        return cookie.getValue();
     }
 }
