@@ -98,7 +98,6 @@ public class Http11Processor implements Runnable, Processor {
             return;
         }
 
-
         if (requestPath.equals("/index.html")) {
             processRenderStaticPage(request, outputStream);
             log.debug("세션 조회: {}", request.getSession(sessionManager, false));

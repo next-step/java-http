@@ -10,6 +10,12 @@ public class RequestCookies {
 
     private static final RequestCookies EMPTY_OBJECT = new RequestCookies(Collections.unmodifiableMap(new HashMap<>()));
 
+    private final Map<String, Cookie> cookiesMap;
+
+    private RequestCookies(Map<String, Cookie> cookiesMap) {
+        this.cookiesMap = cookiesMap;
+    }
+
     public static RequestCookies parse(String cookieValue) {
         if (cookieValue == null) return EMPTY_OBJECT;
 
@@ -23,12 +29,6 @@ public class RequestCookies {
         }
 
         return new RequestCookies(cookiesMap);
-    }
-
-    private final Map<String, Cookie> cookiesMap;
-
-    private RequestCookies(Map<String, Cookie> cookiesMap) {
-        this.cookiesMap = cookiesMap;
     }
 
     public boolean hasKey(String key) {

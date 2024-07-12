@@ -8,6 +8,12 @@ public class QueryParameters {
 
     private static final QueryParameters EMPTY = new QueryParameters(Collections.unmodifiableMap(new HashMap<>()));
 
+    private final Map<String, List<Object>> queryParamsMap;
+
+    private QueryParameters(Map<String, List<Object>> queryParamsMap) {
+        this.queryParamsMap = queryParamsMap;
+    }
+
     public static QueryParameters parse(String queryString) {
         if (queryString == null) return EMPTY;
 
@@ -24,14 +30,12 @@ public class QueryParameters {
         return new QueryParameters(map);
     }
 
-    private final Map<String, List<Object>> queryParamsMap;
-
-    private QueryParameters(Map<String, List<Object>> queryParamsMap) {
-        this.queryParamsMap = queryParamsMap;
-    }
-
     public boolean hasKey(String key) {
         return queryParamsMap.containsKey(key);
+    }
+
+    public List<Object> getAll(String key) {
+        return queryParamsMap.get(key);
     }
 
     public Object get(String key) {
@@ -50,9 +54,5 @@ public class QueryParameters {
         return queryParamsMap.get(key)
                 .stream()
                 .findFirst();
-    }
-
-    public List<Object> getAll(String key) {
-        return queryParamsMap.get(key);
     }
 }

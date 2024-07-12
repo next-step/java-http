@@ -5,6 +5,12 @@ import java.util.List;
 import java.util.Map;
 
 public class RequestHeaders {
+    private final Map<String, String> headersMap;
+
+    private RequestHeaders(Map<String, String> headersMap) {
+        this.headersMap = headersMap;
+    }
+
     public static RequestHeaders parse(List<String> list) {
         final Map<String, String> headersMap = new HashMap<>();
         list.forEach(line -> {
@@ -15,12 +21,6 @@ public class RequestHeaders {
         });
 
         return new RequestHeaders(headersMap);
-    }
-
-    private final Map<String, String> headersMap;
-
-    private RequestHeaders(Map<String, String> headersMap) {
-        this.headersMap = headersMap;
     }
 
     public Integer getContentLength() {
