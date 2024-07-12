@@ -5,7 +5,7 @@ import camp.nextstep.exception.UncheckedServletException;
 import camp.nextstep.model.User;
 import java.io.File;
 import java.net.URL;
-import java.util.Map;
+
 import org.apache.coyote.Processor;
 import org.apache.coyote.support.FileUtils;
 import org.apache.exception.NotFoundUserException;
@@ -23,7 +23,6 @@ public class Http11Processor implements Runnable, Processor {
 
     private final Socket connection;
     private final RequestLineParser requestLineParser = new RequestLineParser();
-    private final ResourceFinder resourceFinder = new ResourceFinder();
 
     private static final String ROOT_PATH = "/";
     private static final String LOGIN_PATH = "/login";
@@ -64,11 +63,11 @@ public class Http11Processor implements Runnable, Processor {
             validateUser(httpServletRequest);
         }
 
-        final File file = resourceFinder.findFile(httpServletRequest.httpPath());
-        final URL resource = resourceFinder.findResource(httpServletRequest.httpPath());
+        final File file = ResourceFinder.findFile(httpServletRequest.httpPath());
+        final URL resource = ResourceFinder.findResource(httpServletRequest.httpPath());
         final String extension = FileUtils.extractExtension(file.getPath());
         final ContentType contentType = ContentType.fromExtension(extension);
-        final String content = resourceFinder.findContent(resource);
+        final String content = ResourceFinder.findContent(resource);
 
         return String.join("\r\n",
                 "HTTP/1.1 200 OK ",
@@ -79,9 +78,13 @@ public class Http11Processor implements Runnable, Processor {
     }
 
     private static void validateUser(HttpServletRequest httpServletRequest) {
-        final Map<String, String> queryParamMap = httpServletRequest.requestTarget().queryParamsMap().value();
-        final String account = queryParamMap.get("account");
-        final String password = queryParamMap.get("password");
+        QueryParamsMap queryParamsMap = httpServletRequest.requestTarget().queryParamsMap();
+        if(queryParamsMap == null) {
+            return;
+        }
+
+        final String account = queryParamsMap.value().get("account");
+        final String password = queryParamsMap.value().get("password");
         final User user = InMemoryUserRepository.findByAccount(account).orElseThrow(NotFoundUserException::new);
         user.checkPassword(password);
         log.info(user.toString());
