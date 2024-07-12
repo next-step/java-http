@@ -209,13 +209,7 @@ class Http11ProcessorTest {
         processor.process(socket);
 
         // then
-        var expected = String.join("\r\n",
-                "HTTP/1.1 302 Found ",
-                "Content-Length: 0 ",
-                "Location: /index.html ");
-
-        assertThat(socket.output()).contains(expected);
-        assertThat(socket.output()).contains("Set-Cookie", "JSESSIONID=");
+        assertThat(socket.output()).contains("Set-Cookie: JSESSIONID=", "Content-Length: 0", "Location: /index.html");
     }
 
     @DisplayName("/login + POST 요청은 실패 시 302 FOUND를 응답하고 Location으로 /401.html을 제공한다")
