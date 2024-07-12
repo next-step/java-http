@@ -70,9 +70,9 @@
 
 ### Mission 4
 
-- [ ] HttpRequest 클래스 구현
-- [ ] HttpResponse 클래스 구현
-- [ ] Controller 인터페이스 추가
-    - 분기에 있는 로직마다 AbstractController를 상속한 구현체 구현
-        - [ ] LoginController 구현
-        - [ ] RegisterController 구현
+- [X] HttpRequest 클래스 구현
+- [X] HttpResponse 클래스 구현
+- [X] Controller 인터페이스 추가
+    - [X] 분기에 있는 로직마다 AbstractController를 상속한 구현체 구현
+        - [X] LoginController 구현
+        - [X] RegisterController 구현
