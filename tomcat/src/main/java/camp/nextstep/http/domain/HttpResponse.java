@@ -6,7 +6,6 @@ import java.io.OutputStream;
 
 public class HttpResponse {
     private static final String PATH_PREFIX = "static";
-    private static final String NOT_FOUND_PATH = "/404.html";
 
     private final OutputStream outputStream;
     private final HttpHeaders headers;
@@ -18,6 +17,10 @@ public class HttpResponse {
 
     public void addHeader(final String name, final String value) {
         headers.add(name, value);
+    }
+
+    public void forward(final Route route) throws IOException {
+        forward(route.getPath());
     }
 
     public void forward(final String path) throws IOException {
@@ -48,6 +51,10 @@ public class HttpResponse {
         outputStream.flush();
     }
 
+    public void sendRedirect(final Route route) throws IOException {
+        sendRedirect(route.getPath());
+    }
+
     public void sendRedirect(final String location) throws IOException {
         headers.setLocation(location);
         final var response = String.join(System.lineSeparator(),
@@ -65,7 +72,7 @@ public class HttpResponse {
         if (resource.exists()) {
             return resource;
         }
-        return new Resource(PATH_PREFIX + NOT_FOUND_PATH);
+        return new Resource(PATH_PREFIX + Route.NOT_FOUND.getPath());
     }
 
     public void setContentType(final ContentType contentType) {
