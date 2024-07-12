@@ -39,11 +39,6 @@ public class Http11Processor implements Runnable, Processor {
              final var outputStream = connection.getOutputStream()) {
 
             RequestLine requestLine = RequestParser.parseRequest(inputStream);
-            if ("/login".equals(requestLine.getPath())) {
-                String account = requestLine.getQueryStringMap().get("account");
-                String password = requestLine.getQueryStringMap().get("password");
-                userService.findUserByAccountAndCheckPassword(account, password);
-            }
             String filePath = requestLine.getPath();
             String fileExtension = requestLine.getFileExtension();
             if (StringUtils.isEmpty(fileExtension)) {
