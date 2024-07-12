@@ -2,8 +2,8 @@ package org.apache.coyote.http11;
 
 import camp.nextstep.exception.UncheckedServletException;
 import org.apache.coyote.Processor;
+import org.apache.coyote.http11.model.HttpHeaders;
 import org.apache.coyote.http11.model.HttpRequest;
-import org.apache.coyote.http11.model.HttpRequestHeader;
 import org.apache.coyote.http11.request.RequestHandlerMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,13 +42,13 @@ public class Http11Processor implements Runnable, Processor {
                     .takeWhile(line -> !line.isEmpty())
                     .toList();
 
-            final HttpRequestHeader httpRequestHeader = HttpRequestHeaderParser.getInstance()
+            final HttpHeaders httpHeaders = HttpRequestHeaderParser.getInstance()
                     .parse(requestHeaderLines);
 
-            final String requestBodyLine = readRequestBodyLine(bufferedReader, httpRequestHeader);
+            final String requestBodyLine = readRequestBodyLine(bufferedReader, httpHeaders);
 
             final HttpRequest httpRequest = HttpRequestParser.getInstance()
-                    .parse(httpRequestHeader, requestBodyLine);
+                    .parse(httpHeaders, requestBodyLine);
 
             final String response = RequestHandlerMapper.getInstance()
                     .response(httpRequest);
@@ -60,7 +60,7 @@ public class Http11Processor implements Runnable, Processor {
         }
     }
 
-    private String readRequestBodyLine(final BufferedReader bs, final HttpRequestHeader httpHeaders) throws IOException {
+    private String readRequestBodyLine(final BufferedReader bs, final HttpHeaders httpHeaders) throws IOException {
         if (httpHeaders.hasRequestBody()) {
             final int contentLength = httpHeaders.contentLength();
 

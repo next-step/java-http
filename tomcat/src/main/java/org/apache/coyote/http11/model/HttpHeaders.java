@@ -2,7 +2,7 @@ package org.apache.coyote.http11.model;
 
 import java.util.Map;
 
-public class HttpRequestHeader {
+public class HttpHeaders {
     public static final String REQUEST_LINE_KEY = "request-line";
     private static final String CONTENTS_LENGTH_KEY = "Content-Length";
     private static final String COOKIE_KEY = "Cookie";
@@ -11,7 +11,7 @@ public class HttpRequestHeader {
 
     private final Map<String, Object> headers;
 
-    public HttpRequestHeader(final Map<String, Object> headers) {
+    public HttpHeaders(final Map<String, Object> headers) {
         this.headers = headers;
     }
 
@@ -67,5 +67,13 @@ public class HttpRequestHeader {
 
     public String JSessionId() {
         return httpCookie().valueByKey(JSESSION_ID_KEY);
+    }
+
+    public String location() {
+        return (String) headerValueBy("Location");
+    }
+
+    public void addLocation(final String location) {
+        headers.put("Location", location);
     }
 }

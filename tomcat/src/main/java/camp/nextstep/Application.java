@@ -1,12 +1,12 @@
 package camp.nextstep;
 
-import camp.nextstep.request.RequestHandlerInitializer;
+import camp.nextstep.request.RequestMappingInitializer;
 import org.apache.catalina.startup.Tomcat;
 
 public class Application {
 
     public static void main(String[] args) {
-        RequestHandlerInitializer.init();
+        RequestMappingInitializer.init();
 
         final var tomcat = new Tomcat();
         tomcat.start();

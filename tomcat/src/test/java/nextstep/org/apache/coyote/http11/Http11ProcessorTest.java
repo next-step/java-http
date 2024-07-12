@@ -1,6 +1,6 @@
 package nextstep.org.apache.coyote.http11;
 
-import camp.nextstep.request.handler.LoginHandler;
+import camp.nextstep.request.controller.LoginController;
 import org.apache.coyote.http11.Http11Processor;
 import org.apache.coyote.http11.model.constant.HttpStatusCode;
 import org.apache.coyote.http11.request.RequestHandlerMapper;
@@ -135,7 +135,7 @@ class Http11ProcessorTest {
 
         final var socket = new StubSocket(httpRequest);
         RequestHandlerMapper.getInstance()
-                .addHandler("/login.html", new LoginHandler());
+                .addHandler("/login.html", LoginController.getInstance());
         final Http11Processor processor = new Http11Processor(socket);
 
         // when
@@ -160,7 +160,7 @@ class Http11ProcessorTest {
 
         final var socket = new StubSocket(httpRequest);
         RequestHandlerMapper.getInstance()
-                .addHandler("/login.html", new LoginHandler());
+                .addHandler("/login.html", LoginController.getInstance());
         final Http11Processor processor = new Http11Processor(socket);
 
         // when
