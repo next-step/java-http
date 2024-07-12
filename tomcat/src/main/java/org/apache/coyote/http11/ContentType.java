@@ -4,8 +4,8 @@ public enum ContentType {
 
     TEXT_HTML("text/html"),
     TEXT_CSS("text/css"),
-    TEXT_JS("text/javascript")
-    ;
+    TEXT_JS("text/javascript"),
+    JSON("application/json");
 
     private final String description;
 

@@ -11,3 +11,6 @@ GET http://{{host}}/index.html
 ### GET /css/styles.css
 GET http://{{host}}/css/styles.css
 ###
+
+### GET /login?account=gugu&password=password
+GET http://{{host}}/login?account=gugu&password=password
