@@ -1,6 +1,6 @@
 package org.apache.coyote.http11;
 
-public record HttpRequest(
+public record HttpServletRequest(
         HttpMethod httpMethod,
         RequestTarget requestTarget
 ) {

@@ -24,7 +24,7 @@ class RequestLineParserTest {
     void from_get() {
         final String requestLine = "GET /users HTTP/1.1";
 
-        final HttpRequest expected = parser.parse(requestLine);
+        final HttpServletRequest expected = parser.parse(requestLine);
 
         assertThat(expected.httpMethod()).isEqualTo(HttpMethod.GET);
         assertThat(expected.requestTarget().path()).isEqualTo(TEST_HTTP_PATH);
@@ -37,7 +37,7 @@ class RequestLineParserTest {
     void from_post() {
         final String requestLine = "POST /users HTTP/1.1";
 
-        final HttpRequest expected = parser.parse(requestLine);
+        final HttpServletRequest expected = parser.parse(requestLine);
 
         assertThat(expected.httpMethod()).isEqualTo(HttpMethod.POST);
         assertThat(expected.requestTarget().path()).isEqualTo(TEST_HTTP_PATH);
@@ -50,7 +50,7 @@ class RequestLineParserTest {
     void from_getWithQueryString() {
         final String requestLine = "GET /users?userId=javajigi&password=password&name=JaeSung HTTP/1.1";
 
-        final HttpRequest expected = parser.parse(requestLine);
+        final HttpServletRequest expected = parser.parse(requestLine);
 
         assertThat(expected.httpMethod()).isEqualTo(HttpMethod.GET);
         assertThat(expected.requestTarget().path()).isEqualTo(TEST_HTTP_PATH);

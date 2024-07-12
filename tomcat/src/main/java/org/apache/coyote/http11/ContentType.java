@@ -1,6 +1,5 @@
 package org.apache.coyote.http11;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
@@ -11,6 +10,7 @@ import java.util.stream.Stream;
 public enum ContentType {
     TEXT_HTML( "text/html", "html"),
     TEXT_CSS("text/css", "css"),
+    TEXT_JS("text/javascript", "js"),
     ;
 
     private final String type;

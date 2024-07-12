@@ -44,9 +44,9 @@ public class Http11Processor implements Runnable, Processor {
              final var outputStream = connection.getOutputStream()) {
 
             final String httpRequestMessage = readHttpRequestMessage(br);
-            final HttpRequest httpRequest = requestLineParser.parse(httpRequestMessage);
+            final HttpServletRequest httpServletRequest = requestLineParser.parse(httpRequestMessage);
 
-            final var response = createResponse(httpRequest);
+            final var response = createResponse(httpServletRequest);
 
             outputStream.write(response.getBytes());
             outputStream.flush();
@@ -55,17 +55,17 @@ public class Http11Processor implements Runnable, Processor {
         }
     }
 
-    private String createResponse(HttpRequest httpRequest) throws IOException {
-        if (httpRequest.httpPath().equals(ROOT_PATH)) {
+    private String createResponse(HttpServletRequest httpServletRequest) throws IOException {
+        if (httpServletRequest.httpPath().equals(ROOT_PATH)) {
             return defaultResponse();
         }
 
-        if(httpRequest.httpPath().equals(LOGIN_PATH)) {
-            validateUser(httpRequest);
+        if(httpServletRequest.httpPath().equals(LOGIN_PATH)) {
+            validateUser(httpServletRequest);
         }
 
-        final File file = resourceFinder.findFile(httpRequest.httpPath());
-        final URL resource = resourceFinder.findResource(httpRequest.httpPath());
+        final File file = resourceFinder.findFile(httpServletRequest.httpPath());
+        final URL resource = resourceFinder.findResource(httpServletRequest.httpPath());
         final String extension = FileUtils.extractExtension(file.getPath());
         final ContentType contentType = ContentType.fromExtension(extension);
         final String content = resourceFinder.findContent(resource);
@@ -78,8 +78,8 @@ public class Http11Processor implements Runnable, Processor {
                 content);
     }
 
-    private static void validateUser(HttpRequest httpRequest) {
-        final Map<String, String> queryParamMap = httpRequest.requestTarget().queryParamsMap().value();
+    private static void validateUser(HttpServletRequest httpServletRequest) {
+        final Map<String, String> queryParamMap = httpServletRequest.requestTarget().queryParamsMap().value();
         final String account = queryParamMap.get("account");
         final String password = queryParamMap.get("password");
         final User user = InMemoryUserRepository.findByAccount(account).orElseThrow(NotFoundUserException::new);

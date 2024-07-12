@@ -1,7 +1,7 @@
 package org.apache.coyote;
 
-import org.apache.coyote.http11.HttpRequest;
+import org.apache.coyote.http11.HttpServletRequest;
 
 public interface Parser {
-    HttpRequest parse(String requestLine);
+    HttpServletRequest parse(String requestLine);
 }
