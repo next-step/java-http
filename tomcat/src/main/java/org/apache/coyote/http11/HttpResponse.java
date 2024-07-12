@@ -4,6 +4,7 @@ import java.util.List;
 
 public class HttpResponse {
     private static final String CRLF = "\r\n";
+    private static final String EMPTY = "";
 
     private final StatusLine statusLine;
     private final HttpHeaders httpHeaders;
@@ -21,11 +22,25 @@ public class HttpResponse {
         return new HttpResponse(StatusLine.of(httpProtocol, httpStatus), httpHeaders1, responseBody);
     }
 
+    public static HttpResponse from(final HttpProtocol protocol) {
+        HttpHeaders httpHeaders = HttpHeaders.empty();
+        httpHeaders.addHeader(HttpHeader.of(HttpHeaderName.CONTENT_LENGTH.getValue(), "0"));
+        return new HttpResponse(StatusLine.from(protocol), httpHeaders, EMPTY);
+    }
+
     public String createFormat() {
         return String.join(CRLF,
                 "%s ".formatted(statusLine.createResponseMessage()),
                 "%s".formatted(httpHeaders.createMessage()),
                 "",
                 responseBody);
+    }
+
+    public void addHeader(final HttpHeader httpHeader) {
+        httpHeaders.addHeader(httpHeader);
+    }
+
+    public void setHttpStatus(final HttpStatus httpStatus) {
+        statusLine.setHttpStatus(httpStatus);
     }
 }

@@ -61,4 +61,12 @@ public class HttpRequest {
     public String getBodyValue(final String key) {
         return requestBody.getValue(key);
     }
+
+    public Cookie getCookie() {
+        String cookie = httpHeaders.getHeaderValue(HttpHeaderName.COOKIE.getValue());
+        if (cookie.isEmpty()) {
+            return Cookie.empty();
+        }
+        return Cookie.from(cookie);
+    }
 }

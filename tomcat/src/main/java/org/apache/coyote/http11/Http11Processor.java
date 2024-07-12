@@ -12,6 +12,7 @@ import java.net.Socket;
 import java.nio.file.Files;
 import java.util.List;
 import java.util.StringJoiner;
+import java.util.UUID;
 
 public class Http11Processor implements Runnable, Processor {
 
@@ -21,7 +22,7 @@ public class Http11Processor implements Runnable, Processor {
     private static final String INDEX_PAGE = "/index.html";
     private static final String UNAUTHORIZED_PAGE = "/401.html";
     private static final String NOT_FOUND_PAGE = "/404.html";
-    private static final String EMPTY = "";
+    private static final String SESSION_KEY = "JSESSIONID";
 
     private final Socket connection;
 
@@ -97,49 +98,70 @@ public class Http11Processor implements Runnable, Processor {
 
     private HttpResponse handleRequest(final HttpRequest httpRequest) throws IOException {
         String path = httpRequest.getPath();
+        HttpResponse httpResponse = HttpResponse.from(httpRequest.getProtocol());
         if (path.contains("/login") && httpRequest.isPost()) {
-            String location = handleLogin(httpRequest);
-            List<HttpHeader> httpHeaders = List.of(HttpHeader.of(HttpHeaderName.LOCATION.getValue(), location));
-            return HttpResponse.of(httpRequest.getProtocol(), HttpStatus.FOUND, httpHeaders, EMPTY);
+            return handleLogin(httpRequest, httpResponse);
+        }
+
+        if (path.contains("/login") && httpRequest.isGet()) {
+            Cookie cookie = httpRequest.getCookie();
+            if (cookie.isNotEmpty() && InMemorySessionRepository.exists(cookie.getValue())) {
+                httpResponse.addHeader(HttpHeader.of(HttpHeaderName.LOCATION.getValue(), INDEX_PAGE));
+                httpResponse.setHttpStatus(HttpStatus.FOUND);
+                return httpResponse;
+            }
         }
 
         if (path.contains("/register") && httpRequest.isPost()) {
-            handleRegister(httpRequest);
-            List<HttpHeader> httpHeaders = List.of(HttpHeader.of(HttpHeaderName.LOCATION.getValue(), INDEX_PAGE));
-            return HttpResponse.of(httpRequest.getProtocol(), HttpStatus.FOUND, httpHeaders, EMPTY);
+            return handleRegister(httpRequest, httpResponse);
         }
 
         if (httpRequest.isGet()) {
-            return handleGetMethod(httpRequest, path);
+            return handleResourceRequiredRequest(httpRequest, path);
         }
 
-        List<HttpHeader> httpHeaders = List.of(HttpHeader.of(HttpHeaderName.LOCATION.getValue(), NOT_FOUND_PAGE));
-        return HttpResponse.of((httpRequest.getProtocol()), HttpStatus.FOUND, httpHeaders, EMPTY);
+        httpResponse.setHttpStatus(HttpStatus.FOUND);
+        httpResponse.addHeader(HttpHeader.of(HttpHeaderName.LOCATION.getValue(), NOT_FOUND_PAGE));
+        return httpResponse;
     }
 
+    private HttpResponse handleLogin(final HttpRequest httpRequest, final HttpResponse httpResponse) {
+        httpResponse.setHttpStatus(HttpStatus.FOUND);
 
-    private String handleLogin(final HttpRequest httpRequest) {
         User user = InMemoryUserRepository.findByAccount(httpRequest.getBodyValue("account"))
                 .orElseThrow();
         String password = httpRequest.getBodyValue("password");
 
         if (user.checkPassword(password)) {
-            return INDEX_PAGE;
+            httpResponse.addHeader(HttpHeader.of(HttpHeaderName.LOCATION.getValue(), INDEX_PAGE));
+
+            String uuid = UUID.randomUUID().toString();
+            InMemorySessionRepository.save(uuid, user);
+
+            Cookie cookie = Cookie.of(SESSION_KEY, uuid);
+            httpResponse.addHeader(HttpHeader.of(HttpHeaderName.SET_COOKIE.getValue(), cookie.createMessage()));
+
+            return httpResponse;
         }
 
-        return UNAUTHORIZED_PAGE;
+        httpResponse.addHeader(HttpHeader.of(HttpHeaderName.LOCATION.getValue(), UNAUTHORIZED_PAGE));
+        return httpResponse;
     }
 
-    private void handleRegister(final HttpRequest httpRequest) {
+    private HttpResponse handleRegister(final HttpRequest httpRequest, final HttpResponse httpResponse) {
         String account = httpRequest.getBodyValue("account");
         String password = httpRequest.getBodyValue("password");
         String email = httpRequest.getBodyValue("email");
 
         User user = new User(InMemoryUserRepository.getAutoIncrement(), account, password, email);
         InMemoryUserRepository.save(user);
+
+        httpResponse.addHeader(HttpHeader.of(HttpHeaderName.LOCATION.getValue(), INDEX_PAGE));
+        httpResponse.setHttpStatus(HttpStatus.FOUND);
+        return httpResponse;
     }
 
-    private HttpResponse handleGetMethod(final HttpRequest httpRequest, final String path) throws IOException {
+    private HttpResponse handleResourceRequiredRequest(final HttpRequest httpRequest, final String path) throws IOException {
         File resource = new ResourceFinder().findByPath(path);
         MediaType mediaType = MediaType.from(resource);
         List<HttpHeader> httpHeaders = List.of(HttpHeader.of(HttpHeaderName.CONTENT_TYPE.getValue(), mediaType.getValue() + ";charset=utf-8"));

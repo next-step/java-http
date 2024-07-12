@@ -9,12 +9,19 @@ public class HttpHeaders {
 
     private final List<HttpHeader> values = new ArrayList<>();
 
+    private HttpHeaders() {
+    }
+
     private HttpHeaders(final List<HttpHeader> values) {
         this.values.addAll(values);
     }
 
     public static HttpHeaders from(final List<HttpHeader> httpHeaders) {
         return new HttpHeaders(httpHeaders);
+    }
+
+    public static HttpHeaders empty() {
+        return new HttpHeaders();
     }
 
     public void addHeader(HttpHeader httpHeader) {
