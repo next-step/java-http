@@ -20,7 +20,7 @@ public abstract class AbstractController implements Controller {
         try {
             return service(request).buildResponse();
         } catch (Exception e) {
-            return new HttpResponse(HttpStatusCode.INTERNAL_SERVER_ERROR, request.httpRequestHeader(), "").buildResponse();
+            return new HttpResponse(HttpStatusCode.INTERNAL_SERVER_ERROR, request.httpRequestHeader()).buildResponse();
         }
     }
 
