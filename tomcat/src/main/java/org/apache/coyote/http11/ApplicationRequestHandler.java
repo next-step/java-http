@@ -1,7 +1,10 @@
 package org.apache.coyote.http11;
 
 import camp.nextstep.UserController;
+import camp.nextstep.exception.UncheckedServletException;
+import org.apache.catalina.ViewModel;
 
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
@@ -16,8 +19,12 @@ public class ApplicationRequestHandler implements RequestHandler {
         }
         if (requestLine.getPath().startsWith("/login")) {
             Map<String, Object> queryParamMap = requestLine.getQueryParamMap();
-            String user = UserController.findUser(queryParamMap);
-            return new Response(requestLine.getHttpProtocol(), HttpStatusCode.OK, ContentType.JSON, StandardCharsets.UTF_8, user.getBytes());
+            ViewModel viewModel = UserController.findUser(queryParamMap);
+            try {
+                return new Response(requestLine.getHttpProtocol(), HttpStatusCode.OK, ContentType.TEXT_HTML, StandardCharsets.UTF_8, FileLoader.read("static" + viewModel.path()));
+            } catch (IOException e) {
+                throw new UncheckedServletException(e);
+            }
         }
 
         return new Response(requestLine.getHttpProtocol(), HttpStatusCode.NOT_FOUND, ContentType.TEXT_HTML, StandardCharsets.UTF_8, "Hello World!".getBytes());

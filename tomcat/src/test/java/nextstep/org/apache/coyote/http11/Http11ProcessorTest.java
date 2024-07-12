@@ -110,7 +110,7 @@ class Http11ProcessorTest {
 
     @Test
     @DisplayName("/login 요청을 처리한다")
-    public void loginRequestTest() {
+    public void loginRequestTest() throws IOException {
 
         // /login?account=gugu&password=password
         final var builder = new TestHttpRequestMessageBuilder();
@@ -126,14 +126,11 @@ class Http11ProcessorTest {
 
         String expected = String.join("\r\n",
                 "HTTP/1.1 200 OK ",
-                "Content-Type: application/json;charset=utf-8 ",
-                "Content-Length: 26 ", // 운영체제 환경에 따라 다른 값이 나올 수 있음. 자신의 개발 환경에 맞춰 수정할 것.
+                "Content-Type: text/html;charset=utf-8 ",
+                "Content-Length: 3796 ", // 운영체제 환경에 따라 다른 값이 나올 수 있음. 자신의 개발 환경에 맞춰 수정할 것.
                 "",
-                """
-                        {       
-                            "account": "gugu"
-                        }
-                        """);
+                actualResource("static/login.html"));
+
 
         assertThat(socket.output()).isEqualTo(expected);
     }
