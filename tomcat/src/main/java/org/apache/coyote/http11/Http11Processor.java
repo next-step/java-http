@@ -50,23 +50,24 @@ public class Http11Processor implements Runnable, Processor {
 
     private void processInternal(final HttpInputParser httpParser, final HttpResponse httpResponse) {
         try {
-            httpParser.parseRequestLine();
+            httpParser.parseRequest();
 
             final HttpRequest httpRequest = httpParser.getRequest();
             httpResponse.init();
 
             adapter.service(httpRequest, httpResponse);
         } catch (HttpParseException e) {
-            final String body = ErrorViewResolver.errorView(e.getMessage());
-
-            httpResponse.setBody(body, ContentType.TEXT_HTML);
-            httpResponse.setResponseLine(HttpVersion.HTTP1_1, StatusCode.BAD_REQUEST);
+            setErrorResponse(e.getMessage(), httpResponse, StatusCode.BAD_REQUEST);
         } catch (Exception e) {
             log.error(e.getMessage(), e);
-            final String body = ErrorViewResolver.errorView(e.getMessage());
-
-            httpResponse.setBody(body, ContentType.TEXT_HTML);
-            httpResponse.setResponseLine(HttpVersion.HTTP1_1, StatusCode.INTERNAL_SERVER_ERROR);
+            setErrorResponse(e.getMessage(), httpResponse, StatusCode.INTERNAL_SERVER_ERROR);
         }
+    }
+
+    private void setErrorResponse(final String e, final HttpResponse httpResponse, final StatusCode badRequest) {
+        final String body = ErrorViewResolver.errorView(e);
+
+        httpResponse.setBody(body, ContentType.TEXT_HTML);
+        httpResponse.setResponseLine(HttpVersion.HTTP1_1, badRequest);
     }
 }

@@ -2,7 +2,7 @@ package camp.nextstep.servlet;
 
 import camp.nextstep.db.InMemoryUserRepository;
 import camp.nextstep.model.User;
-import com.javax.servlet.Servlet;
+import com.javax.servlet.http.HttpServlet;
 import org.apache.coyote.http.HttpRequest;
 import org.apache.coyote.http.HttpResponse;
 import org.apache.coyote.http.StatusCode;
@@ -13,19 +13,23 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 
-public class LoginServlet implements Servlet {
+public class LoginServlet extends HttpServlet {
 
     private final static Logger log = LoggerFactory.getLogger(LoginServlet.class);
 
     @Override
-    public void service(final HttpRequest httpRequest, final HttpResponse httpResponse) throws Exception {
+    public void doGet(final HttpRequest httpRequest, final HttpResponse httpResponse) throws Exception {
         StaticResource staticResource = StaticResourceResolver.findStaticResource("/login.html");
         httpResponse.setBody(staticResource.getContent(), staticResource.getMimeType());
+    }
 
+    @Override
+    public void doPost(final HttpRequest httpRequest, final HttpResponse httpResponse) throws Exception {
         final String account = httpRequest.getParameter("account");
         final String password = httpRequest.getParameter("password");
 
         if (account == null) {
+            setResponse("/401.html", httpResponse, StatusCode.UNAUTHORIZED);
             return;
         }
 
@@ -33,7 +37,6 @@ public class LoginServlet implements Servlet {
 
         if (isInvalidLoginUser(foundAccount, password)) {
             setResponse("/401.html", httpResponse, StatusCode.UNAUTHORIZED);
-
             return;
         }
 

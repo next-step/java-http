@@ -4,6 +4,7 @@ import java.util.Arrays;
 
 public enum ContentType {
     NONE(""),
+    APPLICATION_FORM_URLENCODED("application/x-www-form-urlencoded"),
     TEXT_PLAIN("text/plain"),
     TEXT_HTML("text/html"),
     TEXT_JSON("text/json"),

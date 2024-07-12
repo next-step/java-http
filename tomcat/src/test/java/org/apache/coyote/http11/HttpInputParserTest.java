@@ -13,7 +13,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class HttpInputParserTest {
 
-    @DisplayName("GET 요청의 RequestLine 을 파싱한다")
+    @DisplayName("GET 요청의 Request 를 파싱한다")
     @Test
     public void parseGetRequestLine() throws Exception {
         // given
@@ -21,7 +21,7 @@ class HttpInputParserTest {
         final HttpInputParser httpInputParser = new HttpInputParser(socket.getInputStream());
 
         // when
-        httpInputParser.parseRequestLine();
+        httpInputParser.parseRequest();
 
         // then
         final HttpRequest actual = httpInputParser.getRequest();
@@ -33,7 +33,7 @@ class HttpInputParserTest {
         );
     }
 
-    @DisplayName("POSt 요청의 RequestLine 을 파싱한다")
+    @DisplayName("POST 요청의 Request 를 파싱한다")
     @Test
     public void parsePostRequestLine() throws Exception {
         // given
@@ -41,7 +41,7 @@ class HttpInputParserTest {
         final HttpInputParser httpInputParser = new HttpInputParser(socket.getInputStream());
 
         // when
-        httpInputParser.parseRequestLine();
+        httpInputParser.parseRequest();
 
         // then
         final HttpRequest actual = httpInputParser.getRequest();
@@ -61,7 +61,7 @@ class HttpInputParserTest {
         final HttpInputParser httpInputParser = new HttpInputParser(socket.getInputStream());
 
         // when
-        httpInputParser.parseRequestLine();
+        httpInputParser.parseRequest();
 
         // then
         final HttpRequest actual = httpInputParser.getRequest();
