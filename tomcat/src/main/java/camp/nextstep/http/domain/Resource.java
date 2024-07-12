@@ -13,11 +13,12 @@ public class Resource {
     }
 
     public byte[] readAllBytes() throws IOException {
-        final InputStream resourceAsStream = ClassLoader.getSystemResourceAsStream(filePath);
-        if (resourceAsStream == null) {
-            throw new FileNotFoundException(filePath);
+        try (final InputStream resourceAsStream = ClassLoader.getSystemResourceAsStream(filePath)) {
+            if (resourceAsStream == null) {
+                throw new FileNotFoundException(filePath);
+            }
+            return resourceAsStream.readAllBytes();
         }
-        return resourceAsStream.readAllBytes();
     }
 
     public boolean exists() {
