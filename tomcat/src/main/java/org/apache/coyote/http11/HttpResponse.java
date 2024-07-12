@@ -43,4 +43,13 @@ public class HttpResponse {
     public void setHttpStatus(final HttpStatus httpStatus) {
         statusLine.setHttpStatus(httpStatus);
     }
+
+    public void sendRedirect(final String path) {
+        addHeader(HttpHeader.of(HttpHeaderName.LOCATION.getValue(), path));
+        setHttpStatus(HttpStatus.FOUND);
+    }
+
+    public void setCookie(final Cookie cookie) {
+        addHeader(HttpHeader.of(HttpHeaderName.SET_COOKIE.getValue(), cookie.createMessage()));
+    }
 }

@@ -19,9 +19,9 @@ public class Http11Processor implements Runnable, Processor {
     private static final Logger log = LoggerFactory.getLogger(Http11Processor.class);
 
     private static final String CRLF = "\r\n";
-    private static final String INDEX_PAGE = "/index.html";
-    private static final String UNAUTHORIZED_PAGE = "/401.html";
-    private static final String NOT_FOUND_PAGE = "/404.html";
+    private static final String INDEX_PATH = "/index.html";
+    private static final String UNAUTHORIZED_PATH = "/401.html";
+    private static final String NOT_FOUND_PATH = "/404.html";
     private static final String SESSION_KEY = "JSESSIONID";
 
     private final Socket connection;
@@ -96,6 +96,7 @@ public class Http11Processor implements Runnable, Processor {
         return Long.parseLong(headerValue);
     }
 
+    //TODO: SessionManager,
     private HttpResponse handleRequest(final HttpRequest httpRequest) throws IOException {
         String path = httpRequest.getPath();
         HttpResponse httpResponse = HttpResponse.from(httpRequest.getProtocol());
@@ -106,8 +107,7 @@ public class Http11Processor implements Runnable, Processor {
         if (path.contains("/login") && httpRequest.isGet()) {
             Cookie cookie = httpRequest.getCookie();
             if (cookie.isNotEmpty() && InMemorySessionRepository.exists(cookie.getValue())) {
-                httpResponse.addHeader(HttpHeader.of(HttpHeaderName.LOCATION.getValue(), INDEX_PAGE));
-                httpResponse.setHttpStatus(HttpStatus.FOUND);
+                httpResponse.sendRedirect(INDEX_PATH);
                 return httpResponse;
             }
         }
@@ -120,31 +120,26 @@ public class Http11Processor implements Runnable, Processor {
             return handleResourceRequiredRequest(httpRequest, path);
         }
 
-        httpResponse.setHttpStatus(HttpStatus.FOUND);
-        httpResponse.addHeader(HttpHeader.of(HttpHeaderName.LOCATION.getValue(), NOT_FOUND_PAGE));
+        httpResponse.sendRedirect(NOT_FOUND_PATH);
         return httpResponse;
     }
 
     private HttpResponse handleLogin(final HttpRequest httpRequest, final HttpResponse httpResponse) {
-        httpResponse.setHttpStatus(HttpStatus.FOUND);
-
         User user = InMemoryUserRepository.findByAccount(httpRequest.getBodyValue("account"))
                 .orElseThrow();
         String password = httpRequest.getBodyValue("password");
 
         if (user.checkPassword(password)) {
-            httpResponse.addHeader(HttpHeader.of(HttpHeaderName.LOCATION.getValue(), INDEX_PAGE));
-
             String uuid = UUID.randomUUID().toString();
             InMemorySessionRepository.save(uuid, user);
 
             Cookie cookie = Cookie.of(SESSION_KEY, uuid);
-            httpResponse.addHeader(HttpHeader.of(HttpHeaderName.SET_COOKIE.getValue(), cookie.createMessage()));
-
+            httpResponse.setCookie(cookie);
+            httpResponse.sendRedirect(INDEX_PATH);
             return httpResponse;
         }
 
-        httpResponse.addHeader(HttpHeader.of(HttpHeaderName.LOCATION.getValue(), UNAUTHORIZED_PAGE));
+        httpResponse.sendRedirect(UNAUTHORIZED_PATH);
         return httpResponse;
     }
 
@@ -155,9 +150,7 @@ public class Http11Processor implements Runnable, Processor {
 
         User user = new User(InMemoryUserRepository.getAutoIncrement(), account, password, email);
         InMemoryUserRepository.save(user);
-
-        httpResponse.addHeader(HttpHeader.of(HttpHeaderName.LOCATION.getValue(), INDEX_PAGE));
-        httpResponse.setHttpStatus(HttpStatus.FOUND);
+        httpResponse.sendRedirect(INDEX_PATH);
         return httpResponse;
     }
 
