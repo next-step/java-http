@@ -1,10 +1,14 @@
 package org.apache.coyote.http11;
 
+import camp.nextstep.db.InMemoryUserRepository;
 import camp.nextstep.exception.UncheckedServletException;
+import camp.nextstep.model.User;
 import java.io.File;
 import java.net.URL;
+import java.util.Map;
 import org.apache.coyote.Processor;
 import org.apache.coyote.support.FileUtils;
+import org.apache.exception.NotFoundUserException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -12,7 +16,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.Socket;
-import java.nio.file.Path;
 
 public class Http11Processor implements Runnable, Processor {
 
@@ -57,6 +60,10 @@ public class Http11Processor implements Runnable, Processor {
             return defaultResponse();
         }
 
+        if(httpRequest.httpPath().equals(LOGIN_PATH)) {
+            validateUser(httpRequest);
+        }
+
         final File file = resourceFinder.findFile(httpRequest.httpPath());
         final URL resource = resourceFinder.findResource(httpRequest.httpPath());
         final String extension = FileUtils.extractExtension(file.getPath());
@@ -69,6 +76,15 @@ public class Http11Processor implements Runnable, Processor {
                 "Content-Length: " + content.getBytes().length + " ",
                 "",
                 content);
+    }
+
+    private static void validateUser(HttpRequest httpRequest) {
+        final Map<String, String> queryParamMap = httpRequest.requestTarget().queryParamsMap().value();
+        final String account = queryParamMap.get("account");
+        final String password = queryParamMap.get("password");
+        final User user = InMemoryUserRepository.findByAccount(account).orElseThrow(NotFoundUserException::new);
+        user.checkPassword(password);
+        System.out.println(user);
     }
 
     private String defaultResponse() {
