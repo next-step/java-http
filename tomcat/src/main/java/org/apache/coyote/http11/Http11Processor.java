@@ -5,6 +5,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.Socket;
+import java.util.UUID;
 import org.apache.coyote.Processor;
 import org.apache.coyote.http11.request.Request;
 import org.apache.coyote.http11.response.Response;
@@ -37,7 +38,7 @@ public class Http11Processor implements Runnable, Processor {
             Request request = new Request(br);
             Response response = requestMapping.handleMapping(request);
 
-            outputStream.write(response.toHttp11(request.getCookies()));
+            outputStream.write(response.toHttp11());
             outputStream.flush();
         } catch (IOException | UncheckedServletException e) {
             log.error(e.getMessage(), e);

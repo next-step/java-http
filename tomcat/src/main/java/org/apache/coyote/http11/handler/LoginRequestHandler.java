@@ -3,7 +3,8 @@ package org.apache.coyote.http11.handler;
 import camp.nextstep.db.InMemoryUserRepository;
 import camp.nextstep.model.User;
 import java.io.IOException;
-import org.apache.coyote.http11.request.HttpPath;
+import org.apache.coyote.http11.meta.HttpCookie;
+import org.apache.coyote.http11.meta.HttpPath;
 import org.apache.coyote.http11.request.Request;
 import org.apache.coyote.http11.request.RequestBody;
 import org.apache.coyote.http11.request.RequestLine;
@@ -17,9 +18,16 @@ public class LoginRequestHandler implements RequestHandler {
 
     private static final String ACCOUNT_PARAMETER = "account";
     private static final String PASSWORD_PARAMETER = "password";
+    private static final String USER_KEY = "user";
 
     @Override
     public Response handle(Request request) throws IOException {
+        Session session = SessionManager.getSession(request.getCookies());
+        User user = (User) session.getAttribute(USER_KEY);
+        if (user != null) {
+            return Response.found(INDEX_PATH);
+        }
+
         RequestLine requestLine = request.getRequestLine();
 
         if (requestLine.isGet()) {
@@ -44,10 +52,12 @@ public class LoginRequestHandler implements RequestHandler {
             if (!isPasswordValid(user, password)) {
                 throw new IllegalArgumentException();
             }
-            Session session = request.getSession();
-            session.setAttribute("user", user);
 
-            return Response.redirect(FileUtils.getStaticFileContent(HttpPath.from(INDEX_PATH)));
+            HttpCookie httpCookie = request.getCookies();
+            Session session = SessionManager.getSession(httpCookie);
+            session.setAttribute(USER_KEY, user);
+
+            return Response.found(httpCookie, INDEX_PATH);
         } catch (IllegalArgumentException e) {
             return Response.unauthorized(FileUtils.getStaticFileContent(HttpPath.from(UNAUTHORIZED_PATH)));
         }

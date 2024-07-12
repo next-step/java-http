@@ -1,66 +1,90 @@
 package org.apache.coyote.http11.response;
 
-import org.apache.coyote.http11.request.HttpCookie;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.coyote.http11.meta.HttpCookie;
+import org.apache.coyote.http11.meta.HttpHeader;
+import org.apache.coyote.http11.meta.HttpStatus;
 
 public class Response {
 
+    private static final String CONTENT_TYPE_HEADER_KEY = "Content-Type";
+    private static final String CONTENT_LENGTH_HEADER_KEY = "Content-Length";
+    private static final String COOKIE_HEADER_KEY = "Set-Cookie";
+    private static final String LOCATION_HEADER_KEY = "Location";
+    private static final String HEADER_FORMAT = "%s: %s ";
+    private static final String RESPONSE_STATUS_LINE_FORMAT = "%s %d %s ";
+
     private static final String DELIMITER = "\r\n";
     private static final String HTTP11_VERSION = "HTTP/1.1";
+    private final HttpStatus status;
+    private final String body;
+    private final HttpCookie cookie;
+    private final HttpHeader header;
 
-    HttpStatus status;
-    ContentType contentType;
-    String body;
-
-    private Response(HttpStatus status, ContentType contentType, String body) {
+    public Response(HttpStatus status, HttpCookie cookie, String body, Map<String, String> header) {
         this.status = status;
-        this.contentType = contentType;
         this.body = body;
+        this.cookie = cookie;
+        this.header = new HttpHeader(header);
     }
 
     public static Response ok(ContentType contentType, String body) {
-        return new Response(HttpStatus.OK, contentType, body);
+        Map<String, String> headers = new LinkedHashMap<>();
+        headers.put(CONTENT_TYPE_HEADER_KEY, contentType.getValue());
+        headers.put(CONTENT_LENGTH_HEADER_KEY, String.valueOf(body.getBytes().length));
+        return new Response(HttpStatus.OK, HttpCookie.from(), body, headers);
     }
 
-    public static Response notFound(String body) {
-        return new Response(HttpStatus.NOT_FOUND, ContentType.HTML, body);
+    public static Response notFound(ContentType contentType, String body) {
+        Map<String, String> headers = new LinkedHashMap<>();
+        headers.put(CONTENT_TYPE_HEADER_KEY, contentType.getValue());
+        headers.put(CONTENT_LENGTH_HEADER_KEY, String.valueOf(body.getBytes().length));
+        return new Response(HttpStatus.NOT_FOUND, HttpCookie.from(), body, headers);
     }
 
-    public static Response redirect(String responseBody) {
-        return new Response(HttpStatus.FOUND, ContentType.HTML, responseBody);
+    public static Response found(HttpCookie cookie, String location) {
+        return new Response(HttpStatus.FOUND, cookie, StringUtils.EMPTY, Map.of(LOCATION_HEADER_KEY, location));
     }
 
-    public static Response unauthorized(String responseBody) {
-        return new Response(HttpStatus.UNAUTHORIZED, ContentType.HTML, responseBody);
+    public static Response found(String location) {
+        return new Response(HttpStatus.FOUND, HttpCookie.from(), StringUtils.EMPTY, Map.of(LOCATION_HEADER_KEY, location));
+    }
+
+    public static Response unauthorized(String body) {
+        Map<String, String> headers = new LinkedHashMap<>();
+        headers.put(CONTENT_TYPE_HEADER_KEY, ContentType.HTML.getValue());
+        headers.put(CONTENT_LENGTH_HEADER_KEY, String.valueOf(body.getBytes().length));
+
+        return new Response(HttpStatus.UNAUTHORIZED, HttpCookie.from(), body,
+            headers);
     }
 
     public static Response notAllowed() {
-        return new Response(HttpStatus.METHOD_NOT_ALLOWED, ContentType.HTML, "Method Not Allowed");
+        String body = HttpStatus.METHOD_NOT_ALLOWED.getMessage();
+        return new Response(HttpStatus.METHOD_NOT_ALLOWED, HttpCookie.from(), body,
+            Map.of(CONTENT_TYPE_HEADER_KEY, ContentType.HTML.getValue(),
+                CONTENT_LENGTH_HEADER_KEY, String.valueOf(body.getBytes().length)));
     }
 
     public byte[] toHttp11() {
-        String statusLine = String.format("%s %d %s ", HTTP11_VERSION, status.getCode(), status.getMessage());
-        String contentTypeHeader = String.format("Content-Type: %s ", contentType.getValue());
-        String contentLengthHeader = String.format("Content-Length: %d ", body.getBytes().length);
-
+        String statusLine = String.format(RESPONSE_STATUS_LINE_FORMAT, HTTP11_VERSION, status.getCode(), status.getMessage());
+        String header = generateHeader();
         return String.join(DELIMITER,
             statusLine,
-            contentTypeHeader,
-            contentLengthHeader,
+            header,
             "",
             body).getBytes();
     }
 
-    public byte[] toHttp11(HttpCookie httpCookie) {
-        String statusLine = String.format("%s %d %s ", HTTP11_VERSION, status.getCode(), status.getMessage());
-        String contentTypeHeader = String.format("Content-Type: %s ", contentType.getValue());
-        String contentLengthHeader = String.format("Content-Length: %d ", body.getBytes().length);
-        String cookieHeader = String.format("Set-Cookie: %s ", httpCookie.toCookieHeader());
-        return String.join(DELIMITER,
-            statusLine,
-            contentTypeHeader,
-            contentLengthHeader,
-            cookieHeader,
-            "",
-            body).getBytes();
+    private String generateHeader() {
+        return Stream.of(header.getHeaders(), Map.of(COOKIE_HEADER_KEY, cookie.toCookieHeader()))
+            .flatMap(map -> map.entrySet().stream())
+            .filter(header -> !header.getValue().isEmpty())
+            .map(header -> String.format(HEADER_FORMAT, header.getKey(), header.getValue()))
+            .collect(Collectors.joining(DELIMITER));
     }
 }
