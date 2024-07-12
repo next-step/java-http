@@ -19,41 +19,33 @@ class ResourceFinderTest {
 
     @Nested
     @DisplayName("httpPath 로 파일 내용 조회")
-    class FindContext {
+    class FindContent {
 
         @Test
         @DisplayName("httpPath 와 일치하는 static resource 의 파일 내용을 반환한다")
         void success_getDefaultContext() throws IOException {
-            final String httpPath = "/index.html";
+            final URL resource = ResourceFinder.class.getClassLoader().getResource("static/index.html");
 
-            final String actual = sut.findContent(httpPath);
+            final String actual = sut.findContent(resource);
 
-            final URL resource = getClass().getClassLoader().getResource("static/index.html");
-            var expected = new String(Files.readAllBytes(new File(resource.getFile()).toPath()));
+            final URL expectedResource = getClass().getClassLoader().getResource("static/index.html");
+            var expected = new String(Files.readAllBytes(new File(expectedResource.getFile()).toPath()));
 
             assertThat(actual).isEqualTo(expected);
         }
 
-        @Test
-        @DisplayName("존재하지 않는 경우 에러를 반환한다")
-        void fail_notFoundResource() {
-            final String httpPath = "/heedoitdox.html";
-
-            assertThrows(ResourceNotFoundException.class,
-                    () -> sut.findContent(httpPath));
-        }
     }
 
     @Nested
-    @DisplayName("httpPath 로 파일 path 조회")
-    class FindFilePath {
+    @DisplayName("httpPath 로 파일 조회")
+    class FindFile {
 
         @Test
         @DisplayName("파일이 존재한다")
         void success() {
             String httpPath = "/index.html";
 
-            final Path actual = sut.findFilePath(httpPath);
+            final File actual = sut.findFile(httpPath);
 
             final URL resource = getClass().getClassLoader().getResource("static/index.html");
             var expected = new File(resource.getFile());
@@ -67,15 +59,15 @@ class ResourceFinderTest {
             String httpPath = "/heedoitdox.html";
 
             assertThrows(ResourceNotFoundException.class,
-                    () -> sut.findFilePath(httpPath));
+                    () -> sut.findFile(httpPath));
         }
 
         @Test
-        @DisplayName("로그인 페이지에 해당하는 파일 path 를 조회한다")
+        @DisplayName("로그인 페이지에 해당하는 파일을 조회한다")
         void success_login() {
             String httpPath = "/login";
 
-            final Path actual = sut.findFilePath(httpPath);
+            final File actual = sut.findFile(httpPath);
 
             final URL resource = getClass().getClassLoader().getResource("static/login.html");
             var expected = new File(resource.getFile());

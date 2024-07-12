@@ -12,31 +12,34 @@ public class ResourceFinder {
     private static final String LOGIN_PATH = "/login";
     private static final String LOGIN_RESOURCE_PATH = "/login.html";
 
-    public String findContent(String httpPath) throws IOException {
-        final URL resource = getResource(httpPath);
+    public static String findContent(final URL resource) throws IOException {
         return new String(Files.readAllBytes(getFilePath(resource)));
     }
 
-    public Path findFilePath(String httpPath) {
+    public static File findFile(final String httpPath) {
         if(httpPath.equals(LOGIN_PATH)) {
-            return getFilePath(getResource(LOGIN_RESOURCE_PATH));
+            return new File(findResource(LOGIN_RESOURCE_PATH).getFile());
         }
 
-        final URL resource = getResource(httpPath);
-        return getFilePath(resource);
+        return new File(findResource(httpPath).getFile());
     }
 
-    private Path getFilePath(URL resource) {
-        return new File(resource.getFile()).toPath();
-    }
+    public static URL findResource(final String httpPath) {
+        String filePath = httpPath;
+        if(httpPath.equals(LOGIN_PATH)) {
+            filePath = LOGIN_RESOURCE_PATH;
+        }
 
-    private URL getResource(String httpPath) {
-        final URL resource = getClass().getClassLoader().getResource(ROOT_RESOURCE_PATH + httpPath);
+        final URL resource = ResourceFinder.class.getClassLoader().getResource(ROOT_RESOURCE_PATH + filePath);
         if(resource == null) {
             throw new ResourceNotFoundException("not found resource: " + httpPath);
         }
 
         return resource;
+    }
+
+    private static Path getFilePath(final URL resource) {
+        return new File(resource.getFile()).toPath();
     }
 
 }

@@ -1,6 +1,8 @@
 package org.apache.coyote.http11;
 
 import camp.nextstep.exception.UncheckedServletException;
+import java.io.File;
+import java.net.URL;
 import org.apache.coyote.Processor;
 import org.apache.coyote.support.FileUtils;
 import org.slf4j.Logger;
@@ -51,18 +53,15 @@ public class Http11Processor implements Runnable, Processor {
     }
 
     private String createResponse(HttpRequest httpRequest) throws IOException {
-        String httpPath = "";
-
         if (httpRequest.httpPath().equals(ROOT_PATH)) {
             return defaultResponse();
-        } else if (httpRequest.httpPath().equals(LOGIN_PATH)) {
-            httpPath = "/login.html";
         }
 
-        final Path filePath = resourceFinder.findFilePath(httpPath);
-        final String extension = FileUtils.extractExtension(filePath.toString());
+        final File file = resourceFinder.findFile(httpRequest.httpPath());
+        final URL resource = resourceFinder.findResource(httpRequest.httpPath());
+        final String extension = FileUtils.extractExtension(file.getPath());
         final ContentType contentType = ContentType.fromExtension(extension);
-        final String content = resourceFinder.findContent(httpPath);
+        final String content = resourceFinder.findContent(resource);
 
         return String.join("\r\n",
                 "HTTP/1.1 200 OK ",
