@@ -1,4 +1,4 @@
-package org.apache.coyote.http11.request;
+package org.apache.coyote.http11.meta;
 
 import java.util.Arrays;
 import java.util.LinkedHashMap;
@@ -14,7 +14,7 @@ public class HttpCookie {
     private static final int VALUE_INDEX = 1;
     protected static final int SPLITERATOR_SIZE = 2;
     private static final String JSESSIONID_KEY = "JSESSIONID";
-    private static final String Path = "Path";
+
     private final Map<String, String> cookies;
 
     private HttpCookie(Map<String, String> cookies) {
@@ -23,13 +23,11 @@ public class HttpCookie {
 
     public static HttpCookie from(String cookieHeader) {
         Map<String, String> cookies = new LinkedHashMap<>(parseCookies(cookieHeader));
-        if (!cookies.containsKey(JSESSIONID_KEY)) {
-            cookies.put(JSESSIONID_KEY, UUID.randomUUID().toString());
-        }
-        if (!cookies.containsKey(Path)) {
-            cookies.put(Path, "/");
-        }
         return new HttpCookie(cookies);
+    }
+
+    public static HttpCookie from() {
+        return new HttpCookie(new LinkedHashMap<>());
     }
 
     public String toCookieHeader() {
@@ -38,8 +36,16 @@ public class HttpCookie {
             .collect(Collectors.joining(COOKIES_DELIMITER));
     }
 
+    public boolean hasSessionId() {
+        return cookies.containsKey(JSESSIONID_KEY);
+    }
+
     public String getJSessionId() {
         return cookies.get(JSESSIONID_KEY);
+    }
+
+    public void addSessionId(String sessionId) {
+        cookies.put(JSESSIONID_KEY, sessionId);
     }
 
     public String getCookie(String key) {

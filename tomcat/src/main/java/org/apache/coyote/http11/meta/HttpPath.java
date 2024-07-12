@@ -1,6 +1,7 @@
-package org.apache.coyote.http11.request;
+package org.apache.coyote.http11.meta;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.coyote.http11.request.QueryString;
 import org.apache.coyote.http11.response.ContentType;
 
 public class HttpPath {

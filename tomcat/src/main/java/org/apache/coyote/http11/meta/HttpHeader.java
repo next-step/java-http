@@ -1,11 +1,11 @@
-package org.apache.coyote.http11.request;
+package org.apache.coyote.http11.meta;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-public class RequestHeader {
+public class HttpHeader {
 
     private static final String DELIMITER = ": ";
     private static final int KEY_INDEX = 0;
@@ -15,11 +15,11 @@ public class RequestHeader {
     private final Map<String, String> headers;
 
 
-    public RequestHeader(Map<String, String> headers) {
+    public HttpHeader(Map<String, String> headers) {
         this.headers = headers;
     }
 
-    public static RequestHeader from(BufferedReader br) throws IOException {
+    public static HttpHeader from(BufferedReader br) throws IOException {
         Map<String, String> headers = new HashMap<>();
         do {
             String line = br.readLine();
@@ -30,7 +30,7 @@ public class RequestHeader {
             headers.put(tokens[KEY_INDEX], tokens[VALUE_INDEX]);
         } while (br.ready());
 
-        return new RequestHeader(headers);
+        return new HttpHeader(headers);
     }
 
     public int getContentLength() {
@@ -39,5 +39,9 @@ public class RequestHeader {
 
     public String getCookies() {
         return headers.getOrDefault(COOKIE, "");
+    }
+
+    public Map<String, String> getHeaders() {
+        return headers;
     }
 }

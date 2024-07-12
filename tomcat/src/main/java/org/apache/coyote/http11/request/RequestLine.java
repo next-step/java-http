@@ -1,7 +1,8 @@
 package org.apache.coyote.http11.request;
 
 import java.util.Map;
-import org.apache.coyote.http11.response.HttpMethod;
+import org.apache.coyote.http11.meta.HttpPath;
+import org.apache.coyote.http11.meta.HttpMethod;
 
 public class RequestLine {
 

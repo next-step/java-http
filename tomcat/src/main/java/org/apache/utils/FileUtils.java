@@ -4,7 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.coyote.http11.request.HttpPath;
+import org.apache.coyote.http11.meta.HttpPath;
 
 public class FileUtils {
 
