@@ -1,0 +1,9 @@
+@host = localhost:8080
+
+### GET /
+GET http://{{host}}/
+###
+
+### GET index page
+GET http://{{host}}/index.html
+###
