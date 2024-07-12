@@ -4,12 +4,11 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.regex.Pattern;
 
 public final class FileLoader {
 
-    private static final Pattern FILE_EXTENSION_PATTERN = Pattern.compile(".+\\.html");
+    private static final Pattern FILE_EXTENSION_PATTERN = Pattern.compile(".+(\\.html|.css)$");
 
     private FileLoader() {
     }

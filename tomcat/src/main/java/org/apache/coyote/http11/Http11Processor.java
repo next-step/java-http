@@ -48,6 +48,13 @@ public class Http11Processor implements Runnable, Processor {
                 outputStream.flush();
                 return;
             }
+            if (requestLine.pathEndsWith(".css")) {
+                byte[] readFile = FileLoader.read("static" + requestLine.getPath());
+                var response = new Response(requestLine.getHttpProtocol(), HttpStatusCode.OK, ContentType.TEXT_CSS, StandardCharsets.UTF_8, readFile);
+                outputStream.write(response.generateMessage().getBytes());
+                outputStream.flush();
+                return;
+            }
 
             final var responseBody = "Hello world!";
 

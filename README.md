@@ -26,8 +26,8 @@
 
 - [X] GET /index.html 응답하기
   - [X] line이 null인 경우에 예외 처리를 해준다
-- [ ] CSS 지원하기
-  - [ ] CSS인 경우 응답 헤더의 Content-Type을 text/css로 전송한다.
+- [X] CSS 지원하기
+  - [X] CSS인 경우 응답 헤더의 Content-Type을 text/css로 전송한다.
 - [ ] Query String 파싱
   - [ ] http request의 첫 번째 라인에서 request uri를 추출한다
   - [ ] login.html 파일에서 태그에 name을 추가해준다.
