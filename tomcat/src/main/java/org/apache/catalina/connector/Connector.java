@@ -26,6 +26,7 @@ public class Connector implements Runnable {
         this(DEFAULT_PORT, DEFAULT_ACCEPT_COUNT);
     }
 
+    // acceptCount => ServerSocket의 accept() 메서드에서 대기할 수 있는 최대 연결 요청 수 (backlog)
     public Connector(final int port, final int acceptCount) {
         this.serverSocket = createServerSocket(port, acceptCount);
         this.executorService = ThreadPoolConfig.defaultThreadPool();
