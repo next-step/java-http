@@ -84,7 +84,7 @@ public class Http11Processor implements Runnable, Processor {
         final String password = queryParamMap.get("password");
         final User user = InMemoryUserRepository.findByAccount(account).orElseThrow(NotFoundUserException::new);
         user.checkPassword(password);
-        System.out.println(user);
+        log.info(user.toString());
     }
 
     private String defaultResponse() {
