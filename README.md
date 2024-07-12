@@ -24,8 +24,8 @@
 
 ### 2단계 미션
 
-- [ ] GET /index.html 응답하기
-  - [ ] line이 null인 경우에 예외 처리를 해준다
+- [X] GET /index.html 응답하기
+  - [X] line이 null인 경우에 예외 처리를 해준다
 - [ ] CSS 지원하기
   - [ ] CSS인 경우 응답 헤더의 Content-Type을 text/css로 전송한다.
 - [ ] Query String 파싱

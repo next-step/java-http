@@ -1,5 +1,6 @@
 package nextstep.org.apache.coyote.http11;
 
+import org.junit.jupiter.api.DisplayName;
 import support.StubSocket;
 import org.apache.coyote.http11.Http11Processor;
 import org.junit.jupiter.api.Test;
@@ -60,4 +61,30 @@ class Http11ProcessorTest {
 
         assertThat(socket.output()).isEqualTo(expected);
     }
+
+    @Test
+    @DisplayName("requestLine 이 null일 경우 500.html 반환한다")
+    public void requestLineNullTest() throws IOException {
+        final String httpRequest= String.join("\r\n",
+                "",
+                "");
+
+        final var socket = new StubSocket(httpRequest);
+        final Http11Processor processor = new Http11Processor(socket);
+
+        // when
+        processor.process(socket);
+
+        // then
+        final URL resource = getClass().getClassLoader().getResource("static/500.html");
+        var expected = String.join("\r\n",
+                "HTTP/1.1 500 Internal Server Error ",
+                "Content-Type: text/html;charset=utf-8 ",
+                "Content-Length: 2357 ",
+                "",
+                new String(Files.readAllBytes(new File(resource.getFile()).toPath())));
+
+        assertThat(socket.output()).isEqualTo(expected);
+    }
+
 }
