@@ -1,7 +1,6 @@
 package org.apache.coyote.http;
 
 import java.util.Arrays;
-import java.util.stream.Collectors;
 
 public enum ContentType {
     NONE(""),
@@ -13,7 +12,6 @@ public enum ContentType {
     IMAGE_SVG("image/svg+xml"),
     CHARSET_UTF_8("charset=utf-8");
 
-    public static final String CONTENT_TYPE_SEPARATOR = ";";
     private final String type;
 
     ContentType(final String type) {
@@ -22,10 +20,6 @@ public enum ContentType {
 
     public String type() {
         return this.type;
-    }
-
-    public static String toContentTypeValues(final ContentType... contentTypes) {
-        return Arrays.stream(contentTypes).map(ContentType::type).collect(Collectors.joining(CONTENT_TYPE_SEPARATOR));
     }
 
     public static ContentType from(final String mimeType) {

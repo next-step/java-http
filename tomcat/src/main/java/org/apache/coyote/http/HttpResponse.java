@@ -24,7 +24,7 @@ public class HttpResponse {
     public void setBody(final String body, final ContentType mimeType) {
         this.body.setLength(0);
         this.body.append(body);
-        this.headerMapping.addHeader(HttpHeader.CONTENT_TYPE, ContentType.toContentTypeValues(mimeType, ContentType.CHARSET_UTF_8));
+        this.headerMapping.addHeader(HttpHeader.CONTENT_TYPE, mimeType.type(), ContentType.CHARSET_UTF_8.type());
         this.headerMapping.addHeader(HttpHeader.CONTENT_LENGTH, Integer.toString(this.body.length()));
     }
 
