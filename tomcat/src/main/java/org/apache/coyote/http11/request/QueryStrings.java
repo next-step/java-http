@@ -17,4 +17,8 @@ public class QueryStrings {
     public String getQueryStringValueByKey(String key) {
         return queryString.get(key);
     }
+
+    public boolean isEmpty() {
+        return queryString.isEmpty();
+    }
 }

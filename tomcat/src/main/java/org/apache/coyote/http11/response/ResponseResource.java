@@ -43,9 +43,13 @@ public class ResponseResource {
 			return new ResponseResource(responseBody, filePath, StatusCode.OK);
 		}
 
-		UrlPath.findUrlPath(path.urlPath());
 		if (path.urlPath().equals("/login")) {
 			QueryStrings queryStrings = path.queryStrings();
+			if(queryStrings.isEmpty()) {
+				String filePath = "/login.html";
+				String responseBody = new ResponseBody(filePath).getResponseBody();
+				return new ResponseResource(responseBody, filePath, StatusCode.OK);
+			}
 			String account = queryStrings.getQueryStringValueByKey("account");
 			String password = queryStrings.getQueryStringValueByKey("password");
 			boolean loginSuccess = login(account, password);
