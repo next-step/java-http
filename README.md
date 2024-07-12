@@ -76,3 +76,8 @@
     - [X] 분기에 있는 로직마다 AbstractController를 상속한 구현체 구현
         - [X] LoginController 구현
         - [X] RegisterController 구현
+
+### Mission 5
+
+- [ ] ExecutorService를 이용한 스레드풀 구현
+- [ ] 동시성 컬렉션 적용
