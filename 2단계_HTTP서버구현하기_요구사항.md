@@ -1,0 +1,49 @@
+# 🚀 2단계 - HTTP 서버 구현하기
+
+## 요구사항 
+### 1. GET /index.html 응답하기
+   인덱스 페이지(http://localhost:8080/index.html)에 접근할 수 있도록 만들자.
+   Http11ProcessorTest 테스트 클래스의 모든 테스트를 통과하면 된다.
+   브라우저에서 요청한 HTTP Request Header는 다음과 같다.
+
+```bash
+GET /index.html HTTP/1.1
+Host: localhost:8080
+Connection: keep-alive
+Accept: */*
+```
+
+[x] Http11Processor#process() 에서 http path 를 읽어오기 
+[x] Http11Processor 에서 파일 리소스 읽어오기
+[x] 파일 리소스가 없을 경우 exception 추가
+
+### 2. CSS 지원하기
+![img.png](img.png)
+
+인덱스 페이지에 접속하니까 화면이 이상하게 보인다.
+개발자 도구를 열어서 에러 메시지를 체크해보니 브라우저가 CSS를 못 찾고 있다.
+사용자가 페이지를 열었을 때 CSS 파일도 호출하도록 기능을 추가하자.
+
+```bash
+GET /css/styles.css HTTP/1.1
+Host: localhost:8080
+Accept: text/css,*/*;q=0.1
+Connection: keep-alive
+```
+
+[x] css 파일 로드하는 테스트 코드 추가한다.
+[x] ContentType "text/css", "text/html" 을 구분한다.
+[x] 사용자가 페이지를 (localhost:8080) 호출했을 때 css 파일을 호출한다.
+
+### 3. Query String 파싱
+   http://localhost:8080/login?account=gugu&password=password으로 접속하면 로그인 페이지(login.html)를 보여주도록 만들자.
+   그리고 로그인 페이지에 접속했을 때 Query String을 파싱해서 아이디, 비밀번호가 일치하면 콘솔창에 로그로 회원을 조회한 결과가 나오도록 만들자.
+
+[x] 로그인 페이지를 로드하는 테스트 코드를 추가한다.
+[x] 파싱된 쿼리스트링을 통해 아이디, 비밀번호가 일치하는지 확인한다.
+[x] 일치한다면 회원 조회한 결과를 response 로 반환한다.
+![img_2.png](img_2.png)
+
+### 추가 사항
+[x] 리소스를 조회하는 부분 리팩토링
+

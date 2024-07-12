@@ -2,8 +2,18 @@ package org.apache.coyote.http11;
 
 public record HttpServletRequest(
         HttpMethod httpMethod,
-        HttpPath httpPath,
-        Protocol protocol,
-        ProtocolVersion protocolVersion
+        RequestTarget requestTarget
 ) {
+
+    public String httpPath() {
+        return requestTarget.path();
+    }
+
+    public Protocol getProtocol() {
+        return requestTarget.protocol();
+    }
+
+    public ProtocolVersion getProtocolVersion() {
+        return requestTarget.protocolVersion();
+    }
 }
