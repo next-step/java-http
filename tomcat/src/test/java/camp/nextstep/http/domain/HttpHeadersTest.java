@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
-import java.util.List;
+import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -64,27 +64,13 @@ class HttpHeadersTest {
     }
 
     @Test
-    void HttpHeaders_를_List_String_으로_생성할_수_있다() {
-        final HttpHeaders headers = new HttpHeaders(
-                List.of("Content-Type: text/html;charset=utf-8 ",
-                        "Content-Length: 1000 ")
+    void HttpHeaders_에_Cookie_는_getCookie_로_반환받을_수_있다() {
+        final Map<String, String> headerMap = Map.of(
+                "Content-Type", "text/html;charset=utf-8",
+                "Content-Length", "1000",
+                "Cookie", "yummy_cookie=choco; tasty_cookie=strawberry; JSESSIONID=656cef62-e3c4-40bc-a8df-94732920ed46"
         );
-
-        assertThat(headers.convertToString()).isEqualTo(
-                String.join(System.lineSeparator(),
-                        "Content-Type: text/html;charset=utf-8 ",
-                        "Content-Length: 1000 "
-                )
-        );
-    }
-
-    @Test
-    void HttpHeaders_를_List_String_으로_생성시_Cookie_는_분리된다() {
-        final HttpHeaders headers = new HttpHeaders(
-                List.of("Content-Type: text/html;charset=utf-8 ",
-                        "Content-Length: 1000 ",
-                        "Cookie: yummy_cookie=choco; tasty_cookie=strawberry; JSESSIONID=656cef62-e3c4-40bc-a8df-94732920ed46")
-        );
+        final HttpHeaders headers = new HttpHeaders(headerMap);
 
         assertSoftly(softly -> {
             softly.assertThat(headers.getContentLength()).isEqualTo(1000);
@@ -94,5 +80,4 @@ class HttpHeadersTest {
             softly.assertThat(headers.getCookie("JSESSIONID")).isEqualTo("656cef62-e3c4-40bc-a8df-94732920ed46");
         });
     }
-
 }

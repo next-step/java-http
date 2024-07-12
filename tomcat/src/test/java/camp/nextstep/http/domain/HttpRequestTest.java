@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.List;
+import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
@@ -27,7 +27,7 @@ class HttpRequestTest {
         assertSoftly(softly -> {
             softly.assertThat(httpRequest.isGetMethod()).isTrue();
             softly.assertThat(httpRequest.getPath()).isEqualTo(new HttpPath("/login"));
-            softly.assertThat(httpRequest.getHeaders()).isEqualTo(new HttpHeaders(List.of("Host: localhost:8080", "Connection: keep-alive")));
+            softly.assertThat(httpRequest.getHeaders()).isEqualTo(new HttpHeaders(Map.of("Host", "localhost:8080", "Connection", "keep-alive")));
             softly.assertThat(httpRequest.getQueryParameters()).isEqualTo(new QueryParameters("account=gugu&password=password"));
         });
     }
@@ -48,7 +48,7 @@ class HttpRequestTest {
         assertSoftly(softly -> {
             softly.assertThat(httpRequest.isPostMethod()).isTrue();
             softly.assertThat(httpRequest.getPath()).isEqualTo(new HttpPath("/register"));
-            softly.assertThat(httpRequest.getHeaders()).isEqualTo(new HttpHeaders(List.of("Host: localhost:8080", "Connection: keep-alive", "Content-Length: 50")));
+            softly.assertThat(httpRequest.getHeaders()).isEqualTo(new HttpHeaders(Map.of("Host", "localhost:8080", "Connection", "keep-alive", "Content-Length", "50")));
             softly.assertThat(httpRequest.getRequestBody()).isEqualTo(new RequestBody("account=test&password=password&email=test@test.com"));
         });
     }
@@ -68,6 +68,6 @@ class HttpRequestTest {
 
         final HttpRequest httpRequest = new HttpRequest(inputStream);
 
-        assertThat(httpRequest.getSession(false)).isEqualTo(new HttpSession("session"));
+        assertThat(httpRequest.getSession()).isEqualTo(new HttpSession("session"));
     }
 }

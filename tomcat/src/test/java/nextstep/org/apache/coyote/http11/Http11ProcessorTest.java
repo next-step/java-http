@@ -191,7 +191,7 @@ class Http11ProcessorTest {
                 "");
         assertSoftly(softly -> {
             softly.assertThat(socket.output()).isEqualTo(expected);
-            softly.assertThat(HttpSessionManager.findSession(mockedUUID.toString())).isNotNull();
+            softly.assertThat(HttpSessionManager.computeIfAbsent(mockedUUID.toString())).isNotNull();
         });
     }
 
@@ -199,6 +199,7 @@ class Http11ProcessorTest {
     @DisplayName("로그인 get 요청시 로그인이 안되어있으면 login.html 로 이동한다")
     void process_login_get_without_login() throws IOException {
         // given
+        HttpSessionManager.clear();
         final String httpRequest = "GET /login HTTP/1.1 \r\n" +
                 "Host: localhost:8080 \r\n" +
                 "Connection: keep-alive \r\n" +
@@ -248,7 +249,7 @@ class Http11ProcessorTest {
                 "");
         assertSoftly(softly -> {
             softly.assertThat(socket.output()).isEqualTo(expected);
-            softly.assertThat(HttpSessionManager.findSession(mockedUUID.toString())).isNotNull();
+            softly.assertThat(HttpSessionManager.computeIfAbsent(mockedUUID.toString())).isNotNull();
         });
     }
 

@@ -13,14 +13,16 @@ public class HttpCookies {
     private static final int KEY_INDEX = 0;
     private static final int VALUE_INDEX = 1;
     private static final int SPLIT_LIMIT = 2;
+    private static final String EMPTY = "";
+
     private final Map<String, String> cookies;
 
     public HttpCookies() {
-        this.cookies = new LinkedHashMap<>();
+        this(EMPTY);
     }
 
     public HttpCookies(final String cookies) {
-        if (cookies == null) {
+        if (cookies == null || cookies.isEmpty()) {
             this.cookies = new LinkedHashMap<>();
             return;
         }
@@ -33,7 +35,6 @@ public class HttpCookies {
                         (existing, replacement) -> existing,
                         LinkedHashMap::new
                 ));
-        ;
     }
 
     private String[] splitCookie(final String cookies) {

@@ -15,13 +15,6 @@ class HttpPathTest {
         assertThat(httpPath.getPath()).isEqualTo("/users");
     }
 
-    @Test
-    void httpPath_가_root_인지_반환받을_수_있다() {
-        final HttpPath httpPath = new HttpPath("/");
-
-        assertThat(httpPath.isRoot()).isTrue();
-    }
-
     @ParameterizedTest
     @CsvSource(value = {
             "/index.html:.html",

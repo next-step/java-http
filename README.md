@@ -146,3 +146,56 @@ X-Pad: avoid browser bug
 - 쿠키에서 전달 받은 `JSESSIONID` 의 값으로 로그인 여부를 체크할 수 있어야 한다.
 - 로그인 성공 시 Session 에 User 객체를 저장한다.
 - 로그인이 된 상태에서 `/login` 페이지에 HTTP GET 요청으로 접근하면 index.html 페이지로 리다이렉트 한다.
+
+## 4단계 - 리팩터링
+
+### 요구사항 1 - HttpRequest 클래스 구현하기
+
+- HttpRequest 처리를 담당하는 클래스
+- RequestLine
+    - Method, Path, Version/Protocol 로 구성
+- Headers
+- Body
+    - Headers 의 Content-Length 길이만큼만 읽는다.
+    - Headers 의 Content-Length 가 없으면 읽지 않는다.
+
+### 요구사항 2 - HttpResponse 클래스 구현하기
+
+- HttpResponse 처리를 담당하는 클래스
+- StatusLine
+    - Version/Protocol, StatusCode, ReasonPhrase 로 구성
+- Headers
+- Body
+-
+
+### 요구사항 3 - Controller 인터페이스 추가하기
+
+- Controller 인터페이스를 추가한다.
+    ```java
+    public interface Controller {
+        void service(HttpRequest request, HttpResponse response) throws Exception;
+    }
+    ```
+- AbstractController 추상 클래스를 추가한다.
+    ```java
+    public abstract class AbstractController implements Controller {
+
+    @Override
+    public void service(HttpRequest request, HttpResponse response) throws Exception {
+        // http method 분기문
+    }
+
+    protected void doPost(HttpRequest request, HttpResponse response) throws Exception { /* NOOP */ }
+    protected void doGet(HttpRequest request, HttpResponse response) throws Exception { /* NOOP */ }
+    }
+    ```
+- 각 분기별로 AbstractController 를 구현하게끔 한다.
+- 각 컨트롤러 구현체들을 RequestMapping 에 저장한다
+    ```java
+    public class RequestMapping {
+        ...
+    public Controller getController(HttpRequest request) {
+        ...
+        }
+    }
+    ```
