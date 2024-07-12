@@ -31,7 +31,7 @@ class SessionManagerTest {
         SessionManager.removeSession(session.getSessionId());
 
         // then
-        assertNull(SessionManager.getSession(session.getSessionId()));
+        assertThrows(IllegalArgumentException.class, () -> SessionManager.getSession(session.getSessionId()));
     }
 
     @DisplayName("세션을 가져올 수 있다.")

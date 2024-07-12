@@ -1,7 +1,7 @@
 package org.apache.utils;
 
 import java.io.IOException;
-import org.apache.coyote.http11.request.HttpPath;
+import org.apache.coyote.http11.meta.HttpPath;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

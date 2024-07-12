@@ -85,37 +85,7 @@ class Http11ProcessorTest {
         var expected = String.join("\r\n",
             "HTTP/1.1 200 OK ",
             "Content-Type: text/html ",
-            "Content-Length: 3796 ",
-            "",
-            new String(Files.readAllBytes(new File(resource.getFile()).toPath())));
-
-        assertThat(socket.output()).isEqualTo(expected);
-    }
-
-    @DisplayName("login이 정상적으로 처리 될 경우 index.html을 읽어온다.")
-    @Test
-    void login_with_query_string() throws IOException {
-
-        // given
-        final String httpRequest = String.join("\r\n",
-            "GET /login?account=gugu&password=password HTTP/1.1 ",
-            "Host: localhost:8080 ",
-            "Connection: keep-alive ",
-            "",
-            "");
-
-        final var socket = new StubSocket(httpRequest);
-        final var processor = new Http11Processor(socket);
-
-        // when
-        processor.process(socket);
-
-        // then
-        final URL resource = getClass().getClassLoader().getResource("static/index.html");
-        var expected = String.join("\r\n",
-            "HTTP/1.1 302 Found ",
-            "Content-Type: text/html ",
-            "Content-Length: 5564 ",
+            "Content-Length: 3797 ",
             "",
             new String(Files.readAllBytes(new File(resource.getFile()).toPath())));
 

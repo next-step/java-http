@@ -1,5 +1,6 @@
 package org.apache.coyote.http11.request;
 
+import org.apache.coyote.http11.meta.HttpCookie;
 import static org.assertj.core.api.Assertions.assertThat;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

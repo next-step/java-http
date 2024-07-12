@@ -1,5 +1,6 @@
 package org.apache.coyote.http11.response;
 
+import org.apache.coyote.http11.meta.HttpCookie;
 import static org.assertj.core.api.Assertions.assertThat;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -32,7 +33,7 @@ class ResponseTest {
         @Test
         void create_NotFound_Response() {
             // given & when
-            final var result = Response.notFound("");
+            final var result = Response.notFound(ContentType.HTML, "");
 
             // then
             var expected = String.join("\r\n",
@@ -45,19 +46,18 @@ class ResponseTest {
             assertThat(new String(result.toHttp11())).isEqualTo(expected);
         }
 
-        @DisplayName("redirect Response 객체를 생성할 수 있다.")
+        @DisplayName("found Response 객체를 생성할 수 있다.")
         @Test
-        void create_Redirect_Response() {
+        void create_Found_Response() {
             // given & when
-            final var result = Response.redirect("Redirect to /users");
+            final var result = Response.found(HttpCookie.from(), "/users");
 
             // then
             var expected = String.join("\r\n",
                 "HTTP/1.1 302 Found ",
-                "Content-Type: text/html ",
-                "Content-Length: 18 ",
+                "Location: /users ",
                 "",
-                "Redirect to /users");
+                "");
 
             assertThat(new String(result.toHttp11())).isEqualTo(expected);
         }
