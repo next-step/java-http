@@ -18,14 +18,12 @@ public class Http11Processor implements Runnable, Processor {
     private static final Logger log = LoggerFactory.getLogger(Http11Processor.class);
 
     private final Socket connection;
-    private final SessionManager sessionManager;
 
     private final HttpRequestParser requestParser;
     private final RequestMapping requestMapping;
 
     public Http11Processor(final Socket connection) {
         this.connection = connection;
-        this.sessionManager = SessionManager.INSTANCE;
 
         this.requestParser = new HttpRequestParser();
         this.requestMapping = new RequestMapping();
@@ -45,7 +43,7 @@ public class Http11Processor implements Runnable, Processor {
              final var outputStream = connection.getOutputStream()
         ) {
             HttpRequest request = requestParser.parse(bufferedReader);
-            HttpResponse response = new HttpResponse(request, sessionManager, outputStream);
+            HttpResponse response = new HttpResponse(request, outputStream);
             try {
                 requestMapping.getController(request).service(request, response);
             } catch (RequestNotFoundException e) {

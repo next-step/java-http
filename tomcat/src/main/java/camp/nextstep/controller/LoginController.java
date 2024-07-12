@@ -14,7 +14,7 @@ public class LoginController extends AbstractController {
 
     @Override
     protected void doGet(HttpRequest request, HttpResponse response) throws Exception {
-        if (request.isLoggedIn(getSessionManager())) {
+        if (request.isLoggedIn()) {
             response.redirectTo("/index.html");
             return;
         }
@@ -38,7 +38,7 @@ public class LoginController extends AbstractController {
             return;
         }
 
-        request.signInAs(user.get(), getSessionManager());
+        request.signInAs(user.get());
 
         response.redirectTo("/index.html");
     }

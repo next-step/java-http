@@ -29,7 +29,7 @@ public class RegisterController extends AbstractController {
 
         User user = new User(account, password, email);
         InMemoryUserRepository.save(user);
-        request.signInAs(user, getSessionManager());
+        request.signInAs(user);
         log.debug("사용자 생성 후 로그인: {}", user);
 
         response.redirectTo("/index.html");

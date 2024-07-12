@@ -81,7 +81,7 @@ class HttpResponseTest {
         BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         HttpRequest request = new HttpRequestParser().parse(bufferedReader);
         OutputStream outputStream = socket.getOutputStream();
-        return new HttpResponse(request, sessionManager, outputStream);
+        return new HttpResponse(request, outputStream);
     }
 
     private String readFileContent(String fileName) throws IOException {

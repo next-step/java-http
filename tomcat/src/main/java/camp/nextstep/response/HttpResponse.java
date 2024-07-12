@@ -3,7 +3,7 @@ package camp.nextstep.response;
 import camp.nextstep.request.HttpRequest;
 import camp.nextstep.request.HttpRequestCookie;
 import camp.nextstep.staticresource.StaticResourceLoader;
-import org.apache.coyote.http11.SessionManager;
+import org.apache.catalina.Session;
 import org.apache.util.MimeTypes;
 
 import java.io.IOException;
@@ -13,13 +13,11 @@ public class HttpResponse {
     private static final MimeTypes mimeTypes = new MimeTypes();
 
     private final HttpRequest request;
-    private final SessionManager sessionManager;
     private final OutputStream outputStream;
     private final StaticResourceLoader staticResourceLoader;
 
-    public HttpResponse(HttpRequest request, SessionManager sessionManager, OutputStream outputStream) {
+    public HttpResponse(HttpRequest request, OutputStream outputStream) {
         this.request = request;
-        this.sessionManager = sessionManager;
         this.outputStream = outputStream;
         this.staticResourceLoader = new StaticResourceLoader();
     }
@@ -48,7 +46,7 @@ public class HttpResponse {
             responseBuilder.append("Set-Cookie: ")
                     .append(HttpRequestCookie.JSESSIONID_NAME)
                     .append("=")
-                    .append(request.getSession(sessionManager, true).getId())
+                    .append(request.getSession().getId())
                     .append("; Path=/ ")
                     .append("\r\n");
         }
@@ -63,7 +61,11 @@ public class HttpResponse {
     // ----------------------------------------------------------------------
 
     private boolean needToUpdateSessionId(HttpRequest request) throws IOException {
-        return request.getSession(sessionManager, false) == null;
+        HttpRequestCookie sessionCookie = request.getCookies().get(HttpRequestCookie.JSESSIONID_NAME);
+        if (sessionCookie == null) return true;
+
+        Session session = request.getSession();
+        return !session.getId().equals(sessionCookie.getValue());
     }
 
     private void render(String responseStatus,
@@ -77,7 +79,7 @@ public class HttpResponse {
             responseBuilder.append("Set-Cookie: ")
                     .append(HttpRequestCookie.JSESSIONID_NAME)
                     .append("=")
-                    .append(request.getSession(sessionManager, true).getId())
+                    .append(request.getSession().getId())
                     .append("; Path=/ ")
                     .append("\r\n");
         }

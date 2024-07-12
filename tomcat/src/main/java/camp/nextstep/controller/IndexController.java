@@ -12,6 +12,6 @@ public class IndexController extends AbstractController {
     @Override
     protected void doGet(HttpRequest request, HttpResponse response) throws Exception {
         response.renderStaticResource(request.getPath());
-        log.debug("세션 조회: {}", request.getSession(getSessionManager(), false));
+        log.debug("세션 조회: {}", request.getSession());
     }
 }
