@@ -1,5 +1,7 @@
 package nextstep.org.apache.coyote.http11;
 
+import camp.nextstep.model.User;
+import org.apache.coyote.http11.InMemorySessionRepository;
 import org.junit.jupiter.api.DisplayName;
 import support.StubSocket;
 import org.apache.coyote.http11.Http11Processor;
@@ -96,7 +98,7 @@ class Http11ProcessorTest {
         return new String(Files.readAllBytes(new File(resource.getFile()).toPath()));
     }
 
-    @DisplayName("/login + GET 요청은 login.html 파일을 응답한다")
+    @DisplayName("/login + GET 요청 시, 쿠키가 없으면 login.html이 응답된다")
     @Test
     void getLogin() throws IOException {
         // given
@@ -125,6 +127,68 @@ class Http11ProcessorTest {
         assertThat(socket.output()).isEqualTo(expected);
     }
 
+
+    @DisplayName("/login + GET 요청 시, 쿠키가 있어도 세션에 없으면 login.html이 응답된다")
+    @Test
+    void getLogin2() throws IOException {
+        // given
+        final String httpRequest = String.join("\r\n",
+                "GET /login HTTP/1.1 ",
+                "Host: localhost:8080 ",
+                "Connection: keep-alive ",
+                "Cookie: JSESSIONID=uuid2345 ",
+                "",
+                "");
+
+        final var socket = new StubSocket(httpRequest);
+        final Http11Processor processor = new Http11Processor(socket);
+
+        // when
+        processor.process(socket);
+
+        // then
+        String responseBody = getResponseBody("static/login.html");
+        var expected = String.join("\r\n",
+                "HTTP/1.1 200 OK ",
+                "Content-Type: text/html;charset=utf-8 ",
+                "Content-Length: 3797 ",
+                "",
+                responseBody);
+
+        assertThat(socket.output()).isEqualTo(expected);
+    }
+
+    @DisplayName("/login + GET 요청 시, 쿠키가 있고 세션이 저장돼 있으면 /index.html로 리다이렉트")
+    @Test
+    void getLoginFail() {
+        // given
+        String cookie = "uuid";
+        InMemorySessionRepository.save(cookie, new User(2L, "account", "password", "email"));
+        final String httpRequest = String.join("\r\n",
+                "GET /login HTTP/1.1 ",
+                "Host: localhost:8080 ",
+                "Connection: keep-alive ",
+                "Cookie: JSESSIONID=uuid ",
+                "",
+                "");
+
+        final var socket = new StubSocket(httpRequest);
+        final Http11Processor processor = new Http11Processor(socket);
+
+        // when
+        processor.process(socket);
+
+        // then
+        var expected = String.join("\r\n",
+                "HTTP/1.1 302 Found ",
+                "Content-Length: 0 ",
+                "Location: /index.html ",
+                "",
+                "");
+
+        assertThat(socket.output()).isEqualTo(expected);
+    }
+
     @DisplayName("/login + POST 요청은 성공 시 302 FOUND를 응답하고 Location으로 /index.html을 제공한다")
     @Test
     void postLogin() {
@@ -147,12 +211,11 @@ class Http11ProcessorTest {
         // then
         var expected = String.join("\r\n",
                 "HTTP/1.1 302 Found ",
-                "Location: /index.html ",
                 "Content-Length: 0 ",
-                "",
-                "");
+                "Location: /index.html ");
 
-        assertThat(socket.output()).isEqualTo(expected);
+        assertThat(socket.output()).contains(expected);
+        assertThat(socket.output()).contains("Set-Cookie", "JSESSIONID=");
     }
 
     @DisplayName("/login + POST 요청은 실패 시 302 FOUND를 응답하고 Location으로 /401.html을 제공한다")
@@ -177,8 +240,8 @@ class Http11ProcessorTest {
         // then
         var expected = String.join("\r\n",
                 "HTTP/1.1 302 Found ",
-                "Location: /401.html ",
                 "Content-Length: 0 ",
+                "Location: /401.html ",
                 "",
                 "");
 
@@ -207,8 +270,8 @@ class Http11ProcessorTest {
         // then
         var expected = String.join("\r\n",
                 "HTTP/1.1 302 Found ",
-                "Location: /index.html ",
                 "Content-Length: 0 ",
+                "Location: /index.html ",
                 "",
                 "");
 
