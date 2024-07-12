@@ -8,7 +8,7 @@ import java.util.regex.Pattern;
 
 public final class FileLoader {
 
-    private static final Pattern FILE_EXTENSION_PATTERN = Pattern.compile(".+(\\.html|.css)$");
+    private static final Pattern FILE_EXTENSION_PATTERN = Pattern.compile(".+(\\.html|.css|.js)$");
 
     private FileLoader() {
     }

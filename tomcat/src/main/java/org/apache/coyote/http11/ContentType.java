@@ -3,7 +3,9 @@ package org.apache.coyote.http11;
 public enum ContentType {
 
     TEXT_HTML("text/html"),
-    TEXT_CSS("text/css");
+    TEXT_CSS("text/css"),
+    TEXT_JS("text/javascript")
+    ;
 
     private final String description;
 
@@ -12,7 +14,11 @@ public enum ContentType {
     }
 
     public static ContentType from(String path) {
-        return path.endsWith(".html") ? TEXT_HTML : TEXT_CSS;
+        if (path.endsWith(".css"))
+            return TEXT_CSS;
+        if (path.endsWith(".js"))
+            return TEXT_JS;
+        return TEXT_HTML;
     }
 
     public String getDescription() {
