@@ -34,9 +34,9 @@ public class LoginController extends AbstractController {
     @Override
     protected HttpResponse doGet(HttpRequest request) throws Exception {
         if (!request.httpRequestHeader().hasJSessionIdCookie()) {
-            final String body = buildBodyFromReadFile(request.httpRequestHeader().requestLine().url());
-            return buildOkHttpResponse(request, body);
+            return buildOkHttpResponse(request);
         }
+        
         final String key = request.httpRequestHeader().JSessionId();
         final HttpSession session = (HttpSession) SessionManager.getInstance()
                 .findSession(key);
@@ -45,8 +45,7 @@ public class LoginController extends AbstractController {
             return buildRedirectHttpResponse(request, SUCCESS_REDIRECT_PATH);
         }
 
-        final String body = buildBodyFromReadFile(request.httpRequestHeader().requestLine().url());
-        return buildOkHttpResponse(request, body);
+        return buildOkHttpResponse(request);
     }
 
     @Override

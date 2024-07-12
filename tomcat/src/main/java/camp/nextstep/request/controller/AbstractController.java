@@ -16,7 +16,7 @@ public abstract class AbstractController implements Controller {
     private static final String NOT_FOUND_PATH = "/404.html";
 
     @Override
-    public String handle(HttpRequest request) throws IOException {
+    public String handle(HttpRequest request) {
         try {
             return service(request).buildResponse();
         } catch (Exception e) {
@@ -47,14 +47,15 @@ public abstract class AbstractController implements Controller {
         return httpResponse;
     }
 
-    protected String buildBodyFromReadFile(final String pathString) throws IOException {
+    private String buildBodyFromReadFile(final String pathString) throws IOException {
         final URL path = getClass().getClassLoader().getResource(STATIC_PATH + pathString);
         final File html = new File(path.getFile());
 
         return new String(Files.readAllBytes(html.toPath()));
     }
 
-    protected HttpResponse buildOkHttpResponse(final HttpRequest request, final String body) {
+    protected HttpResponse buildOkHttpResponse(final HttpRequest request) throws IOException {
+        final String body = buildBodyFromReadFile(request.httpRequestHeader().requestLine().url());
         return new HttpResponse(HttpStatusCode.OK, request.httpRequestHeader(), body);
     }
 
