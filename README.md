@@ -65,10 +65,10 @@
     Accept: */*
     Cookie: yummy_cookie=choco; tasty_cookie=strawberry; JSESSIONID=656cef62-e3c4-40bc-a8df-94732920ed46
     ```
-  - [] 로그인 성공 시 `Set-Cookie` 헤더에 `JSESSIONID=656cef62-e3c4-40bc-a8df-94732920ed46` 값을 추가한다 
-  - [] Cookie 클래스를 추가한다 
-  - [] HTTP 요청 헤더의 Cookie에 `JESSIONID`가 없으면 HTTP 응답 헤더에 `Set-Cookie`를 반환 해준다 
+  - [x] 로그인 성공 시 `Set-Cookie` 헤더에 `JSESSIONID=656cef62-e3c4-40bc-a8df-94732920ed46` 값을 추가한다 
+  - [x] Cookie 클래스를 추가한다 
+  - [x] HTTP 요청 헤더의 Cookie에 `JESSIONID`가 없으면 HTTP 응답 헤더에 `Set-Cookie`를 반환 해준다 
 - 세션 구현 
-  - [] 쿠키에서 전달 받은 `JESSIONID` 값으로 로그인 여부를 체크한다 
-  - [] 로그인에 성공하면 Session 객체의 값으로 `User`객체를 저장한다 
-  - [] 로그인 상태에서 `/login` 페이지에 `GET` 요청으로 접근 시 `index.html`로 리다이렉트
+  - [x] 쿠키에서 전달 받은 `JESSIONID` 값으로 로그인 여부를 체크한다 
+  - [x] 로그인에 성공하면 Session 객체의 값으로 `User`객체를 저장한다 
+  - [x] 로그인 상태에서 `/login` 페이지에 `GET` 요청으로 접근 시 `index.html`로 리다이렉트
