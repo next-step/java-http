@@ -26,5 +26,7 @@ public final class FileLoader {
         return Files.readAllBytes(new File(resource.getFile()).toPath());
     }
 
-
+    public static boolean isStaticResource(String resourceName) {
+        return FILE_EXTENSION_PATTERN.matcher(resourceName).matches();
+    }
 }

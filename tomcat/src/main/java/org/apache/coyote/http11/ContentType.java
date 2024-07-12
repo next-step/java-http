@@ -11,6 +11,10 @@ public enum ContentType {
         this.description = description;
     }
 
+    public static ContentType from(String path) {
+        return path.endsWith(".html") ? TEXT_HTML : TEXT_CSS;
+    }
+
     public String getDescription() {
         return description;
     }
