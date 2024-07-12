@@ -24,9 +24,10 @@ public class LoginController extends AbstractController {
 
     @Override
     protected void doPost(HttpRequest request, HttpResponse response) throws Exception {
-        HttpQueryParameters requestBody = request.getRequestBody();
-        String account = requireNonNull(requestBody.getString("account"));
-        String password = requireNonNull(requestBody.getString("password"));
+        final HttpQueryParameters requestBody = request.getRequestBody().toQueryParameters();
+
+        final String account = requireNonNull(requestBody.getString("account"));
+        final String password = requireNonNull(requestBody.getString("password"));
 
         Optional<User> user = InMemoryUserRepository.findByAccount(account);
         Boolean found = user

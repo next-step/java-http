@@ -17,7 +17,7 @@ public class HttpRequestParser {
         HttpRequestCookies cookies = HttpRequestCookies.parse(cookieValue);
 
         String bodyString = extractBody(bufferedReader, requestHeaders.getContentLength());
-        HttpQueryParameters requestBody = HttpQueryParameters.parse(bodyString);
+        HttpRequestBody requestBody = new HttpRequestBody(bodyString);
 
         return new HttpRequest(requestLine, requestHeaders, cookies, requestBody);
     }

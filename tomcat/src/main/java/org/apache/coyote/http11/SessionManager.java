@@ -9,11 +9,10 @@ import java.util.Map;
 
 public class SessionManager implements Manager {
     public static final SessionManager INSTANCE = new SessionManager();
+    private static final Map<String, Session> SESSIONS = new HashMap<>();
 
     private SessionManager() {
     }
-
-    private static final Map<String, Session> SESSIONS = new HashMap<>();
 
     @Override
     public void add(Session session) {

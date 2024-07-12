@@ -21,7 +21,7 @@ public class RegisterController extends AbstractController {
 
     @Override
     protected void doPost(HttpRequest request, HttpResponse response) throws Exception {
-        final HttpQueryParameters requestBody = request.getRequestBody();
+        final HttpQueryParameters requestBody = request.getRequestBody().toQueryParameters();
 
         final String account = requireNonNull(requestBody.getString("account"));
         final String email = requireNonNull(requestBody.getString("email"));

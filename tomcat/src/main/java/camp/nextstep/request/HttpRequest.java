@@ -17,13 +17,13 @@ public class HttpRequest {
     private final HttpRequestLine requestLine;
     private final HttpRequestHeaders requestHeaders;
     private final HttpRequestCookies cookies;
-    private final HttpQueryParameters requestBody;
+    private final HttpRequestBody requestBody;
     private Session newSession;
 
     public HttpRequest(HttpRequestLine requestLine,
                        HttpRequestHeaders requestHeaders,
                        HttpRequestCookies cookies,
-                       HttpQueryParameters requestBody) {
+                       HttpRequestBody requestBody) {
         this.requestLine = requestLine;
         this.requestHeaders = requestHeaders;
         this.cookies = cookies;
@@ -48,19 +48,12 @@ public class HttpRequest {
         return requestHeaders;
     }
 
-    public HttpQueryParameters getRequestBody() {
+    public HttpRequestBody getRequestBody() {
         return requestBody;
     }
 
     public HttpRequestCookies getCookies() {
         return cookies;
-    }
-
-    public String getSessionIdFromCookie() {
-        HttpRequestCookie cookie = cookies.get(JSESSIONID_NAME);
-        if (cookie == null) return null;
-
-        return cookie.getValue();
     }
 
     /**
@@ -81,6 +74,13 @@ public class HttpRequest {
         newSession = new Session(HttpRequestCookie.randomJsessionId());
         sessionManager.add(newSession);
         return newSession;
+    }
+
+    private String getSessionIdFromCookie() {
+        HttpRequestCookie cookie = cookies.get(JSESSIONID_NAME);
+        if (cookie == null) return null;
+
+        return cookie.getValue();
     }
 
     public boolean isLoggedIn(SessionManager sessionManager) throws IOException {

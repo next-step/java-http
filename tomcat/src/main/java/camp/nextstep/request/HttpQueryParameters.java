@@ -7,6 +7,11 @@ public class HttpQueryParameters {
     private static final String QUERY_PARAMS_KEY_VALUE_REGEX_SEPARATOR = "=";
 
     private static final HttpQueryParameters EMPTY = new HttpQueryParameters(Collections.unmodifiableMap(new HashMap<>()));
+    private final Map<String, List<Object>> queryParamsMap;
+
+    private HttpQueryParameters(Map<String, List<Object>> queryParamsMap) {
+        this.queryParamsMap = queryParamsMap;
+    }
 
     public static HttpQueryParameters parse(String queryString) {
         if (queryString == null) return EMPTY;
@@ -24,14 +29,12 @@ public class HttpQueryParameters {
         return new HttpQueryParameters(map);
     }
 
-    private final Map<String, List<Object>> queryParamsMap;
-
-    private HttpQueryParameters(Map<String, List<Object>> queryParamsMap) {
-        this.queryParamsMap = queryParamsMap;
-    }
-
     public boolean hasKey(String key) {
         return queryParamsMap.containsKey(key);
+    }
+
+    public List<Object> getAll(String key) {
+        return queryParamsMap.get(key);
     }
 
     public Object get(String key) {
@@ -50,9 +53,5 @@ public class HttpQueryParameters {
         return queryParamsMap.get(key)
                 .stream()
                 .findFirst();
-    }
-
-    public List<Object> getAll(String key) {
-        return queryParamsMap.get(key);
     }
 }

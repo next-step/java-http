@@ -3,6 +3,17 @@ package camp.nextstep.request;
 public class HttpRequestLine {
     private static final String REQUEST_LINE_REGEX_SEPARATOR = " ";
     private static final String QUERY_STRING_REGEX_SEPARATOR = "\\?";
+    private final HttpRequestMethod method;
+    private final String path;
+    private final HttpQueryParameters queryParameters;
+    private final String httpVersion;
+
+    private HttpRequestLine(HttpRequestMethod method, String path, HttpQueryParameters queryParameters, String httpVersion) {
+        this.method = method;
+        this.path = path;
+        this.queryParameters = queryParameters;
+        this.httpVersion = httpVersion;
+    }
 
     public static HttpRequestLine parse(String requestLineString) {
         final String[] split = requestLineString.split(REQUEST_LINE_REGEX_SEPARATOR, 3);
@@ -21,18 +32,6 @@ public class HttpRequestLine {
         if (split.length != 2) return null;
 
         return split[1];
-    }
-
-    private final HttpRequestMethod method;
-    private final String path;
-    private final HttpQueryParameters queryParameters;
-    private final String httpVersion;
-
-    private HttpRequestLine(HttpRequestMethod method, String path, HttpQueryParameters queryParameters, String httpVersion) {
-        this.method = method;
-        this.path = path;
-        this.queryParameters = queryParameters;
-        this.httpVersion = httpVersion;
     }
 
     public HttpRequestMethod getMethod() {
