@@ -46,7 +46,7 @@ class ResourceFinderTest {
 
     @Nested
     @DisplayName("httpPath 로 파일 path 조회")
-    class FindFile {
+    class FindFilePath {
 
         @Test
         @DisplayName("파일이 존재한다")
@@ -68,6 +68,19 @@ class ResourceFinderTest {
 
             assertThrows(ResourceNotFoundException.class,
                     () -> sut.findFilePath(httpPath));
+        }
+
+        @Test
+        @DisplayName("로그인 페이지에 해당하는 파일 path 를 조회한다")
+        void success_login() {
+            String httpPath = "/login";
+
+            final Path actual = sut.findFilePath(httpPath);
+
+            final URL resource = getClass().getClassLoader().getResource("static/login.html");
+            var expected = new File(resource.getFile());
+
+            assertThat(actual.toString()).isEqualTo(expected.toString());
         }
     }
 
