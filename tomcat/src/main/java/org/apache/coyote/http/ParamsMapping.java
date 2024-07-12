@@ -52,4 +52,8 @@ public class ParamsMapping {
     public String getParam(final String parameterName) {
         return this.params.get(parameterName);
     }
+
+    public void addParams(final Map<String, String> params) {
+        this.params.putAll(params);
+    }
 }

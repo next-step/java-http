@@ -34,7 +34,7 @@ class HeaderMappingTest {
         final String actual = headerMapping.convertHttpHeaders();
 
         // then
-        final String header = String.join("\r\n", "Content-Type: text/html ", "Content-Length: 12 ");
+        final String header = String.join(System.lineSeparator(), "Content-Type: text/html ", "Content-Length: 12 ");
         assertThat(actual).isEqualTo(header);
     }
 
