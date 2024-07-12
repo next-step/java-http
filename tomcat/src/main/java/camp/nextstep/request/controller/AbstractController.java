@@ -13,6 +13,7 @@ import java.nio.file.Files;
 public abstract class AbstractController implements Controller {
 
     private static final String STATIC_PATH = "static";
+    private static final String NOT_FOUND_PATH = "/404.html";
 
     @Override
     public String handle(HttpRequest request) throws IOException {
@@ -41,7 +42,9 @@ public abstract class AbstractController implements Controller {
     }
 
     private HttpResponse notFindMethod(HttpRequest request) {
-        return new HttpResponse(HttpStatusCode.NOT_FOUND, request.httpRequestHeader());
+        final HttpResponse httpResponse = new HttpResponse(HttpStatusCode.FOUND, request.httpRequestHeader());
+        httpResponse.addLocationHeader(NOT_FOUND_PATH);
+        return httpResponse;
     }
 
     protected String buildBodyFromReadFile(final String pathString) throws IOException {

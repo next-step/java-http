@@ -49,6 +49,12 @@ public class HttpResponse {
     }
 
     private class ResponseBuilder {
+        private static final String LOCATION_HEADER = "Location: ";
+        private static final String SET_COOKIE_HEADER = "Set-Cookie: ";
+        private static final String CONTENT_TYPE_HEADER = "Content-Type: ";
+        private static final String CONTENT_LENGTH_HEADER = "Content-Length: ";
+        private static final String CHARSET = ";charset=utf-8";
+
         public String buildOkResponse() {
             return buildStatusLine() +
                     buildContentTypeHeader() +
@@ -59,7 +65,7 @@ public class HttpResponse {
         }
 
         public String buildFoundResponse() {
-            if (httpHeaders.hasCookie() && httpHeaders.httpCookie().valueByKey("JSESSIONID") != null) {
+            if (httpHeaders.hasJSessionIdCookie()) {
                 return buildRedirectSetCookieResponse(httpHeaders.location(), httpHeaders.httpCookie().toLine());
             }
 
@@ -75,19 +81,19 @@ public class HttpResponse {
         }
 
         private String buildLocationHeader(final String location) {
-            return "Location: " + location + NEW_LINE;
+            return LOCATION_HEADER + location + NEW_LINE;
         }
 
         private String buildSetCookieHeader(final String cookie) {
-            return "Set-Cookie: " + cookie + NEW_LINE;
+            return SET_COOKIE_HEADER + cookie + NEW_LINE;
         }
 
         private String buildContentTypeHeader() {
-            return "Content-Type: " + httpHeaders.requestLine().contentTypeText() + ";charset=utf-8" + NEW_LINE;
+            return CONTENT_TYPE_HEADER + httpHeaders.requestLine().contentTypeText() + CHARSET + NEW_LINE;
         }
 
         private String buildContentLengthHeader() {
-            return "Content-Length: " + body.getBytes().length + NEW_LINE;
+            return CONTENT_LENGTH_HEADER + body.getBytes().length + NEW_LINE;
         }
 
         private String buildCookieHeader() {
