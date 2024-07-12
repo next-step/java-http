@@ -14,6 +14,10 @@ public class HttpResponse {
 
     public void setResponseLine(final HttpVersion httpVersion, final StatusCode statusCode) {
         this.httpResponseLine.setHttpVersion(httpVersion);
+        setStatusCode(statusCode);
+    }
+
+    public void setStatusCode(final StatusCode statusCode) {
         this.httpResponseLine.setStatusCode(statusCode);
     }
 
