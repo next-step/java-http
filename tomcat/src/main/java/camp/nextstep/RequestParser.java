@@ -19,7 +19,7 @@ public class RequestParser {
 		List<String> request = getRequest(is);
 		String[] requestInfos = request.get(0).split(" "); // GET /hello HTTP/1.1
 		String[] protocolAndVersion = requestInfos[2].split("\\/");
-		if (!requestInfos[1].contains("\\?")) {
+		if (!requestInfos[1].contains("?")) {
 			return RequestLine.of(requestInfos[0], requestInfos[1], protocolAndVersion[0], protocolAndVersion[1]);
 		}
 		String[] uriAndQueryString = requestInfos[1].split("\\?");

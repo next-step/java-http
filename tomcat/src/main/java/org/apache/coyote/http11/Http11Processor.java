@@ -9,11 +9,11 @@ import org.apache.coyote.Processor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.Socket;
 import java.net.URL;
 import java.nio.file.Files;
-import java.nio.file.Paths;
 
 public class Http11Processor implements Runnable, Processor {
 
@@ -51,7 +51,7 @@ public class Http11Processor implements Runnable, Processor {
                 filePath = "%s.%s".formatted(filePath, fileExtension);
             }
             final URL resourceUrl = getClass().getClassLoader().getResource("static" + filePath);
-            final var responseBody = Files.readAllBytes(Paths.get(resourceUrl.getPath()));
+            final var responseBody = Files.readAllBytes(new File(resourceUrl.getFile()).toPath());
 
             final var response = String.join("\r\n",
                     "HTTP/1.1 200 OK ",
