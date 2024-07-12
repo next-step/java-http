@@ -4,9 +4,13 @@ import camp.nextstep.db.InMemoryUserRepository;
 import camp.nextstep.exception.UncheckedServletException;
 import camp.nextstep.model.User;
 import org.apache.coyote.Processor;
+import org.apache.coyote.request.HttpRequest;
 import org.apache.coyote.request.RequestBody;
 import org.apache.coyote.request.RequestHeaders;
 import org.apache.coyote.request.RequestLine;
+import org.apache.coyote.response.FileFinder;
+import org.apache.coyote.response.HttpResponse;
+import org.apache.coyote.response.HttpStatus;
 import org.apache.coyote.response.MimeType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,20 +19,18 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.Socket;
-import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
 public class Http11Processor implements Runnable, Processor {
 
     private static final Logger log = LoggerFactory.getLogger(Http11Processor.class);
-    private static final String ROOT_PATH = "/";
+    private static final String ACCOUNT_KEY = "account";
     private static final String ROOT_CONTENT = "Hello world!";
-    public static final String LOGIN_PATH = "/login";
-    public static final String ACCOUNT_KEY = "account";
+
+    private static final String ROOT_PATH = "/";
+    private static final String LOGIN_PATH = "/login";
+    private static final String REGISTER_PATH = "/register";
 
     private final Socket connection;
 
@@ -52,10 +54,11 @@ public class Http11Processor implements Runnable, Processor {
             RequestLine requestLine = getRequestLine(bufferedReader);
             RequestHeaders requestHeaders = getRequestHeaders(bufferedReader);
             RequestBody requestBody = getRequestBody(bufferedReader, requestHeaders);
+            HttpRequest httpRequest = new HttpRequest(requestLine, requestHeaders, requestBody);
 
-            String response = getResponse(requestLine, requestBody);
+            HttpResponse response = getResponse(httpRequest);
 
-            outputStream.write(response.getBytes());
+            outputStream.write(response.buildContent().getBytes());
             outputStream.flush();
         } catch (IOException | UncheckedServletException e) {
             log.error(e.getMessage(), e);
@@ -84,59 +87,91 @@ public class Http11Processor implements Runnable, Processor {
         return RequestBody.parse(new String(buffer));
     }
 
-    private String getResponse(RequestLine requestLine, RequestBody requestBody) throws IOException {
-        String httpPath = requestLine.getHttpPath();
-        String responseBody = findResponseBody(httpPath);
-        MimeType mimeType = MimeType.from(httpPath);
-
-        String httpStatus = "200 OK";
-
-        if (httpPath.endsWith(LOGIN_PATH) && requestLine.getHttpMethod().isPost()) {
-            Optional<User> optionalUser = InMemoryUserRepository.findByAccount(requestBody.get(ACCOUNT_KEY));
-            if (optionalUser.isPresent() && optionalUser.get().checkPassword(requestBody.get("password"))) {
-                httpStatus = "302 Found";
-                responseBody = findResponseBody("/index.html");
-                log.info(optionalUser.get().toString());
-            } else {
-                httpStatus = "401 Unauthorized";
-                responseBody = findResponseBody("/401.html");
-            }
-            log.info("requestBody: {}", requestBody);
+    private HttpResponse getResponse(HttpRequest request) throws IOException {
+        String httpPath = request.getHttpPath();
+        if (httpPath.endsWith(LOGIN_PATH)) {
+            return handleLogin(request);
         }
-
-        if (httpPath.endsWith("/register")) {
-            if (requestLine.getHttpMethod().isGet()) {
-                responseBody = findResponseBody("/register.html");
-            }
-            if (requestLine.getHttpMethod().isPost()) {
-                User user = new User(requestBody.get("account"), requestBody.get("password"), requestBody.get("email"));
-                InMemoryUserRepository.save(user);
-                httpStatus = "201 Created";
-                responseBody = findResponseBody("/index.html");
-            }
+        if (httpPath.endsWith(REGISTER_PATH)) {
+            return handleRegister(request);
         }
-
-        return String.join("\r\n",
-                "HTTP/1.1 " + httpStatus + " ",
-                "Content-Type: " + mimeType.getContentType() + " ",
-                "Content-Length: " + responseBody.getBytes().length + " ",
-                "",
-                responseBody);
+        if (httpPath.equals(ROOT_PATH)) {
+            return handleRoot(request);
+        }
+        return handleDefault(request);
     }
 
-    private String findResponseBody(String httpPath) throws IOException {
-        if (httpPath.equals(ROOT_PATH)) {
-            return ROOT_CONTENT;
+    private HttpResponse handleLogin(HttpRequest request) throws IOException {
+        if (request.isGet()) {
+            MimeType mimeType = MimeType.HTML;
+            return new HttpResponse(
+                    HttpStatus.OK,
+                    mimeType,
+                    FileFinder.find(LOGIN_PATH + mimeType.getFileExtension()));
         }
-        ClassLoader classLoader = getClass().getClassLoader();
-        if (httpPath.endsWith(LOGIN_PATH)) {
-            httpPath += MimeType.HTML.getFileExtension();
+        if (request.isPost()) {
+            RequestBody requestBody = request.getRequestBody();
+            Optional<User> optionalUser = InMemoryUserRepository.findByAccount(requestBody.get(ACCOUNT_KEY));
+            if (optionalUser.isPresent() && optionalUser.get().checkPassword(requestBody.get("password"))) {
+                log.info(optionalUser.get().toString());
+                return new HttpResponse(
+                        HttpStatus.FOUND,
+                        MimeType.HTML,
+                        FileFinder.find("/index.html"));
+            }
+            return new HttpResponse(
+                    HttpStatus.UNAUTHORIZED,
+                    MimeType.HTML,
+                    FileFinder.find("/401.html"));
         }
-        if (httpPath.endsWith("/register")) {
-            httpPath += MimeType.HTML.getFileExtension();
+        return new HttpResponse(
+                HttpStatus.NOT_FOUND,
+                MimeType.HTML,
+                FileFinder.find("/404.html"));
+    }
+
+    private HttpResponse handleRegister(HttpRequest request) throws IOException {
+        if (request.isGet()) {
+            return new HttpResponse(
+                    HttpStatus.OK,
+                    MimeType.HTML,
+                    FileFinder.find("/register.html"));
         }
-        URL resource = classLoader.getResource("static" + httpPath);
-        Path path = Path.of(Objects.requireNonNull(resource).getPath());
-        return new String(Files.readAllBytes(path));
+        if (request.isPost()) {
+            RequestBody requestBody = request.getRequestBody();
+            User user = new User(requestBody.get("account"), requestBody.get("password"), requestBody.get("email"));
+            InMemoryUserRepository.save(user);
+
+            return new HttpResponse(
+                    HttpStatus.CREATED,
+                    MimeType.HTML,
+                    FileFinder.find("/index.html"));
+        }
+        return null;
+    }
+
+    private HttpResponse handleRoot(HttpRequest request) throws IOException {
+        if (request.isGet()) {
+            return new HttpResponse(
+                    HttpStatus.OK,
+                    MimeType.HTML,
+                    ROOT_CONTENT);
+        }
+        return new HttpResponse(
+                HttpStatus.NOT_FOUND,
+                MimeType.HTML,
+                FileFinder.find("/404.html"));
+    }
+
+    private HttpResponse handleDefault(HttpRequest request) throws IOException {
+        String httpPath = request.getHttpPath();
+        return new HttpResponse(
+                HttpStatus.OK,
+                parseMimeType(httpPath),
+                FileFinder.find(httpPath));
+    }
+
+    private MimeType parseMimeType(String httpPath) {
+        return MimeType.from(httpPath);
     }
 }
