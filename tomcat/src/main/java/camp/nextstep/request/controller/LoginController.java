@@ -1,54 +1,56 @@
-package camp.nextstep.request.handler;
+package camp.nextstep.request.controller;
 
 import camp.nextstep.db.InMemoryUserRepository;
 import camp.nextstep.model.User;
 import org.apache.coyote.http11.model.HttpRequest;
+import org.apache.coyote.http11.model.HttpResponse;
 import org.apache.coyote.http11.model.QueryParams;
-import org.apache.coyote.http11.request.AbstractRequestHandler;
 import org.apache.coyote.http11.session.HttpSession;
 import org.apache.coyote.http11.session.SessionManager;
 
-import java.io.IOException;
 import java.util.NoSuchElementException;
 import java.util.UUID;
 
-public class LoginHandler extends AbstractRequestHandler {
+public class LoginController extends AbstractController {
 
+    private static final String LOGIN_URI = "/login.html";
     private static final String LOGIN_ACCOUNT_KEY = "account";
     private static final String LOGIN_PASSWORD_KEY = "password";
     private static final String SUCCESS_REDIRECT_PATH = "/index.html";
     private static final String FAILED_REDIRECT_PATH = "/401.html";
-    private static final String JSESSIONID_KEY = "JSESSIONID";
-    private static final String EQUAL = "=";
 
-    @Override
-    public String handle(final HttpRequest request) throws IOException {
-        if (!request.hasRequestBody()) {
-            return checkSessionLogin(request);
-        }
-
-        return login(request);
+    private LoginController() {
     }
 
-    private String checkSessionLogin(final HttpRequest request) throws IOException {
+    public static LoginController getInstance() {
+        return SingletonHelper.instance;
+    }
+
+    @Override
+    public String url() {
+        return LOGIN_URI;
+    }
+
+    @Override
+    protected HttpResponse doGet(HttpRequest request) throws Exception {
         if (!request.httpRequestHeader().hasJSessionIdCookie()) {
             final String body = buildBodyFromReadFile(request.httpRequestHeader().requestLine().url());
-            return buildOkHttpResponse(request.httpRequestHeader(), body);
+            return buildOkHttpResponse(request, body);
         }
-
+        final String key = request.httpRequestHeader().JSessionId();
         final HttpSession session = (HttpSession) SessionManager.getInstance()
-                .findSession(request.httpRequestHeader().JSessionId());
+                .findSession(key);
 
         if (session != null) {
-            return buildRedirectHttpResponse(request.httpRequestHeader(), SUCCESS_REDIRECT_PATH);
+            return buildRedirectHttpResponse(request, SUCCESS_REDIRECT_PATH);
         }
 
         final String body = buildBodyFromReadFile(request.httpRequestHeader().requestLine().url());
-        return buildOkHttpResponse(request.httpRequestHeader(), body);
+        return buildOkHttpResponse(request, body);
     }
 
-
-    private String login(final HttpRequest request) {
+    @Override
+    protected HttpResponse doPost(HttpRequest request) {
         final QueryParams requestBody = request.requestBody();
 
         final User user = InMemoryUserRepository.findByAccount(requestBody.valueBy(LOGIN_ACCOUNT_KEY))
@@ -58,12 +60,12 @@ public class LoginHandler extends AbstractRequestHandler {
             return loginWithCookie(request);
         }
 
-        return buildRedirectHttpResponse(request.httpRequestHeader(), FAILED_REDIRECT_PATH);
+        return buildRedirectHttpResponse(request, FAILED_REDIRECT_PATH);
     }
 
-    private String loginWithCookie(final HttpRequest request) {
+    private HttpResponse loginWithCookie(final HttpRequest request) {
         if (request.httpRequestHeader().hasJSessionIdCookie()) {
-            return buildRedirectHttpResponse(request.httpRequestHeader(), SUCCESS_REDIRECT_PATH);
+            return buildRedirectHttpResponse(request, SUCCESS_REDIRECT_PATH);
         }
 
         final String uuid = UUID.randomUUID()
@@ -73,6 +75,10 @@ public class LoginHandler extends AbstractRequestHandler {
         SessionManager.getInstance()
                 .add(new HttpSession(uuid));
 
-        return buildRedirectSetCookieHttpResponse(request.httpRequestHeader(), SUCCESS_REDIRECT_PATH, JSESSIONID_KEY + EQUAL + uuid);
+        return buildRedirectSetCookieHttpResponse(request, SUCCESS_REDIRECT_PATH, uuid);
+    }
+
+    private static class SingletonHelper {
+        private static final LoginController instance = new LoginController();
     }
 }

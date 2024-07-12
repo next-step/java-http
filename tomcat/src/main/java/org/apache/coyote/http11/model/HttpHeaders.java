@@ -68,4 +68,12 @@ public class HttpHeaders {
     public String JSessionId() {
         return httpCookie().valueByKey(JSESSION_ID_KEY);
     }
+
+    public String location() {
+        return (String) headerValueBy("Location");
+    }
+
+    public void addLocation(final String location) {
+        headers.put("Location", location);
+    }
 }
