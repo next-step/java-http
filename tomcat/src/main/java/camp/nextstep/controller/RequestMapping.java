@@ -8,7 +8,7 @@ public class RequestMapping {
 
     private final Map<HttpPath, Controller> controllers;
 
-    public RequestMapping() {
+    private RequestMapping() {
         controllers = Map.of(
                 new HttpPath("/"), new RootController(),
                 new HttpPath("/login"), new LoginController(),
@@ -16,9 +16,15 @@ public class RequestMapping {
         );
     }
 
+    public static RequestMapping getInstance() {
+        return InstanceHolder.INSTANCE;
+    }
+
     public Controller getController(final HttpPath path) {
         return controllers.get(path);
     }
 
-
+    private static class InstanceHolder {
+        private static final RequestMapping INSTANCE = new RequestMapping();
+    }
 }
