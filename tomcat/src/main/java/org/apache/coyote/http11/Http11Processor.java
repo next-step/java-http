@@ -23,6 +23,7 @@ import java.net.Socket;
 import java.net.URISyntaxException;
 import java.util.Optional;
 
+import static camp.nextstep.request.Cookie.JSESSIONID_NAME;
 import static java.util.Objects.requireNonNull;
 
 public class Http11Processor implements Runnable, Processor {
@@ -30,7 +31,6 @@ public class Http11Processor implements Runnable, Processor {
     private static final Logger log = LoggerFactory.getLogger(Http11Processor.class);
 
     private final Socket connection;
-    private final SessionManager sessionManager;
 
     private final RequestParser requestParser;
     private final StaticResourceLoader staticResourceLoader;
@@ -38,7 +38,6 @@ public class Http11Processor implements Runnable, Processor {
 
     public Http11Processor(final Socket connection) {
         this.connection = connection;
-        this.sessionManager = SessionManager.INSTANCE;
 
         this.requestParser = new RequestParser();
         this.staticResourceLoader = new StaticResourceLoader();
@@ -100,7 +99,7 @@ public class Http11Processor implements Runnable, Processor {
 
         if (requestPath.equals("/index.html")) {
             processRenderStaticPage(request, outputStream);
-            log.debug("세션 조회: {}", request.getSession(sessionManager, false));
+            log.debug("세션 조회: {}", request.getSession());
             return;
         }
 
@@ -120,9 +119,7 @@ public class Http11Processor implements Runnable, Processor {
     }
 
     private boolean isLoggedIn(Request request) throws IOException {
-        Session session = request.getSession(sessionManager, false);
-        if (session == null) return false;
-
+        Session session = request.getSession();
         return session.getAttribute("user") != null;
     }
 
@@ -147,7 +144,7 @@ public class Http11Processor implements Runnable, Processor {
     }
 
     private void signInAs(User user, Request request) throws IOException {
-        final var session = request.getSession(sessionManager, true);
+        final var session = request.getSession();
 
         session.setAttribute("user", user);
         log.debug("로그인: {}", user);
@@ -196,9 +193,9 @@ public class Http11Processor implements Runnable, Processor {
         responseBuilder.append("Location: ").append(redirectTo).append(" ").append("\r\n");
         if (needToUpdateSessionId(request)) {
             responseBuilder.append("Set-Cookie: ")
-                    .append(Cookie.JSESSIONID_NAME)
+                    .append(JSESSIONID_NAME)
                     .append("=")
-                    .append(request.getSession(sessionManager, true).getId())
+                    .append(request.getSession().getId())
                     .append("; Path=/ ")
                     .append("\r\n");
         }
@@ -207,7 +204,11 @@ public class Http11Processor implements Runnable, Processor {
     }
 
     private boolean needToUpdateSessionId(Request request) throws IOException {
-        return request.getSession(sessionManager, false) == null;
+        Cookie sessionCookie = request.getRequestCookies().get(JSESSIONID_NAME);
+        if (sessionCookie == null) return true;
+
+        Session session = request.getSession();
+        return !session.getId().equals(sessionCookie.getValue());
     }
 
     private void render(String responseStatus,
@@ -220,9 +221,9 @@ public class Http11Processor implements Runnable, Processor {
         responseBuilder.append("Content-Length: ").append(content.getBytes().length).append(" ").append("\r\n");
         if (needToUpdateSessionId(request)) {
             responseBuilder.append("Set-Cookie: ")
-                    .append(Cookie.JSESSIONID_NAME)
+                    .append(JSESSIONID_NAME)
                     .append("=")
-                    .append(request.getSession(sessionManager, true).getId())
+                    .append(request.getSession().getId())
                     .append("; Path=/ ")
                     .append("\r\n");
         }
