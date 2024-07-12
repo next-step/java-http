@@ -11,13 +11,13 @@ public class Request {
     private final RequestLine requestLine;
     private final RequestHeaders requestHeaders;
     private final RequestCookies requestCookies;
-    private final QueryParameters requestBody;
+    private final RequestBody requestBody;
     private Session newSession;
 
     public Request(RequestLine requestLine,
                    RequestHeaders requestHeaders,
                    RequestCookies requestCookies,
-                   QueryParameters requestBody) {
+                   RequestBody requestBody) {
         this.requestLine = requestLine;
         this.requestHeaders = requestHeaders;
         this.requestCookies = requestCookies;
@@ -42,7 +42,7 @@ public class Request {
         return requestHeaders;
     }
 
-    public QueryParameters getRequestBody() {
+    public RequestBody getRequestBody() {
         return requestBody;
     }
 

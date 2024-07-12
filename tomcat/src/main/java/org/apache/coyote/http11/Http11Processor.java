@@ -127,7 +127,8 @@ public class Http11Processor implements Runnable, Processor {
     }
 
     private void processPostLogin(Request request, OutputStream outputStream) throws IOException {
-        QueryParameters requestBody = request.getRequestBody();
+        QueryParameters requestBody = request.getRequestBody().toQueryParameters();
+
         String account = requireNonNull(requestBody.getString("account"));
         String password = requireNonNull(requestBody.getString("password"));
 
@@ -157,7 +158,7 @@ public class Http11Processor implements Runnable, Processor {
     }
 
     private void processPostRegister(Request request, OutputStream outputStream) throws IOException {
-        final QueryParameters requestBody = request.getRequestBody();
+        final QueryParameters requestBody = request.getRequestBody().toQueryParameters();
 
         final String account = requireNonNull(requestBody.getString("account"));
         final String email = requireNonNull(requestBody.getString("email"));
