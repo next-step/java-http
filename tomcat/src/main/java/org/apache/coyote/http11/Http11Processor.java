@@ -7,12 +7,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.Socket;
-import java.net.URL;
-import java.nio.file.Files;
 import java.nio.file.Path;
 
 public class Http11Processor implements Runnable, Processor {
@@ -83,8 +80,11 @@ public class Http11Processor implements Runnable, Processor {
 
     private String readHttpRequestMessage(final BufferedReader br) throws IOException {
         StringBuilder sb = new StringBuilder("\n");
-        String line;
-        while ((line = br.readLine()) != null) {
+        while (true) {
+            String line = br.readLine();
+            if (line == null || line.isEmpty()) {
+                break;
+            }
             sb.append(line);
         }
         return sb.toString();
