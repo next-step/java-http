@@ -1,6 +1,6 @@
 package nextstep.org.apache.coyote.http11.request;
 
-import org.apache.coyote.http11.request.RequestBodiesParser;
+import org.apache.coyote.http11.request.parser.RequestBodiesParser;
 import org.apache.coyote.http11.request.model.RequestBodies;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

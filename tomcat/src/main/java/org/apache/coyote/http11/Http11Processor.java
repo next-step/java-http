@@ -2,11 +2,8 @@ package org.apache.coyote.http11;
 
 import camp.nextstep.exception.UncheckedServletException;
 import org.apache.coyote.Processor;
-import org.apache.coyote.http11.request.model.Cookies;
-import org.apache.coyote.http11.request.model.CookiesParser;
-import org.apache.coyote.http11.request.model.RequestHeader;
-import org.apache.coyote.http11.request.RequestHeaderParser;
-import org.apache.coyote.http11.request.model.RequestLine;
+import org.apache.coyote.http11.request.parser.HttpRequestParser;
+import org.apache.coyote.http11.request.HttpRequest;
 import org.apache.coyote.http11.response.Response;
 import org.apache.coyote.http11.response.ResponseResource;
 import org.slf4j.Logger;
@@ -16,7 +13,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.Socket;
-import java.util.List;
 
 public class Http11Processor implements Runnable, Processor {
 
@@ -40,14 +36,8 @@ public class Http11Processor implements Runnable, Processor {
              final var outputStream = connection.getOutputStream();
              final BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream))) {
 
-            if (bufferedReader.lines() == null) {
-                throw new IllegalArgumentException("요청값이 빈값입니다.");
-            }
-            List<String> requestHeaders = bufferedReader.lines().takeWhile(line -> !line.isEmpty()).toList();
-            RequestHeader requestHeader = RequestHeaderParser.parse(bufferedReader, requestHeaders);
-            RequestLine requestLine = requestHeader.getRequestLine();
-            Cookies cookies = CookiesParser.parse(requestHeader.getHeaders());
-            ResponseResource responseResource = ResponseResource.of(requestLine.getPath(),  requestHeader.getRequestBodies(), requestLine.getHttpMethod(), cookies);
+            HttpRequest httpRequest = HttpRequestParser.parse(bufferedReader);
+            ResponseResource responseResource = ResponseResource.of(httpRequest.getPath(),  httpRequest.getRequestBodies(), httpRequest.getHttpMethod(), httpRequest.getCookies());
 
             Response response = Response.createResponse(responseResource);
 

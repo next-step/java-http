@@ -1,4 +1,4 @@
-package org.apache.coyote.http11.request;
+package org.apache.coyote.http11.request.parser;
 
 import org.apache.coyote.http11.request.model.RequestBodies;
 
