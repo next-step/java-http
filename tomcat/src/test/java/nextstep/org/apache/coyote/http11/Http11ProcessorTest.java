@@ -1,7 +1,10 @@
 package nextstep.org.apache.coyote.http11;
 
 import camp.nextstep.exception.RequestNotFoundException;
+import org.apache.catalina.Session;
 import org.apache.coyote.http11.Http11Processor;
+import org.apache.coyote.http11.SessionManager;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import support.StubSocket;
 
@@ -9,16 +12,31 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Files;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class Http11ProcessorTest {
 
+    public static final String givenSessionId = UUID.randomUUID().toString();
+
+    @BeforeAll
+    static void setUpSessionManager() {
+        SessionManager.INSTANCE.add(new Session(givenSessionId));
+    }
+
     @Test
-    void process() {
+    void helloWorld() {
         // given
-        final var socket = new StubSocket();
+        final String httpRequest = String.join("\r\n",
+                "GET / HTTP/1.1 ",
+                "Host: localhost:8080 ",
+                "Connection: keep-alive ",
+                "Cookie: JSESSIONID=" + givenSessionId,
+                "");
+
+        final var socket = new StubSocket(httpRequest);
         final var processor = new Http11Processor(socket);
 
         // when
@@ -42,7 +60,7 @@ class Http11ProcessorTest {
                 "GET /index.html HTTP/1.1 ",
                 "Host: localhost:8080 ",
                 "Connection: keep-alive ",
-                "",
+                "Cookie: JSESSIONID=" + givenSessionId,
                 "");
 
         final var socket = new StubSocket(httpRequest);
@@ -70,7 +88,7 @@ class Http11ProcessorTest {
                 "GET /css/styles.css HTTP/1.1 ",
                 "Host: localhost:8080 ",
                 "Connection: keep-alive ",
-                "",
+                "Cookie: JSESSIONID=" + givenSessionId,
                 "");
 
         final var socket = new StubSocket(httpRequest);
@@ -99,7 +117,7 @@ class Http11ProcessorTest {
                 "GET /assets/chart-area.js HTTP/1.1 ",
                 "Host: localhost:8080 ",
                 "Connection: keep-alive ",
-                "",
+                "Cookie: JSESSIONID=" + givenSessionId,
                 "");
 
         final var socket = new StubSocket(httpRequest);
@@ -121,13 +139,13 @@ class Http11ProcessorTest {
     }
 
     @Test
-    void handle404_404_페이지를_그린다() throws IOException {
+    void render404_404_페이지를_그린다() throws IOException {
         // given
         final String httpRequest = String.join("\r\n",
                 "GET /missing-file.html HTTP/1.1 ",
                 "Host: localhost:8080 ",
                 "Connection: keep-alive ",
-                "",
+                "Cookie: JSESSIONID=" + givenSessionId,
                 "");
 
         final var socket = new StubSocket(httpRequest);

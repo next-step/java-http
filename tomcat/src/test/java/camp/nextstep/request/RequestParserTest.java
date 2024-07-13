@@ -13,8 +13,7 @@ class RequestParserTest {
     @Test
     void parseGetRequest() {
         String requestLineString = "GET /docs/index.html HTTP/1.1";
-        Request request = requestParser.parse(requestLineString);
-        RequestLine requestLine = request.getRequestLine();
+        RequestLine requestLine = RequestLine.parse(requestLineString);
 
         assertThat(requestLine.getMethod()).isEqualTo(RequestMethod.GET);
         assertThat(requestLine.getPath()).isEqualTo("/docs/index.html");
@@ -24,8 +23,7 @@ class RequestParserTest {
     @Test
     void parsePostRequest() {
         String requestLineString = "POST /docs/index.html HTTP/1.1";
-        Request request = requestParser.parse(requestLineString);
-        RequestLine requestLine = request.getRequestLine();
+        RequestLine requestLine = RequestLine.parse(requestLineString);
 
         assertThat(requestLine.getMethod()).isEqualTo(RequestMethod.POST);
         assertThat(requestLine.getPath()).isEqualTo("/docs/index.html");
@@ -36,8 +34,7 @@ class RequestParserTest {
     @Test
     void parseQueryString() {
         String requestLineString = "GET /users?userId=javajigi&password=password&name=JaeSung HTTP/1.1";
-        Request request = requestParser.parse(requestLineString);
-        RequestLine requestLine = request.getRequestLine();
+        RequestLine requestLine = RequestLine.parse(requestLineString);
         QueryParameters queryParameters = requestLine.getQueryParameters();
 
         assertThat(requestLine.getMethod()).isEqualTo(RequestMethod.GET);
@@ -52,10 +49,8 @@ class RequestParserTest {
     @Test
     void parseQueryString2() {
         String requestLineString = "GET /users?userId=javajigi&userId=abc HTTP/1.1";
-        Request request = requestParser.parse(requestLineString);
-        QueryParameters queryParameters = request
-                .getRequestLine()
-                .getQueryParameters();
+        RequestLine requestLine = RequestLine.parse(requestLineString);
+        QueryParameters queryParameters = requestLine.getQueryParameters();
 
         assertThat(queryParameters.get("userId")).isEqualTo("javajigi");
         assertThat(queryParameters.getAll("userId")).isEqualTo(List.of("javajigi", "abc"));
