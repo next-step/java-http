@@ -3,6 +3,7 @@ package org.apache.coyote.http11;
 import camp.nextstep.exception.InvalidRequestException;
 import camp.nextstep.exception.UncheckedServletException;
 import camp.nextstep.http.ContentType;
+import camp.nextstep.http.PathResolver;
 import camp.nextstep.http.RequestLine;
 import camp.nextstep.util.FileUtils;
 import java.io.BufferedReader;
@@ -44,11 +45,11 @@ public class Http11Processor implements Runnable, Processor {
       var responseBody = "Hello world!";
 
       RequestLine requestLine = RequestLine.parse(bufferedInputStream.readLine());
-      String path =
-          requestLine.getPath().equals(PATH_SEPARATOR) ? "index.html" : requestLine.getPath();
-      String extension = FileUtils.getFileExtension(path);
 
-      URL url = getClass().getClassLoader().getResource(staticPath + path);
+      PathResolver pathResolver = PathResolver.of(requestLine.getPath());
+      String extension = FileUtils.getFileExtension(pathResolver.getFilePath());
+
+      URL url = getClass().getClassLoader().getResource(staticPath + pathResolver.getFilePath());
 
       if (url != null) {
         responseBody = new String(Files.readAllBytes(new File(url.getFile()).toPath()));
