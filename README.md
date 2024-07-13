@@ -72,3 +72,5 @@
   - [x] 쿠키에서 전달 받은 `JESSIONID` 값으로 로그인 여부를 체크한다 
   - [x] 로그인에 성공하면 Session 객체의 값으로 `User`객체를 저장한다 
   - [x] 로그인 상태에서 `/login` 페이지에 `GET` 요청으로 접근 시 `index.html`로 리다이렉트
+  - [x] 쿠키가 `key=value; key2=value2;` 형태일 때도 파싱해서 가지고 있을 수 있어야 함 
+  - [x] `Session`, `SessionManager` 구현
