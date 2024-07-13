@@ -1,9 +1,9 @@
 package org.apache.coyote.http11;
 
 public class Cookie {
+    private static final Cookie EMPTY = new Cookie("", "");
     private static final String KEY_VALUE_SEPARATOR = "=";
     private static final String MESSAGE_FORMAT = "%s=%s";
-    private static final String EMPTY = "";
 
     private final String name;
     private final String value;
@@ -24,7 +24,7 @@ public class Cookie {
     }
 
     public static Cookie empty() {
-        return new Cookie(EMPTY, EMPTY);
+        return Cookie.EMPTY;
     }
 
     private void validateCookieName(final String value) {
