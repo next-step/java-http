@@ -35,10 +35,6 @@ public class HttpRequest {
         return requestLine.path.value();
     }
 
-    public String getParam(final String key) {
-        return requestLine.params.get(key);
-    }
-
     public boolean isGet() {
         return requestLine.method == HttpMethod.GET;
     }
