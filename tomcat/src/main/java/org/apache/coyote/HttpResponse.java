@@ -18,26 +18,22 @@ public class HttpResponse {
     private final HttpResponseHeaders headers;
     private final HttpBody body;
 
-    public HttpResponse(HttpBody body) {
-        this.statusLine = new HttpResponseStatusLine(HttpStatus.OK);
-        this.headers = body.addContentHeader(new HttpResponseHeaders());
-        this.body = body;
-    }
-
-    public HttpResponse(HttpStatus status, HttpResponseHeaders headers) {
-        this.statusLine = new HttpResponseStatusLine(status);
-        this.headers = headers;
-        this.body = null;
-    }
-
-    public HttpResponse(final HttpPath path) {
-        this(HttpStatus.Found, new HttpResponseHeaders().add(new Location(path)));
-    }
-
     HttpResponse(HttpResponseStatusLine statusLine, HttpResponseHeaders headers, HttpBody body) {
         this.statusLine = statusLine;
         this.headers = headers;
         this.body = body;
+    }
+
+    public HttpResponse(HttpBody body) {
+        this(new HttpResponseStatusLine(HttpStatus.OK), body.addContentHeader(new HttpResponseHeaders()), body);
+    }
+
+    public HttpResponse(HttpStatus status, HttpResponseHeaders headers) {
+        this(new HttpResponseStatusLine(status), headers, null);
+    }
+
+    public HttpResponse(final HttpPath path) {
+        this(HttpStatus.Found, new HttpResponseHeaders().add(new Location(path)));
     }
 
     public HttpResponse addCookie(HttpCookie cookie) {
