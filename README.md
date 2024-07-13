@@ -199,3 +199,28 @@ X-Pad: avoid browser bug
         }
     }
     ```
+
+## 5단계 - 동시성 확장하기
+
+### 요구사항 1 - Executors 로 Thread Pool 적용
+
+- `Executors` 클래스를 사용해 `ExecutorsService` 객체를 만든다.
+  > Executors 로 생성할 수 있는 스레드 풀
+  >
+  > 1. 고정된 스레드 풀 (FixedThreadPool): 고정된 수의 스레드를 사용하여 스레드 수를 제한하고 싶을 때 사용
+  > 2. 캐시된 스레드 풀 (CachedThreadPool): 짧은 시간에 많은 작업을 처리하고, 유휴 스레드를 재사용하고 싶을 때 사용
+  > 3. 스케줄된 스레드 풀 (ScheduledThreadPool): 지정된 시간 후에 작업을 실행하거나 주기적으로 작업을 실행하고 싶을 때 사용
+  > 4. 단일 스레드 풀 (SingleThreadExecutor): 단일 스레드로 순차적으로 작업을 처리하고 싶을 때 사용
+  >
+  > ThreadPoolExecutor 클래스로 원하는 형태의 스레드 풀 구성이 가능하다
+    - 최대 thread 수(maxThreads) 는 250
+    - 대기 요청 큐(acceptCount) 는 100
+    - 최소 유지 thread 수(coreThreads) 는 10
+    - 유휴 thread 유지 시간(keepAliveTime) 는 60
+    - 대기 요청 큐가 다 쌓였을 시 정책은 AbortPolicy, CallerRunsPolicy, DiscardPolicy 등등이 있다
+    
+### 요구사항 2 - 동시성 컬렉션 사용하기
+
+- `SessionManager` 는 전역에서 접근 가능한 static 변수이다.
+- 여러 Thread 에서 접근하여 읽고 쓰면 동시성 문제가 발생한다.
+- `ConcurrentHashMap` 을 적용하면 어느정도 해소 된다.
