@@ -3,6 +3,7 @@ package camp.nextstep.servlet;
 import camp.nextstep.db.InMemoryUserRepository;
 import camp.nextstep.model.User;
 import com.javax.servlet.http.HttpServlet;
+import org.apache.coyote.http.Cookie;
 import org.apache.coyote.http.HttpRequest;
 import org.apache.coyote.http.HttpResponse;
 import org.apache.coyote.http.StatusCode;

@@ -1,11 +1,14 @@
 package org.apache.coyote.http11;
 
+import org.apache.coyote.http.Cookie;
+import org.apache.coyote.http.HttpHeader;
 import org.apache.coyote.http.HttpRequest;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.List;
 
 public class HttpInputParser {
 
@@ -44,6 +47,14 @@ public class HttpInputParser {
 
             this.httpRequest.appendHeader(header[0], headerValues);
         }
+
+        final List<String> cookies = this.httpRequest.getHeader(HttpHeader.COOKIE);
+
+        if (cookies == null || cookies.isEmpty()) {
+            return;
+        }
+
+        this.httpRequest.setCookies(cookies.stream().map(Cookie::new).toList());
     }
 
     private void parseBody() throws IOException {

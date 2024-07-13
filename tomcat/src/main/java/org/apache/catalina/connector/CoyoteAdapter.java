@@ -1,6 +1,7 @@
 package org.apache.catalina.connector;
 
 import com.javax.servlet.Servlet;
+import org.apache.coyote.http.Cookie;
 import org.apache.coyote.http.HttpRequest;
 import org.apache.coyote.http.HttpResponse;
 
@@ -16,6 +17,10 @@ public class CoyoteAdapter {
         final Servlet servlet = servletMapping.getServlet(httpRequest);
 
         servlet.service(httpRequest, httpResponse);
+
+        if (httpRequest.hasNotSessionId()) {
+            httpResponse.addCookie(Cookie.createSessionCookie());
+        }
     }
 
 }

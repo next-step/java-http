@@ -34,7 +34,7 @@ class RegisterServletTest {
         final URL resource = getClass().getClassLoader().getResource("static/register.html");
         final HttpResponse expected = new HttpResponse();
         expected.setResponseLine("HTTP/1.1 200 Ok");
-        expected.setHeader(Map.of("Content-Type", List.of("text/html", "charset=utf-8")));
+        expected.addHeader(HttpHeader.CONTENT_TYPE, "text/html", "charset=utf-8");
         expected.setBody(new String(Files.readAllBytes(new File(resource.getFile()).toPath())), ContentType.TEXT_HTML);
 
         assertAll(
@@ -59,7 +59,7 @@ class RegisterServletTest {
         final URL resource = getClass().getClassLoader().getResource("static/index.html");
         final HttpResponse expected = new HttpResponse();
         expected.setResponseLine("HTTP/1.1 200 Ok");
-        expected.setHeader(Map.of("Content-Type", List.of("text/html", "charset=utf-8")));
+        expected.addHeader(HttpHeader.CONTENT_TYPE, "text/html", "charset=utf-8");
         expected.setBody(new String(Files.readAllBytes(new File(resource.getFile()).toPath())), ContentType.TEXT_HTML);
 
         assertAll(
@@ -84,7 +84,7 @@ class RegisterServletTest {
         final URL resource = getClass().getClassLoader().getResource("static/register.html");
         final HttpResponse expected = new HttpResponse();
         expected.setResponseLine("HTTP/1.1 400 Bad Request");
-        expected.setHeader(Map.of("Content-Type", List.of("text/html", "charset=utf-8")));
+        expected.addHeader(HttpHeader.CONTENT_TYPE, "text/html", "charset=utf-8");
         expected.setBody(new String(Files.readAllBytes(new File(resource.getFile()).toPath())), ContentType.TEXT_HTML);
 
         assertAll(

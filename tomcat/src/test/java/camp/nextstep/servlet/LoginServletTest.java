@@ -12,11 +12,10 @@ import support.TomcatServerTest;
 import java.io.File;
 import java.net.URL;
 import java.nio.file.Files;
-import java.util.List;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 @TomcatServerTest
 class LoginServletTest {
@@ -34,7 +33,7 @@ class LoginServletTest {
         final URL resource = getClass().getClassLoader().getResource("static/login.html");
         final HttpResponse expected = new HttpResponse();
         expected.setResponseLine("HTTP/1.1 200 Ok");
-        expected.setHeader(Map.of("Content-Type", List.of("text/html", "charset=utf-8")));
+        expected.addHeader(HttpHeader.CONTENT_TYPE, "text/html", "charset=utf-8");
         expected.setBody(new String(Files.readAllBytes(new File(resource.getFile()).toPath())), ContentType.TEXT_HTML);
 
         assertAll(
@@ -44,7 +43,7 @@ class LoginServletTest {
         );
     }
 
-    @DisplayName("존재하는 회원으로 POST 로그인 /login 요청을 하면 index.html 로 리다이렉트 한다")
+    @DisplayName("존재하는 회원으로 POST 로그인 /login 요청을 하면 쿠키 저장 후 index.html 로 리다이렉트 한다")
     @Test
     public void post_login_success() throws Exception {
         // given
@@ -59,12 +58,16 @@ class LoginServletTest {
         final URL resource = getClass().getClassLoader().getResource("static/index.html");
         final HttpResponse expected = new HttpResponse();
         expected.setResponseLine("HTTP/1.1 302 Found");
-        expected.setHeader(Map.of("Content-Type", List.of("text/html", "charset=utf-8")));
+        expected.addHeader(HttpHeader.CONTENT_TYPE, "text/html", "charset=utf-8");
         expected.setBody(new String(Files.readAllBytes(new File(resource.getFile()).toPath())), ContentType.TEXT_HTML);
+
+        System.out.println(actual.headers());
+        System.out.println();
+        System.out.println(expected.headers());
 
         assertAll(
                 () -> assertThat(actual.responseLine()).isEqualTo(expected.responseLine()),
-                () -> assertThat(actual.headers()).isEqualTo(expected.headers()),
+                () -> assertThat(actual.headers()).contains(expected.headers()).contains("Set-Cookie"),
                 () -> assertThat(actual.body()).isEqualTo(expected.body())
         );
     }
@@ -84,7 +87,7 @@ class LoginServletTest {
         final URL resource = getClass().getClassLoader().getResource("static/401.html");
         final HttpResponse expected = new HttpResponse();
         expected.setResponseLine("HTTP/1.1 401 Unauthorized");
-        expected.setHeader(Map.of("Content-Type", List.of("text/html", "charset=utf-8")));
+        expected.addHeader(HttpHeader.CONTENT_TYPE, "text/html", "charset=utf-8");
         expected.setBody(new String(Files.readAllBytes(new File(resource.getFile()).toPath())), ContentType.TEXT_HTML);
 
         assertAll(

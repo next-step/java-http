@@ -84,22 +84,28 @@ public class RestTemplate {
         if (httpMethod == HttpMethod.POST) {
             connection.setDoOutput(true);
             try (OutputStream os = connection.getOutputStream()) {
-                final String body = convertMapToBody(ContentType.from(headers.getHeader((HttpHeader.CONTENT_TYPE))[0]));
+                final String body = convertMapToBody(ContentType.from(headers.getHeader((HttpHeader.CONTENT_TYPE)).get(0)));
                 final byte[] input = body.getBytes(StandardCharsets.UTF_8);
                 os.write(input, 0, input.length);
             }
         }
 
         final HttpResponse httpResponse = new HttpResponse();
-        final Map<String, List<String>> headerFields = connection.getHeaderFields();
+        final int headerNum = connection.getHeaderFields().size();
         try {
-            httpResponse.setResponseLine(headerFields.get(null).get(0));
+            httpResponse.setResponseLine(connection.getHeaderField(null));
         } catch (HttpParseException e) {
             log.error(e.getMessage());
         }
 
+        for (int i = 1; i < headerNum; i++) {
+            final String headerFieldKey = connection.getHeaderFieldKey(i);
+            final String headerField = connection.getHeaderField(i);
+            final String[] values = headerField.split(";");
+            httpResponse.addHeader(HttpHeader.from(headerFieldKey), values);
+        }
+
         httpResponse.setBody(extractBody(connection), ContentType.from(connection.getHeaderField("Content-Type")));
-        httpResponse.setHeader(headerFields);
 
         return httpResponse;
     }

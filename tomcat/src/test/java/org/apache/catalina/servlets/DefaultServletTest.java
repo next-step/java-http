@@ -31,7 +31,7 @@ class DefaultServletTest {
         final URL resource = getClass().getClassLoader().getResource("static/index.html");
         final HttpResponse expected = new HttpResponse();
         expected.setResponseLine(HttpVersion.HTTP1_1, StatusCode.OK);
-        expected.setHeader(Map.of("Content-Type", List.of("text/html", "charset=utf-8")));
+        expected.addHeader(HttpHeader.CONTENT_TYPE, "text/html", "charset=utf-8");
         expected.setBody(new String(Files.readAllBytes(new File(resource.getFile()).toPath())), ContentType.TEXT_HTML);
 
         assertAll(
@@ -54,7 +54,7 @@ class DefaultServletTest {
         final URL resource = getClass().getClassLoader().getResource("static/css/styles.css");
         final HttpResponse expected = new HttpResponse();
         expected.setResponseLine(HttpVersion.HTTP1_1, StatusCode.OK);
-        expected.setHeader(Map.of("Content-Type", List.of("text/css", "charset=utf-8")));
+        expected.addHeader(HttpHeader.CONTENT_TYPE, "text/html", "charset=utf-8");
         expected.setBody(new String(Files.readAllBytes(new File(resource.getFile()).toPath())), ContentType.TEXT_CSS);
 
         assertAll(

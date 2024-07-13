@@ -2,6 +2,7 @@ package org.apache.coyote.http;
 
 import org.apache.coyote.http11.HttpParseException;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -16,6 +17,7 @@ public class HttpRequest {
 
     private final HttpRequestLine httpRequestLine = new HttpRequestLine();
     private final HeaderMapping headerMapping = new HeaderMapping();
+    private final Cookies cookies = new Cookies();
     private final ParamsMapping params = new ParamsMapping();
     private String body = "";
 
@@ -76,6 +78,10 @@ public class HttpRequest {
         return this.httpRequestLine.getPath();
     }
 
+    public List<String> getHeader(final HttpHeader httpHeader) {
+        return this.headerMapping.getHeader(httpHeader);
+    }
+
     public Map<String, String> getParameters() {
         return this.params.getParams();
     }
@@ -93,7 +99,7 @@ public class HttpRequest {
     }
 
     public boolean isContentLengthEmpty() {
-        final String[] contentLengthHeaders = this.headerMapping.getHeader(HttpHeader.CONTENT_LENGTH);
+        final String[] contentLengthHeaders = this.headerMapping.getHeader(HttpHeader.CONTENT_LENGTH).toArray(new String[0]);
 
         if (Objects.isNull(contentLengthHeaders) || contentLengthHeaders.length == REQUEST_LINE_METHOD_POINT) {
             return true;
@@ -103,6 +109,14 @@ public class HttpRequest {
     }
 
     public int getBodyLength() {
-        return Integer.parseInt(this.headerMapping.getHeader(HttpHeader.CONTENT_LENGTH)[REQUEST_LINE_METHOD_POINT]);
+        return Integer.parseInt(this.headerMapping.getHeader(HttpHeader.CONTENT_LENGTH).get(REQUEST_LINE_METHOD_POINT));
+    }
+
+    public void setCookies(final List<Cookie> cookies) {
+
+    }
+
+    public boolean hasNotSessionId() {
+        return this.cookies.getSessionCookie() == null;
     }
 }
