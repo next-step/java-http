@@ -114,10 +114,12 @@ public class Http11Processor implements Runnable, Processor {
             Optional<User> optionalUser = InMemoryUserRepository.findByAccount(requestBody.get(ACCOUNT_KEY));
             if (optionalUser.isPresent() && optionalUser.get().checkPassword(requestBody.get("password"))) {
                 log.info(optionalUser.get().toString());
-                return new HttpResponse(
+                HttpResponse httpResponse = new HttpResponse(
                         HttpStatus.FOUND,
                         MimeType.HTML,
                         FileFinder.find("/index.html"));
+                httpResponse.addCookie();
+                return httpResponse;
             }
             return new HttpResponse(
                     HttpStatus.UNAUTHORIZED,

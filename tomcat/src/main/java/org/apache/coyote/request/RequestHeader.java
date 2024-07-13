@@ -21,7 +21,7 @@ public class RequestHeader {
         if (headerParts.length != KEY_AND_VALUE_LENGTH) {
             throw new BadHeaderException();
         }
-        return new RequestHeader(headerParts[REQUEST_HEADER_KEY_INDEX], headerParts[REQUEST_HEADER_VALUE_INDEX]);
+        return new RequestHeader(headerParts[REQUEST_HEADER_KEY_INDEX], headerParts[REQUEST_HEADER_VALUE_INDEX].trim());
     }
 
     public boolean is(String key) {
