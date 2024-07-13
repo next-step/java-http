@@ -37,17 +37,12 @@ public class LoginController extends AbstractController {
         final RequestBody requestBody = request.getRequestBody();
         final Optional<User> userOptional = InMemoryUserRepository.findByAccount(requestBody.get(ACCOUNT));
 
-        if (userOptional.isEmpty()) {
+        if (userOptional.isEmpty() || !userOptional.get().checkPassword(requestBody.get(PASSWORD))) {
             response.sendRedirect(Route.UNAUTHORIZED);
             return;
         }
 
-        final User user = userOptional.get();
-        if (user.checkPassword(requestBody.get(PASSWORD))) {
-            processLogin(request, response, user);
-            return;
-        }
-        response.sendRedirect(Route.UNAUTHORIZED);
+        processLogin(request, response, userOptional.get());
     }
 
     private void processLogin(final HttpRequest request, final HttpResponse response, final User user) throws IOException {
