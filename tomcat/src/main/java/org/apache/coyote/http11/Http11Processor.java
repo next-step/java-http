@@ -18,12 +18,10 @@ import java.nio.file.Files;
 public class Http11Processor implements Runnable, Processor {
 
     private static final Logger log = LoggerFactory.getLogger(Http11Processor.class);
-    private final UserService userService;
 
     private final Socket connection;
 
     public Http11Processor(final Socket connection) {
-        this.userService = new UserService();
         this.connection = connection;
     }
 
@@ -39,7 +37,7 @@ public class Http11Processor implements Runnable, Processor {
              final var outputStream = connection.getOutputStream()) {
 
             RequestLine requestLine = RequestParser.parseRequest(inputStream);
-            String filePath = requestLine.getPath();
+            String filePath = requestLine.getPath().toString();
             String fileExtension = requestLine.getFileExtension();
             if (StringUtils.isEmpty(fileExtension)) {
                 fileExtension = "html";

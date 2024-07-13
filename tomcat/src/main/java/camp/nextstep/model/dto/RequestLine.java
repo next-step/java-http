@@ -1,6 +1,9 @@
 package camp.nextstep.model.dto;
 
 import camp.nextstep.model.enums.HttpMethod;
+import camp.nextstep.model.request.Path;
+import camp.nextstep.model.request.Protocol;
+import camp.nextstep.model.request.Version;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.HashMap;
@@ -8,24 +11,24 @@ import java.util.Map;
 
 public class RequestLine {
     HttpMethod method;
-    String path;
-    String protocol;
-    String version;
+    Path path;
+    Protocol protocol;
+    Version version;
     Map<String, String> queryStringMap = new HashMap<>();
 
     public HttpMethod getMethod() {
         return method;
     }
 
-    public String getPath() {
+    public Path getPath() {
         return path;
     }
 
-    public String getProtocol() {
+    public Protocol getProtocol() {
         return protocol;
     }
 
-    public String getVersion() {
+    public Version getVersion() {
         return version;
     }
 
@@ -34,7 +37,7 @@ public class RequestLine {
     }
     public String getFileExtension() {
         final String dot = ".";
-        if (StringUtils.isEmpty(this.path)) {
+        if (this.path.isEmpty()) {
             return "";
         }
         if (!this.path.contains(dot)) {
@@ -47,18 +50,18 @@ public class RequestLine {
     public static RequestLine of(String method, String path, String protocol, String version) {
         RequestLine requestLine = new RequestLine();
         requestLine.method = HttpMethod.valueOf(method);
-        requestLine.path = path;
-        requestLine.protocol = protocol;
-        requestLine.version = version;
+        requestLine.path = Path.valueOf(path);
+        requestLine.protocol = Protocol.valueOf(protocol);
+        requestLine.version = Version.fromString(version);
         return requestLine;
     }
 
     public static RequestLine of(String method, String path, String protocol, String version, Map<String, String> queryString) {
         RequestLine requestLine = new RequestLine();
         requestLine.method = HttpMethod.valueOf(method);
-        requestLine.path = path;
-        requestLine.protocol = protocol;
-        requestLine.version = version;
+        requestLine.path = Path.valueOf(path);
+        requestLine.protocol = Protocol.valueOf(protocol);
+        requestLine.version = Version.fromString(version);
         requestLine.queryStringMap = queryString;
         return requestLine;
     }
