@@ -1,5 +1,6 @@
 package org.apache.coyote.http11;
 
+import org.apache.catalina.Manager;
 import org.apache.catalina.Session;
 
 import java.util.Map;
@@ -8,10 +9,10 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class DefaultSession implements Session {
     private final String id;
-    private final SessionManager sessionManager;
+    private final Manager sessionManager;
     private final Map<String, Object> values = new ConcurrentHashMap<>();
 
-    public DefaultSession(final String id, final SessionManager sessionManager) {
+    public DefaultSession(final String id, final Manager sessionManager) {
         this.id = id;
         this.sessionManager = sessionManager;
         sessionManager.add(this);

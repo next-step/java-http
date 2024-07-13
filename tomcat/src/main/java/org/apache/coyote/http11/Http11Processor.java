@@ -3,6 +3,7 @@ package org.apache.coyote.http11;
 import camp.nextstep.db.InMemoryUserRepository;
 import camp.nextstep.exception.UncheckedServletException;
 import camp.nextstep.model.User;
+import org.apache.catalina.Session;
 import org.apache.coyote.Processor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import java.io.*;
 import java.net.Socket;
 import java.nio.file.Files;
+import java.util.Objects;
 import java.util.StringJoiner;
 import java.util.UUID;
 
@@ -24,9 +26,11 @@ public class Http11Processor implements Runnable, Processor {
     private static final String JSESSIONID = "JSESSIONID";
 
     private final Socket connection;
+    private final Session session;
 
-    public Http11Processor(final Socket connection) {
+    public Http11Processor(final Socket connection, final Session session) {
         this.connection = connection;
+        this.session = session;
     }
 
     @Override
@@ -107,7 +111,7 @@ public class Http11Processor implements Runnable, Processor {
 
         if (path.contains("/login") && httpRequest.isGet()) {
             Cookie cookie = httpRequest.getCookie(JSESSIONID);
-            if (cookie.isNotEmpty() && InMemorySessionRepository.exists(cookie.getValue())) {
+            if (cookie.isNotEmpty() && Objects.nonNull(session.getAttribute(cookie.getValue()))) {
                 httpResponse.sendRedirect(INDEX_PATH);
                 return;
             }
@@ -133,7 +137,7 @@ public class Http11Processor implements Runnable, Processor {
 
         if (user.checkPassword(password)) {
             String uuid = UUID.randomUUID().toString();
-            InMemorySessionRepository.save(uuid, user);
+            session.setAttribute(uuid, user);
 
             Cookie cookie = Cookie.of(JSESSIONID, uuid);
             httpResponse.setCookie(cookie);
