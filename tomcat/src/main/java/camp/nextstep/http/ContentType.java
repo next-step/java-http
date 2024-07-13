@@ -4,7 +4,8 @@ import camp.nextstep.exception.UnsupportedContentType;
 
 public enum ContentType {
   TEXT_HTML("html", "text/html"),
-  TEXT_CSS("css", "text/css");
+  TEXT_CSS("css", "text/css"),
+  APPLICATION_JS("js", "application/javascript");
   private final String extention;
   private final String type;
 
@@ -19,6 +20,6 @@ public enum ContentType {
         return contentType.type;
       }
     }
-    throw new UnsupportedContentType("지원하지 않는 Content Type 입니다.");
+    throw new UnsupportedContentType("지원하지 않는 Content Type 입니다." + extention);
   }
 }
