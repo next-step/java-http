@@ -45,6 +45,10 @@ public class HttpQueryParameters {
         return getOne(key).map(Object::toString).orElse(null);
     }
 
+    public Set<String> getAllKeys() {
+        return queryParamsMap.keySet();
+    }
+
     private Optional<Object> getOne(String key) {
         if (!queryParamsMap.containsKey(key)) {
             return Optional.empty();

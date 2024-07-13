@@ -3,29 +3,45 @@ package camp.nextstep.response;
 import camp.nextstep.request.HttpRequest;
 import camp.nextstep.request.HttpRequestCookie;
 import camp.nextstep.staticresource.StaticResourceLoader;
-import org.apache.catalina.Session;
 import org.apache.util.MimeTypes;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class HttpResponse {
     private final OutputStream outputStream;
     private final HttpRequest request;
     private final Map<String, String> headersMap;
+
+    private final List<HttpRequestCookie> newCookies;
     private final StaticResourceLoader staticResourceLoader;
 
     public HttpResponse(OutputStream outputStream, HttpRequest request, StaticResourceLoader staticResourceLoader) {
         this.outputStream = outputStream;
         this.request = request;
-        this.headersMap = new HashMap<>();
         this.staticResourceLoader = staticResourceLoader;
+
+        this.headersMap = new HashMap<>();
+        this.newCookies = new ArrayList<>();
+    }
+
+    public void setSessionCookie() throws IOException {
+        if (request.hasSession()) return;
+
+        String sessionId = request.getSession().getId();
+        setCookie(new HttpRequestCookie(HttpRequestCookie.JSESSIONID_NAME, sessionId));
     }
 
     public void setHeader(String key, String value) {
         this.headersMap.put(key, value);
+    }
+
+    public void setCookie(HttpRequestCookie cookie) {
+        newCookies.add(cookie);
     }
 
     public void render(String requestPath) throws IOException {
@@ -67,25 +83,15 @@ public class HttpResponse {
         ResponseWriter writer = new ResponseWriter(outputStream);
 
         writer.setResponseLine(statusCode);
+
         writer.appendHeaders(headersMap);
-        if (needToUpdateSessionId(request)) {
-            writer.setHeader("Set-Cookie",
-                    HttpRequestCookie.JSESSIONID_NAME + "=" + request.getSession().getId() + "; Path=/");
-        }
+        writer.appendNewCookies(newCookies);
 
         if (content != null) {
             writer.setContent(content);
         }
 
         writer.write();
-    }
-
-    private boolean needToUpdateSessionId(HttpRequest request) throws IOException {
-        HttpRequestCookie sessionCookie = request.getCookies().get(HttpRequestCookie.JSESSIONID_NAME);
-        if (sessionCookie == null) return true;
-
-        Session session = request.getSession();
-        return !session.getId().equals(sessionCookie.getValue());
     }
 
     private String guessMimeTypeFromPath(String path) {

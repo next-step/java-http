@@ -1,7 +1,10 @@
 package camp.nextstep.response;
 
+import camp.nextstep.request.HttpRequestCookie;
+
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.List;
 import java.util.Map;
 
 import static camp.nextstep.response.ResponseWritingStage.*;
@@ -28,16 +31,25 @@ public class ResponseWriter {
     }
 
     public void appendHeaders(Map<String, String> additionalHeaders) {
-        assert stage == ADDING_HEADERS : "헤더를 입력할 수 없는 단계입니다: " + stage;
-
-        for (Map.Entry<String, String> e : additionalHeaders.entrySet()) {
-            responseBuilder.append(e.getKey()).append(": ")
-                    .append(e.getValue()).append(" \r\n");
-        }
+        additionalHeaders.forEach(this::setHeader);
     }
 
     public void setHeader(String key, String value) {
-        responseBuilder.append(key).append(": ").append(value).append(" ").append("\r\n");
+        assert stage == ADDING_HEADERS : "헤더를 입력할 수 없는 단계입니다: " + stage;
+
+        responseBuilder.append(key).append(": ")
+                .append(value)
+                .append(" ").append("\r\n");
+    }
+
+    public void appendNewCookies(List<HttpRequestCookie> newCookies) {
+        newCookies.forEach(this::appendCookie);
+    }
+
+    public void appendCookie(HttpRequestCookie cookie) {
+        assert stage == ADDING_HEADERS : "헤더를 입력할 수 없는 단계입니다: " + stage;
+
+        setHeader("Set-Cookie", cookie.getKey() + "=" + cookie.getValueWithParam());
     }
 
     public void setContent(String content) {

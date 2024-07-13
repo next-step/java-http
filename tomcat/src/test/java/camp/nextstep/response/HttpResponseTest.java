@@ -1,6 +1,7 @@
 package camp.nextstep.response;
 
 import camp.nextstep.request.HttpRequest;
+import camp.nextstep.request.HttpRequestCookie;
 import camp.nextstep.request.HttpRequestParser;
 import camp.nextstep.staticresource.StaticResourceLoader;
 import org.apache.catalina.Session;
@@ -73,6 +74,25 @@ class HttpResponseTest {
                 "Location: " + "/abc.html ",
                 ""
         );
+        assertThat(socket.output()).isEqualTo(expected);
+    }
+
+    @Test
+    void addNewCookies() throws IOException {
+        final var socket = new StubSocket(httpRequestString);
+        HttpResponse response = buildResponse(socket);
+        response.setCookie(new HttpRequestCookie("abc", "def"));
+        response.setCookie(new HttpRequestCookie("ghi", "jkl"));
+        response.render("/index.html");
+
+        String expected = String.join("\r\n",
+                "HTTP/1.1 200 OK ",
+                "Content-Length: 5564 ",
+                "Content-Type: text/html;charset=utf-8 ",
+                "Set-Cookie: abc=def; Path=/ ",
+                "Set-Cookie: ghi=jkl; Path=/ ",
+                "",
+                readFileContent("static/index.html"));
         assertThat(socket.output()).isEqualTo(expected);
     }
 

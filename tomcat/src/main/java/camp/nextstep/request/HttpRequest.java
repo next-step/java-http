@@ -41,6 +41,10 @@ public class HttpRequest {
         return requestLine.getPath();
     }
 
+    public HttpQueryParameters getQueryParameters() {
+        return requestLine.getQueryParameters();
+    }
+
     public HttpRequestHeaders getRequestHeaders() {
         return requestHeaders;
     }
@@ -51,6 +55,13 @@ public class HttpRequest {
 
     public HttpRequestCookies getCookies() {
         return cookies;
+    }
+
+    /**
+     * 요청에서 세션을 가지고 있었는지 확인
+     */
+    public boolean hasSession() {
+        return SessionManager.INSTANCE.findSession(getSessionIdFromCookie()) != null;
     }
 
     /**

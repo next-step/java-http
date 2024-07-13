@@ -48,6 +48,8 @@ public class Http11Processor implements Runnable, Processor {
         ) {
             HttpRequest request = requestParser.parse(bufferedReader);
             HttpResponse response = new HttpResponse(outputStream, request, staticResourceLoader);
+            response.setSessionCookie();
+
             try {
                 requestMapping.getController(request).service(request, response);
             } catch (RequestNotFoundException e) {

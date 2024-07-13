@@ -3,7 +3,6 @@ package org.apache.coyote.http11;
 import org.apache.catalina.Manager;
 import org.apache.catalina.Session;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -20,7 +19,7 @@ public class SessionManager implements Manager {
     }
 
     @Override
-    public Session findSession(String id) throws IOException {
+    public Session findSession(String id) {
         if (id == null) return null;
         return SESSIONS.get(id);
     }

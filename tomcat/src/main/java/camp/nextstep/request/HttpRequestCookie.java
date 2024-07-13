@@ -17,7 +17,15 @@ public class HttpRequestCookie {
         return UUID.randomUUID().toString();
     }
 
+    public String getKey() {
+        return key;
+    }
+
     public String getValue() {
         return value;
+    }
+
+    public String getValueWithParam() {
+        return value + "; Path=/";
     }
 }
