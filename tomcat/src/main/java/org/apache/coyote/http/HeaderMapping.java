@@ -27,7 +27,7 @@ public class HeaderMapping {
 
     public void addHeader(final HttpHeader header, final List<String> values) {
         final List<String> headerValues = headerMapping.getOrDefault(header, new ArrayList<>());
-        headerValues.addAll(values.stream().filter(value -> isAddableValue(value, headerValues)).toList());
+        headerValues.addAll(values.stream().filter(value -> isAddableValue(value, headerValues)).map(value -> value.trim()).toList());
 
         headerMapping.put(header, headerValues);
     }

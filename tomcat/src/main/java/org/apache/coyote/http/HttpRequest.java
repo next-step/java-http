@@ -99,13 +99,13 @@ public class HttpRequest {
     }
 
     public boolean isContentLengthEmpty() {
-        final String[] contentLengthHeaders = this.headerMapping.getHeader(HttpHeader.CONTENT_LENGTH).toArray(new String[0]);
+        final List<String> contentLengthHeaders = this.headerMapping.getHeader(HttpHeader.CONTENT_LENGTH);
 
-        if (Objects.isNull(contentLengthHeaders) || contentLengthHeaders.length == REQUEST_LINE_METHOD_POINT) {
+        if (Objects.isNull(contentLengthHeaders) || contentLengthHeaders.isEmpty()) {
             return true;
         }
 
-        return Objects.equals(contentLengthHeaders[REQUEST_LINE_METHOD_POINT], EMPTY_CONTENT_LENGTH);
+        return Objects.equals(contentLengthHeaders.get(REQUEST_LINE_METHOD_POINT), EMPTY_CONTENT_LENGTH);
     }
 
     public int getBodyLength() {
@@ -113,7 +113,7 @@ public class HttpRequest {
     }
 
     public void setCookies(final List<Cookie> cookies) {
-
+        this.cookies.addCookies(cookies);
     }
 
     public boolean hasNotSessionId() {

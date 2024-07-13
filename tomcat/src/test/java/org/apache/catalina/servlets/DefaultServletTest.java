@@ -36,7 +36,7 @@ class DefaultServletTest {
 
         assertAll(
                 () -> assertThat(actual.responseLine()).isEqualTo(expected.responseLine()),
-                () -> assertThat(actual.headers()).isEqualTo(expected.headers()),
+                () -> assertThat(actual.headers()).contains(expected.headers()),
                 () -> assertThat(actual.body()).isEqualTo(expected.body())
         );
     }
@@ -54,12 +54,12 @@ class DefaultServletTest {
         final URL resource = getClass().getClassLoader().getResource("static/css/styles.css");
         final HttpResponse expected = new HttpResponse();
         expected.setResponseLine(HttpVersion.HTTP1_1, StatusCode.OK);
-        expected.addHeader(HttpHeader.CONTENT_TYPE, "text/html", "charset=utf-8");
+        expected.addHeader(HttpHeader.CONTENT_TYPE, "text/css", "charset=utf-8");
         expected.setBody(new String(Files.readAllBytes(new File(resource.getFile()).toPath())), ContentType.TEXT_CSS);
 
         assertAll(
                 () -> assertThat(actual.responseLine()).isEqualTo(expected.responseLine()),
-                () -> assertThat(actual.headers()).isEqualTo(expected.headers()),
+                () -> assertThat(actual.headers()).contains(expected.headers()),
                 () -> assertThat(actual.body()).isEqualTo(expected.body())
         );
     }

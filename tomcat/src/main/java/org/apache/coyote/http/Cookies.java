@@ -1,7 +1,9 @@
 package org.apache.coyote.http;
 
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class Cookies {
 
@@ -10,8 +12,11 @@ public class Cookies {
     private final Map<String, Cookie> cookies = new HashMap<>();
 
     public void addCookie(final Cookie... cookie) {
-        final Map<String, Cookie> cookieMapping = Arrays.stream(cookie).collect(Collectors.toMap(Cookie::getName, it -> it));
-        this.cookies.putAll(cookieMapping);
+        addCookies(Arrays.asList(cookie));
+    }
+
+    public void addCookies(final List<Cookie> cookies) {
+        cookies.forEach(cookie -> this.cookies.put(cookie.getName(), cookie));
     }
 
     public Cookie getCookie(final String cookieName) {

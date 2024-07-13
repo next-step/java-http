@@ -7,6 +7,7 @@ import org.apache.coyote.http.HttpResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import support.RestTemplate;
+import support.ServletMapping;
 import support.TomcatServerTest;
 
 import java.io.File;
@@ -17,7 +18,9 @@ import java.util.Map;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
-@TomcatServerTest
+@TomcatServerTest(
+        servletMappings = @ServletMapping(path = "/login", servlet = LoginServlet.class)
+)
 class LoginServletTest {
 
     @DisplayName("GET /login 요청으로 login.html 을 반환한다")
@@ -38,7 +41,7 @@ class LoginServletTest {
 
         assertAll(
                 () -> assertThat(actual.responseLine()).isEqualTo(expected.responseLine()),
-                () -> assertThat(actual.headers()).isEqualTo(expected.headers()),
+                () -> assertThat(actual.headers()).contains(expected.headers()),
                 () -> assertThat(actual.body()).isEqualTo(expected.body())
         );
     }
@@ -92,7 +95,7 @@ class LoginServletTest {
 
         assertAll(
                 () -> assertThat(actual.responseLine()).isEqualTo(expected.responseLine()),
-                () -> assertThat(actual.headers()).isEqualTo(expected.headers()),
+                () -> assertThat(actual.headers()).contains(expected.headers()),
                 () -> assertThat(actual.body()).isEqualTo(expected.body())
         );
     }

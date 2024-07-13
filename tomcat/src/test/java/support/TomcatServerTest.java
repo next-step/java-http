@@ -1,5 +1,6 @@
 package support;
 
+import com.javax.servlet.Servlet;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 import java.lang.annotation.ElementType;
@@ -11,4 +12,5 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @ExtendWith(TestServerExtension.class)
 public @interface TomcatServerTest {
+    ServletMapping[] servletMappings() default {};
 }

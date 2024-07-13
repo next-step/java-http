@@ -42,7 +42,7 @@ class CoyoteAdapterTest {
         assertDoesNotThrow(() -> adapter.service(httpRequest, httpResponse));
     }
 
-    @DisplayName("세션 쿠키가 없다면 새로운 새션 ID 를 생성해 추가한다")
+    @DisplayName("요청에 세션 쿠키가 없다면 새로운 새션 ID 를 생성해 추가한다")
     @Test
     public void addSessionCookie() throws Exception {
         // given
@@ -61,6 +61,27 @@ class CoyoteAdapterTest {
 
         // then
         assertThat(httpResponse.headers()).contains("JSESSIONID");
+    }
+
+    @DisplayName("요청에 세션 쿠카가 이미 있다면 새로운 세션 ID 를 생성하지 않는다")
+    @Test
+    public void notAddSessionCookie() throws Exception {
+        // given
+        final CoyoteAdapter adapter = new CoyoteAdapter();
+        final Servlet servlet = mock();
+        final String mapping = "/servlet";
+        final HttpRequest httpRequest = mock();
+        final HttpResponse httpResponse = new HttpResponse();
+
+        adapter.addServlet(mapping, servlet);
+        when(httpRequest.getPath()).thenReturn(mapping);
+        when(httpRequest.hasNotSessionId()).thenReturn(false);
+
+        // when
+        adapter.service(httpRequest, httpResponse);
+
+        // then
+        assertThat(httpResponse.headers()).doesNotContain("JSESSIONID");
     }
 
 }
