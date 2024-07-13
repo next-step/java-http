@@ -61,7 +61,7 @@ public class LoginHandler implements Handler {
 
         var session = httpRequest.getSession(true);
         session.setAttribute("user", user);
-        return new HttpResponse(new HttpPath(SUCCESS_PAGE)).addCookie(HttpCookie.ofSession(session));
+        return new HttpResponse(new HttpPath(SUCCESS_PAGE)).cookie(HttpCookie.ofSession(session));
     }
 }
 

@@ -36,7 +36,7 @@ public class HttpResponse {
         this(HttpStatus.Found, new HttpResponseHeaders().add(new Location(path)));
     }
 
-    public HttpResponse addCookie(HttpCookie cookie) {
+    public HttpResponse cookie(HttpCookie cookie) {
         return new HttpResponse(statusLine, headers.add(new SetCookie().addCookie(cookie)), body);
     }
 
