@@ -8,18 +8,13 @@ import java.util.Map;
 class HttpParamsTest {
 
     @Test
-    void fromUrl_without_questionMark() {
-        Assertions.assertThat(new HttpParams("url")).isEqualTo(new HttpParams());
+    void params() {
+        Assertions.assertThat(new HttpParams("test=hello")).isEqualTo(new HttpParams(Map.of("test", "hello")));
     }
 
     @Test
-    void fromUrl_with_questionMark() {
-        Assertions.assertThat(new HttpParams("url?test=hello")).isEqualTo(new HttpParams(Map.of("test", "hello")));
-    }
-
-    @Test
-    void fromUrl_with_wrongQueryString() {
-        Assertions.assertThat(new HttpParams("url?teshello")).isEqualTo(new HttpParams());
+    void noParams() {
+        Assertions.assertThat(new HttpParams("teshello")).isEqualTo(new HttpParams(Map.of()));
     }
 
 }

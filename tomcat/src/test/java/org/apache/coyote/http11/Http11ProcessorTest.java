@@ -1,185 +1,137 @@
 package org.apache.coyote.http11;
 
-import org.apache.coyote.handler.LoginHandler;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.http.HttpPath;
+import org.apache.http.header.Cookie;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import support.StubLogger;
+import support.StubHttpRequest;
 import support.StubSocket;
 
-import java.io.File;
 import java.io.IOException;
-import java.net.URL;
-import java.nio.file.Files;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static support.OutputTest.*;
 
 class Http11ProcessorTest {
 
     @Test
     void process() {
-        // given
         final var socket = new StubSocket();
         final var processor = new Http11Processor(socket);
 
-        // when
         processor.process(socket);
 
-        // then
-        var expected = String.join("\r\n",
-                "HTTP/1.1 200 OK ",
-                "Content-Type: text/html;charset=utf-8 ",
-                "Content-Length: 12 ",
-                "",
-                "Hello world!");
-
-        assertThat(socket.output()).isEqualTo(expected);
+        test_default(socket.output());
     }
 
     @Test
     void index() throws IOException {
-        // given
-        final String httpRequest= String.join("\r\n",
-                "GET /index.html HTTP/1.1 ",
-                "Host: localhost:8080 ",
-                "Connection: keep-alive ",
-                "",
-                "");
-
+        final var httpRequest = new StubHttpRequest();
         final var socket = new StubSocket(httpRequest);
         final Http11Processor processor = new Http11Processor(socket);
 
-        // when
         processor.process(socket);
 
-        // then
-        final URL resource = getClass().getClassLoader().getResource("static/index.html");
-        var expected = String.join("\r\n",
-            "HTTP/1.1 200 OK ",
-            "Content-Type: text/html;charset=utf-8 ",
-            "Content-Length: 5564 ", // 운영체제 환경에 따라 다른 값이 나올 수 있음. 자신의 개발 환경에 맞춰 수정할 것.
-            "",
-            new String(Files.readAllBytes(new File(resource.getFile()).toPath())));
-
-        assertThat(socket.output()).isEqualTo(expected);
+        test_index_page(socket.output());
     }
 
     @Test
     void css() throws IOException {
-        // given
-        final String httpRequest= String.join("\r\n",
-                "GET /css/styles.css HTTP/1.1 ",
-                "Host: localhost:8080 ",
-                "Accept: text/css,*/*;q=0.1",
-                "Connection: keep-alive ",
-                "",
-                "");
-
+        final var httpRequest = new StubHttpRequest(new HttpPath("/css/styles.css"));
         final var socket = new StubSocket(httpRequest);
         final Http11Processor processor = new Http11Processor(socket);
 
-        // when
         processor.process(socket);
 
-        // then
-        final URL resource = getClass().getClassLoader().getResource("static/css/styles.css");
-        var expected = String.join("\r\n",
-                "HTTP/1.1 200 OK ",
-                "Content-Type: text/css;charset=utf-8 ",
-                "Content-Length: 211991 ", // 운영체제 환경에 따라 다른 값이 나올 수 있음. 자신의 개발 환경에 맞춰 수정할 것.
-                "",
-                new String(Files.readAllBytes(new File(resource.getFile()).toPath())));
-
-        assertThat(socket.output()).isEqualTo(expected);
+        test_css(socket.output());
     }
 
 
     @Nested
     class Login {
 
-        private final StubLogger<LoginHandler> logger = new StubLogger<>(LoginHandler.class);
-
         @Test
-        void correct_account_correct_password() throws IOException {
-            // given
-            final String httpRequest= String.join("\r\n",
-                    "GET /login?account=gugu&password=password HTTP/1.1 ",
-                    "Host: localhost:8080 ",
-                    "Connection: keep-alive ",
-                    "",
-                    "");
-
+        void login_page() throws IOException {
+            final var httpRequest = new StubHttpRequest(new HttpPath("/login"));
             final var socket = new StubSocket(httpRequest);
             final Http11Processor processor = new Http11Processor(socket);
 
-            // when
             processor.process(socket);
 
-            // then
-            test_index_resource(socket.output());
-            test_log_user();
+            test_login_page(socket.output());
         }
 
         @Test
-        void correct_account_wrong_password() throws IOException {
-            // given
-            final String httpRequest= String.join("\r\n",
-                    "GET /login?account=gugu&password=wrong HTTP/1.1 ",
-                    "Host: localhost:8080 ",
-                    "Connection: keep-alive ",
-                    "",
-                    "");
-
+        void correct_account_correct_password() {
+            final var httpRequest = new StubHttpRequest("gugu", "password");
             final var socket = new StubSocket(httpRequest);
             final Http11Processor processor = new Http11Processor(socket);
 
-            // when
             processor.process(socket);
 
-            // then
-            test_index_resource(socket.output());
-            test_doNotLog_user();
+            test_success_redirect_setCookie(socket.output());
         }
 
         @Test
-        void wrong_account() throws IOException {
-            // given
-            final String httpRequest= String.join("\r\n",
-                    "GET /login?account=woo-yu&password=wrong HTTP/1.1 ",
-                    "Host: localhost:8080 ",
-                    "Connection: keep-alive ",
-                    "",
-                    "");
-
+        void correct_account_wrong_password() {
+            final var httpRequest = new StubHttpRequest("gugu", "wrong");
             final var socket = new StubSocket(httpRequest);
             final Http11Processor processor = new Http11Processor(socket);
 
-            // when
             processor.process(socket);
 
-            // then
-            test_index_resource(socket.output());
-            test_doNotLog_user();
+            test_fail_redirect(socket.output());
         }
 
+        @Test
+        void wrong_account() {
+            final var httpRequest = new StubHttpRequest("woo-yu", "wrong");
+            final var socket = new StubSocket(httpRequest);
+            final Http11Processor processor = new Http11Processor(socket);
 
-        private void test_index_resource(String output) throws IOException {
-            final URL resource = getClass().getClassLoader().getResource("static/login.html");
-            var expected = String.join("\r\n",
-                    "HTTP/1.1 200 OK ",
-                    "Content-Type: text/html;charset=utf-8 ",
-                    "Content-Length: 3796 ", // 운영체제 환경에 따라 다른 값이 나올 수 있음. 자신의 개발 환경에 맞춰 수정할 것.
-                    "",
-                    new String(Files.readAllBytes(new File(resource.getFile()).toPath())));
+            processor.process(socket);
 
-            assertThat(output).isEqualTo(expected);
+            test_fail_redirect(socket.output());
         }
 
-        private void test_log_user() {
-            assertThat(logger.list.get(0).getMessage()).contains("gugu");
+        @Test
+        void login_cookie() {
+            final var httpRequest = new StubHttpRequest("gugu", "password");
+            final var socket = new StubSocket(httpRequest);
+            final Http11Processor processor = new Http11Processor(socket);
+            processor.process(socket);
+            final var cookieRequest = new StubHttpRequest(new Cookie(StringUtils.substringAfter(socket.output(), "Cookie: ")));
+            final var newSocket = new StubSocket(cookieRequest);
+
+            processor.process(newSocket);
+
+            test_success_redirect(newSocket.output());
+        }
+    }
+
+    @Nested
+    class Register {
+
+        @Test
+        void register_page() throws IOException {
+            final var httpRequest = new StubHttpRequest(new HttpPath("/register"));
+            final var socket = new StubSocket(httpRequest);
+            final Http11Processor processor = new Http11Processor(socket);
+
+            processor.process(socket);
+
+            test_register_page(socket.output());
         }
 
-        private void test_doNotLog_user() {
-            assertThat(logger.list).isEmpty();
+        @Test
+        void register() {
+            final var httpRequest = new StubHttpRequest("gugu", "password", "email");
+            final var socket = new StubSocket(httpRequest);
+            final Http11Processor processor = new Http11Processor(socket);
+
+            processor.process(socket);
+
+            test_success_redirect(socket.output());
         }
 
     }

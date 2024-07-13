@@ -1,11 +1,14 @@
 package org.apache.http.header;
 
+import org.apache.commons.lang3.tuple.Pair;
+import org.apache.file.MediaType;
+
 /**
  * https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Type
  */
-public class ContentType extends HttpHeader {
-    private static final String HEADER_NAME = "Content-Type";
-    private static final String DEFAULT_CHARSET = "charset=utf-8";
+public class ContentType extends HttpRequestHeader implements HttpResponseHeader {
+    private static final RequestHeaderParser parser = RequestHeaderParser.CONTENT_TYPE;
+    private static final String DEFAULT_CHARSET = ";charset=utf-8";
 
     private final MediaType mediaType;
 
@@ -13,13 +16,21 @@ public class ContentType extends HttpHeader {
         this.mediaType = mediaType;
     }
 
+    public ContentType(String mediaType) {
+        this.mediaType = new MediaType(mediaType.replace(DEFAULT_CHARSET, ""));
+    }
+
+    public boolean match(final MediaType type) {
+        return mediaType.equals(type);
+    }
+
     @Override
-    public String getHeaderName() {
-        return HEADER_NAME;
+    public RequestHeaderParser getParser() {
+        return parser;
     }
 
     @Override
     public String toString() {
-        return HEADER_NAME + ": " + mediaType + ";" + DEFAULT_CHARSET + " ";
+        return parser + HttpResponseHeader.DELIMITER + mediaType + DEFAULT_CHARSET + " ";
     }
 }

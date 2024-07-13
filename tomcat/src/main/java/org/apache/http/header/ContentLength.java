@@ -1,24 +1,30 @@
 package org.apache.http.header;
 
+import org.apache.commons.lang3.tuple.Pair;
+
 /**
  * https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Length
  */
-public class ContentLength extends HttpHeader {
-    private static final String HEADER_NAME = "Content-Length";
-    
-    private final int length;
+public class ContentLength extends HttpRequestHeader implements HttpResponseHeader{
+    private static final RequestHeaderParser parser = RequestHeaderParser.CONTENT_LENGTH;
+
+    protected final int length;
 
     public ContentLength(int length) {
         this.length = length;
     }
 
+    public ContentLength(String length) {
+        this.length = Integer.parseInt(length);
+    }
+
     @Override
-    String getHeaderName() {
-        return HEADER_NAME;
+    RequestHeaderParser getParser() {
+        return parser;
     }
 
     @Override
     public String toString() {
-        return HEADER_NAME + ": " + length + " ";
+        return parser + HttpResponseHeader.DELIMITER + length + " ";
     }
 }

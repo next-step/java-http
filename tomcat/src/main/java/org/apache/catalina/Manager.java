@@ -1,6 +1,7 @@
 package org.apache.catalina;
 
-import jakarta.servlet.http.HttpSession;
+
+import org.apache.http.session.HttpSession;
 
 import java.io.IOException;
 
@@ -46,6 +47,9 @@ public interface Manager {
      *         requested ID could not be found
      */
     HttpSession findSession(String id) throws IOException;
+
+
+    HttpSession findSession(HttpSession session) throws IOException;
 
     /**
      * Remove this Session from the active Sessions for this Manager.

@@ -1,7 +1,8 @@
 package org.apache.http;
 
 public enum HttpStatus {
-    OK(200);
+    OK(200),
+    Found(302);
 
     private final int statusCode;
 

@@ -1,59 +1,47 @@
 package org.apache.coyote.handler;
 
-import org.apache.coyote.HttpRequest;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpPath;
+import org.apache.http.header.Cookie;
 import org.junit.jupiter.api.Test;
 import support.StubHttpRequest;
-import support.StubLogger;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import java.io.IOException;
+
+import static support.OutputTest.*;
 
 class LoginHandlerTest {
 
     private final Handler handler = new LoginHandler();
-    private final StubLogger<LoginHandler> logger = new StubLogger<>(LoginHandler.class);
 
     @Test
     void correct_account_correct_password() {
-        var request = new StubHttpRequest(new HttpPath("/login?account=gugu&password=password"));
-
-        handler.handle(request);
-
-        test_request_path(request);
-        test_log_user();
+        var request = new StubHttpRequest("gugu", "password");
+        var response = handler.handle(request);
+        test_success_redirect_setCookie(response.toString());
     }
 
     @Test
     void correct_account_wrong_password() {
-        var request = new StubHttpRequest(new HttpPath("/login?account=gugu&password=wrong"));
-
-        handler.handle(request);
-
-        test_request_path(request);
-        test_doNotLog_user();
+        var request = new StubHttpRequest("gugu", "wrong");
+        var response = handler.handle(request);
+        test_fail_redirect(response.toString());
     }
 
     @Test
     void wrong_account() {
-        var request = new StubHttpRequest(new HttpPath("/login?account=woo-yu&password=wrong"));
-
-        handler.handle(request);
-
-        test_request_path(request);
-        test_doNotLog_user();
+        var request = new StubHttpRequest("woo-yu", "password");
+        var response = handler.handle(request);
+        test_fail_redirect(response.toString());
     }
 
-    private void test_request_path(HttpRequest request) {
-        assertThat(request.matchPath("/login.html")).isTrue();
+    @Test
+    void login_cookie() {
+        var loginResult = handler.handle(new StubHttpRequest("gugu", "password")).toString();
+        var request = new StubHttpRequest(new Cookie(StringUtils.substringAfter(loginResult, "Cookie: ")));
+
+        var response = handler.handle(request);
+
+        test_success_redirect(response.toString());
     }
-
-    private void test_log_user() {
-        assertThat(logger.list.get(0).getMessage()).contains("gugu");
-    }
-
-    private void test_doNotLog_user() {
-        assertThat(logger.list).isEmpty();
-    }
-
-
 }

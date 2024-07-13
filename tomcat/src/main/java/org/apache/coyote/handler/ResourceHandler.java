@@ -1,31 +1,22 @@
 package org.apache.coyote.handler;
 
-import org.apache.coyote.HttpRequest;
 import org.apache.coyote.HttpResponse;
-import org.apache.http.header.ContentLength;
-import org.apache.http.header.ContentType;
-import org.apache.http.header.HttpHeaders;
-import org.apache.http.header.MediaType;
+import org.apache.coyote.handler.NotSupportHandlerException;
+import org.apache.file.FileReader;
+import org.apache.http.body.HttpFileBody;
 
-import java.io.File;
-import java.nio.file.Files;
+import java.io.IOException;
+import java.nio.file.Path;
 
-public class ResourceHandler implements Handler {
-    private static final String DEFAULT_PATH = "static";
+public class ResourceHandler {
 
-    @Override
-    public HttpResponse handle(HttpRequest request) {
+    public HttpResponse handle(Path path) {
         try {
-            final var resource = getClass().getClassLoader().getResource(request.resolveStringPath(DEFAULT_PATH));
-            final var path = new File(resource.getFile()).toPath();
-            final var body = new String(Files.readAllBytes(path));
+            final var file = FileReader.read(path);
+            final var body = new HttpFileBody(file);
 
-            final var headers = new HttpHeaders()
-                    .add(new ContentType(new MediaType(path)))
-                    .add(new ContentLength(body.getBytes().length));
-
-            return new HttpResponse(headers, body);
-        } catch (Exception e) {
+            return new HttpResponse(body);
+        } catch (IOException e) {
             throw new NotSupportHandlerException();
         }
     }

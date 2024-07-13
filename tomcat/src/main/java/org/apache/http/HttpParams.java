@@ -3,33 +3,30 @@ package org.apache.http;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class HttpParams {
-    private Map<String, String> params = new HashMap<>();
+    private static final String PARAM_DELIMITER = "&";
+    private static final String KEY_VALUE_DELIMITER = "=";
 
-    HttpParams() {
-    }
+    private Map<String, String> params = new HashMap<>();
 
     HttpParams(Map<String, String> params) {
         this.params = params;
     }
 
     public HttpParams(final String url) {
-        if (!url.contains("?")) {
-            return;
-        }
-        parseQueryString(url.split("\\?")[1]);
+        parseQueryString(url);
     }
 
-    public Optional<String> get(final String key) {
-        return Optional.ofNullable(params.get(key));
+    public String get(final String key) {
+        return params.get(key);
     }
 
     private void parseQueryString(final String queryString) {
-        final var values = queryString.split("&");
+        final var values = queryString.split(PARAM_DELIMITER);
         for (String param : values) {
-            var token = param.split("=");
+            var token = param.split(KEY_VALUE_DELIMITER);
             if (token.length < 2) continue;
             final String key = token[0];
             final String value = token[1];
@@ -48,5 +45,12 @@ public class HttpParams {
     @Override
     public int hashCode() {
         return Objects.hash(params);
+    }
+
+    @Override
+    public String toString() {
+        return params.entrySet().stream()
+                .map(param -> param.getKey() + KEY_VALUE_DELIMITER + param.getValue())
+                .collect(Collectors.joining(PARAM_DELIMITER));
     }
 }
