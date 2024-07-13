@@ -77,4 +77,33 @@ class Http11ProcessorTest {
     // then
     assertThat(thrown).isInstanceOf(InvalidRequestException.class);
   }
+
+  @Test
+  @DisplayName(" css요청에 대해 올바른 content-type을 리턴한다")
+  void css() throws IOException {
+    // given
+    final String httpRequest = String.join("\r\n",
+        "GET /css/styles.css HTTP/1.1 ",
+        "Host: localhost:8080 ",
+        "Connection: keep-alive ",
+        "",
+        "");
+
+    final var socket = new StubSocket(httpRequest);
+    final Http11Processor processor = new Http11Processor(socket);
+
+    // when
+    processor.process(socket);
+
+    // then
+    final URL resource = getClass().getClassLoader().getResource("static/css/styles.css");
+    var expected = String.join("\r\n",
+        "HTTP/1.1 200 OK ",
+        "Content-Type: text/css;charset=utf-8 ",
+        "Content-Length: 211991 ",
+        "",
+        new String(Files.readAllBytes(new File(resource.getFile()).toPath())));
+
+    assertThat(socket.output()).isEqualTo(expected);
+  }
 }
