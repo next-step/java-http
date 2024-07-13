@@ -23,7 +23,7 @@ public class HttpResponse {
     }
 
     public static HttpResponse from(final HttpProtocol protocol) {
-        HttpHeaders httpHeaders = HttpHeaders.empty();
+        HttpHeaders httpHeaders = HttpHeaders.create();
         httpHeaders.addHeader(HttpHeader.of(HttpHeaderName.CONTENT_LENGTH.getValue(), "0"));
         return new HttpResponse(StatusLine.from(protocol), httpHeaders, EMPTY);
     }

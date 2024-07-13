@@ -20,7 +20,7 @@ public class HttpHeaders {
         return new HttpHeaders(httpHeaders);
     }
 
-    public static HttpHeaders empty() {
+    public static HttpHeaders create() {
         return new HttpHeaders();
     }
 
