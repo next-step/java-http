@@ -1,7 +1,6 @@
 package camp.nextstep.http;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.Assertions.catchThrowable;
 
 import camp.nextstep.exception.InvalidRequestException;
@@ -22,7 +21,7 @@ class RequestLineTest {
 
     // then
     assertThat(requestLine.getHttpMethod()).isEqualTo(HttpMethod.GET);
-    assertThat(requestLine.getPath()).isEqualTo("/users");
+    assertThat(requestLine.getPath().getUrlPath()).isEqualTo("/users");
     assertThat(requestLine.getProtocol()).isEqualTo("HTTP");
     assertThat(requestLine.getVersion()).isEqualTo("1.1");
   }
@@ -38,7 +37,7 @@ class RequestLineTest {
 
     // then
     assertThat(requestLine.getHttpMethod()).isEqualTo(HttpMethod.POST);
-    assertThat(requestLine.getPath()).isEqualTo("/users");
+    assertThat(requestLine.getPath().getUrlPath()).isEqualTo("/users");
     assertThat(requestLine.getProtocol()).isEqualTo("HTTP");
     assertThat(requestLine.getVersion()).isEqualTo("1.1");
   }
@@ -68,7 +67,7 @@ class RequestLineTest {
 
     // then
     assertThat(requestLine.getHttpMethod()).isInstanceOf(HttpMethod.class);
-    assertThat(requestLine.getQueryString()).isEqualTo(
+    assertThat(requestLine.getPath().getQueryString().getQueryString()).isEqualTo(
         Map.of("userId", "javajigi", "password", "password", "name", "JaeSung"));
   }
 
@@ -83,7 +82,7 @@ class RequestLineTest {
 
     // then
     assertThat(requestLine.getHttpMethod()).isInstanceOf(HttpMethod.class);
-    assertThat(requestLine.getQueryString()).isEqualTo(
+    assertThat(requestLine.getPath().getQueryString().getQueryString()).isEqualTo(
         Map.of("userId", "javajigi"));
   }
 
