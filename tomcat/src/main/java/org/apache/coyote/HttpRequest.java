@@ -1,30 +1,27 @@
 package org.apache.coyote;
 
 import org.apache.http.HttpMethod;
-import org.apache.http.HttpPath;
 import org.apache.http.body.HttpBody;
 import org.apache.http.header.HttpRequestHeaders;
 import org.apache.http.session.HttpSession;
-import org.apache.http.session.SessionManager;
 
-import java.util.UUID;
+import java.util.function.Function;
+import java.util.function.Supplier;
 
 /**
  * https://developer.mozilla.org/en-US/docs/Web/HTTP/Messages#http_requests
  */
 public class HttpRequest {
-    private final SessionManager sessionManager = new SessionManager();
     protected final HttpRequestLine requestLine;
     protected final HttpRequestHeaders headers;
     protected final HttpBody body;
-    protected final HttpSession session;
+    protected final Function<Boolean, HttpSession> getSession;
 
-    public HttpRequest(HttpRequestLine requestLine, HttpRequestHeaders headers, HttpBody body) {
+    public HttpRequest(HttpRequestLine requestLine, HttpRequestHeaders headers, HttpBody body, Function<Boolean, HttpSession> getSession) {
         this.requestLine = requestLine;
         this.headers = headers;
         this.body = body;
-        var session = headers.getSession();
-        this.session = sessionManager.findSession(session);
+        this.getSession = getSession;
     }
 
     public String path() {
@@ -42,18 +39,7 @@ public class HttpRequest {
         return body.getValue(key);
     }
 
-    public HttpSession getSession(Boolean canCreate) {
-        if (session != null) {
-            return session;
-        }
-
-        if (!canCreate) {
-            return null;
-        }
-
-        var id = UUID.randomUUID().toString();
-        var session = new HttpSession(id);
-        sessionManager.add(session);
-        return session;
+    public HttpSession getSession(boolean canCreate) {
+        return getSession.apply(canCreate);
     }
 }

@@ -6,23 +6,35 @@ import org.apache.http.HttpPath;
 import org.apache.http.body.HttpFormBody;
 import org.apache.http.header.Cookie;
 import org.apache.http.header.HttpRequestHeaders;
+import org.apache.http.session.HttpSession;
+import org.apache.http.session.SessionManager;
 
 import java.util.List;
+import java.util.function.Function;
 
 public class StubHttpRequest extends HttpRequest {
+    private static final SessionManager sessionManager = new SessionManager();
+    private static HttpSession createdSession = sessionManager.create();
+    private static Function<Boolean, HttpSession> createSession = (c) -> {
+        if(c) return createdSession;
+        else return null;
+    };
+
+
     public StubHttpRequest() {
-        super(new HttpRequestLine("GET /index.html HTTP/1.1 "), new HttpRequestHeaders(), null);
+        super(new HttpRequestLine("GET /index.html HTTP/1.1 "), new HttpRequestHeaders(), null, createSession);
     }
 
     public StubHttpRequest(final HttpPath path) {
-        super(new HttpRequestLine("GET " + path + " HTTP/1.1 "), new HttpRequestHeaders(), null);
+        super(new HttpRequestLine("GET " + path + " HTTP/1.1 "), new HttpRequestHeaders(), null, createSession);
     }
 
     public StubHttpRequest(final String account, final String password) {
         super(
                 new HttpRequestLine("POST /login HTTP/1.1"),
                 new HttpRequestHeaders(List.of("Content-Type: application/x-www-form-urlencoded", "Content-Length: " + ("account=" + account + "&password=" + password).getBytes().length)),
-                new HttpFormBody("account=" + account + "&password=" + password)
+                new HttpFormBody("account=" + account + "&password=" + password),
+                createSession
         );
     }
 
@@ -30,8 +42,8 @@ public class StubHttpRequest extends HttpRequest {
         super(
                 new HttpRequestLine("POST /register HTTP/1.1"),
                 new HttpRequestHeaders(List.of("Content-Type: application/x-www-form-urlencoded", "Content-Length: " + ("account=" + account + "&password=" + password + "&email=" + email).getBytes().length)),
-                new HttpFormBody("account=" + account + "&password=" + password + "&email=" + email)
-
+                new HttpFormBody("account=" + account + "&password=" + password + "&email=" + email),
+                createSession
         );
     }
 
@@ -39,7 +51,14 @@ public class StubHttpRequest extends HttpRequest {
         super(
                 new HttpRequestLine("POST /login HTTP/1.1"),
                 new HttpRequestHeaders(cookie),
-                null
+                null,
+                (c) -> {
+                    var session = sessionManager.findSession(cookie.findSession());
+                    if (session != null) {
+                        return session;
+                    }
+                    return createSession.apply(c);
+                }
         );
     }
     @Override
