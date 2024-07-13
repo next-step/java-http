@@ -8,7 +8,7 @@ public class HttpResponse {
 
     private final StatusLine statusLine;
     private final HttpHeaders httpHeaders;
-    private final String responseBody;
+    private String responseBody;
 
     private HttpResponse(final StatusLine statusLine, final HttpHeaders httpHeaders, final String responseBody) {
         this.statusLine = statusLine;
@@ -51,5 +51,12 @@ public class HttpResponse {
 
     public void setCookie(final Cookie cookie) {
         addHeader(HttpHeader.of(HttpHeaderName.SET_COOKIE.getValue(), cookie.createMessage()));
+    }
+
+    public void setBody(final String responseBody) {
+        String headerName = HttpHeaderName.CONTENT_LENGTH.getValue();
+        String value = String.valueOf(responseBody.getBytes().length);
+        httpHeaders.replace(headerName, value);
+        this.responseBody = responseBody;
     }
 }

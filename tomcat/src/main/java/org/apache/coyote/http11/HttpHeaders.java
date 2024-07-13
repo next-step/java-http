@@ -41,4 +41,13 @@ public class HttpHeaders {
                 .map(HttpHeader::getValue)
                 .orElse("");
     }
+
+    public void replace(final String name, final String value) {
+        values.stream()
+                .filter(httpHeader -> httpHeader.equalsName(name))
+                .findAny()
+                .ifPresent(values::remove);
+
+        values.add(HttpHeader.of(name, value));
+    }
 }

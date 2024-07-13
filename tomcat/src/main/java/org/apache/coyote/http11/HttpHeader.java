@@ -1,5 +1,7 @@
 package org.apache.coyote.http11;
 
+import java.util.Objects;
+
 public class HttpHeader {
     private static final String HEADER_KEY_VALUE_SEPARATOR = ":";
     private static final String MESSAGE_FORMAT = "%s: %s ";
@@ -31,5 +33,18 @@ public class HttpHeader {
 
     public String getValue() {
         return value;
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        final HttpHeader that = (HttpHeader) o;
+        return Objects.equals(name, that.name);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(name);
     }
 }
