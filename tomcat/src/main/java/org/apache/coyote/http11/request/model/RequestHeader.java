@@ -20,4 +20,8 @@ public class RequestHeader {
     public RequestBodies getRequestBodies() {
         return requestBodies;
     }
+
+    public Map<String, Object> getHeaders() {
+        return headers;
+    }
 }

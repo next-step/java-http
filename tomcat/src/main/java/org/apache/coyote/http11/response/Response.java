@@ -1,6 +1,7 @@
 package org.apache.coyote.http11.response;
 
 import org.apache.coyote.http11.request.model.ContentType;
+import org.apache.coyote.http11.request.model.Cookies;
 
 public class Response {
 	private final String response;
@@ -18,11 +19,17 @@ public class Response {
 		String contentType = ContentType.findByExtension(extension).getContentType();
 		String responseBody = responseResource.getResponseBody();
 		StatusCode statusCode = responseResource.getStatusCode();
+		Cookies cookies = responseResource.getCookies();
+		String jSessionResponse = "";
+		if (cookies.hasJSessionId()) {
+			jSessionResponse = "Set-Cookie: JSESSIONID=" + cookies.getJSessionId() + ";";
+		}
 
 		final var response = String.join("\r\n",
 				"HTTP/1.1 " + statusCode.getCode() + " " + statusCode.name(),
 				"Content-Type: " + contentType + ";charset=utf-8 ",
 				"Content-Length: " + responseBody.getBytes().length + " ",
+				jSessionResponse,
 				"",
 				responseBody);
 

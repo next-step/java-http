@@ -2,6 +2,8 @@ package org.apache.coyote.http11;
 
 import camp.nextstep.exception.UncheckedServletException;
 import org.apache.coyote.Processor;
+import org.apache.coyote.http11.request.model.Cookies;
+import org.apache.coyote.http11.request.model.CookiesParser;
 import org.apache.coyote.http11.request.model.RequestHeader;
 import org.apache.coyote.http11.request.RequestHeaderParser;
 import org.apache.coyote.http11.request.model.RequestLine;
@@ -44,8 +46,8 @@ public class Http11Processor implements Runnable, Processor {
             List<String> requestHeaders = bufferedReader.lines().takeWhile(line -> !line.isEmpty()).toList();
             RequestHeader requestHeader = RequestHeaderParser.parse(bufferedReader, requestHeaders);
             RequestLine requestLine = requestHeader.getRequestLine();
-
-            ResponseResource responseResource = ResponseResource.of(requestLine.getPath(),  requestHeader.getRequestBodies(), requestLine.getHttpMethod());
+            Cookies cookies = CookiesParser.parse(requestHeader.getHeaders());
+            ResponseResource responseResource = ResponseResource.of(requestLine.getPath(),  requestHeader.getRequestBodies(), requestLine.getHttpMethod(), cookies);
 
             Response response = Response.createResponse(responseResource);
 

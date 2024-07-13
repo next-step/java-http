@@ -2,84 +2,84 @@ package org.apache.coyote.http11.response;
 
 import camp.nextstep.db.InMemoryUserRepository;
 import camp.nextstep.model.User;
-import org.apache.coyote.http11.request.model.HttpMethod;
-import org.apache.coyote.http11.request.model.Path;
-import org.apache.coyote.http11.request.model.QueryStrings;
-import org.apache.coyote.http11.request.model.RequestBodies;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.coyote.http11.request.model.*;
 
 import java.io.IOException;
 import java.util.NoSuchElementException;
+import java.util.UUID;
 
 public class ResponseResource {
-
-    private static final Logger log = LoggerFactory.getLogger(ResponseResource.class);
 
     private final String responseBody;
     private final String filePath;
     private final StatusCode statusCode;
+    private final Cookies cookies;
 
-    private ResponseResource(final String responseBody, String filePath, StatusCode statusCode) {
+    private ResponseResource(final String responseBody, String filePath, StatusCode statusCode, Cookies cookies) {
         this.responseBody = responseBody;
         this.filePath = filePath;
         this.statusCode = statusCode;
+        this.cookies = cookies;
     }
 
-    public static ResponseResource of(final Path path, final RequestBodies requestBodies, final HttpMethod httpMethod) throws IOException {
+    public static ResponseResource of(final Path path, final RequestBodies requestBodies, final HttpMethod httpMethod, final Cookies cookies) throws IOException {
         if (HttpMethod.POST.name().equals(httpMethod.name())) {
-            return postResponseResource(path, requestBodies);
+            return postResponseResource(path, requestBodies, cookies);
         }
         return getResponseResource(path);
     }
 
-    private static ResponseResource postResponseResource(Path path, RequestBodies requestBodies) throws IOException {
+    private static ResponseResource postResponseResource(Path path, RequestBodies requestBodies, Cookies cookies) throws IOException {
         if (path.urlPath().equals("/register")) {
             String account = requestBodies.getRequestBodyValueByKey("account");
             String password = requestBodies.getRequestBodyValueByKey("password");
             String email = requestBodies.getRequestBodyValueByKey("email");
             InMemoryUserRepository.save(new User(account, password, email));
             String responseBody = new ResponseBody("/index.html").getResponseBody();
-            return new ResponseResource(responseBody, "/index.html", StatusCode.FOUND);
+            return new ResponseResource(responseBody, "/index.html", StatusCode.FOUND, Cookies.emptyCookies());
         }
         if (path.urlPath().equals("/login")) {
             String account = requestBodies.getRequestBodyValueByKey("account");
             String password = requestBodies.getRequestBodyValueByKey("password");
-            boolean loginSuccess = login(account, password);
+            boolean loginSuccess = login(account, password, cookies);
             if (loginSuccess) {
                 String filePath = "/index.html";
                 String responseBody = new ResponseBody(filePath).getResponseBody();
-                return new ResponseResource(responseBody, filePath, StatusCode.FOUND);
+                return new ResponseResource(responseBody, filePath, StatusCode.FOUND, cookies);
             }
             String filePath = "/401.html";
             String responseBody = new ResponseBody(filePath).getResponseBody();
-            return new ResponseResource(responseBody, filePath, StatusCode.NOT_FOUND);
+            return new ResponseResource(responseBody, filePath, StatusCode.NOT_FOUND, Cookies.emptyCookies());
         }
         String responseBody = new ResponseBody(path.urlPath()).getResponseBody();
-        return new ResponseResource(responseBody, path.urlPath(), StatusCode.OK);
+        return new ResponseResource(responseBody, path.urlPath(), StatusCode.OK, Cookies.emptyCookies());
     }
 
     private static ResponseResource getResponseResource(Path path) throws IOException {
         if (isRootPath(path)) {
             String filePath = "/index.html";
             String responseBody = new ResponseBody(filePath).getResponseBody();
-            return new ResponseResource(responseBody, filePath, StatusCode.OK);
+            return new ResponseResource(responseBody, filePath, StatusCode.OK, Cookies.emptyCookies());
         }
 
         if (path.urlPath().equals("/login")) {
             String filePath = "/login.html";
             String responseBody = new ResponseBody(filePath).getResponseBody();
-            return new ResponseResource(responseBody, filePath, StatusCode.OK);
+            return new ResponseResource(responseBody, filePath, StatusCode.OK, Cookies.emptyCookies());
         }
 
         if (path.urlPath().equals("/register")) {
             String filePath = "/register.html";
             String responseBody = new ResponseBody(filePath).getResponseBody();
-            return new ResponseResource(responseBody, filePath, StatusCode.OK);
+            return new ResponseResource(responseBody, filePath, StatusCode.OK, Cookies.emptyCookies());
         }
 
         String responseBody = new ResponseBody(path.urlPath()).getResponseBody();
-        return new ResponseResource(responseBody, path.urlPath(), StatusCode.OK);
+        return new ResponseResource(responseBody, path.urlPath(), StatusCode.OK, Cookies.emptyCookies());
+    }
+
+    public Cookies getCookies() {
+        return cookies;
     }
 
     public String getResponseBody() {
@@ -101,10 +101,14 @@ public class ResponseResource {
         return filePath.substring(filePath.lastIndexOf("."));
     }
 
-    private static boolean login(String account, String password) {
+    private static boolean login(String account, String password, Cookies cookies) {
         final User user = InMemoryUserRepository.findByAccount(account).orElseThrow(NoSuchElementException::new);
         if (user.checkPassword(password)) {
-            log.info("user {}", user);
+            if (cookies.hasJSessionId()) {
+                return true;
+            }
+            String string = UUID.randomUUID().toString();
+            cookies.addCookie(new Cookie("JSESSIONID", string));
             return true;
         }
         return false;
