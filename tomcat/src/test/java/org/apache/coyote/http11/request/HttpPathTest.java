@@ -1,5 +1,6 @@
-package org.apache.coyote.http11;
+package org.apache.coyote.http11.request;
 
+import org.apache.coyote.http11.meta.HttpPath;
 import static org.assertj.core.api.Assertions.assertThat;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -49,13 +50,13 @@ class HttpPathTest {
         assertThat(result.getExtension()).isEmpty();
     }
 
-    @DisplayName("루트 경로인지 확인할 수 있다.")
+    @DisplayName("파일 경로를 반환할 수 있다.")
     @Test
-    void isRootPath() {
+    void getFilePath() {
         // given & when
-        final var result = HttpPath.from("/");
+        final var result = HttpPath.from("/users");
 
         // then
-        assertThat(result.isRootPath()).isTrue();
+        assertThat(result.getFilePath()).isEqualTo("/users.html");
     }
 }

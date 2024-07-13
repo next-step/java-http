@@ -1,6 +1,8 @@
-package org.apache.coyote.http11;
+package org.apache.coyote.http11.request;
 
 import java.util.Map;
+import org.apache.coyote.http11.meta.HttpPath;
+import org.apache.coyote.http11.meta.HttpMethod;
 
 public class RequestLine {
 
@@ -56,5 +58,13 @@ public class RequestLine {
 
     public Map<String, Object> getParameters() {
         return path.getQuery().getParameters();
+    }
+
+    public boolean isGet() {
+        return method.isGet();
+    }
+
+    public boolean isPost() {
+        return method.isPost();
     }
 }
