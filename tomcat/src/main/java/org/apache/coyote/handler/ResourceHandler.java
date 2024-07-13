@@ -1,19 +1,22 @@
 package org.apache.coyote.handler;
 
-import org.apache.coyote.HttpRequest;
 import org.apache.coyote.HttpResponse;
+import org.apache.coyote.handler.NotSupportHandlerException;
 import org.apache.file.FileReader;
 import org.apache.http.body.HttpFileBody;
 
-public class ResourceHandler implements Handler {
-    @Override
-    public HttpResponse handle(HttpRequest request) {
+import java.io.IOException;
+import java.nio.file.Path;
+
+public class ResourceHandler {
+
+    public HttpResponse handle(Path path) {
         try {
-            final var file = FileReader.read(request.path());
+            final var file = FileReader.read(path);
             final var body = new HttpFileBody(file);
 
             return new HttpResponse(body);
-        } catch (Exception e) {
+        } catch (IOException e) {
             throw new NotSupportHandlerException();
         }
     }

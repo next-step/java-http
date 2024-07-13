@@ -1,71 +1,56 @@
 package org.apache.coyote.http11;
 
-import org.apache.coyote.handler.*;
 import org.apache.http.HttpPath;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import support.StubHttpRequest;
 
-import java.util.List;
+import java.io.IOException;
 
-import static org.mockito.Mockito.*;
+import static support.OutputTest.*;
 
 class Http11ProcessorHandlersTest {
 
-    private Handler registerHandler;
-    private Handler loginHandler;
-    private Handler resourceHandler;
-    private Handler defaultHandler;
-    private Http11ProcessorHandlers handlers;
+    private final Http11ProcessorHandlers handlers = new Http11ProcessorHandlers();
 
-    @BeforeEach()
-    void setUp() {
-        registerHandler = spy(RegisterHandler.class);
-        loginHandler = spy(LoginHandler.class);
-        resourceHandler = spy(ResourceHandler.class);
-        defaultHandler = spy(DefaultHandler.class);
-        handlers = new Http11ProcessorHandlers(List.of(registerHandler, loginHandler, resourceHandler, defaultHandler));
+    @Test
+    void get_login() throws IOException {
+        var request = new StubHttpRequest(new HttpPath("/login"));
+        var response = handlers.handle(request);
+        test_login_page(response.toString());
     }
 
     @Test
-    void register() {
+    void post_login() {
+        var request = new StubHttpRequest("gugu", "password");
+        var response = handlers.handle(request);
+        test_success_redirect_setCookie(response.toString());
+    }
+
+    @Test
+    void get_register() throws IOException {
         var request = new StubHttpRequest(new HttpPath("/register"));
-
-        handlers.handle(request);
-        verify(registerHandler, atLeastOnce()).handle(request);
-        verify(loginHandler, never()).handle(request);
-        verify(resourceHandler, never()).handle(request);
-        verify(defaultHandler, never()).handle(request);
+        var response = handlers.handle(request);
+        test_register_page(response.toString());
     }
 
     @Test
-    void login() {
-        var request = new StubHttpRequest(new HttpPath("/login?account=gugu&password=password"));
-
-        handlers.handle(request);
-        verify(loginHandler, atLeastOnce()).handle(request);
-        verify(resourceHandler, never()).handle(request);
-        verify(defaultHandler, never()).handle(request);
+    void post_register() {
+        var request = new StubHttpRequest("gugu2", "password2", "email");
+        var response = handlers.handle(request);
+        test_success_redirect(response.toString());
     }
 
     @Test
-    void resource() {
-        var request = new StubHttpRequest(new HttpPath("/index.html"));
-
-        handlers.handle(request);
-        verify(loginHandler, atLeastOnce()).handle(request);
-        verify(resourceHandler, atLeastOnce()).handle(request);
-        verify(defaultHandler, never()).handle(request);
+    void resource() throws IOException {
+        var request = new StubHttpRequest(new HttpPath("/css/styles.css"));
+        var response = handlers.handle(request);
+        test_css(response.toString());
     }
 
     @Test
-    void noMatch() {
+    void no_match() {
         var request = new StubHttpRequest(new HttpPath("/"));
-
-        handlers.handle(request);
-        verify(loginHandler, atLeastOnce()).handle(request);
-        verify(resourceHandler, atLeastOnce()).handle(request);
-        verify(defaultHandler, atLeastOnce()).handle(request);
+        var response = handlers.handle(request);
+        test_default(response.toString());
     }
-
 }

@@ -1,19 +1,16 @@
 package org.apache.file;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 
 public class FileReader {
-    private static final String DEFAULT_PATH = "static";
 
-    public static FileResource read(final String path) throws IOException {
-        var resource = FileReader.class.getClassLoader().getResource(DEFAULT_PATH + path);
-        var filePath = new File(resource.getFile()).toPath();
-        var fileContent = new String(Files.readAllBytes(filePath));
-        var mediaType = new MediaType(Files.probeContentType(filePath));
+    public static FileResource read(final Path path) throws IOException {
+        var fileContent = new String(Files.readAllBytes(path));
+        var mediaType = new MediaType(Files.probeContentType(path));
 
-        return new FileResource(filePath, fileContent, fileContent.getBytes().length, mediaType);
+        return new FileResource(path, fileContent, fileContent.getBytes().length, mediaType);
     }
 
 }

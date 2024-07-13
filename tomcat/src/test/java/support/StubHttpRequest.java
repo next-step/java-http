@@ -37,7 +37,7 @@ public class StubHttpRequest extends HttpRequest {
 
     public StubHttpRequest(final Cookie cookie) {
         super(
-                new HttpRequestLine("GET /login HTTP/1.1"),
+                new HttpRequestLine("POST /login HTTP/1.1"),
                 new HttpRequestHeaders(cookie),
                 null
         );

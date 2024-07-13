@@ -27,10 +27,6 @@ public class HttpRequest {
         this.session = sessionManager.findSession(session);
     }
 
-    public boolean matchPath(final String path) {
-        return new HttpPath(path).equals(requestLine.path);
-    }
-
     public String path() {
         return requestLine.path.value();
     }

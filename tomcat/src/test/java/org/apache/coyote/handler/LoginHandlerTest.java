@@ -15,20 +15,6 @@ class LoginHandlerTest {
     private final Handler handler = new LoginHandler();
 
     @Test
-    void get() throws IOException {
-        var request = new StubHttpRequest(new HttpPath("/login"));
-        var response = handler.handle(request);
-        test_login_page(response.toString());
-    }
-
-    @Test
-    void get_with_param() throws IOException {
-        var request = new StubHttpRequest(new HttpPath("/login?account=gugu&password=password"));
-        var response = handler.handle(request);
-        test_login_page(response.toString());
-    }
-
-    @Test
     void correct_account_correct_password() {
         var request = new StubHttpRequest("gugu", "password");
         var response = handler.handle(request);
