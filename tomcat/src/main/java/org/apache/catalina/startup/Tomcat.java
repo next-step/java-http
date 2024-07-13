@@ -4,6 +4,7 @@ import org.apache.catalina.Manager;
 import org.apache.catalina.Session;
 import org.apache.catalina.connector.Connector;
 import org.apache.coyote.http11.DefaultSession;
+import org.apache.coyote.http11.RequestHandler;
 import org.apache.coyote.http11.SessionManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,6 +20,7 @@ public class Tomcat {
         Manager sessionManager = new SessionManager();
         Session session = new DefaultSession(UUID.randomUUID().toString(), sessionManager);
         var connector = new Connector(session);
+        var connector = new Connector(RequestHandler.from(session));
         connector.start();
 
         try {

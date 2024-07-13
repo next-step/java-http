@@ -1,36 +1,29 @@
 package org.apache.coyote.http11;
 
-import camp.nextstep.db.InMemoryUserRepository;
 import camp.nextstep.exception.UncheckedServletException;
-import camp.nextstep.model.User;
-import org.apache.catalina.Session;
 import org.apache.coyote.Processor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.net.Socket;
-import java.nio.file.Files;
-import java.util.Objects;
 import java.util.StringJoiner;
-import java.util.UUID;
 
 public class Http11Processor implements Runnable, Processor {
 
     private static final Logger log = LoggerFactory.getLogger(Http11Processor.class);
 
     private static final String CRLF = "\r\n";
-    private static final String INDEX_PATH = "/index.html";
-    private static final String UNAUTHORIZED_PATH = "/401.html";
-    private static final String NOT_FOUND_PATH = "/404.html";
-    private static final String JSESSIONID = "JSESSIONID";
 
     private final Socket connection;
-    private final Session session;
+    private final RequestHandler requestHandler;
 
-    public Http11Processor(final Socket connection, final Session session) {
+    public Http11Processor(final Socket connection, final RequestHandler requestHandler) {
         this.connection = connection;
-        this.session = session;
+        this.requestHandler = requestHandler;
     }
 
     @Override
@@ -45,7 +38,7 @@ public class Http11Processor implements Runnable, Processor {
              OutputStream outputStream = connection.getOutputStream()) {
             HttpRequest httpRequest = parseHttpRequest(br);
             HttpResponse httpResponse = HttpResponse.from(httpRequest.getProtocol());
-            handleRequest(httpRequest, httpResponse);
+            requestHandler.handle(httpRequest, httpResponse);
 
             outputStream.write(httpResponse.createFormat().getBytes());
             outputStream.flush();
@@ -99,72 +92,5 @@ public class Http11Processor implements Runnable, Processor {
             return 0;
         }
         return Long.parseLong(headerValue);
-    }
-
-    //TODO: SessionManager, Session, RequestHandler, Controller 
-    private void handleRequest(final HttpRequest httpRequest, final HttpResponse httpResponse) throws IOException {
-        String path = httpRequest.getPath();
-        if (path.contains("/login") && httpRequest.isPost()) {
-            handleLogin(httpRequest, httpResponse);
-            return;
-        }
-
-        if (path.contains("/login") && httpRequest.isGet()) {
-            Cookie cookie = httpRequest.getCookie(JSESSIONID);
-            if (cookie.isNotEmpty() && Objects.nonNull(session.getAttribute(cookie.getValue()))) {
-                httpResponse.sendRedirect(INDEX_PATH);
-                return;
-            }
-        }
-
-        if (path.contains("/register") && httpRequest.isPost()) {
-            handleRegister(httpRequest, httpResponse);
-            return;
-        }
-
-        if (httpRequest.isGet()) {
-            handleResourceRequiredRequest(httpRequest, httpResponse);
-            return;
-        }
-
-        httpResponse.sendRedirect(NOT_FOUND_PATH);
-    }
-
-    private void handleLogin(final HttpRequest httpRequest, final HttpResponse httpResponse) {
-        User user = InMemoryUserRepository.findByAccount(httpRequest.getBodyValue("account"))
-                .orElseThrow();
-        String password = httpRequest.getBodyValue("password");
-
-        if (user.checkPassword(password)) {
-            String uuid = UUID.randomUUID().toString();
-            session.setAttribute(uuid, user);
-
-            Cookie cookie = Cookie.of(JSESSIONID, uuid);
-            httpResponse.setCookie(cookie);
-            httpResponse.sendRedirect(INDEX_PATH);
-            return;
-        }
-
-        httpResponse.sendRedirect(UNAUTHORIZED_PATH);
-    }
-
-    private void handleRegister(final HttpRequest httpRequest, final HttpResponse httpResponse) {
-        String account = httpRequest.getBodyValue("account");
-        String password = httpRequest.getBodyValue("password");
-        String email = httpRequest.getBodyValue("email");
-
-        User user = new User(InMemoryUserRepository.getAutoIncrement(), account, password, email);
-        InMemoryUserRepository.save(user);
-        httpResponse.sendRedirect(INDEX_PATH);
-    }
-
-    private void handleResourceRequiredRequest(final HttpRequest httpRequest, final HttpResponse httpResponse) throws IOException {
-        File resource = new ResourceFinder().findByPath(httpRequest.getPath());
-        MediaType mediaType = MediaType.from(resource);
-        HttpHeader header = HttpHeader.of(HttpHeaderName.CONTENT_TYPE.getValue(), mediaType.getValue() + ";charset=utf-8");
-        String responseBody = new String(Files.readAllBytes(resource.toPath()));
-
-        httpResponse.addHeader(header);
-        httpResponse.setBody(responseBody);
     }
 }
