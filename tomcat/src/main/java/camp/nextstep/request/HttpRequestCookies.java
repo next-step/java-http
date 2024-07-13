@@ -9,6 +9,11 @@ public class HttpRequestCookies {
     private static final String COOKIES_REGEX_SEPARATOR = "; ";
 
     private static final HttpRequestCookies EMPTY_OBJECT = new HttpRequestCookies(Collections.unmodifiableMap(new HashMap<>()));
+    private final Map<String, HttpRequestCookie> cookiesMap;
+
+    private HttpRequestCookies(Map<String, HttpRequestCookie> cookiesMap) {
+        this.cookiesMap = cookiesMap;
+    }
 
     public static HttpRequestCookies parse(String cookieValue) {
         if (cookieValue == null) return EMPTY_OBJECT;
@@ -23,12 +28,6 @@ public class HttpRequestCookies {
         }
 
         return new HttpRequestCookies(cookiesMap);
-    }
-
-    private final Map<String, HttpRequestCookie> cookiesMap;
-
-    private HttpRequestCookies(Map<String, HttpRequestCookie> cookiesMap) {
-        this.cookiesMap = cookiesMap;
     }
 
     public boolean hasKey(String key) {
