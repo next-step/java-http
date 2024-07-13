@@ -6,9 +6,7 @@ import java.util.List;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
-class HttpHttpRequestParserTest {
-
-    private final HttpRequestParser requestParser = new HttpRequestParser();
+class HttpRequestParserTest {
 
     @Test
     void parseGetRequest() {

@@ -5,6 +5,8 @@ import camp.nextstep.exception.RequestNotFoundException;
 import camp.nextstep.request.HttpRequest;
 import camp.nextstep.request.HttpRequestParser;
 import camp.nextstep.response.HttpResponse;
+import camp.nextstep.response.ResponseStatusCode;
+import camp.nextstep.staticresource.StaticResourceLoader;
 import org.apache.coyote.Processor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,12 +23,14 @@ public class Http11Processor implements Runnable, Processor {
 
     private final HttpRequestParser requestParser;
     private final RequestMapping requestMapping;
+    private final StaticResourceLoader staticResourceLoader;
 
     public Http11Processor(final Socket connection) {
         this.connection = connection;
 
         this.requestParser = new HttpRequestParser();
         this.requestMapping = new RequestMapping();
+        this.staticResourceLoader = new StaticResourceLoader();
     }
 
     @Override
@@ -43,11 +47,11 @@ public class Http11Processor implements Runnable, Processor {
              final var outputStream = connection.getOutputStream()
         ) {
             HttpRequest request = requestParser.parse(bufferedReader);
-            HttpResponse response = new HttpResponse(request, outputStream);
+            HttpResponse response = new HttpResponse(outputStream, request, staticResourceLoader);
             try {
                 requestMapping.getController(request).service(request, response);
             } catch (RequestNotFoundException e) {
-                response.render404();
+                response.render(ResponseStatusCode.NotFound, "/404.html");
                 throw e;
             }
         } catch (Exception e) {

@@ -2,6 +2,7 @@ package camp.nextstep.response;
 
 import camp.nextstep.request.HttpRequest;
 import camp.nextstep.request.HttpRequestParser;
+import camp.nextstep.staticresource.StaticResourceLoader;
 import org.apache.catalina.Session;
 import org.apache.coyote.http11.SessionManager;
 import org.junit.jupiter.api.BeforeEach;
@@ -16,7 +17,6 @@ import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 
 class HttpResponseTest {
     private final String givenSessionId = "abc";
-    private SessionManager sessionManager;
     final String httpRequestString = String.join("\r\n",
             "GET / HTTP/1.1 ",
             "Host: localhost:8080 ",
@@ -26,8 +26,7 @@ class HttpResponseTest {
 
     @BeforeEach
     void setUp() {
-        sessionManager = SessionManager.INSTANCE;
-        sessionManager.add(new Session(givenSessionId));
+        SessionManager.INSTANCE.add(new Session(givenSessionId));
     }
 
     @Test
@@ -35,28 +34,28 @@ class HttpResponseTest {
         final var socket = new StubSocket(httpRequestString);
         HttpResponse response = buildResponse(socket);
 
-        response.renderStaticResource("/index.html");
+        response.render("/index.html");
 
         String expected = String.join("\r\n",
                 "HTTP/1.1 200 OK ",
-                "Content-Type: text/html;charset=utf-8 ",
                 "Content-Length: 5564 ",
+                "Content-Type: text/html;charset=utf-8 ",
                 "",
                 readFileContent("static/index.html"));
         assertThat(socket.output()).isEqualTo(expected);
     }
 
     @Test
-    void render404() throws IOException {
+    void renderNotFound() throws IOException {
         final var socket = new StubSocket(httpRequestString);
         HttpResponse response = buildResponse(socket);
 
-        response.render404();
+        response.render(ResponseStatusCode.NotFound, "/404.html");
 
         String expected = String.join("\r\n",
                 "HTTP/1.1 404 Not Found ",
-                "Content-Type: text/html;charset=utf-8 ",
                 "Content-Length: 2426 ",
+                "Content-Type: text/html;charset=utf-8 ",
                 "",
                 readFileContent("static/404.html"));
         assertThat(socket.output()).isEqualTo(expected);
@@ -81,7 +80,7 @@ class HttpResponseTest {
         BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         HttpRequest request = new HttpRequestParser().parse(bufferedReader);
         OutputStream outputStream = socket.getOutputStream();
-        return new HttpResponse(request, outputStream);
+        return new HttpResponse(outputStream, request, new StaticResourceLoader());
     }
 
     private String readFileContent(String fileName) throws IOException {

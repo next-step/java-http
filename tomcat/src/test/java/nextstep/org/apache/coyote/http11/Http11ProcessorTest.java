@@ -13,6 +13,7 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.util.UUID;
 
+import static java.util.Objects.requireNonNull;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class Http11ProcessorTest {
@@ -43,8 +44,9 @@ class Http11ProcessorTest {
         // then
         var expected = String.join("\r\n",
                 "HTTP/1.1 200 OK ",
-                "Content-Type: text/html;charset=utf-8 ",
+                "HELLO: World! ",
                 "Content-Length: 12 ",
+                "Content-Type: text/html;charset=utf-8 ",
                 "",
                 "Hello world!");
 
@@ -71,10 +73,10 @@ class Http11ProcessorTest {
         final URL resource = getClass().getClassLoader().getResource("static/index.html");
         var expected = String.join("\r\n",
                 "HTTP/1.1 200 OK ",
-                "Content-Type: text/html;charset=utf-8 ",
                 "Content-Length: 5564 ",
+                "Content-Type: text/html;charset=utf-8 ",
                 "",
-                new String(Files.readAllBytes(new File(resource.getFile()).toPath())));
+                new String(Files.readAllBytes(new File(requireNonNull(resource).getFile()).toPath())));
 
         assertThat(socket.output()).isEqualTo(expected);
     }
@@ -99,10 +101,10 @@ class Http11ProcessorTest {
         final URL resource = getClass().getClassLoader().getResource("static/css/styles.css");
         var expected = String.join("\r\n",
                 "HTTP/1.1 200 OK ",
-                "Content-Type: text/css;charset=utf-8 ",
                 "Content-Length: 211991 ",
+                "Content-Type: text/css;charset=utf-8 ",
                 "",
-                new String(Files.readAllBytes(new File(resource.getFile()).toPath())));
+                new String(Files.readAllBytes(new File(requireNonNull(resource).getFile()).toPath())));
 
         assertThat(socket.output()).isEqualTo(expected);
     }
@@ -128,10 +130,10 @@ class Http11ProcessorTest {
         final URL resource = getClass().getClassLoader().getResource("static/assets/chart-area.js");
         var expected = String.join("\r\n",
                 "HTTP/1.1 200 OK ",
-                "Content-Type: application/javascript;charset=utf-8 ",
                 "Content-Length: 1530 ",
+                "Content-Type: application/javascript;charset=utf-8 ",
                 "",
-                new String(Files.readAllBytes(new File(resource.getFile()).toPath())));
+                new String(Files.readAllBytes(new File(requireNonNull(resource).getFile()).toPath())));
 
         assertThat(socket.output()).isEqualTo(expected);
     }
@@ -156,10 +158,10 @@ class Http11ProcessorTest {
         final URL resource = getClass().getClassLoader().getResource("static/404.html");
         var expected = String.join("\r\n",
                 "HTTP/1.1 404 Not Found ",
-                "Content-Type: text/html;charset=utf-8 ",
                 "Content-Length: 2426 ",
+                "Content-Type: text/html;charset=utf-8 ",
                 "",
-                new String(Files.readAllBytes(new File(resource.getFile()).toPath())));
+                new String(Files.readAllBytes(new File(requireNonNull(resource).getFile()).toPath())));
 
         assertThat(socket.output()).isEqualTo(expected);
     }

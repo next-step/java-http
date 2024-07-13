@@ -6,6 +6,7 @@ import camp.nextstep.request.HttpQueryParameters;
 import camp.nextstep.request.HttpRequest;
 import camp.nextstep.response.HttpResponse;
 
+import java.io.IOException;
 import java.util.Optional;
 
 import static java.util.Objects.requireNonNull;
@@ -13,17 +14,17 @@ import static java.util.Objects.requireNonNull;
 public class LoginController extends AbstractController {
 
     @Override
-    protected void doGet(HttpRequest request, HttpResponse response) throws Exception {
+    protected void doGet(HttpRequest request, HttpResponse response) throws IOException {
         if (request.isLoggedIn()) {
             response.redirectTo("/index.html");
             return;
         }
 
-        response.renderStaticResource("/login.html");
+        response.render("/login.html");
     }
 
     @Override
-    protected void doPost(HttpRequest request, HttpResponse response) throws Exception {
+    protected void doPost(HttpRequest request, HttpResponse response) throws IOException {
         final HttpQueryParameters requestBody = request.getRequestBody().toQueryParameters();
 
         final String account = requireNonNull(requestBody.getString("account"));

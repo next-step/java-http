@@ -9,18 +9,20 @@ import org.apache.coyote.http11.Http11Processor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
+
 import static java.util.Objects.requireNonNull;
 
 public class RegisterController extends AbstractController {
     private static final Logger log = LoggerFactory.getLogger(Http11Processor.class);
 
     @Override
-    protected void doGet(HttpRequest request, HttpResponse response) throws Exception {
-        response.renderStaticResource("/register.html");
+    protected void doGet(HttpRequest request, HttpResponse response) throws IOException {
+        response.render("/register.html");
     }
 
     @Override
-    protected void doPost(HttpRequest request, HttpResponse response) throws Exception {
+    protected void doPost(HttpRequest request, HttpResponse response) throws IOException {
         final HttpQueryParameters requestBody = request.getRequestBody().toQueryParameters();
 
         final String account = requireNonNull(requestBody.getString("account"));

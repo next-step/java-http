@@ -8,57 +8,77 @@ import org.apache.util.MimeTypes;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.HashMap;
+import java.util.Map;
 
 public class HttpResponse {
-    private static final MimeTypes mimeTypes = new MimeTypes();
-
-    private final HttpRequest request;
     private final OutputStream outputStream;
+    private final HttpRequest request;
+    private final Map<String, String> headersMap;
     private final StaticResourceLoader staticResourceLoader;
 
-    public HttpResponse(HttpRequest request, OutputStream outputStream) {
-        this.request = request;
+    public HttpResponse(OutputStream outputStream, HttpRequest request, StaticResourceLoader staticResourceLoader) {
         this.outputStream = outputStream;
-        this.staticResourceLoader = new StaticResourceLoader();
+        this.request = request;
+        this.headersMap = new HashMap<>();
+        this.staticResourceLoader = staticResourceLoader;
     }
 
-    public void renderStaticResource(String staticFilePath) throws IOException {
-        assert staticFilePath.startsWith("/");
-
-        final String content = staticResourceLoader.readAllLines("static" + staticFilePath);
-        final String mimeType = guessMimeTypeFromPath(staticFilePath);
-
-        render("200 OK", content, mimeType);
+    public void setHeader(String key, String value) {
+        this.headersMap.put(key, value);
     }
 
-    public void render404() throws IOException {
-        final String content = staticResourceLoader.readAllLines("static/404.html");
+    public void render(String requestPath) throws IOException {
+        render(ResponseStatusCode.OK, requestPath);
+    }
 
-        render("404 Not Found", content, "text/html");
+    public void render(ResponseStatusCode statusCode, String requestPath) throws IOException {
+        assert requestPath.startsWith("/");
+
+        String content = staticResourceLoader.readAllLines("static" + requestPath);
+        String contentType = guessMimeTypeFromPath(requestPath);
+
+        setHeader("Content-Type", contentType + ";charset=utf-8");
+        setHeader("Content-Length", String.valueOf(content.getBytes().length));
+
+        writeResponse(statusCode, content);
+    }
+
+    public void renderText(String text, String contentType) throws IOException {
+        renderText(ResponseStatusCode.OK, text, contentType);
+    }
+
+    private void renderText(ResponseStatusCode statusCode, String text, String contentType) throws IOException {
+        setHeader("Content-Type", contentType + ";charset=utf-8");
+        setHeader("Content-Length", String.valueOf(text.getBytes().length));
+
+        writeResponse(statusCode, text);
     }
 
     public void redirectTo(String redirectTo) throws IOException {
-        String responseStatus = "302 Found";
-        StringBuilder responseBuilder = new StringBuilder();
-        responseBuilder.append("HTTP/1.1 ").append(responseStatus).append(" ").append("\r\n");
-        responseBuilder.append("Location: ").append(redirectTo).append(" ").append("\r\n");
+        setHeader("Location", redirectTo);
+
+        writeResponse(ResponseStatusCode.Found, null);
+    }
+
+    // ---------------------------------------------------------------------------------------------------------------
+
+    private void writeResponse(ResponseStatusCode statusCode, String content) throws IOException {
+        ResponseWriter writer = new ResponseWriter(outputStream);
+
+        writer.setResponseLine(statusCode);
+        writer.appendHeaders(headersMap);
         if (needToUpdateSessionId(request)) {
-            responseBuilder.append("Set-Cookie: ")
-                    .append(HttpRequestCookie.JSESSIONID_NAME)
-                    .append("=")
-                    .append(request.getSession().getId())
-                    .append("; Path=/ ")
-                    .append("\r\n");
+            writer.setHeader("Set-Cookie",
+                    HttpRequestCookie.JSESSIONID_NAME + "=" + request.getSession().getId() + "; Path=/");
         }
-        outputStream.write(responseBuilder.toString().getBytes());
-        outputStream.flush();
-    }
 
-    public void renderText(String content) throws IOException {
-        render("200 OK", content, "text/html");
-    }
+        if (content != null) {
+            writer.setContent(content);
+        }
 
-    // ----------------------------------------------------------------------
+        writer.write();
+    }
 
     private boolean needToUpdateSessionId(HttpRequest request) throws IOException {
         HttpRequestCookie sessionCookie = request.getCookies().get(HttpRequestCookie.JSESSIONID_NAME);
@@ -66,27 +86,6 @@ public class HttpResponse {
 
         Session session = request.getSession();
         return !session.getId().equals(sessionCookie.getValue());
-    }
-
-    private void render(String responseStatus,
-                        String content,
-                        String mimeType) throws IOException {
-        StringBuilder responseBuilder = new StringBuilder();
-        responseBuilder.append("HTTP/1.1 ").append(responseStatus).append(" ").append("\r\n");
-        responseBuilder.append("Content-Type: ").append(mimeType).append(";charset=utf-8 ").append("\r\n");
-        responseBuilder.append("Content-Length: ").append(content.getBytes().length).append(" ").append("\r\n");
-        if (needToUpdateSessionId(request)) {
-            responseBuilder.append("Set-Cookie: ")
-                    .append(HttpRequestCookie.JSESSIONID_NAME)
-                    .append("=")
-                    .append(request.getSession().getId())
-                    .append("; Path=/ ")
-                    .append("\r\n");
-        }
-        responseBuilder.append("\r\n").append(content);
-
-        outputStream.write(responseBuilder.toString().getBytes());
-        outputStream.flush();
     }
 
     private String guessMimeTypeFromPath(String path) {
@@ -97,7 +96,7 @@ public class HttpResponse {
         String extension = extractExtensionFromPath(path);
         if (extension == null) return FALLBACK_MIME_TYPE;
 
-        String mimeType = mimeTypes.guessByExtension(extension);
+        String mimeType = MimeTypes.guessByExtension(extension);
         if (mimeType == null) return FALLBACK_MIME_TYPE;
 
         return mimeType;

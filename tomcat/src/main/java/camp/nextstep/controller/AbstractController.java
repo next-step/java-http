@@ -20,12 +20,12 @@ public class AbstractController implements Controller {
         if (request.isPOST()) doPost(request, response);
     }
 
-    protected void doPost(HttpRequest request, HttpResponse response) throws Exception {
-        throw new NotFoundException("POST 요청에는 응답할 수 없습니다");
-    }
-
     protected void doGet(HttpRequest request, HttpResponse response) throws Exception {
         throw new NotFoundException("GET 요청에는 응답할 수 없습니다");
+    }
+
+    protected void doPost(HttpRequest request, HttpResponse response) throws Exception {
+        throw new NotFoundException("POST 요청에는 응답할 수 없습니다");
     }
 
     protected SessionManager getSessionManager() {
