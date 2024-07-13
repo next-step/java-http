@@ -34,8 +34,7 @@ public class RegisterServlet extends HttpServlet {
 
         InMemoryUserRepository.save(new User(account, password, email));
 
-        StaticResource staticResource = StaticResourceResolver.findStaticResource("/index.html");
-        httpResponse.setBody(staticResource.getContent(), staticResource.getMimeType());
+        httpResponse.sendRedirect("/index.html");
     }
 
     private boolean isInvalidUserInfo(final String account, final String password, final String email) {

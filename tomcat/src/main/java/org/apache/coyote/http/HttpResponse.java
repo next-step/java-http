@@ -3,8 +3,6 @@ package org.apache.coyote.http;
 import org.apache.coyote.http11.HttpParseException;
 
 import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 public class HttpResponse {
@@ -85,6 +83,11 @@ public class HttpResponse {
 
     public String body() {
         return this.body.toString();
+    }
+
+    public void sendRedirect(final String location) {
+        this.httpResponseLine.setStatusCode(StatusCode.FOUND);
+        this.headerMapping.addHeader(HttpHeader.LOCATION, location);
     }
 }
 

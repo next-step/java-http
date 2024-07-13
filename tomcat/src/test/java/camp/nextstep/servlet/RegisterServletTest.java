@@ -13,7 +13,6 @@ import support.TomcatServerTest;
 import java.io.File;
 import java.net.URL;
 import java.nio.file.Files;
-import java.util.List;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -28,7 +27,7 @@ class RegisterServletTest {
 
     @DisplayName("GET /register 요청으로 register.html 을 반환한다")
     @Test
-    public void get_register() throws Exception {
+    public void getRegister() throws Exception {
         // given
         final RestTemplate restTemplate = new RestTemplate("/register", HttpMethod.GET);
 
@@ -51,7 +50,7 @@ class RegisterServletTest {
 
     @DisplayName("POST 요청으로 /register 로 회원가입 요청을 하면 index.html 을 반환한다")
     @Test
-    public void post_register() throws Exception {
+    public void postRegisterSuccess() throws Exception {
         // given
         final RestTemplate restTemplate = new RestTemplate("/register", HttpMethod.POST);
         restTemplate.setHeaders(Map.of(HttpHeader.CONTENT_TYPE, new String[] {ContentType.APPLICATION_FORM_URLENCODED.type()}));
@@ -76,7 +75,7 @@ class RegisterServletTest {
 
     @DisplayName("회원가입에 필요한 정보 중 하나라도 공백이거나 null 이면 400 을 반환한다")
     @Test
-    public void post_login_fail() throws Exception {
+    public void postRegisterFail() throws Exception {
         // given
         final RestTemplate restTemplate = new RestTemplate("/register", HttpMethod.POST);
         restTemplate.setHeaders(Map.of(HttpHeader.CONTENT_TYPE, new String[] {ContentType.APPLICATION_FORM_URLENCODED.type()}));

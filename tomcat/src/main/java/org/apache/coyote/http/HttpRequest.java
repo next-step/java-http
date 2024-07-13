@@ -18,6 +18,7 @@ public class HttpRequest {
     private final HttpRequestLine httpRequestLine = new HttpRequestLine();
     private final HeaderMapping headerMapping = new HeaderMapping();
     private final Cookies cookies = new Cookies();
+    private final SessionManager sessionManager = new SessionManager();
     private final ParamsMapping params = new ParamsMapping();
     private String body = "";
 
@@ -118,5 +119,25 @@ public class HttpRequest {
 
     public boolean hasNotSessionId() {
         return this.cookies.getSessionCookie() == null;
+    }
+
+    public Session getSession(final boolean create) {
+        final Session session = getSession();
+
+        if (create && Objects.isNull(session)) {
+            final Cookie sessionCookie = this.cookies.getSessionCookie(true);
+            final Session newSession = new Session(sessionCookie.getName());
+
+            sessionManager.add(newSession);
+
+            return newSession;
+        }
+
+        return session;
+    }
+
+    public Session getSession() {
+        final Cookie sessionCookie = this.cookies.getSessionCookie(true);
+        return sessionManager.findSession(sessionCookie.getName());
     }
 }
