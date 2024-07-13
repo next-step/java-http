@@ -2,9 +2,13 @@ package org.apache.coyote.http11.response;
 
 import camp.nextstep.db.InMemoryUserRepository;
 import camp.nextstep.model.User;
+import jakarta.servlet.http.HttpSession;
 import org.apache.coyote.http11.request.model.*;
+import org.apache.coyote.http11.session.Session;
+import org.apache.coyote.http11.session.SessionManager;
 
 import java.io.IOException;
+import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.UUID;
 
@@ -26,7 +30,7 @@ public class ResponseResource {
         if (HttpMethod.POST.name().equals(httpMethod.name())) {
             return postResponseResource(path, requestBodies, cookies);
         }
-        return getResponseResource(path);
+        return getResponseResource(path, cookies);
     }
 
     private static ResponseResource postResponseResource(Path path, RequestBodies requestBodies, Cookies cookies) throws IOException {
@@ -55,7 +59,7 @@ public class ResponseResource {
         return new ResponseResource(responseBody, path.urlPath(), StatusCode.OK, Cookies.emptyCookies());
     }
 
-    private static ResponseResource getResponseResource(Path path) throws IOException {
+    private static ResponseResource getResponseResource(Path path, Cookies cookies) throws IOException {
         if (isRootPath(path)) {
             String filePath = "/index.html";
             String responseBody = new ResponseBody(filePath).getResponseBody();
@@ -63,6 +67,16 @@ public class ResponseResource {
         }
 
         if (path.urlPath().equals("/login")) {
+            if (cookies.hasJSessionId()) {
+                String jSessionId = cookies.getJSessionId();
+                HttpSession jsessionid = SessionManager.getInstance().findSession(jSessionId);
+                if (jsessionid != null) {
+                    String filePath = "/index.html";
+                    String responseBody = new ResponseBody(filePath).getResponseBody();
+                    return new ResponseResource(responseBody, filePath, StatusCode.OK, cookies);
+                }
+            }
+
             String filePath = "/login.html";
             String responseBody = new ResponseBody(filePath).getResponseBody();
             return new ResponseResource(responseBody, filePath, StatusCode.OK, Cookies.emptyCookies());
@@ -109,6 +123,7 @@ public class ResponseResource {
             }
             String string = UUID.randomUUID().toString();
             cookies.addCookie(new Cookie("JSESSIONID", string));
+            SessionManager.getInstance().add(new Session(string));
             return true;
         }
         return false;
