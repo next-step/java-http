@@ -4,6 +4,9 @@ import java.util.HashMap;
 
 public class Path {
 
+  private static final String QUERY_STRING_INDICATOR = "?";
+
+  private static final String QUERY_STRING_SEPARATOR = "\\?";
   private final String urlPath;
   private final QueryString queryString;
 
@@ -33,8 +36,8 @@ public class Path {
     String urlPath = fullPath;
     QueryString queryString = new QueryString(new HashMap<>());
 
-    if (fullPath.contains("?")) {
-      final String[] pathTokens = fullPath.split("\\?");
+    if (fullPath.contains(QUERY_STRING_INDICATOR)) {
+      final String[] pathTokens = fullPath.split(QUERY_STRING_SEPARATOR);
       urlPath = pathTokens[0];
       queryString = QueryString.parse(pathTokens[1]);
     }
