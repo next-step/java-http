@@ -31,9 +31,7 @@
 - git의 commit 단위는 앞 단계에서 README.md 파일에 정리한 기능 목록 단위로 추가한다.
 - AngularJS Commit Message Conventions 을 지킨다.
 
-## RequestLine 을 파싱한다.
-- RequestLine 을 파싱해 원하는 값을 가져올 수 있는 API 를 제공해야한다.
-- RequestLine 은 HTTP 첫번째 라인을 의미한다.
+## HTTP 서버 구현하기
 
 ###  요구사항 1 - GET /index.html 응답하기
 - 인덱스 페이지(http://localhost:8080/index.html)에 접근할 수 있도록 만들자.
