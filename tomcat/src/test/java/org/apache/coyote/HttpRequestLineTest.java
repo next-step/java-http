@@ -3,6 +3,7 @@ package org.apache.coyote;
 import org.apache.http.HttpMethod;
 import org.apache.http.HttpPath;
 import org.apache.http.HttpProtocol;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
@@ -43,5 +44,11 @@ class HttpRequestLineTest {
             softly.assertThat(request.params.get("password")).isEqualTo("password");
             softly.assertThat(request.params.get("name")).isEqualTo("JaeSung");
         });
+    }
+
+    @Test
+    void cannot_parse() {
+        Assertions.assertThatThrownBy(() -> new HttpRequestLine("GET/usersHTTP/1.1"))
+                .isInstanceOf(NotSupportHttpRequestException.class);
     }
 }

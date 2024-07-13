@@ -16,12 +16,16 @@ public class HttpRequestLine {
     protected final HttpProtocol protocol;
 
     public HttpRequestLine(final String requestLine) {
-        final var tokens = requestLine.split(DELIMITER);
-        this.method = HttpMethod.valueOf(tokens[0]);
-        var urlTokens = tokens[1].split(URL_REGEX);
-        this.path = new HttpPath(urlTokens[0]);
-        this.params = (urlTokens.length > 1) ? new HttpParams(urlTokens[1]) : null;
-        this.protocol = new HttpProtocol(tokens[2]);
+        try {
+            final var tokens = requestLine.split(DELIMITER);
+            this.method = HttpMethod.valueOf(tokens[0]);
+            var urlTokens = tokens[1].split(URL_REGEX);
+            this.path = new HttpPath(urlTokens[0]);
+            this.params = (urlTokens.length > 1) ? new HttpParams(urlTokens[1]) : null;
+            this.protocol = new HttpProtocol(tokens[2]);
+        } catch (Exception e) {
+            throw new NotSupportHttpRequestException();
+        }
     }
 
     @Override

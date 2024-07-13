@@ -3,6 +3,7 @@ package org.apache.coyote.http11;
 import camp.nextstep.exception.UncheckedServletException;
 import org.apache.coyote.HttpRequest;
 import org.apache.coyote.HttpRequestLine;
+import org.apache.coyote.NotSupportHttpRequestException;
 import org.apache.coyote.Processor;
 import org.apache.http.header.HttpRequestHeaders;
 import org.slf4j.Logger;
@@ -44,7 +45,7 @@ public class Http11Processor implements Runnable, Processor {
 
             outputStream.write(response.toString().getBytes());
             outputStream.flush();
-        } catch (IOException | UncheckedServletException e) {
+        } catch (IOException | UncheckedServletException | NotSupportHttpRequestException e) {
             log.error(e.getMessage(), e);
         }
     }
