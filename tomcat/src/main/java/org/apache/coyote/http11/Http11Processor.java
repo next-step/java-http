@@ -12,6 +12,8 @@ import org.apache.coyote.response.FileFinder;
 import org.apache.coyote.response.HttpResponse;
 import org.apache.coyote.response.HttpStatus;
 import org.apache.coyote.response.MimeType;
+import org.apache.coyote.session.Session;
+import org.apache.coyote.session.SessionManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -98,38 +100,60 @@ public class Http11Processor implements Runnable, Processor {
         if (httpPath.equals(ROOT_PATH)) {
             return handleRoot(request);
         }
-        return handleDefault(request);
+        return handlePath(request);
     }
 
     private HttpResponse handleLogin(HttpRequest request) throws IOException {
         if (request.isGet()) {
-            MimeType mimeType = MimeType.HTML;
-            return new HttpResponse(
-                    HttpStatus.OK,
-                    mimeType,
-                    FileFinder.find(LOGIN_PATH + mimeType.getFileExtension()));
+            return handleLoginGet(request);
         }
         if (request.isPost()) {
-            RequestBody requestBody = request.getRequestBody();
-            Optional<User> optionalUser = InMemoryUserRepository.findByAccount(requestBody.get(ACCOUNT_KEY));
-            if (optionalUser.isPresent() && optionalUser.get().checkPassword(requestBody.get("password"))) {
-                log.info(optionalUser.get().toString());
-                HttpResponse httpResponse = new HttpResponse(
-                        HttpStatus.FOUND,
-                        MimeType.HTML,
-                        FileFinder.find("/index.html"));
-                httpResponse.addCookie();
-                return httpResponse;
-            }
-            return new HttpResponse(
-                    HttpStatus.UNAUTHORIZED,
-                    MimeType.HTML,
-                    FileFinder.find("/401.html"));
+            return handleLoginPost(request);
         }
         return new HttpResponse(
                 HttpStatus.NOT_FOUND,
                 MimeType.HTML,
                 FileFinder.find("/404.html"));
+    }
+
+    private HttpResponse handleLoginGet(HttpRequest request) throws IOException {
+        Optional<String> cookie = request.findCookie();
+        if (cookie.isPresent()) {
+            Optional<Session> session = SessionManager.findSession(cookie.get().split("=")[1]);
+            if (session.isPresent()) {
+                return new HttpResponse(
+                        HttpStatus.OK,
+                        MimeType.HTML,
+                        FileFinder.find("/index.html"));
+            }
+        }
+        MimeType mimeType = MimeType.HTML;
+        return new HttpResponse(
+                HttpStatus.OK,
+                mimeType,
+                FileFinder.find(LOGIN_PATH + mimeType.getFileExtension()));
+
+    }
+
+    private HttpResponse handleLoginPost(HttpRequest request) throws IOException {
+        RequestBody requestBody = request.getRequestBody();
+        Optional<User> optionalUser = InMemoryUserRepository.findByAccount(requestBody.get(ACCOUNT_KEY));
+        if (optionalUser.isPresent() && optionalUser.get().checkPassword(requestBody.get("password"))) {
+            log.info(optionalUser.get().toString());
+            HttpResponse httpResponse = new HttpResponse(
+                    HttpStatus.FOUND,
+                    MimeType.HTML,
+                    FileFinder.find("/index.html"));
+            Session session = new Session();
+            session.setAttribute("user", optionalUser.get());
+            SessionManager.add(session);
+            httpResponse.addCookie(session.getId());
+            return httpResponse;
+        }
+        return new HttpResponse(
+                HttpStatus.UNAUTHORIZED,
+                MimeType.HTML,
+                FileFinder.find("/401.html"));
     }
 
     private HttpResponse handleRegister(HttpRequest request) throws IOException {
@@ -165,7 +189,7 @@ public class Http11Processor implements Runnable, Processor {
                 FileFinder.find("/404.html"));
     }
 
-    private HttpResponse handleDefault(HttpRequest request) throws IOException {
+    private HttpResponse handlePath(HttpRequest request) throws IOException {
         String httpPath = request.getHttpPath();
         return new HttpResponse(
                 HttpStatus.OK,

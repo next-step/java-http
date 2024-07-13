@@ -28,9 +28,8 @@ public class HttpResponse {
         return responseBody;
     }
 
-    public void addCookie() {
-        UUID uuid = UUID.randomUUID();
-        responseHeaders.add("Set-Cookie", uuid.toString());
+    public void addCookie(String sessionId) {
+        responseHeaders.add("Set-Cookie", sessionId);
     }
 
     public String buildContent() {

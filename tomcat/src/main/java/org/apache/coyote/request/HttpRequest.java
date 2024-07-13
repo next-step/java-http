@@ -1,5 +1,7 @@
 package org.apache.coyote.request;
 
+import java.util.Optional;
+
 public class HttpRequest {
     private final RequestLine requestLine;
     private final RequestHeaders requestHeaders;
@@ -25,5 +27,9 @@ public class HttpRequest {
 
     public RequestBody getRequestBody() {
         return requestBody;
+    }
+
+    public Optional<String> findCookie() {
+        return requestHeaders.findCookie();
     }
 }
