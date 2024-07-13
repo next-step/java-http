@@ -31,32 +31,29 @@ public class RequestHandler {
     public void handle(final HttpRequest httpRequest, final HttpResponse httpResponse) throws IOException {
         String path = httpRequest.getPath();
         if (path.contains("/login") && httpRequest.isPost()) {
-            handleLogin(httpRequest, httpResponse);
+            handleLoginProcess(httpRequest, httpResponse);
             return;
         }
 
         if (path.contains("/login") && httpRequest.isGet()) {
-            Cookie cookie = httpRequest.getCookie(JSESSIONID);
-            if (cookie.isNotEmpty() && Objects.nonNull(session.getAttribute(cookie.getValue()))) {
-                httpResponse.sendRedirect(INDEX_PATH);
-                return;
-            }
+            handleLoginView(httpRequest, httpResponse);
+            return;
         }
 
         if (path.contains("/register") && httpRequest.isPost()) {
-            handleRegister(httpRequest, httpResponse);
+            handleRegisterProcess(httpRequest, httpResponse);
             return;
         }
 
         if (httpRequest.isGet()) {
-            handleResourceRequiredRequest(httpRequest, httpResponse);
+            handleResourceView(httpRequest, httpResponse);
             return;
         }
 
         httpResponse.sendRedirect(NOT_FOUND_PATH);
     }
 
-    private void handleLogin(final HttpRequest httpRequest, final HttpResponse httpResponse) {
+    private void handleLoginProcess(final HttpRequest httpRequest, final HttpResponse httpResponse) {
         String account = httpRequest.getBodyValue("account");
         User user = InMemoryUserRepository.findByAccount(account)
                 .orElseThrow(() -> new UserNotFoundException(account));
@@ -75,7 +72,17 @@ public class RequestHandler {
         httpResponse.sendRedirect(UNAUTHORIZED_PATH);
     }
 
-    private void handleRegister(final HttpRequest httpRequest, final HttpResponse httpResponse) {
+    private void handleLoginView(final HttpRequest httpRequest, final HttpResponse httpResponse) throws IOException {
+        Cookie cookie = httpRequest.getCookie(JSESSIONID);
+        if (cookie.isNotEmpty() && Objects.nonNull(session.getAttribute(cookie.getValue()))) {
+            httpResponse.sendRedirect(INDEX_PATH);
+            return;
+        }
+
+        handleResourceView(httpRequest, httpResponse);
+    }
+
+    private void handleRegisterProcess(final HttpRequest httpRequest, final HttpResponse httpResponse) {
         String account = httpRequest.getBodyValue("account");
         String password = httpRequest.getBodyValue("password");
         String email = httpRequest.getBodyValue("email");
@@ -85,7 +92,7 @@ public class RequestHandler {
         httpResponse.sendRedirect(INDEX_PATH);
     }
 
-    private void handleResourceRequiredRequest(final HttpRequest httpRequest, final HttpResponse httpResponse) throws IOException {
+    private void handleResourceView(final HttpRequest httpRequest, final HttpResponse httpResponse) throws IOException {
         File resource = new ResourceFinder().findByPath(httpRequest.getPath());
         MediaType mediaType = MediaType.from(resource);
         HttpHeader header = HttpHeader.of(HttpHeaderName.CONTENT_TYPE.getValue(), mediaType.getValue() + ";charset=utf-8");
