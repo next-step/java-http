@@ -105,7 +105,7 @@ public class Http11Processor implements Runnable, Processor {
         }
 
         if (path.contains("/login") && httpRequest.isGet()) {
-            Cookie cookie = httpRequest.getCookie();
+            Cookie cookie = httpRequest.getCookie(JSESSIONID);
             if (cookie.isNotEmpty() && InMemorySessionRepository.exists(cookie.getValue())) {
                 httpResponse.sendRedirect(INDEX_PATH);
                 return httpResponse;

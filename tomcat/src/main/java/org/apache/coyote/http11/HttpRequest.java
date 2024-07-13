@@ -8,30 +8,46 @@ public class HttpRequest {
     private static final int REQUEST_LINE_INDEX = 0;
     private static final int HEADER_START_INDEX = 1;
     private static final String CRLF = "\r\n";
+    private static final String EMPTY = "";
 
     private final RequestLine requestLine;
     private final HttpHeaders httpHeaders;
     private final RequestBody requestBody;
+    private final Cookies cookies;
 
-    private HttpRequest(final RequestLine requestLine, final HttpHeaders httpHeaders, final RequestBody requestBody) {
+    private HttpRequest(final RequestLine requestLine, final HttpHeaders httpHeaders, final RequestBody requestBody, final Cookies cookies) {
         this.requestLine = requestLine;
         this.httpHeaders = httpHeaders;
         this.requestBody = requestBody;
+        this.cookies = cookies;
     }
 
     public static HttpRequest from(final String httpRequestMessage) {
         String[] httpRequestMessages = httpRequestMessage.split(CRLF);
-
-        List<HttpHeader> httpHeaders = Arrays.stream(httpRequestMessages, HEADER_START_INDEX, httpRequestMessages.length)
-                .takeWhile(Predicate.not(String::isBlank))
-                .map(HttpHeader::from)
-                .toList();
+        List<HttpHeader> httpHeaders = parseHttpHeaders(httpRequestMessages);
+        String cookies = findCookies(httpHeaders);
 
         return new HttpRequest(
                 RequestLine.from(httpRequestMessages[REQUEST_LINE_INDEX]),
                 HttpHeaders.from(httpHeaders),
-                RequestBody.empty()
+                RequestBody.empty(),
+                Cookies.from(cookies)
         );
+    }
+
+    private static List<HttpHeader> parseHttpHeaders(final String[] httpRequestMessages) {
+        return Arrays.stream(httpRequestMessages, HEADER_START_INDEX, httpRequestMessages.length)
+                .takeWhile(Predicate.not(String::isBlank))
+                .map(HttpHeader::from)
+                .toList();
+    }
+
+    private static String findCookies(final List<HttpHeader> httpHeaders) {
+        return httpHeaders.stream()
+                .filter(httpHeader -> httpHeader.equalsName(HttpHeaderName.COOKIE.getValue()))
+                .findAny()
+                .map(HttpHeader::getValue)
+                .orElse(EMPTY);
     }
 
     public String getPath() {
@@ -62,11 +78,10 @@ public class HttpRequest {
         return requestBody.getValue(key);
     }
 
-    public Cookie getCookie() {
-        String cookie = httpHeaders.getHeaderValue(HttpHeaderName.COOKIE.getValue());
-        if (cookie.isEmpty()) {
-            return Cookie.empty();
-        }
-        return Cookie.from(cookie);
+    public Cookie getCookie(String name) {
+        return cookies.stream()
+                .filter(cookie -> cookie.equalsName(name))
+                .findAny()
+                .orElseGet(Cookie::empty);
     }
 }

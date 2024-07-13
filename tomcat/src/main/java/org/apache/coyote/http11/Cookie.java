@@ -3,13 +3,15 @@ package org.apache.coyote.http11;
 public class Cookie {
     private static final String KEY_VALUE_SEPARATOR = "=";
     private static final String MESSAGE_FORMAT = "%s=%s";
+    private static final String EMPTY = "";
 
     private final String name;
     private final String value;
 
     private Cookie(final String name, final String value) {
-        this.name = name;
-        this.value = value;
+        validateCookieName(name);
+        this.name = name.trim();
+        this.value = value.trim();
     }
 
     public static Cookie of(final String name, final String value) {
@@ -22,7 +24,13 @@ public class Cookie {
     }
 
     public static Cookie empty() {
-        return new Cookie("", "");
+        return new Cookie(EMPTY, EMPTY);
+    }
+
+    private void validateCookieName(final String value) {
+        if (value == null) {
+            throw new InvalidCookieNameException();
+        }
     }
 
     public String createMessage() {
@@ -35,5 +43,9 @@ public class Cookie {
 
     public boolean isNotEmpty() {
         return !name.isEmpty();
+    }
+
+    public boolean equalsName(final String name) {
+        return this.name.equals(name);
     }
 }
