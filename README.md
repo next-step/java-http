@@ -109,3 +109,10 @@
   - 로그인에 성공하면 Session 객체의 값으로 User 객체를 저장해보자. 
   - 그리고 로그인된 상태에서 /login 페이지에 HTTP GET method로 접근하면 이미 로그인한 상태니 index.html 페이지로 리다이렉트 처리한다.
 
+### 4단계 - 리팩토링
+- [ ] 요구사항 1 - HttpRequest 클래스 구현하기
+  - Method, Path, protocol, version, headers, body를 가지고 있는 HttpRequest 클래스를 구현한다.
+- [ ] 요구사항 2 - HttpResponse 클래스 구현하기
+  - protocol, statusCode, statusMessage, Headers를 가지고 있는 HttpResponse 클래스를 구현한다.
+- [ ] 요구사항 3 - Controller 인터페이스 추가하기
+  - HttpRequest를 받아서 Controller를 반환하는 RequestMapping을 구현한다.
