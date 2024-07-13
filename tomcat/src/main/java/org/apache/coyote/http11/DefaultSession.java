@@ -12,10 +12,14 @@ public class DefaultSession implements Session {
     private final Manager sessionManager;
     private final Map<String, Object> values = new ConcurrentHashMap<>();
 
-    public DefaultSession(final String id, final Manager sessionManager) {
+    private DefaultSession(final String id, final Manager sessionManager) {
         this.id = id;
         this.sessionManager = sessionManager;
         sessionManager.add(this);
+    }
+
+    public static Session of(final String id, final Manager manager) {
+        return new DefaultSession(id, manager);
     }
 
     @Override

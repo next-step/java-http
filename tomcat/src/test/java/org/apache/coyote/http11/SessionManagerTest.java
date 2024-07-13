@@ -10,8 +10,8 @@ class SessionManagerTest {
     @DisplayName("세션이 있으면 세션을 반환한다")
     @Test
     void findSession() {
-        SessionManager sessionManager = new SessionManager();
-        DefaultSession session = new DefaultSession("id1", sessionManager);
+        SessionManager sessionManager = SessionManager.create();
+        Session session = DefaultSession.of("id1", sessionManager);
 
         Session findSession = sessionManager.findSession(session.getId());
 
@@ -21,8 +21,8 @@ class SessionManagerTest {
     @DisplayName("세션이 없으면 null을 반환한다")
     @Test
     void findSession2() {
-        SessionManager sessionManager = new SessionManager();
-        DefaultSession session = new DefaultSession("id1", sessionManager);
+        SessionManager sessionManager = SessionManager.create();
+        Session session = DefaultSession.of("id1", sessionManager);
         sessionManager.add(session);
 
         Session findSession = sessionManager.findSession("newId");

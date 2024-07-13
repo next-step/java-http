@@ -17,9 +17,8 @@ public class Tomcat {
     private static final Logger log = LoggerFactory.getLogger(Tomcat.class);
 
     public void start() {
-        Manager sessionManager = new SessionManager();
-        Session session = new DefaultSession(UUID.randomUUID().toString(), sessionManager);
-        var connector = new Connector(session);
+        Manager sessionManager = SessionManager.create();
+        Session session = DefaultSession.of(UUID.randomUUID().toString(), sessionManager);
         var connector = new Connector(RequestHandler.from(session));
         connector.start();
 
