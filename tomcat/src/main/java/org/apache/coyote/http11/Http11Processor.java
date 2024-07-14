@@ -23,6 +23,7 @@ public class Http11Processor implements Runnable, Processor {
     private static final String ROOT_PATH = "/";
     private static final String INDEX_PATH = "/index.html";
     private static final String LOGIN_PATH = "/login";
+    private static final String REGISTER_PATH = "/register";
     public static final String UNAUTHORIZED_PATH = "/401.html";
 
     private final Socket connection;
@@ -58,13 +59,30 @@ public class Http11Processor implements Runnable, Processor {
     private String createResponse(HttpServletRequest httpServletRequest) throws IOException {
         if (httpServletRequest.httpPath().equals(ROOT_PATH)) {
             return defaultResponse();
-        }
-
-        if(httpServletRequest.httpPath().equals(LOGIN_PATH)) {
-            return LoginResponse(httpServletRequest);
+        }else if (httpServletRequest.httpPath().equals(LOGIN_PATH)) {
+            return loginResponse(httpServletRequest);
+        }else if (httpServletRequest.httpPath().equals(REGISTER_PATH)) {
+            return registerResponse(httpServletRequest);
         }
 
         return staticResponse(httpServletRequest);
+    }
+
+    private String registerResponse(HttpServletRequest request) throws IOException {
+        return switch(request.httpMethod()) {
+            case GET -> {
+                final URL resource = ResourceFinder.findResource(REGISTER_PATH);
+                final String content = ResourceFinder.findContent(resource);
+
+                yield  String.join("\r\n",
+                        "HTTP/1.1 200 OK ",
+                        "Content-Type: "+ ContentType.TEXT_HTML.getType() +";charset=utf-8 ",
+                        "Content-Length: " + content.getBytes().length + " ",
+                        "",
+                        content);
+            }
+            case POST -> throw new NotSupportedMethodException("not support yet");
+        };
     }
 
     private String staticResponse(HttpServletRequest httpServletRequest) throws IOException {
@@ -82,7 +100,7 @@ public class Http11Processor implements Runnable, Processor {
                 content);
     }
 
-    private String LoginResponse(HttpServletRequest request) throws IOException {
+    private String loginResponse(HttpServletRequest request) throws IOException {
         QueryParamsMap queryParamsMap = request.requestTarget().queryParamsMap();
         if(queryParamsMap == null) {
             return staticResponse(request);
