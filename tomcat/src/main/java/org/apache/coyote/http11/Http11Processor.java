@@ -113,20 +113,20 @@ public class Http11Processor implements Runnable, Processor {
     }
 
     private String loginResponse(HttpRequest request) throws IOException {
-        QueryParamsMap queryParamsMap = request.getRequestTarget().queryParamsMap();
-        if(queryParamsMap == null) {
-            return staticResponse(request);
-        }
+        return switch(request.getHttpMethod()) {
+            case GET -> staticResponse(request);
+            case POST -> {
+                final String account = request.getBody().get("account");
+                final String password = request.getBody().get("password");
+                Optional<User> userOptional = InMemoryUserRepository.findByAccount(account);
+                if(userOptional.isEmpty() || !userOptional.get().checkPassword(password)) {
+                    yield  unauthorizedResponse();
+                }
 
-        final String account = queryParamsMap.value().get("account");
-        final String password = queryParamsMap.value().get("password");
-        Optional<User> userOptional = InMemoryUserRepository.findByAccount(account);
-        if(userOptional.isEmpty() || !userOptional.get().checkPassword(password)) {
-            return unauthorizedResponse();
-        }
-
-        log.info(userOptional.get().toString());
-        return redirectResponse();
+                log.info(userOptional.get().toString());
+                yield redirectResponse();
+            }
+        };
     }
 
     private String redirectResponse() throws IOException {
