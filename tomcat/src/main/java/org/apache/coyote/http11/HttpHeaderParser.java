@@ -1,5 +1,7 @@
 package org.apache.coyote.http11;
 
+import org.apache.coyote.http11.model.HttpHeaders;
+
 import java.util.HashMap;
 
 public final class HttpHeaderParser {

@@ -1,5 +1,7 @@
 package org.apache.coyote.http11;
 
+import org.apache.coyote.http11.constants.HttpMethod;
+import org.apache.coyote.http11.model.HttpRequest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 

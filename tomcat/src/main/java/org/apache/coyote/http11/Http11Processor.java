@@ -7,6 +7,7 @@ import java.io.File;
 import java.net.URL;
 
 import org.apache.coyote.Processor;
+import org.apache.coyote.http11.model.*;
 import org.apache.coyote.support.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

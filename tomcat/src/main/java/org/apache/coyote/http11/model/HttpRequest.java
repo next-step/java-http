@@ -1,4 +1,6 @@
-package org.apache.coyote.http11;
+package org.apache.coyote.http11.model;
+
+import org.apache.coyote.http11.constants.HttpMethod;
 
 public class HttpRequest {
     private final HttpMethod httpMethod;
