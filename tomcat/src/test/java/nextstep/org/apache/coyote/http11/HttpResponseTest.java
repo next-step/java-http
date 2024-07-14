@@ -1,33 +1,33 @@
 package nextstep.org.apache.coyote.http11;
 
-import org.apache.coyote.http11.*;
+import org.apache.coyote.http11.HttpProtocol;
+import org.apache.coyote.http11.HttpResponse;
+import org.apache.coyote.http11.ResourceFinder;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-
-import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class HttpResponseTest {
-    @DisplayName("HttpProtocol, HttpStatus, List<HttpHeader>, responseBody를 받아 응답 객체를 생성하고, createFormat() 호출 시 응답 포맷 생성")
+    @DisplayName("sendResource 메서드는 resourcePath에 해당하는 파일을 찾아 Content-Type, Content-Length 헤더와 response body를 추가한다")
     @Test
-    void of2() {
-        HttpProtocol httpProtocol = HttpProtocol.from("HTTP/1.1");
-        List<HttpHeader> httpHeaders = List.of(
-                HttpHeader.of(HttpHeaderName.CONTENT_TYPE.getValue(), MediaType.HTML.getValue() + ";charset=utf-8"),
-                HttpHeader.of(HttpHeaderName.COOKIE.getValue(), "name=value")
-        );
+    void sendResource() {
+        HttpResponse httpResponse = HttpResponse.of(HttpProtocol.from("HTTP/1.1"), new ResourceFinder());
 
-        HttpResponse httpResponse = HttpResponse.of(httpProtocol, HttpStatus.OK, httpHeaders, "responseBody!");
+        httpResponse.sendResource("/nextstep.txt");
+        
+        String format = httpResponse.createFormat();
+        assertThat(format).contains("Content-Type", "Content-Length", "nextstep");
+    }
 
-        String expected = String.join("\r\n",
-                "HTTP/1.1 200 OK ",
-                "Content-Type: text/html;charset=utf-8 ",
-                "Cookie: name=value ",
-                "Content-Length: 13 ",
-                "",
-                "responseBody!");
+    @DisplayName("sendRedirect 메서드는 명시된 path를 Location 헤더에 추가하고, 302 Found 상태 코드를 추가한다")
+    @Test
+    void sendRedirect() {
+        HttpResponse httpResponse = HttpResponse.of(HttpProtocol.from("HTTP/1.1"), new ResourceFinder());
 
-        assertThat(httpResponse.createFormat()).contains(expected);
+        httpResponse.sendRedirect("/여기로가셈");
+
+        String format = httpResponse.createFormat();
+        assertThat(format).contains("Location", "302 Found");
     }
 }
