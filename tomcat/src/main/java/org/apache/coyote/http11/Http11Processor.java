@@ -4,9 +4,16 @@ import camp.nextstep.db.InMemoryUserRepository;
 import camp.nextstep.exception.UncheckedServletException;
 import camp.nextstep.model.User;
 import org.apache.coyote.Processor;
+import org.apache.coyote.request.HttpRequest;
+import org.apache.coyote.request.RequestBody;
 import org.apache.coyote.request.RequestHeaders;
 import org.apache.coyote.request.RequestLine;
+import org.apache.coyote.response.FileFinder;
+import org.apache.coyote.response.HttpResponse;
+import org.apache.coyote.response.HttpStatus;
 import org.apache.coyote.response.MimeType;
+import org.apache.coyote.session.Session;
+import org.apache.coyote.session.SessionManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -14,19 +21,18 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.Socket;
-import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.List;
-import java.util.Objects;
+import java.util.Optional;
 
 public class Http11Processor implements Runnable, Processor {
 
     private static final Logger log = LoggerFactory.getLogger(Http11Processor.class);
-    private static final String ROOT_PATH = "/";
+    private static final String ACCOUNT_KEY = "account";
     private static final String ROOT_CONTENT = "Hello world!";
-    public static final String LOGIN_PATH = "/login";
-    public static final String ACCOUNT_KEY = "account";
+
+    private static final String ROOT_PATH = "/";
+    private static final String LOGIN_PATH = "/login";
+    private static final String REGISTER_PATH = "/register";
 
     private final Socket connection;
 
@@ -47,48 +53,151 @@ public class Http11Processor implements Runnable, Processor {
              final var bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
              final var outputStream = connection.getOutputStream()) {
 
-            String requestLineValue = bufferedReader.readLine();
-            List<String> requestHeaderValues = bufferedReader.lines()
-                    .takeWhile(line -> !line.isEmpty())
-                    .toList();
+            RequestLine requestLine = getRequestLine(bufferedReader);
+            RequestHeaders requestHeaders = getRequestHeaders(bufferedReader);
+            RequestBody requestBody = getRequestBody(bufferedReader, requestHeaders);
+            HttpRequest httpRequest = new HttpRequest(requestLine, requestHeaders, requestBody);
 
-            RequestLine requestLine = RequestLine.parse(requestLineValue);
-            RequestHeaders requestHeaders = RequestHeaders.parse(requestHeaderValues);
+            HttpResponse response = getResponse(httpRequest);
 
-            String httpPath = requestLine.getHttpPath();
-            String responseBody = findResponseBody(httpPath);
-            MimeType mimeType = MimeType.from(httpPath);
-
-            if (httpPath.endsWith(LOGIN_PATH)) {
-                User account = InMemoryUserRepository.findByAccount(requestLine.findQueryParam(ACCOUNT_KEY))
-                        .orElseThrow(IllegalArgumentException::new);
-                log.info(account.toString());
-            }
-
-            String response = String.join("\r\n",
-                    "HTTP/1.1 200 OK ",
-                    "Content-Type: " + mimeType.getContentType() + " ",
-                    "Content-Length: " + responseBody.getBytes().length + " ",
-                    "",
-                    responseBody);
-
-            outputStream.write(response.getBytes());
+            outputStream.write(response.buildContent().getBytes());
             outputStream.flush();
         } catch (IOException | UncheckedServletException e) {
             log.error(e.getMessage(), e);
         }
     }
 
-    private String findResponseBody(String httpPath) throws IOException {
-        if (httpPath.equals(ROOT_PATH)) {
-            return ROOT_CONTENT;
+    private static RequestLine getRequestLine(BufferedReader bufferedReader) throws IOException {
+        String requestLineValue = bufferedReader.readLine();
+        return RequestLine.parse(requestLineValue);
+    }
+
+    private static RequestHeaders getRequestHeaders(BufferedReader bufferedReader) {
+        List<String> requestHeaderValues = bufferedReader.lines()
+                .takeWhile(line -> !line.isEmpty())
+                .toList();
+        return RequestHeaders.parse(requestHeaderValues);
+    }
+
+    private RequestBody getRequestBody(BufferedReader bufferedReader, RequestHeaders requestHeaders) throws IOException {
+        if (requestHeaders.getHeader("Content-Length") == null) {
+            return new RequestBody();
         }
-        ClassLoader classLoader = getClass().getClassLoader();
+        int contentLength = Integer.parseInt(requestHeaders.getHeader("Content-Length"));
+        char[] buffer = new char[contentLength];
+        bufferedReader.read(buffer, 0, contentLength);
+        return RequestBody.parse(new String(buffer));
+    }
+
+    private HttpResponse getResponse(HttpRequest request) throws IOException {
+        String httpPath = request.getHttpPath();
         if (httpPath.endsWith(LOGIN_PATH)) {
-            httpPath += MimeType.HTML.getFileExtension();
+            return handleLogin(request);
         }
-        URL resource = classLoader.getResource("static" + httpPath);
-        Path path = Path.of(Objects.requireNonNull(resource).getPath());
-        return new String(Files.readAllBytes(path));
+        if (httpPath.endsWith(REGISTER_PATH)) {
+            return handleRegister(request);
+        }
+        if (httpPath.equals(ROOT_PATH)) {
+            return handleRoot(request);
+        }
+        return handlePath(request);
+    }
+
+    private HttpResponse handleLogin(HttpRequest request) throws IOException {
+        if (request.isGet()) {
+            return handleLoginGet(request);
+        }
+        if (request.isPost()) {
+            return handleLoginPost(request);
+        }
+        return new HttpResponse(
+                HttpStatus.NOT_FOUND,
+                MimeType.HTML,
+                FileFinder.find("/404.html"));
+    }
+
+    private HttpResponse handleLoginGet(HttpRequest request) throws IOException {
+        Optional<String> cookie = request.findCookie();
+        if (cookie.isPresent()) {
+            Optional<Session> session = SessionManager.findSession(cookie.get().split("=")[1]);
+            if (session.isPresent()) {
+                return new HttpResponse(
+                        HttpStatus.OK,
+                        MimeType.HTML,
+                        FileFinder.find("/index.html"));
+            }
+        }
+        MimeType mimeType = MimeType.HTML;
+        return new HttpResponse(
+                HttpStatus.OK,
+                mimeType,
+                FileFinder.find(LOGIN_PATH + mimeType.getFileExtension()));
+
+    }
+
+    private HttpResponse handleLoginPost(HttpRequest request) throws IOException {
+        RequestBody requestBody = request.getRequestBody();
+        Optional<User> optionalUser = InMemoryUserRepository.findByAccount(requestBody.get(ACCOUNT_KEY));
+        if (optionalUser.isPresent() && optionalUser.get().checkPassword(requestBody.get("password"))) {
+            log.info(optionalUser.get().toString());
+            HttpResponse httpResponse = new HttpResponse(
+                    HttpStatus.FOUND,
+                    MimeType.HTML,
+                    FileFinder.find("/index.html"));
+            Session session = new Session();
+            session.setAttribute("user", optionalUser.get());
+            SessionManager.add(session);
+            httpResponse.addCookie(session.getId());
+            return httpResponse;
+        }
+        return new HttpResponse(
+                HttpStatus.UNAUTHORIZED,
+                MimeType.HTML,
+                FileFinder.find("/401.html"));
+    }
+
+    private HttpResponse handleRegister(HttpRequest request) throws IOException {
+        if (request.isGet()) {
+            return new HttpResponse(
+                    HttpStatus.OK,
+                    MimeType.HTML,
+                    FileFinder.find("/register.html"));
+        }
+        if (request.isPost()) {
+            RequestBody requestBody = request.getRequestBody();
+            User user = new User(requestBody.get("account"), requestBody.get("password"), requestBody.get("email"));
+            InMemoryUserRepository.save(user);
+
+            return new HttpResponse(
+                    HttpStatus.CREATED,
+                    MimeType.HTML,
+                    FileFinder.find("/index.html"));
+        }
+        return null;
+    }
+
+    private HttpResponse handleRoot(HttpRequest request) throws IOException {
+        if (request.isGet()) {
+            return new HttpResponse(
+                    HttpStatus.OK,
+                    MimeType.HTML,
+                    ROOT_CONTENT);
+        }
+        return new HttpResponse(
+                HttpStatus.NOT_FOUND,
+                MimeType.HTML,
+                FileFinder.find("/404.html"));
+    }
+
+    private HttpResponse handlePath(HttpRequest request) throws IOException {
+        String httpPath = request.getHttpPath();
+        return new HttpResponse(
+                HttpStatus.OK,
+                parseMimeType(httpPath),
+                FileFinder.find(httpPath));
+    }
+
+    private MimeType parseMimeType(String httpPath) {
+        return MimeType.from(httpPath);
     }
 }
