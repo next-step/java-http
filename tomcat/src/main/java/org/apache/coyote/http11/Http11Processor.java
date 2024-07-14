@@ -1,10 +1,6 @@
 package org.apache.coyote.http11;
 
-import camp.nextstep.exception.UncheckedServletException;
-import org.apache.coyote.HttpRequest;
-import org.apache.coyote.HttpRequestLine;
-import org.apache.coyote.NotSupportHttpRequestException;
-import org.apache.coyote.Processor;
+import org.apache.coyote.*;
 import org.apache.http.header.HttpRequestHeaders;
 import org.apache.http.session.HttpSession;
 import org.apache.http.session.SessionManager;
@@ -18,13 +14,12 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
-import java.util.function.Supplier;
 
 public class Http11Processor implements Runnable, Processor {
     private static final Logger log = LoggerFactory.getLogger(Http11Processor.class);
 
     private final Socket connection;
-    private final Http11ProcessorHandlers handlers = new Http11ProcessorHandlers();
+    private final RequestMapping handlers = new RequestMapping();
     private final SessionManager sessionManager = new SessionManager();
 
     public Http11Processor(final Socket connection) {
@@ -46,7 +41,7 @@ public class Http11Processor implements Runnable, Processor {
 
             outputStream.write(response.toString().getBytes());
             outputStream.flush();
-        } catch (IOException | UncheckedServletException | NotSupportHttpRequestException e) {
+        } catch (IOException | NotSupportHttpRequestException e) {
             log.error(e.getMessage(), e);
         }
     }

@@ -1,5 +1,6 @@
 package org.apache.coyote.http11;
 
+import camp.nextstep.config.ControllerConfig;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpPath;
 import org.apache.http.header.Cookie;
@@ -13,6 +14,9 @@ import java.io.IOException;
 import static support.OutputTest.*;
 
 class Http11ProcessorTest {
+    static {
+        ControllerConfig.initialize();
+    }
 
     @Test
     void process() {
