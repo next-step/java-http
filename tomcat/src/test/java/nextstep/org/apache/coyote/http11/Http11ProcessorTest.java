@@ -44,7 +44,6 @@ class Http11ProcessorTest {
         // then
         var expected = String.join("\r\n",
                 "HTTP/1.1 200 OK ",
-                "HELLO: World! ",
                 "Content-Length: 12 ",
                 "Content-Type: text/html;charset=utf-8 ",
                 "",

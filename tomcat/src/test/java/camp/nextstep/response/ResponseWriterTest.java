@@ -16,7 +16,7 @@ import java.nio.file.Files;
 
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 
-class HttpResponseTest {
+class ResponseWriterTest {
     private final String givenSessionId = "abc";
     final String httpRequestString = String.join("\r\n",
             "GET / HTTP/1.1 ",
@@ -33,9 +33,10 @@ class HttpResponseTest {
     @Test
     void renderStaticResource() throws IOException {
         final var socket = new StubSocket(httpRequestString);
-        HttpResponse response = buildResponse(socket);
+        HttpResponse response = buildResponse(socket.getInputStream());
 
         response.render("/index.html");
+        writeResponse(response, socket.getOutputStream());
 
         String expected = String.join("\r\n",
                 "HTTP/1.1 200 OK ",
@@ -49,9 +50,10 @@ class HttpResponseTest {
     @Test
     void renderNotFound() throws IOException {
         final var socket = new StubSocket(httpRequestString);
-        HttpResponse response = buildResponse(socket);
+        HttpResponse response = buildResponse(socket.getInputStream());
 
         response.render(ResponseStatusCode.NotFound, "/404.html");
+        writeResponse(response, socket.getOutputStream());
 
         String expected = String.join("\r\n",
                 "HTTP/1.1 404 Not Found ",
@@ -65,9 +67,10 @@ class HttpResponseTest {
     @Test
     void redirectTo() throws IOException {
         final var socket = new StubSocket(httpRequestString);
-        HttpResponse response = buildResponse(socket);
+        HttpResponse response = buildResponse(socket.getInputStream());
 
         response.redirectTo("/abc.html");
+        writeResponse(response, socket.getOutputStream());
 
         String expected = String.join("\r\n",
                 "HTTP/1.1 302 Found ",
@@ -80,10 +83,11 @@ class HttpResponseTest {
     @Test
     void addNewCookies() throws IOException {
         final var socket = new StubSocket(httpRequestString);
-        HttpResponse response = buildResponse(socket);
+        HttpResponse response = buildResponse(socket.getInputStream());
         response.setCookie(new HttpRequestCookie("abc", "def"));
         response.setCookie(new HttpRequestCookie("ghi", "jkl"));
         response.render("/index.html");
+        writeResponse(response, socket.getOutputStream());
 
         String expected = String.join("\r\n",
                 "HTTP/1.1 200 OK ",
@@ -96,11 +100,15 @@ class HttpResponseTest {
         assertThat(socket.output()).isEqualTo(expected);
     }
 
-    private HttpResponse buildResponse(StubSocket socket) throws IOException {
-        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+    private HttpResponse buildResponse(InputStream inputStream) throws IOException {
+        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
         HttpRequest request = new HttpRequestParser().parse(bufferedReader);
-        OutputStream outputStream = socket.getOutputStream();
-        return new HttpResponse(outputStream, request, new StaticResourceLoader());
+        return new HttpResponse(request, new StaticResourceLoader());
+    }
+
+    private void writeResponse(HttpResponse response, OutputStream outputStream) throws IOException {
+        ResponseWriter responseWriter = new ResponseWriter(response, outputStream);
+        responseWriter.write();
     }
 
     private String readFileContent(String fileName) throws IOException {

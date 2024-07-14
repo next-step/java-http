@@ -6,27 +6,28 @@ import camp.nextstep.staticresource.StaticResourceLoader;
 import org.apache.util.MimeTypes;
 
 import java.io.IOException;
-import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public class HttpResponse {
-    private final OutputStream outputStream;
     private final HttpRequest request;
-    private final Map<String, String> headersMap;
-
-    private final List<HttpRequestCookie> newCookies;
     private final StaticResourceLoader staticResourceLoader;
 
-    public HttpResponse(OutputStream outputStream, HttpRequest request, StaticResourceLoader staticResourceLoader) {
-        this.outputStream = outputStream;
+    private final Map<String, String> headersMap;
+    private final List<HttpRequestCookie> newCookies;
+    private ResponseStatusCode statusCode;
+    private String content;
+
+    public HttpResponse(HttpRequest request, StaticResourceLoader staticResourceLoader) {
         this.request = request;
         this.staticResourceLoader = staticResourceLoader;
 
         this.headersMap = new HashMap<>();
         this.newCookies = new ArrayList<>();
+        this.statusCode = null;
+        this.content = null;
     }
 
     public void setSessionCookie() throws IOException {
@@ -37,7 +38,7 @@ public class HttpResponse {
     }
 
     public void setHeader(String key, String value) {
-        this.headersMap.put(key, value);
+        headersMap.put(key, value);
     }
 
     public void setCookie(HttpRequestCookie cookie) {
@@ -51,47 +52,55 @@ public class HttpResponse {
     public void render(ResponseStatusCode statusCode, String requestPath) throws IOException {
         assert requestPath.startsWith("/");
 
-        String content = staticResourceLoader.readAllLines("static" + requestPath);
+        this.statusCode = statusCode;
+
+        String content = readFile("static" + requestPath);
         String contentType = guessMimeTypeFromPath(requestPath);
-
-        setHeader("Content-Type", contentType + ";charset=utf-8");
-        setHeader("Content-Length", String.valueOf(content.getBytes().length));
-
-        writeResponse(statusCode, content);
+        setContent(content, contentType);
     }
 
-    public void renderText(String text, String contentType) throws IOException {
+    public void renderText(String text, String contentType) {
         renderText(ResponseStatusCode.OK, text, contentType);
     }
 
-    private void renderText(ResponseStatusCode statusCode, String text, String contentType) throws IOException {
+    private void renderText(@SuppressWarnings("SameParameterValue") ResponseStatusCode statusCode, String text, String contentType) {
+        this.statusCode = statusCode;
+        setContent(text, contentType);
+    }
+
+    private void setContent(String content, String contentType) {
         setHeader("Content-Type", contentType + ";charset=utf-8");
-        setHeader("Content-Length", String.valueOf(text.getBytes().length));
-
-        writeResponse(statusCode, text);
+        setHeader("Content-Length", String.valueOf(content.getBytes().length));
+        this.content = content;
     }
 
-    public void redirectTo(String redirectTo) throws IOException {
+    public void redirectTo(String redirectTo) {
+        this.statusCode = ResponseStatusCode.Found;
         setHeader("Location", redirectTo);
-
-        writeResponse(ResponseStatusCode.Found, null);
     }
 
-    // ---------------------------------------------------------------------------------------------------------------
+    public HttpRequest getRequest() {
+        return request;
+    }
 
-    private void writeResponse(ResponseStatusCode statusCode, String content) throws IOException {
-        ResponseWriter writer = new ResponseWriter(outputStream);
+    public Map<String, String> getHeadersMap() {
+        return headersMap;
+    }
 
-        writer.setResponseLine(statusCode);
+    public List<HttpRequestCookie> getNewCookies() {
+        return newCookies;
+    }
 
-        writer.appendHeaders(headersMap);
-        writer.appendNewCookies(newCookies);
+    public ResponseStatusCode getStatusCode() {
+        return statusCode;
+    }
 
-        if (content != null) {
-            writer.setContent(content);
-        }
+    public String getContent() {
+        return content;
+    }
 
-        writer.write();
+    private String readFile(String path) throws IOException {
+        return staticResourceLoader.readAllLines(path);
     }
 
     private String guessMimeTypeFromPath(String path) {

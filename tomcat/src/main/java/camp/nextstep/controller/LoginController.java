@@ -1,6 +1,7 @@
 package camp.nextstep.controller;
 
 import camp.nextstep.db.InMemoryUserRepository;
+import camp.nextstep.session.SessionService;
 import camp.nextstep.model.User;
 import camp.nextstep.request.HttpQueryParameters;
 import camp.nextstep.request.HttpRequest;
@@ -13,9 +14,15 @@ import static java.util.Objects.requireNonNull;
 
 public class LoginController extends AbstractController {
 
+    private final SessionService sessionService;
+
+    public LoginController() {
+        this.sessionService = new SessionService();
+    }
+
     @Override
     protected void doGet(HttpRequest request, HttpResponse response) throws IOException {
-        if (request.isLoggedIn()) {
+        if (sessionService.isLoggedIn(request.getSession())) {
             response.redirectTo("/index.html");
             return;
         }
@@ -39,7 +46,7 @@ public class LoginController extends AbstractController {
             return;
         }
 
-        request.signInAs(user.get());
+        sessionService.signInAs(request.getSession(), user.get());
 
         response.redirectTo("/index.html");
     }

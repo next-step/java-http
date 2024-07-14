@@ -6,6 +6,7 @@ import camp.nextstep.request.HttpRequest;
 import camp.nextstep.request.HttpRequestParser;
 import camp.nextstep.response.HttpResponse;
 import camp.nextstep.response.ResponseStatusCode;
+import camp.nextstep.response.ResponseWriter;
 import camp.nextstep.staticresource.StaticResourceLoader;
 import org.apache.coyote.Processor;
 import org.slf4j.Logger;
@@ -47,7 +48,7 @@ public class Http11Processor implements Runnable, Processor {
              final var outputStream = connection.getOutputStream()
         ) {
             HttpRequest request = requestParser.parse(bufferedReader);
-            HttpResponse response = new HttpResponse(outputStream, request, staticResourceLoader);
+            HttpResponse response = new HttpResponse(request, staticResourceLoader);
             response.setSessionCookie();
 
             try {
@@ -55,6 +56,8 @@ public class Http11Processor implements Runnable, Processor {
             } catch (RequestNotFoundException e) {
                 response.render(ResponseStatusCode.NotFound, "/404.html");
                 throw e;
+            } finally {
+                new ResponseWriter(response, outputStream).write();
             }
         } catch (Exception e) {
             log.error(e.getMessage(), e);

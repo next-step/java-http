@@ -5,16 +5,18 @@ import camp.nextstep.model.User;
 import camp.nextstep.request.HttpQueryParameters;
 import camp.nextstep.request.HttpRequest;
 import camp.nextstep.response.HttpResponse;
-import org.apache.coyote.http11.Http11Processor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import camp.nextstep.session.SessionService;
 
 import java.io.IOException;
 
 import static java.util.Objects.requireNonNull;
 
 public class RegisterController extends AbstractController {
-    private static final Logger log = LoggerFactory.getLogger(Http11Processor.class);
+    private final SessionService sessionService;
+
+    public RegisterController() {
+        this.sessionService = new SessionService();
+    }
 
     @Override
     protected void doGet(HttpRequest request, HttpResponse response) throws IOException {
@@ -31,8 +33,8 @@ public class RegisterController extends AbstractController {
 
         User user = new User(account, password, email);
         InMemoryUserRepository.save(user);
-        request.signInAs(user);
-        log.debug("사용자 생성 후 로그인: {}", user);
+
+        sessionService.signInAs(request.getSession(), user);
 
         response.redirectTo("/index.html");
     }
