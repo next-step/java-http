@@ -14,7 +14,7 @@ import java.util.function.Supplier;
 public class HttpRequest {
     protected final HttpRequestLine requestLine;
     protected final HttpRequestHeaders headers;
-    protected final HttpBody body;
+    public final HttpBody body;
     protected final Function<Boolean, HttpSession> getSession;
 
     public HttpRequest(HttpRequestLine requestLine, HttpRequestHeaders headers, HttpBody body, Function<Boolean, HttpSession> getSession) {
@@ -30,13 +30,6 @@ public class HttpRequest {
 
     public boolean isGet() {
         return requestLine.method == HttpMethod.GET;
-    }
-
-    public String getBodyValue(final String key) {
-        if (body == null) {
-            return null;
-        }
-        return body.getValue(key);
     }
 
     public HttpSession getSession(boolean canCreate) {
