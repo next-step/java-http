@@ -1,108 +1,46 @@
 package org.apache.coyote.http11;
 
-import camp.nextstep.db.InMemoryUserRepository;
-import camp.nextstep.exception.UserNotFoundException;
-import camp.nextstep.model.User;
-import org.apache.catalina.Session;
-
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.HashMap;
+import java.util.Map;
 
 public class RequestHandler {
-
-    private static final String INDEX_PATH = "/index.html";
-    private static final String UNAUTHORIZED_PATH = "/401.html";
     private static final String NOT_FOUND_PATH = "/404.html";
-    private static final String JSESSIONID = "JSESSIONID";
 
-    private final Session session;
+    private final Map<String, Controller> controllerMap = new HashMap<>();
 
-    private RequestHandler(final Session session) {
-        this.session = session;
+    public RequestHandler() {
     }
 
-    public static RequestHandler from(final Session session) {
-        return new RequestHandler(session);
+    public void register(String path, Controller controller) {
+        controllerMap.put(path, controller);
     }
 
-    public void handle(final HttpRequest httpRequest, final HttpResponse httpResponse) throws IOException {
+    void handle(final HttpRequest httpRequest, final HttpResponse httpResponse) {
         String path = httpRequest.getPath();
-        if (path.contains("/login") && httpRequest.isPost()) {
-            handleLoginProcess(httpRequest, httpResponse);
+        if (!controllerMap.containsKey(path)) {
+            handleNotRegisteredRequest(path, httpResponse);
             return;
         }
 
-        if (path.contains("/login") && httpRequest.isGet()) {
-            handleLoginView(httpRequest, httpResponse);
-            return;
-        }
-
-        if (path.contains("/register") && httpRequest.isPost()) {
-            handleRegisterProcess(httpRequest, httpResponse);
-            return;
-        }
-
-        if (httpRequest.isGet()) {
-            handleResourceView(httpRequest, httpResponse);
-            return;
-        }
-
-        httpResponse.sendRedirect(NOT_FOUND_PATH);
+        handleRegisteredRequest(httpRequest, httpResponse, path);
     }
 
-    private void handleLoginProcess(final HttpRequest httpRequest, final HttpResponse httpResponse) {
-        String account = httpRequest.getBodyValue("account");
-        User user = InMemoryUserRepository.findByAccount(account)
-                .orElseThrow(() -> new UserNotFoundException(account));
-        String password = httpRequest.getBodyValue("password");
-
-        if (user.checkPassword(password)) {
-            String uuid = UUID.randomUUID().toString();
-            session.setAttribute(uuid, user);
-
-            Cookie cookie = Cookie.of(JSESSIONID, uuid);
-            httpResponse.setCookie(cookie);
-            httpResponse.sendRedirect(INDEX_PATH);
-            return;
+    private void handleNotRegisteredRequest(final String path, final HttpResponse httpResponse) {
+        try {
+            httpResponse.sendResource(path);
+        } catch (ResourceNotFoundException e) {
+            httpResponse.sendRedirect(NOT_FOUND_PATH);
         }
-
-        httpResponse.sendRedirect(UNAUTHORIZED_PATH);
     }
 
-    private void handleLoginView(final HttpRequest httpRequest, final HttpResponse httpResponse) throws IOException {
-        Cookie cookie = httpRequest.getCookie(JSESSIONID);
-        if (cookie.isNotEmpty() && Objects.nonNull(session.getAttribute(cookie.getValue()))) {
-            httpResponse.sendRedirect(INDEX_PATH);
-            return;
+    private void handleRegisteredRequest(final HttpRequest httpRequest, final HttpResponse httpResponse, final String path) {
+        Controller controller = controllerMap.get(path);
+        try {
+            controller.service(httpRequest, httpResponse);
+        } catch (ResourceNotFoundException e) {
+            httpResponse.sendRedirect(NOT_FOUND_PATH);
+        } catch (Exception e) {
+            throw new RuntimeException(e);  // TODO: ExceptionHandler -> 예외에 따라서 처리? 아니면 status? 사용자가 예외를 커스터마이징 할 수 있는 방법?
         }
-
-        handleResourceView(httpRequest, httpResponse);
-    }
-
-    private void handleRegisterProcess(final HttpRequest httpRequest, final HttpResponse httpResponse) {
-        String account = httpRequest.getBodyValue("account");
-        String password = httpRequest.getBodyValue("password");
-        String email = httpRequest.getBodyValue("email");
-
-        User user = new User(InMemoryUserRepository.getAutoIncrement(), account, password, email);
-        InMemoryUserRepository.save(user);
-        httpResponse.sendRedirect(INDEX_PATH);
-    }
-
-    private void handleResourceView(final HttpRequest httpRequest, final HttpResponse httpResponse) throws IOException {
-        File resource = new ResourceFinder().findByPath(httpRequest.getPath());
-        MediaType mediaType = MediaType.from(resource);
-        HttpHeader header = HttpHeader.of(HttpHeaderName.CONTENT_TYPE.getValue(), mediaType.getValue() + ";charset=utf-8");
-        String responseBody = new String(Files.readAllBytes(resource.toPath()));
-
-        httpResponse.addHeader(header);
-        httpResponse.setBody(responseBody);
-    }
-
-    public Session getSession() {
-        return session;
     }
 }
