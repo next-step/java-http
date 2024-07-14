@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.concurrent.ExecutorService;
 
 public class Connector implements Runnable {
 
@@ -16,15 +17,25 @@ public class Connector implements Runnable {
     private static final int DEFAULT_PORT = 8080;
     private static final int DEFAULT_ACCEPT_COUNT = 100;
 
+
     private final ServerSocket serverSocket;
+    private final ExecutorService executorService;
     private boolean stopped;
 
     public Connector() {
         this(DEFAULT_PORT, DEFAULT_ACCEPT_COUNT);
     }
 
+    // acceptCount => ServerSocket의 accept() 메서드에서 대기할 수 있는 최대 연결 요청 수 (backlog)
     public Connector(final int port, final int acceptCount) {
         this.serverSocket = createServerSocket(port, acceptCount);
+        this.executorService = ThreadPoolConfig.defaultThreadPool();
+        this.stopped = false;
+    }
+
+    public Connector(final int port, final int acceptCount, final int coreSize, final int maxSize, final int queueCapacity) {
+        this.serverSocket = createServerSocket(port, acceptCount);
+        this.executorService = ThreadPoolConfig.createThreadPool(coreSize, maxSize, queueCapacity);
         this.stopped = false;
     }
 
@@ -67,7 +78,7 @@ public class Connector implements Runnable {
             return;
         }
         var processor = new Http11Processor(connection);
-        new Thread(processor).start();
+        executorService.execute(processor);
     }
 
     public void stop() {
