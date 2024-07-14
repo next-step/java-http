@@ -21,17 +21,17 @@ public class LoginController extends AbstractController {
 
     @Override
     public HttpResponse doPost(final HttpRequest request) {
-        var session = request.getSession(false);
-        if (session != null && session.getAttribute("user") != null) {
-            return new HttpResponse(new HttpPath(SUCCESS_PAGE));
-        }
-
         var loginRequest = new LoginRequest(request);
         return login(request, loginRequest);
     }
 
     @Override
     public HttpResponse doGet(final HttpRequest request) throws IOException {
+        var session = request.getSession(false);
+        if (session != null && session.getAttribute("user") != null) {
+            return new HttpResponse(new HttpPath(SUCCESS_PAGE));
+        }
+
         var loginPage = request.path() + ".html";
         return ResourceHandler.handle(loginPage);
     }
