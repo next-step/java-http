@@ -6,6 +6,7 @@ import camp.nextstep.model.User;
 import java.io.File;
 import java.net.URL;
 
+import org.apache.catalina.manager.SessionManager;
 import org.apache.coyote.Processor;
 import org.apache.coyote.http11.model.*;
 import org.apache.coyote.support.FileUtils;
@@ -117,7 +118,13 @@ public class Http11Processor implements Runnable, Processor {
 
     private String loginResponse(HttpRequest request) throws IOException {
         return switch(request.getHttpMethod()) {
-            case GET -> staticResponse(request);
+            case GET -> {
+                if(request.getCookie().hasJSessionId() && existSession(request)) {
+                    yield redirectResponse(request.getCookie());
+                }
+
+                yield staticResponse(request);
+            }
             case POST -> {
                 final String account = request.getBody().get("account");
                 final String password = request.getBody().get("password");
@@ -127,9 +134,23 @@ public class Http11Processor implements Runnable, Processor {
                 }
 
                 log.info(userOptional.get().toString());
+
+                /* 세션 설정 */
+                final String key = UUID.randomUUID().toString();
+                SessionManager.getInstance().add(new HttpSession(key));
+                HttpSession session = SessionManager.getInstance().findSession(key);
+                session.setAttribute("user", userOptional.get());
+
                 yield redirectResponse(request.getCookie());
             }
         };
+    }
+
+    private static boolean existSession(HttpRequest request) {
+        final String key = request.getCookie().JSessionId();
+        final HttpSession session = SessionManager.getInstance().findSession(key);
+
+        return session == null;
     }
 
     private String redirectResponse(HttpCookie cookie) throws IOException {
@@ -140,7 +161,7 @@ public class Http11Processor implements Runnable, Processor {
                 "HTTP/1.1 302 OK ",
                 "Content-Type: "+ ContentType.TEXT_HTML.getType() +";charset=utf-8 ",
                 "Content-Length: " + content.getBytes().length + " ",
-                !cookie.hasJSESSIONID() ? "Set-Cookie: " + UUID.randomUUID() + " " : "",
+                !cookie.hasJSessionId() ? "Set-Cookie: " + UUID.randomUUID() + " " : "",
                 "",
                 content);
     }

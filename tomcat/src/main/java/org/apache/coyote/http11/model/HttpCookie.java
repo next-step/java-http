@@ -14,7 +14,12 @@ public class HttpCookie {
         return cookies.get(key);
     }
 
-    public boolean hasJSESSIONID() {
+    public boolean hasJSessionId() {
         return cookies.containsKey("JSESSIONID");
     }
+
+    public String JSessionId() {
+        return cookies.get("JSESSIONID");
+    }
+
 }
