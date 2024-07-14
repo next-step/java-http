@@ -4,10 +4,10 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.function.Predicate;
-import java.util.stream.Stream;
 
 public class Cookies implements Iterable<Cookie> {
     private static final String COOKIE_SEPARATOR = ";";
+    private static final String JSESSIONID = "JSESSIONID";
 
     private final List<Cookie> values;
 
@@ -24,12 +24,19 @@ public class Cookies implements Iterable<Cookie> {
         return new Cookies(values);
     }
 
-    public Stream<Cookie> stream() {
-        return values.stream();
-    }
-
     @Override
     public Iterator<Cookie> iterator() {
         return values.iterator();
+    }
+
+    public Cookie findJSessionCookie() {
+        return findCookie(JSESSIONID);
+    }
+
+    public Cookie findCookie(final String name) {
+        return values.stream()
+                .filter(cookie -> cookie.equalsName(name))
+                .findAny()
+                .orElse(null);
     }
 }

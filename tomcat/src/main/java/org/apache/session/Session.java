@@ -1,22 +1,19 @@
 package org.apache.session;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
-import java.util.concurrent.ConcurrentHashMap;
 
 public class Session {
     private final String id;
-    private final Manager sessionManager;
-    private final Map<String, Object> values = new ConcurrentHashMap<>();
+    private final Map<String, Object> values = new HashMap<>();
 
-    private Session(final String id, final Manager sessionManager) {
+    private Session(final String id) {
         this.id = id;
-        this.sessionManager = sessionManager;
-        sessionManager.add(this);
     }
 
-    public static Session of(final String id, final Manager manager) {
-        return new Session(id, manager);
+    public static Session from(final String id) {
+        return new Session(id);
     }
 
     public String getId() {
@@ -33,11 +30,6 @@ public class Session {
 
     public void removeAttribute(final String name) {
         values.remove(name);
-    }
-
-    public void invalidate() {
-        values.clear();
-        sessionManager.remove(this);
     }
 
     @Override

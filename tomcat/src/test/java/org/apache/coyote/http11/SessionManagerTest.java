@@ -12,7 +12,8 @@ class SessionManagerTest {
     @Test
     void findSession() {
         SessionManager sessionManager = SessionManager.create();
-        Session session = Session.of("id1", sessionManager);
+        Session session = Session.from("id1");
+        sessionManager.add(session);
 
         Session findSession = sessionManager.findSession(session.getId());
 
@@ -23,7 +24,7 @@ class SessionManagerTest {
     @Test
     void findSession2() {
         SessionManager sessionManager = SessionManager.create();
-        Session session = Session.of("id1", sessionManager);
+        Session session = Session.from("id1");
         sessionManager.add(session);
 
         Session findSession = sessionManager.findSession("newId");

@@ -1,6 +1,7 @@
 package org.apache.coyote.http11;
 
 import org.apache.session.Session;
+import org.apache.session.SessionManager;
 
 import java.util.Arrays;
 import java.util.List;
@@ -12,30 +13,46 @@ public class HttpRequest {
     private static final String CRLF = "\r\n";
     private static final String EMPTY = "";
 
+    private final SessionManager sessionManager;
+
     private final RequestLine requestLine;
     private final HttpHeaders httpHeaders;
     private final RequestBody requestBody;
     private final Cookies cookies;
     private Session session;
 
-    private HttpRequest(final RequestLine requestLine, final HttpHeaders httpHeaders, final RequestBody requestBody, final Cookies cookies) {
+    private HttpRequest(final SessionManager sessionManager, final RequestLine requestLine, final HttpHeaders httpHeaders, final RequestBody requestBody, final Cookies cookies, final Session session) {
+        this.sessionManager = sessionManager;
         this.requestLine = requestLine;
         this.httpHeaders = httpHeaders;
         this.requestBody = requestBody;
         this.cookies = cookies;
+        this.session = session;
     }
 
-    public static HttpRequest from(final String httpRequestMessage) {
+    public static HttpRequest from(final String httpRequestMessage, final SessionManager sessionManager) {
         String[] httpRequestMessages = httpRequestMessage.split(CRLF);
         List<HttpHeader> httpHeaders = parseHttpHeaders(httpRequestMessages);
-        String cookies = findCookies(httpHeaders);
+        Cookies cookies = Cookies.from(findCookies(httpHeaders));
+        Session session = findSession(sessionManager, cookies);
 
         return new HttpRequest(
+                sessionManager,
                 RequestLine.from(httpRequestMessages[REQUEST_LINE_INDEX]),
                 HttpHeaders.from(httpHeaders),
                 RequestBody.empty(),
-                Cookies.from(cookies)
+                cookies,
+                session
         );
+    }
+
+    private static Session findSession(final SessionManager sessionManager, final Cookies cookies) {
+        Cookie jSessionCookie = cookies.findJSessionCookie();
+        if (jSessionCookie == null) {
+            return null;
+        }
+
+        return sessionManager.findSession(jSessionCookie.getValue());
     }
 
     private static List<HttpHeader> parseHttpHeaders(final String[] httpRequestMessages) {
@@ -81,18 +98,21 @@ public class HttpRequest {
         return requestBody.getValue(key);
     }
 
-    public Cookie getCookie(String name) {
-        return cookies.stream()
-                .filter(cookie -> cookie.equalsName(name))
-                .findAny()
-                .orElse(null);
-    }
-
-    public void setSession(final Session session) {
-        this.session = session;
-    }
-
     public Session getSession() {
-        return session;
+        return getSession(false);
+    }
+
+    public Session getSession(boolean requiresNew) {
+        if (session != null) {
+            return session;
+        }
+
+        if (requiresNew) {
+            Session newSession = sessionManager.createSession();
+            sessionManager.add(newSession);
+            return newSession;
+        }
+
+        return null;
     }
 }

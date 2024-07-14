@@ -1,6 +1,7 @@
 package nextstep.org.apache.coyote.http11;
 
 import org.apache.coyote.http11.HttpRequest;
+import org.apache.session.SessionManager;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -18,7 +19,7 @@ public class HttpRequestTest {
                 ""
         );
 
-        HttpRequest httpRequest = HttpRequest.from(httpRequestMessage);
+        HttpRequest httpRequest = HttpRequest.from(httpRequestMessage, SessionManager.create());
 
         assertThat(httpRequest).extracting("requestLine").isNotNull();
         assertThat(httpRequest).extracting("httpHeaders").isNotNull();
