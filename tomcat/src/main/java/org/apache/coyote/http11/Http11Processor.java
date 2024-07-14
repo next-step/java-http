@@ -20,10 +20,8 @@ import java.util.Optional;
 public class Http11Processor implements Runnable, Processor {
 
     private static final Logger log = LoggerFactory.getLogger(Http11Processor.class);
-    private static final String ROOT_PATH = "/";
     private static final String INDEX_PATH = "/index.html";
-    private static final String LOGIN_PATH = "/login";
-    private static final String REGISTER_PATH = "/register";
+    private static final String REGISTER_PATH = "/register.html";
     public static final String UNAUTHORIZED_PATH = "/401.html";
 
     private final Socket connection;
@@ -45,9 +43,9 @@ public class Http11Processor implements Runnable, Processor {
              final var outputStream = connection.getOutputStream()) {
 
             final String httpRequestMessage = readHttpRequestMessage(br);
-            final HttpServletRequest httpServletRequest = requestLineParser.parse(httpRequestMessage);
+            final HttpRequest httpRequest = requestLineParser.parse(httpRequestMessage);
 
-            final var response = createResponse(httpServletRequest);
+            final var response = createResponse(httpRequest);
 
             outputStream.write(response.getBytes());
             outputStream.flush();
@@ -56,20 +54,20 @@ public class Http11Processor implements Runnable, Processor {
         }
     }
 
-    private String createResponse(HttpServletRequest httpServletRequest) throws IOException {
-        if (httpServletRequest.httpPath().equals(ROOT_PATH)) {
+    private String createResponse(HttpRequest httpRequest) throws IOException {
+        if (httpRequest.getHttpPath().equals("/")) {
             return defaultResponse();
-        }else if (httpServletRequest.httpPath().equals(LOGIN_PATH)) {
-            return loginResponse(httpServletRequest);
-        }else if (httpServletRequest.httpPath().equals(REGISTER_PATH)) {
-            return registerResponse(httpServletRequest);
+        }else if (httpRequest.getHttpPath().equals("/login")) {
+            return loginResponse(httpRequest);
+        }else if (httpRequest.getHttpPath().equals("/register")) {
+            return registerResponse(httpRequest);
         }
 
-        return staticResponse(httpServletRequest);
+        return staticResponse(httpRequest);
     }
 
-    private String registerResponse(HttpServletRequest request) throws IOException {
-        return switch(request.httpMethod()) {
+    private String registerResponse(HttpRequest request) throws IOException {
+        return switch(request.getHttpMethod()) {
             case GET -> {
                 final URL resource = ResourceFinder.findResource(REGISTER_PATH);
                 final String content = ResourceFinder.findContent(resource);
@@ -81,13 +79,25 @@ public class Http11Processor implements Runnable, Processor {
                         "",
                         content);
             }
-            case POST -> throw new NotSupportedMethodException("not support yet");
+            case POST -> {
+                registerUser(request);
+                yield redirectResponse();
+            }
         };
     }
 
-    private String staticResponse(HttpServletRequest httpServletRequest) throws IOException {
-        final File file = ResourceFinder.findFile(httpServletRequest.httpPath());
-        final URL resource = ResourceFinder.findResource(httpServletRequest.httpPath());
+    private void registerUser(HttpRequest request) {
+        QueryParamsMap queryParamsMap = request.getRequestTarget().queryParamsMap();
+        final String account = queryParamsMap.value().get("account");
+        final String email = queryParamsMap.value().get("email");
+        final String password = queryParamsMap.value().get("password");
+
+        InMemoryUserRepository.save(new User(account, email, password));
+    }
+
+    private String staticResponse(HttpRequest httpRequest) throws IOException {
+        final File file = ResourceFinder.findFile(httpRequest.getHttpPath());
+        final URL resource = ResourceFinder.findResource(httpRequest.getHttpPath());
         final String extension = FileUtils.extractExtension(file.getPath());
         final ContentType contentType = ContentType.fromExtension(extension);
         final String content = ResourceFinder.findContent(resource);
@@ -100,8 +110,8 @@ public class Http11Processor implements Runnable, Processor {
                 content);
     }
 
-    private String loginResponse(HttpServletRequest request) throws IOException {
-        QueryParamsMap queryParamsMap = request.requestTarget().queryParamsMap();
+    private String loginResponse(HttpRequest request) throws IOException {
+        QueryParamsMap queryParamsMap = request.getRequestTarget().queryParamsMap();
         if(queryParamsMap == null) {
             return staticResponse(request);
         }

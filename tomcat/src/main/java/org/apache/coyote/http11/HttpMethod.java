@@ -18,6 +18,6 @@ public enum HttpMethod {
 
     public static HttpMethod from(String method) {
         return Optional.ofNullable(VALUE_MAP.getOrDefault(method, null))
-                .orElseThrow(() -> new IllegalArgumentException("Invalid HTTP method: " + method));
+                .orElseThrow(() -> new IllegalArgumentException("not supported HTTP method: " + method));
     }
 }

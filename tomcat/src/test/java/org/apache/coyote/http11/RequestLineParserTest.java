@@ -24,12 +24,12 @@ class RequestLineParserTest {
     void from_get() {
         final String requestLine = "GET /users HTTP/1.1";
 
-        final HttpServletRequest expected = parser.parse(requestLine);
+        final HttpRequest expected = parser.parse(requestLine);
 
-        assertThat(expected.httpMethod()).isEqualTo(HttpMethod.GET);
-        assertThat(expected.requestTarget().path()).isEqualTo(TEST_HTTP_PATH);
-        assertThat(expected.requestTarget().protocol().value()).isEqualTo(TEST_HTTP_PROTOCOL);
-        assertThat(expected.requestTarget().protocolVersion().value()).isEqualTo(TEST_HTTPS_PROTOCOL_VERSION);
+        assertThat(expected.getHttpPath()).isEqualTo(HttpMethod.GET);
+        assertThat(expected.getRequestTarget().path()).isEqualTo(TEST_HTTP_PATH);
+        assertThat(expected.getRequestTarget().protocol().value()).isEqualTo(TEST_HTTP_PROTOCOL);
+        assertThat(expected.getRequestTarget().protocolVersion().value()).isEqualTo(TEST_HTTPS_PROTOCOL_VERSION);
     }
 
     @Test
@@ -37,12 +37,12 @@ class RequestLineParserTest {
     void from_post() {
         final String requestLine = "POST /users HTTP/1.1";
 
-        final HttpServletRequest expected = parser.parse(requestLine);
+        final HttpRequest expected = parser.parse(requestLine);
 
-        assertThat(expected.httpMethod()).isEqualTo(HttpMethod.POST);
-        assertThat(expected.requestTarget().path()).isEqualTo(TEST_HTTP_PATH);
-        assertThat(expected.requestTarget().protocol().value()).isEqualTo(TEST_HTTP_PROTOCOL);
-        assertThat(expected.requestTarget().protocolVersion().value()).isEqualTo(TEST_HTTPS_PROTOCOL_VERSION);
+        assertThat(expected.getHttpMethod()).isEqualTo(HttpMethod.POST);
+        assertThat(expected.getRequestTarget().path()).isEqualTo(TEST_HTTP_PATH);
+        assertThat(expected.getRequestTarget().protocol().value()).isEqualTo(TEST_HTTP_PROTOCOL);
+        assertThat(expected.getRequestTarget().protocolVersion().value()).isEqualTo(TEST_HTTPS_PROTOCOL_VERSION);
     }
 
     @Test
@@ -50,15 +50,15 @@ class RequestLineParserTest {
     void from_getWithQueryString() {
         final String requestLine = "GET /users?userId=javajigi&password=password&name=JaeSung HTTP/1.1";
 
-        final HttpServletRequest expected = parser.parse(requestLine);
+        final HttpRequest expected = parser.parse(requestLine);
 
-        assertThat(expected.httpMethod()).isEqualTo(HttpMethod.GET);
-        assertThat(expected.requestTarget().path()).isEqualTo(TEST_HTTP_PATH);
-        assertThat(expected.requestTarget().queryParamsMap().value().get(QUERY_PARAMS_KEY_1)).isEqualTo(QUERY_PARAMS_VALUE_1);
-        assertThat(expected.requestTarget().queryParamsMap().value().get(QUERY_PARAMS_KEY_2)).isEqualTo(QUERY_PARAMS_VALUE_2);
-        assertThat(expected.requestTarget().queryParamsMap().value().get(QUERY_PARAMS_KEY_3)).isEqualTo(QUERY_PARAMS_VALUE_3);
-        assertThat(expected.requestTarget().protocol().value()).isEqualTo(TEST_HTTP_PROTOCOL);
-        assertThat(expected.requestTarget().protocolVersion().value()).isEqualTo(TEST_HTTPS_PROTOCOL_VERSION);
+        assertThat(expected.getHttpMethod()).isEqualTo(HttpMethod.GET);
+        assertThat(expected.getRequestTarget().path()).isEqualTo(TEST_HTTP_PATH);
+        assertThat(expected.getRequestTarget().queryParamsMap().value().get(QUERY_PARAMS_KEY_1)).isEqualTo(QUERY_PARAMS_VALUE_1);
+        assertThat(expected.getRequestTarget().queryParamsMap().value().get(QUERY_PARAMS_KEY_2)).isEqualTo(QUERY_PARAMS_VALUE_2);
+        assertThat(expected.getRequestTarget().queryParamsMap().value().get(QUERY_PARAMS_KEY_3)).isEqualTo(QUERY_PARAMS_VALUE_3);
+        assertThat(expected.getRequestTarget().protocol().value()).isEqualTo(TEST_HTTP_PROTOCOL);
+        assertThat(expected.getRequestTarget().protocolVersion().value()).isEqualTo(TEST_HTTPS_PROTOCOL_VERSION);
     }
 
 }
