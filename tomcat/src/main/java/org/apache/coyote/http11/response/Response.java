@@ -20,10 +20,13 @@ public class Response {
 
     private static final String DELIMITER = "\r\n";
     private static final String HTTP11_VERSION = "HTTP/1.1";
-    private final HttpStatus status;
-    private final String body;
-    private final HttpCookie cookie;
-    private final HttpHeader header;
+    private HttpStatus status;
+    private String body;
+    private HttpCookie cookie;
+    private HttpHeader header;
+
+    public Response() {
+    }
 
     public Response(HttpStatus status, HttpCookie cookie, String body, Map<String, String> header) {
         this.status = status;
@@ -32,42 +35,34 @@ public class Response {
         this.header = new HttpHeader(header);
     }
 
-    public static Response ok(ContentType contentType, String body) {
+    public void ok(ContentType contentType, String body) {
+        setBasicResponse(HttpStatus.OK, contentType, body, HttpCookie.from());
+    }
+
+    public void notFound(ContentType contentType, String body) {
+        setBasicResponse(HttpStatus.NOT_FOUND, contentType, body, HttpCookie.from());
+    }
+
+    public void found(HttpCookie cookie, String location) {
         Map<String, String> headers = new LinkedHashMap<>();
-        headers.put(CONTENT_TYPE_HEADER_KEY, contentType.getValue());
-        headers.put(CONTENT_LENGTH_HEADER_KEY, String.valueOf(body.getBytes().length));
-        return new Response(HttpStatus.OK, HttpCookie.from(), body, headers);
+        headers.put(LOCATION_HEADER_KEY, location);
+        setBasicResponse(HttpStatus.FOUND, StringUtils.EMPTY, cookie, headers);
     }
 
-    public static Response notFound(ContentType contentType, String body) {
+    public void found(String location) {
         Map<String, String> headers = new LinkedHashMap<>();
-        headers.put(CONTENT_TYPE_HEADER_KEY, contentType.getValue());
-        headers.put(CONTENT_LENGTH_HEADER_KEY, String.valueOf(body.getBytes().length));
-        return new Response(HttpStatus.NOT_FOUND, HttpCookie.from(), body, headers);
+        headers.put(LOCATION_HEADER_KEY, location);
+        setBasicResponse(HttpStatus.FOUND, StringUtils.EMPTY, HttpCookie.from(), headers);
     }
 
-    public static Response found(HttpCookie cookie, String location) {
-        return new Response(HttpStatus.FOUND, cookie, StringUtils.EMPTY, Map.of(LOCATION_HEADER_KEY, location));
+    public void unauthorized(String body) {
+        setBasicResponse(HttpStatus.UNAUTHORIZED, ContentType.HTML, body);
+
     }
 
-    public static Response found(String location) {
-        return new Response(HttpStatus.FOUND, HttpCookie.from(), StringUtils.EMPTY, Map.of(LOCATION_HEADER_KEY, location));
-    }
-
-    public static Response unauthorized(String body) {
-        Map<String, String> headers = new LinkedHashMap<>();
-        headers.put(CONTENT_TYPE_HEADER_KEY, ContentType.HTML.getValue());
-        headers.put(CONTENT_LENGTH_HEADER_KEY, String.valueOf(body.getBytes().length));
-
-        return new Response(HttpStatus.UNAUTHORIZED, HttpCookie.from(), body,
-            headers);
-    }
-
-    public static Response notAllowed() {
+    public void notAllowed() {
         String body = HttpStatus.METHOD_NOT_ALLOWED.getMessage();
-        return new Response(HttpStatus.METHOD_NOT_ALLOWED, HttpCookie.from(), body,
-            Map.of(CONTENT_TYPE_HEADER_KEY, ContentType.HTML.getValue(),
-                CONTENT_LENGTH_HEADER_KEY, String.valueOf(body.getBytes().length)));
+        setBasicResponse(HttpStatus.METHOD_NOT_ALLOWED, ContentType.HTML, body);
     }
 
     public byte[] toHttp11() {
@@ -79,6 +74,25 @@ public class Response {
             "",
             body).getBytes();
     }
+
+    private void setBasicResponse(HttpStatus status, String body, HttpCookie cookie, Map<String, String> headers) {
+        this.header = new HttpHeader(headers);
+        this.status = status;
+        this.body = body;
+        this.cookie = cookie;
+    }
+
+    private void setBasicResponse(HttpStatus status, ContentType contentType, String body, HttpCookie cookie) {
+        Map<String, String> headers = new LinkedHashMap<>();
+        headers.put(CONTENT_TYPE_HEADER_KEY, contentType.getValue());
+        headers.put(CONTENT_LENGTH_HEADER_KEY, String.valueOf(body.getBytes().length));
+        setBasicResponse(status, body, cookie, headers);
+    }
+
+    private void setBasicResponse(HttpStatus status, ContentType contentType, String body) {
+        setBasicResponse(status, contentType, body, HttpCookie.from());
+    }
+
 
     private String generateHeader() {
         return Stream.of(header.getHeaders(), Map.of(COOKIE_HEADER_KEY, cookie.toCookieHeader()))

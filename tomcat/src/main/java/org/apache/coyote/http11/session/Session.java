@@ -33,6 +33,10 @@ public class Session {
         return attributes.get(key);
     }
 
+    public boolean hasAttribute(String key) {
+        return attributes.containsKey(key);
+    }
+
     public Object removeAttribute(String key) {
         return attributes.remove(key);
     }

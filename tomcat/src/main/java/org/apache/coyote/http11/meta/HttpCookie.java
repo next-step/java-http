@@ -3,7 +3,6 @@ package org.apache.coyote.http11.meta;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 public class HttpCookie {

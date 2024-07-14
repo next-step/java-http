@@ -78,3 +78,8 @@ GET /users?userId=javajigi&password=password&name=JaeSung HTTP/1.1
 - [x] : 3. Cookie에 JSESSIONID 값 저장하기
 - [x] : 4. Session 구현하기
 
+# 🚀 4단계 - 리팩터링
+- [X] : 1. HttpRequest 클래스 구현하기
+- [X] : 2. HttpResponse 클래스 구현하기
+- [X] : 3. Controller 인터페이스 추가하기
+

@@ -1,11 +1,9 @@
 package org.apache.coyote.http11;
 
-import camp.nextstep.exception.UncheckedServletException;
+import camp.nextstep.controller.Controller;
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.Socket;
-import java.util.UUID;
 import org.apache.coyote.Processor;
 import org.apache.coyote.http11.request.Request;
 import org.apache.coyote.http11.response.Response;
@@ -21,7 +19,7 @@ public class Http11Processor implements Runnable, Processor {
 
     public Http11Processor(final Socket connection) {
         this.connection = connection;
-        this.requestMapping = new RequestMapping();
+        this.requestMapping = RequestMapping.getInstance();
     }
 
     @Override
@@ -36,12 +34,16 @@ public class Http11Processor implements Runnable, Processor {
              final var br = new BufferedReader(inputStream);
              final var outputStream = connection.getOutputStream()) {
             Request request = new Request(br);
-            Response response = requestMapping.handleMapping(request);
+            Response response = new Response();
+
+            Controller controller = requestMapping.getController(request);
+            controller.service(request, response);
 
             outputStream.write(response.toHttp11());
             outputStream.flush();
-        } catch (IOException | UncheckedServletException e) {
+        } catch (Exception e) {
             log.error(e.getMessage(), e);
+            throw new RuntimeException(e);
         }
     }
 }
