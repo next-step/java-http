@@ -44,3 +44,33 @@
 - `Query String` 파싱하기 
   - [x] Query String을 파싱하기 
   - [x] 로그인 페이지에 접속했을 때 파싱한 ID, PW 값이 일치하면 콘솔 창에 로그로 회원을 조회한 결과가 나와야 한다
+
+
+## 3단계 - 로그인 구현하기 요구사항 목록 
+- 로그인 여부에 따라 다른 페이지로 이동시키기  
+  - [x] 로그인 성공 시 HttpStatusCode 302를 반환하고 `/index.html`로 리다이렉트 
+  - [x] 로그인 실패 시 `401.html`로 리다이렉트 
+  - [x] 로그인 버튼을 눌렀을 때 `POST` 방식으로 전송하도록 변경한다 
+    - [x] HTTP 요청 메세지에서 body를 파싱해와야 한다. 
+- 회원 가입 
+  - [x] `http://localhost:8080/register` 에 `GET` 메서드로 접속하면 회원 가입 페이지(`register.html`)를 보여준다
+  - [x] 회원 가입 버튼을 누르면 `POST` 방식으로 데이터를 전송한다 
+  - [x] 회원 가입이 완료되면 `/index.html`로 리다이렉트 한다  
+- 로그인 성공 시, 쿠키와 세션을 활용해 로그인 상태를 유지해야 한다 
+  - 로그인에 성공하면 응답 헤더에 `Set-Cookie` 를 추가하고, `JSESSIONID=656cef62-e3c4-40bc-a8df-94732920ed46` 형태로 값을 전달하면, 클라이언트 요청 헤더의 `Cookie` 필드에 값이 추가된다
+    ```text
+    GET /index.html HTTP/1.1
+    Host: localhost:8080
+    Connection: keep-alive
+    Accept: */*
+    Cookie: yummy_cookie=choco; tasty_cookie=strawberry; JSESSIONID=656cef62-e3c4-40bc-a8df-94732920ed46
+    ```
+  - [x] 로그인 성공 시 `Set-Cookie` 헤더에 `JSESSIONID=656cef62-e3c4-40bc-a8df-94732920ed46` 값을 추가한다 
+  - [x] Cookie 클래스를 추가한다 
+  - [x] HTTP 요청 헤더의 Cookie에 `JESSIONID`가 없으면 HTTP 응답 헤더에 `Set-Cookie`를 반환 해준다 
+- 세션 구현 
+  - [x] 쿠키에서 전달 받은 `JESSIONID` 값으로 로그인 여부를 체크한다 
+  - [x] 로그인에 성공하면 Session 객체의 값으로 `User`객체를 저장한다 
+  - [x] 로그인 상태에서 `/login` 페이지에 `GET` 요청으로 접근 시 `index.html`로 리다이렉트
+  - [x] 쿠키가 `key=value; key2=value2;` 형태일 때도 파싱해서 가지고 있을 수 있어야 함 
+  - [x] `Session`, `SessionManager` 구현

@@ -19,20 +19,27 @@ public class RequestTarget {
 
         public static RequestTarget from(String requestTarget) {
             String[] pathAndQueries = requestTarget.split(PATH_QUERY_SEPARATOR);
-
-            if (pathAndQueries.length > 1) {
-                String path = pathAndQueries[0];
-                String queries = pathAndQueries[1];
-
-                Map<String, String> queryParamMap = Arrays.stream(queries.split(QUERY_SEPARATOR))
-                        .map(query -> query.split(QUERY_KEY_VALUE_SEPARATOR))
-                        .collect(Collectors.toUnmodifiableMap(query -> query[0], query -> query[1]));
-
-                return new RequestTarget(path, queryParamMap);
-            }
-
-            return new RequestTarget(requestTarget, Map.of());
+            return parseRequestTarget(requestTarget, pathAndQueries);
         }
+
+    private static RequestTarget parseRequestTarget(final String requestTarget, final String[] pathAndQueries) {
+        if (hasQueryParams(pathAndQueries)) {
+            String path = pathAndQueries[0];
+            String queries = pathAndQueries[1];
+
+            Map<String, String> queryParamMap = Arrays.stream(queries.split(QUERY_SEPARATOR))
+                    .map(query -> query.split(QUERY_KEY_VALUE_SEPARATOR))
+                    .collect(Collectors.toUnmodifiableMap(query -> query[0], query -> query[1]));
+
+            return new RequestTarget(path, queryParamMap);
+        }
+
+        return new RequestTarget(requestTarget, Map.of());
+    }
+
+    private static boolean hasQueryParams(final String[] pathAndQueries) {
+        return pathAndQueries.length > 1;
+    }
 
     public String getPath() {
         return path;

@@ -18,4 +18,12 @@ public enum HttpMethod {
 
             throw new IllegalArgumentException("지원되지 않는 HTTP method. 입력=" + upperCase);
         }
+
+    public boolean isPost() {
+        return this == POST;
     }
+
+    public boolean isGet() {
+        return this == GET;
+    }
+}

@@ -50,4 +50,12 @@ public class RequestLine {
     public String getQueryParamValue(final String queryParamKey) {
         return requestTarget.getQueryParamValue(queryParamKey);
     }
+
+    public boolean isPost() {
+        return method.isPost();
+    }
+
+    public boolean isGet() {
+        return method.isGet();
+    }
 }
