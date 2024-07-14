@@ -52,7 +52,7 @@ public class Http11Processor implements Runnable, Processor {
 
     private HttpRequest parseHttpRequest(final BufferedReader br) throws IOException {
         String httpRequestMessage = readHttpRequestMessage(br);
-        HttpRequest httpRequest = HttpRequest.from(httpRequestMessage, sessionManager);
+        HttpRequest httpRequest = HttpRequest.of(httpRequestMessage, sessionManager);
         handleRequestBody(httpRequest, br);
         return httpRequest;
     }

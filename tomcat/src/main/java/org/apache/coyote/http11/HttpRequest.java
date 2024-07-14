@@ -30,7 +30,7 @@ public class HttpRequest {
         this.session = session;
     }
 
-    public static HttpRequest from(final String httpRequestMessage, final SessionManager sessionManager) {
+    public static HttpRequest of(final String httpRequestMessage, final SessionManager sessionManager) {
         String[] httpRequestMessages = httpRequestMessage.split(CRLF);
         List<HttpHeader> httpHeaders = parseHttpHeaders(httpRequestMessages);
         Cookies cookies = Cookies.from(findCookies(httpHeaders));
@@ -110,6 +110,7 @@ public class HttpRequest {
         if (requiresNew) {
             Session newSession = sessionManager.createSession();
             sessionManager.add(newSession);
+            session = newSession;
             return newSession;
         }
 
