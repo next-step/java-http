@@ -37,5 +37,9 @@ public class HttpRequest {
         return headers;
     }
 
+    public RequestBody getBody() {
+        return body;
+    }
+
 }
 

@@ -88,16 +88,15 @@ public class Http11Processor implements Runnable, Processor {
         };
     }
 
-    private void registerUser(HttpRequest request) {
-        QueryParamsMap queryParamsMap = request.getRequestTarget().queryParamsMap();
-        final String account = queryParamsMap.value().get("account");
-        final String email = queryParamsMap.value().get("email");
-        final String password = queryParamsMap.value().get("password");
+    private void registerUser(final HttpRequest request) {
+        final String account = request.getBody().get("account");
+        final String email = request.getBody().get("email");
+        final String password = request.getBody().get("password");
 
         InMemoryUserRepository.save(new User(account, email, password));
     }
 
-    private String staticResponse(HttpRequest httpRequest) throws IOException {
+    private String staticResponse(final HttpRequest httpRequest) throws IOException {
         final File file = ResourceFinder.findFile(httpRequest.getHttpPath());
         final URL resource = ResourceFinder.findResource(httpRequest.getHttpPath());
         final String extension = FileUtils.extractExtension(file.getPath());
