@@ -6,12 +6,12 @@ import org.apache.coyote.http11.HttpResponse;
 
 public class IndexController extends AbstractController {
     @Override
-    protected void doPost(final HttpRequest request, final HttpResponse response) throws Exception {
+    protected void doPost(final HttpRequest request, final HttpResponse response) {
 
     }
 
     @Override
-    protected void doGet(final HttpRequest request, final HttpResponse response) throws Exception {
+    protected void doGet(final HttpRequest request, final HttpResponse response) {
         response.sendResource("/index.html");
     }
 }
