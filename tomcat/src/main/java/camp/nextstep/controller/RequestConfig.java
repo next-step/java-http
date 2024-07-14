@@ -1,17 +1,17 @@
 package camp.nextstep.controller;
 
-import org.apache.coyote.http11.RequestHandler;
+import org.apache.coyote.http11.RequestHandlerMapping;
 
 public class RequestConfig {
-    private final RequestHandler requestHandler;
+    private final RequestHandlerMapping requestHandlerMapping;
 
-    public RequestConfig(final RequestHandler requestHandler) {
-        this.requestHandler = requestHandler;
+    public RequestConfig(final RequestHandlerMapping requestHandlerMapping) {
+        this.requestHandlerMapping = requestHandlerMapping;
     }
 
     public void register() {
-        requestHandler.register("/login", new LoginController());
-        requestHandler.register("/register", new RegisterController());
-        requestHandler.register("/", new IndexController());
+        requestHandlerMapping.register("/login", new LoginController());
+        requestHandlerMapping.register("/register", new RegisterController());
+        requestHandlerMapping.register("/", new IndexController());
     }
 }

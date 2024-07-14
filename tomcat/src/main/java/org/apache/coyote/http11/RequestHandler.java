@@ -1,23 +1,17 @@
 package org.apache.coyote.http11;
 
-import java.util.HashMap;
-import java.util.Map;
-
 public class RequestHandler {
     private static final String NOT_FOUND_PATH = "/404.html";
 
-    private final Map<String, Controller> controllerMap = new HashMap<>();
+    private final RequestHandlerMapping requestHandlerMapping;
 
-    public RequestHandler() {
-    }
-
-    public void register(String path, Controller controller) {
-        controllerMap.put(path, controller);
+    public RequestHandler(final RequestHandlerMapping requestHandlerMapping) {
+        this.requestHandlerMapping = requestHandlerMapping;
     }
 
     void handle(final HttpRequest httpRequest, final HttpResponse httpResponse) {
         String path = httpRequest.getPath();
-        if (!controllerMap.containsKey(path)) {
+        if (requestHandlerMapping.isNotRegisteredPath(path)) {
             handleNotRegisteredRequest(path, httpResponse);
             return;
         }
@@ -34,7 +28,7 @@ public class RequestHandler {
     }
 
     private void handleRegisteredRequest(final HttpRequest httpRequest, final HttpResponse httpResponse, final String path) {
-        Controller controller = controllerMap.get(path);
+        Controller controller = requestHandlerMapping.getController(path);
         try {
             controller.service(httpRequest, httpResponse);
         } catch (ResourceNotFoundException e) {
