@@ -8,7 +8,6 @@ import java.net.URL;
 
 import org.apache.coyote.Processor;
 import org.apache.coyote.support.FileUtils;
-import org.apache.exception.NotFoundUserException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,16 +15,18 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.Socket;
+import java.util.Optional;
 
 public class Http11Processor implements Runnable, Processor {
 
     private static final Logger log = LoggerFactory.getLogger(Http11Processor.class);
+    private static final String ROOT_PATH = "/";
+    private static final String INDEX_PATH = "/index.html";
+    private static final String LOGIN_PATH = "/login";
+    public static final String UNAUTHORIZED_PATH = "/401.html";
 
     private final Socket connection;
     private final RequestLineParser requestLineParser = new RequestLineParser();
-
-    private static final String ROOT_PATH = "/";
-    private static final String LOGIN_PATH = "/login";
 
     public Http11Processor(final Socket connection) {
         this.connection = connection;
@@ -60,9 +61,13 @@ public class Http11Processor implements Runnable, Processor {
         }
 
         if(httpServletRequest.httpPath().equals(LOGIN_PATH)) {
-            validateUser(httpServletRequest);
+            return LoginResponse(httpServletRequest);
         }
 
+        return staticResponse(httpServletRequest);
+    }
+
+    private String staticResponse(HttpServletRequest httpServletRequest) throws IOException {
         final File file = ResourceFinder.findFile(httpServletRequest.httpPath());
         final URL resource = ResourceFinder.findResource(httpServletRequest.httpPath());
         final String extension = FileUtils.extractExtension(file.getPath());
@@ -77,17 +82,45 @@ public class Http11Processor implements Runnable, Processor {
                 content);
     }
 
-    private static void validateUser(HttpServletRequest httpServletRequest) {
-        QueryParamsMap queryParamsMap = httpServletRequest.requestTarget().queryParamsMap();
+    private String LoginResponse(HttpServletRequest request) throws IOException {
+        QueryParamsMap queryParamsMap = request.requestTarget().queryParamsMap();
         if(queryParamsMap == null) {
-            return;
+            return staticResponse(request);
         }
 
         final String account = queryParamsMap.value().get("account");
         final String password = queryParamsMap.value().get("password");
-        final User user = InMemoryUserRepository.findByAccount(account).orElseThrow(NotFoundUserException::new);
-        user.checkPassword(password);
-        log.info(user.toString());
+        Optional<User> userOptional = InMemoryUserRepository.findByAccount(account);
+        if(userOptional.isEmpty() || !userOptional.get().checkPassword(password)) {
+            return unauthorizedResponse();
+        }
+
+        log.info(userOptional.get().toString());
+        return redirectResponse();
+    }
+
+    private String redirectResponse() throws IOException {
+        final URL resource = ResourceFinder.findResource(INDEX_PATH);
+        final String content = ResourceFinder.findContent(resource);
+
+        return String.join("\r\n",
+                "HTTP/1.1 302 OK ",
+                "Content-Type: "+ ContentType.TEXT_HTML.getType() +";charset=utf-8 ",
+                "Content-Length: " + content.getBytes().length + " ",
+                "",
+                content);
+    }
+
+    private String unauthorizedResponse() throws IOException {
+        final URL resource = ResourceFinder.findResource(UNAUTHORIZED_PATH);
+        final String content = ResourceFinder.findContent(resource);
+
+        return String.join("\r\n",
+                "HTTP/1.1 401 OK ",
+                "Content-Type: "+ ContentType.TEXT_HTML.getType() +";charset=utf-8 ",
+                "Content-Length: " + content.getBytes().length + " ",
+                "",
+                content);
     }
 
     private String defaultResponse() {
@@ -105,6 +138,7 @@ public class Http11Processor implements Runnable, Processor {
         StringBuilder sb = new StringBuilder("\n");
         while (true) {
             String line = br.readLine();
+            log.info(line);
             if (line == null || line.isEmpty()) {
                 break;
             }
