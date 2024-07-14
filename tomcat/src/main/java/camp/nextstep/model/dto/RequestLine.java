@@ -14,9 +14,6 @@ public class RequestLine {
     Path path;
     Protocol protocol;
     Version version;
-    String path;
-    String protocol;
-    String version;
     Map<String, String> queryStringMap = new HashMap<>();
 
     public HttpMethod getMethod() {
