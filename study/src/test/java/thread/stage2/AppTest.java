@@ -27,7 +27,14 @@ class AppTest {
         var threads = new Thread[NUMBER_OF_THREAD];
 
         for (int i = 0; i < NUMBER_OF_THREAD; i++) {
-            threads[i] = new Thread(() -> incrementIfOk(TestHttpUtils.send("/test")));
+            int newI = i;
+            threads[i] = new Thread(() -> {
+                try {
+                    incrementIfOk(TestHttpUtils.send(newI, "/test"));
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+            });
         }
 
         for (final var thread : threads) {
