@@ -1,4 +1,4 @@
-package org.apache.catalina;
+package org.apache.session;
 
 import java.util.Map;
 import java.util.Objects;

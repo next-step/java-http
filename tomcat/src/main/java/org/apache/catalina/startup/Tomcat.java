@@ -1,9 +1,9 @@
 package org.apache.catalina.startup;
 
-import org.apache.catalina.Manager;
+import org.apache.session.Manager;
 import org.apache.catalina.connector.Connector;
-import org.apache.catalina.Session;
-import org.apache.catalina.SessionManager;
+import org.apache.session.Session;
+import org.apache.session.SessionManager;
 import org.apache.coyote.http11.RequestHandler;
 import org.apache.coyote.http11.RequestHandlerMapping;
 import org.slf4j.Logger;

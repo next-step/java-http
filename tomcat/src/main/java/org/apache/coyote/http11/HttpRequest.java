@@ -1,6 +1,6 @@
 package org.apache.coyote.http11;
 
-import org.apache.catalina.Session;
+import org.apache.session.Session;
 
 import java.util.Arrays;
 import java.util.List;

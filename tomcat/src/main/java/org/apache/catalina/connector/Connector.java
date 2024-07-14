@@ -1,6 +1,6 @@
 package org.apache.catalina.connector;
 
-import org.apache.catalina.Session;
+import org.apache.session.Session;
 import org.apache.coyote.http11.Http11Processor;
 import org.apache.coyote.http11.RequestHandler;
 import org.slf4j.Logger;

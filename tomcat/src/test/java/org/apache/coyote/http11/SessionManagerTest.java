@@ -1,7 +1,7 @@
 package org.apache.coyote.http11;
 
-import org.apache.catalina.Session;
-import org.apache.catalina.SessionManager;
+import org.apache.session.Session;
+import org.apache.session.SessionManager;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 

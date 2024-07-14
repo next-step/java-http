@@ -3,7 +3,7 @@ package camp.nextstep.controller;
 import camp.nextstep.db.InMemoryUserRepository;
 import camp.nextstep.exception.UserNotFoundException;
 import camp.nextstep.model.User;
-import org.apache.catalina.Session;
+import org.apache.session.Session;
 import org.apache.coyote.http11.AbstractController;
 import org.apache.coyote.http11.Cookie;
 import org.apache.coyote.http11.HttpRequest;

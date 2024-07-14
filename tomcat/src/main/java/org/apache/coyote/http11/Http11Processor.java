@@ -1,7 +1,7 @@
 package org.apache.coyote.http11;
 
 import camp.nextstep.exception.UncheckedServletException;
-import org.apache.catalina.Session;
+import org.apache.session.Session;
 import org.apache.coyote.Processor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
