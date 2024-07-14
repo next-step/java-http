@@ -9,6 +9,7 @@ import org.apache.http.header.HttpRequestHeaders;
 import org.apache.http.session.HttpSession;
 import org.apache.http.session.SessionManager;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.function.Function;
 
@@ -49,7 +50,7 @@ public class StubHttpRequest extends HttpRequest {
     public StubHttpRequest(final Cookie cookie) {
         super(
                 new HttpRequestLine("POST /login HTTP/1.1"),
-                new HttpRequestHeaders(cookie),
+                new HttpRequestHeaders(Collections.singletonList(cookie.toString())),
                 null,
                 (c) -> {
                     var session = sessionManager.findSession(cookie.findSession());
