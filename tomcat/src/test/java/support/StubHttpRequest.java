@@ -14,9 +14,8 @@ import java.util.function.Function;
 
 public class StubHttpRequest extends HttpRequest {
     private static final SessionManager sessionManager = new SessionManager();
-    private static HttpSession createdSession = sessionManager.create();
     private static Function<Boolean, HttpSession> createSession = (c) -> {
-        if(c) return createdSession;
+        if(c) return sessionManager.create();
         else return null;
     };
 

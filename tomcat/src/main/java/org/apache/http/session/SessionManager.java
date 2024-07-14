@@ -27,6 +27,14 @@ public class SessionManager implements Manager {
         return SESSIONS.get(session.id);
     }
 
+    public HttpSession findOrCreateSession(HttpSession session) {
+        var result = findSession(session);
+        if (result == null) {
+            return create();
+        }
+        return result;
+    }
+
     public HttpSession create() {
         var id = UUID.randomUUID().toString();
         var newSession = new HttpSession(id);

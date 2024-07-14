@@ -50,15 +50,12 @@ public class Http11Processor implements Runnable, Processor {
         final var requestLine = new HttpRequestLine(reader.readLine().trim());
         final var headers = new HttpRequestHeaders(parseHeaders(reader));
         final var body = headers.parseBody(parseBody(reader, headers.contentLength()));
-        final var session = sessionManager.findSession(headers.getSession());
+        final var session = headers.getSession();
         final Function<Boolean, HttpSession> getSession = (canCreate) -> {
-            if (session != null) {
-                return session;
+            if (canCreate) {
+                return sessionManager.findOrCreateSession(session);
             }
-            if (!canCreate) {
-                return null;
-            }
-            return sessionManager.create();
+            return sessionManager.findSession(session);
         };
 
         return new HttpRequest(requestLine, headers, body, getSession);
