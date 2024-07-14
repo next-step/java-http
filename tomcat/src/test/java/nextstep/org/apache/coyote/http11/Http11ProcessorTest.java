@@ -1,12 +1,9 @@
 package nextstep.org.apache.coyote.http11;
 
-import camp.nextstep.model.User;
 import org.apache.catalina.Manager;
 import org.apache.catalina.Session;
-import org.apache.coyote.http11.DefaultSession;
-import org.apache.coyote.http11.Http11Processor;
-import org.apache.coyote.http11.RequestHandler;
-import org.apache.coyote.http11.SessionManager;
+import org.apache.catalina.SessionManager;
+import org.apache.coyote.http11.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -20,33 +17,65 @@ import java.nio.file.Files;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class Http11ProcessorTest {
+    private Session session;
+    private RequestHandlerMapping requestHandlerMapping;
     private RequestHandler requestHandler;
 
     @BeforeEach
     void setUp() {
         Manager sessionManager = SessionManager.create();
-        Session session = DefaultSession.of("1", sessionManager);
-        requestHandler = RequestHandler.from(session);
+        session = Session.of("1", sessionManager);
+        requestHandlerMapping = new RequestHandlerMapping();
+        requestHandler = new RequestHandler(requestHandlerMapping);
     }
 
-    @DisplayName("Http11Processor 프로세스를 수행하면 응답이 반환된다")
+    @DisplayName("RequestHandler에 등록된 Controller가 없을 경우 /404.html을 응답한다")
     @Test
     void process() {
         // given
         final var socket = new StubSocket();
-        final var processor = new Http11Processor(socket, requestHandler);
+        final var processor = new Http11Processor(socket, requestHandler, session);
 
         // when
         processor.process(socket);
 
         // then
-        var expected = String.join("\r\n",
-                "HTTP/1.1 200 OK ",
-                "Content-Type: text/html;charset=utf-8 ",
-                "Content-Length: 5564 ",
-                "");
+        assertThat(socket.output()).contains("HTTP/1.1 302 Found ", "Location: /404.html", "Content-Length: 0");
+    }
 
-        assertThat(socket.output()).contains(expected);
+    @DisplayName("RequestHandler에 등록된 Controller가 있을 경우, 그에 맞는 응답을 한다.")
+    @Test
+    void process2() {
+        // given
+        final String httpRequest = String.join("\r\n",
+                "GET /haha HTTP/1.1 ",
+                "Host: localhost:8080 ",
+                "Connection: keep-alive ",
+                "",
+                "");
+        final var socket = new StubSocket(httpRequest);
+
+        requestHandlerMapping.register("/haha", new TestController());
+        final var processor = new Http11Processor(socket, requestHandler, session);
+
+        // when
+        processor.process(socket);
+
+        // then
+        assertThat(socket.output()).contains("HTTP/1.1 302 Found ", "Location: /haha.html", "Content-Length: 0");
+    }
+
+    private static class TestController extends AbstractController {
+
+        @Override
+        protected void doPost(final HttpRequest request, final HttpResponse response) throws Exception {
+
+        }
+
+        @Override
+        protected void doGet(final HttpRequest request, final HttpResponse response) throws Exception {
+            response.sendRedirect("/haha.html");
+        }
     }
 
     @DisplayName("/index.html로 요청하면 responseBody에 index.html 파일의 내용이 추가된다.")
@@ -61,7 +90,7 @@ class Http11ProcessorTest {
                 "");
 
         final var socket = new StubSocket(httpRequest);
-        final Http11Processor processor = new Http11Processor(socket, requestHandler);
+        final Http11Processor processor = new Http11Processor(socket, requestHandler, session);
 
         // when
         processor.process(socket);
@@ -90,7 +119,7 @@ class Http11ProcessorTest {
                 "");
 
         final var socket = new StubSocket(httpRequest);
-        final Http11Processor processor = new Http11Processor(socket, requestHandler);
+        final Http11Processor processor = new Http11Processor(socket, requestHandler, session);
 
         // when
         processor.process(socket);
@@ -110,180 +139,5 @@ class Http11ProcessorTest {
     private String getResponseBody(String resourcePath) throws IOException {
         final URL resource = getClass().getClassLoader().getResource(resourcePath);
         return new String(Files.readAllBytes(new File(resource.getFile()).toPath()));
-    }
-
-    @DisplayName("/login + GET 요청 시, 쿠키가 없으면 login.html이 응답된다")
-    @Test
-    void getLogin() throws IOException {
-        // given
-        final String httpRequest = String.join("\r\n",
-                "GET /login HTTP/1.1 ",
-                "Host: localhost:8080 ",
-                "Connection: keep-alive ",
-                "",
-                "");
-
-        final var socket = new StubSocket(httpRequest);
-        final Http11Processor processor = new Http11Processor(socket, requestHandler);
-
-        // when
-        processor.process(socket);
-
-        // then
-        String responseBody = getResponseBody("static/login.html");
-        var expected = String.join("\r\n",
-                "HTTP/1.1 200 OK ",
-                "Content-Type: text/html;charset=utf-8 ",
-                "Content-Length: 3797 ",
-                "",
-                responseBody);
-
-        assertThat(socket.output()).isEqualTo(expected);
-    }
-
-
-    @DisplayName("/login + GET 요청 시, 쿠키가 있어도 세션에 없으면 login.html이 응답된다")
-    @Test
-    void getLogin2() throws IOException {
-        // given
-        final String httpRequest = String.join("\r\n",
-                "GET /login HTTP/1.1 ",
-                "Host: localhost:8080 ",
-                "Connection: keep-alive ",
-                "Cookie: JSESSIONID=uuid2345 ",
-                "",
-                "");
-
-        final var socket = new StubSocket(httpRequest);
-        final Http11Processor processor = new Http11Processor(socket, requestHandler);
-
-        // when
-        processor.process(socket);
-
-        // then
-        String responseBody = getResponseBody("static/login.html");
-        var expected = String.join("\r\n",
-                "HTTP/1.1 200 OK ",
-                "Content-Type: text/html;charset=utf-8 ",
-                "Content-Length: 3797 ",
-                "",
-                responseBody);
-
-        assertThat(socket.output()).isEqualTo(expected);
-    }
-
-    @DisplayName("/login + GET 요청 시, 쿠키가 있고 세션이 저장돼 있으면 /index.html로 리다이렉트")
-    @Test
-    void getLoginFail() {
-        // given
-        String cookie = "uuid";
-        Session session = requestHandler.getSession();
-        session.setAttribute(cookie, new User(2L, "account", "password", "email"));
-        final String httpRequest = String.join("\r\n",
-                "GET /login HTTP/1.1 ",
-                "Host: localhost:8080 ",
-                "Connection: keep-alive ",
-                "Cookie: JSESSIONID=uuid ",
-                "",
-                "");
-
-        final var socket = new StubSocket(httpRequest);
-        final Http11Processor processor = new Http11Processor(socket, requestHandler);
-
-        // when
-        processor.process(socket);
-
-        // then
-        var expected = String.join("\r\n",
-                "HTTP/1.1 302 Found ",
-                "Content-Length: 0 ",
-                "Location: /index.html ",
-                "",
-                "");
-
-        assertThat(socket.output()).isEqualTo(expected);
-    }
-
-    @DisplayName("/login + POST 요청은 성공 시 302 FOUND를 응답하고 Location으로 /index.html을 제공한다")
-    @Test
-    void postLogin() {
-        // given
-        String body = "account=gugu&password=password";
-        final String httpRequest = String.join("\r\n",
-                "POST /login HTTP/1.1 ",
-                "Host: localhost:8080 ",
-                "Content-Length: %d ".formatted(body.getBytes().length),
-                "Connection: keep-alive ",
-                "",
-                body);
-
-        final var socket = new StubSocket(httpRequest);
-        final Http11Processor processor = new Http11Processor(socket, requestHandler);
-
-        // when
-        processor.process(socket);
-
-        // then
-        assertThat(socket.output()).contains("Set-Cookie: JSESSIONID=", "Content-Length: 0", "Location: /index.html");
-    }
-
-    @DisplayName("/login + POST 요청은 실패 시 302 FOUND를 응답하고 Location으로 /401.html을 제공한다")
-    @Test
-    void postLoginFail() {
-        // given
-        String body = "account=gugu&password=passwordddd!";
-        final String httpRequest = String.join("\r\n",
-                "POST /login HTTP/1.1 ",
-                "Host: localhost:8080 ",
-                "Content-Length: %d ".formatted(body.getBytes().length),
-                "Connection: keep-alive ",
-                "",
-                body);
-
-        final var socket = new StubSocket(httpRequest);
-        final Http11Processor processor = new Http11Processor(socket, requestHandler);
-
-        // when
-        processor.process(socket);
-
-        // then
-        var expected = String.join("\r\n",
-                "HTTP/1.1 302 Found ",
-                "Content-Length: 0 ",
-                "Location: /401.html ",
-                "",
-                "");
-
-        assertThat(socket.output()).isEqualTo(expected);
-    }
-
-    @DisplayName("/register + POST 요청은 성공 시 302 FOUND를 응답하고 Location으로 /index.html을 제공한다")
-    @Test
-    void register() {
-        // given
-        String body = "account=gugu&password=password";
-        final String httpRequest = String.join("\r\n",
-                "POST /register HTTP/1.1 ",
-                "Host: localhost:8080 ",
-                "Content-Length: %d ".formatted(body.getBytes().length),
-                "Connection: keep-alive ",
-                "",
-                body);
-
-        final var socket = new StubSocket(httpRequest);
-        final Http11Processor processor = new Http11Processor(socket, requestHandler);
-
-        // when
-        processor.process(socket);
-
-        // then
-        var expected = String.join("\r\n",
-                "HTTP/1.1 302 Found ",
-                "Content-Length: 0 ",
-                "Location: /index.html ",
-                "",
-                "");
-
-        assertThat(socket.output()).isEqualTo(expected);
     }
 }
