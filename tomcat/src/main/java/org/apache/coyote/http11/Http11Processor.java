@@ -1,7 +1,6 @@
 package org.apache.coyote.http11;
 
 import camp.nextstep.RequestParser;
-import camp.nextstep.UserService;
 import camp.nextstep.exception.UncheckedServletException;
 import camp.nextstep.model.dto.RequestLine;
 import org.apache.commons.lang3.StringUtils;
