@@ -18,6 +18,7 @@ import java.io.InputStreamReader;
 import java.net.Socket;
 import java.util.Optional;
 import java.util.StringJoiner;
+import java.util.UUID;
 
 public class Http11Processor implements Runnable, Processor {
 
@@ -47,6 +48,8 @@ public class Http11Processor implements Runnable, Processor {
             final HttpHeaders headers = HttpHeaderParser.parse(requestLine);
             final RequestBody requestBody = RequestBodyParser.parse(br, headers);
             final HttpRequest httpRequest = RequestLineParser.parse(requestLine, headers, requestBody);
+            final HttpCookie cookie = HttpCookieParser.parse(headers);
+            httpRequest.addCookie(cookie);
 
             final var response = createResponse(httpRequest);
 
@@ -84,7 +87,7 @@ public class Http11Processor implements Runnable, Processor {
             }
             case POST -> {
                 registerUser(request);
-                yield redirectResponse();
+                yield redirectResponse(request.getCookie());
             }
         };
     }
@@ -124,12 +127,12 @@ public class Http11Processor implements Runnable, Processor {
                 }
 
                 log.info(userOptional.get().toString());
-                yield redirectResponse();
+                yield redirectResponse(request.getCookie());
             }
         };
     }
 
-    private String redirectResponse() throws IOException {
+    private String redirectResponse(HttpCookie cookie) throws IOException {
         final URL resource = ResourceFinder.findResource(INDEX_PATH);
         final String content = ResourceFinder.findContent(resource);
 
@@ -137,6 +140,7 @@ public class Http11Processor implements Runnable, Processor {
                 "HTTP/1.1 302 OK ",
                 "Content-Type: "+ ContentType.TEXT_HTML.getType() +";charset=utf-8 ",
                 "Content-Length: " + content.getBytes().length + " ",
+                !cookie.hasJSESSIONID() ? "Set-Cookie: " + UUID.randomUUID() + " " : "",
                 "",
                 content);
     }

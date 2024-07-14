@@ -7,6 +7,7 @@ public class HttpRequest {
     private final RequestTarget requestTarget;
     private final HttpHeaders headers;
     private final RequestBody body;
+    private HttpCookie cookie;
 
     public HttpRequest(HttpMethod httpMethod, RequestTarget requestTarget, HttpHeaders headers, RequestBody body) {
         this.httpMethod = httpMethod;
@@ -41,6 +42,14 @@ public class HttpRequest {
 
     public RequestBody getBody() {
         return body;
+    }
+
+    public HttpCookie getCookie() {
+        return cookie;
+    }
+
+    public void addCookie(HttpCookie cookie) {
+        this.cookie = cookie;
     }
 
 }
