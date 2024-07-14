@@ -1,5 +1,8 @@
 package org.apache.coyote.http11;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.util.List;
 
 public class HttpResponse {
@@ -53,10 +56,20 @@ public class HttpResponse {
         addHeader(HttpHeader.of(HttpHeaderName.SET_COOKIE.getValue(), cookie.createMessage()));
     }
 
-    public void setBody(final String responseBody) {
-        String headerName = HttpHeaderName.CONTENT_LENGTH.getValue();
-        String value = String.valueOf(responseBody.getBytes().length);
-        httpHeaders.replace(headerName, value);
-        this.responseBody = responseBody;
+    public void sendResource(final String resourcePath) {
+        try {
+            File resource = new ResourceFinder().findByPath(resourcePath);
+            responseBody = new String(Files.readAllBytes(resource.toPath()));
+
+            MediaType mediaType = MediaType.from(resource);
+            HttpHeader contentTypeHeader = HttpHeader.of(HttpHeaderName.CONTENT_TYPE.getValue(), mediaType.getValue() + ";charset=utf-8");
+            addHeader(contentTypeHeader);
+
+            String contentLengthHeaderName = HttpHeaderName.CONTENT_LENGTH.getValue();
+            String contentLength = String.valueOf(responseBody.getBytes().length);
+            httpHeaders.replace(contentLengthHeaderName, contentLength);
+        } catch (IOException e) {
+            throw new ResourceNotFoundException();
+        }
     }
 }
