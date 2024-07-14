@@ -22,6 +22,10 @@ public class HttpHeaders {
         return headers.containsKey("Content-Length");
     }
 
+    public boolean hasCookie() {
+        return headers.containsKey("Cookie");
+    }
+
     public int contentLength() {
         return Integer.parseInt(headers.get("Content-Length"));
     }

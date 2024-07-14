@@ -4,10 +4,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class RequestBody {
-    private Map<String, String> body = new HashMap<>();
+    private final Map<String, String> body = new HashMap<>();
 
-    public RequestBody(Map<String, String> body) {
-        this.body = body;
+    public RequestBody(Map<String, String> value) {
+        body.putAll(value);
     }
 
     public Map<String, String> map() {
