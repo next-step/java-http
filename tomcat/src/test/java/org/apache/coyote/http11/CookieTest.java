@@ -4,14 +4,14 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class CookieTest {
-    @DisplayName("Cookie의 이름은 null일 수 없다.")
+    @DisplayName("Cookie 생성 문자열로 key= 와 같이 value가 없이 들어오는 경우 value는 빈값이 된다.")
     @Test
     void createCookieWithNull() {
-        assertThatThrownBy(() -> Cookie.of(null, "haha"))
-                .isInstanceOf(InvalidCookieNameException.class);
+        Cookie cookie = Cookie.from("key=");
+
+        assertThat(cookie.getValue()).isEmpty();
     }
 
     @DisplayName("name, value를 받아 앞뒤 공백을 지운 후 Cookie 객체가 생성된다")
