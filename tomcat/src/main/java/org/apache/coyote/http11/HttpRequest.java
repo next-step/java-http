@@ -4,11 +4,13 @@ public class HttpRequest {
     private final HttpMethod httpMethod;
     private final RequestTarget requestTarget;
     private final HttpHeaders headers;
+    private final RequestBody body;
 
-    public HttpRequest(HttpMethod httpMethod, RequestTarget requestTarget, HttpHeaders headers) {
+    public HttpRequest(HttpMethod httpMethod, RequestTarget requestTarget, HttpHeaders headers, RequestBody body) {
         this.httpMethod = httpMethod;
         this.requestTarget = requestTarget;
         this.headers = headers;
+        this.body = body;
     }
 
     public HttpMethod getHttpMethod() {

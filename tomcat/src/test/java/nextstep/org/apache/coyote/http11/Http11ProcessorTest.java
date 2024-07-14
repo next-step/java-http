@@ -94,7 +94,7 @@ class Http11ProcessorTest {
 
     @Test
     @DisplayName("로그인 페이지를 호출한다")
-    void login() throws IOException {
+    void loginPage() throws IOException {
         // given
         final String httpRequest= String.join("\r\n",
             "GET /login HTTP/1.1 ",
@@ -183,8 +183,38 @@ class Http11ProcessorTest {
     }
 
     @Test
-    @DisplayName("회원 가입 페이지를 호출한다")
-    void register() throws IOException {
+    @DisplayName("GET 회원 가입 페이지를 호출한다")
+    void registerPage() throws IOException {
+        // given
+        final String httpRequest= String.join("\r\n",
+                "GET /register HTTP/1.1 ",
+                "Host: localhost:8080 ",
+                "Accept: text/html,charset=utf-8 ",
+                "Connection: keep-alive ",
+                "",
+                "");
+
+        final var socket = new StubSocket(httpRequest);
+        final Http11Processor processor = new Http11Processor(socket);
+
+        // when
+        processor.process(socket);
+
+        // then
+        final URL resource = getClass().getClassLoader().getResource("static/register.html");
+        var expected = String.join("\r\n",
+                "HTTP/1.1 200 OK ",
+                "Content-Type: text/html;charset=utf-8 ",
+                "Content-Length: 4391 ", // 운영체제 환경에 따라 다른 값이 나올 수 있음. 자신의 개발 환경에 맞춰 수정할 것.
+                "",
+                new String(Files.readAllBytes(new File(resource.getFile()).toPath())));
+
+        assertThat(socket.output()).isEqualTo(expected);
+    }
+
+    @Test
+    @DisplayName("POST 로 회원가입을 호출한 뒤 가입이 완료되면 index.html 으로 리다이렉트 한다")
+    void registerSuccess() throws IOException {
         // given
         final String httpRequest= String.join("\r\n",
                 "GET /register HTTP/1.1 ",

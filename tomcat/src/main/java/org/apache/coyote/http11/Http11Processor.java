@@ -26,7 +26,6 @@ public class Http11Processor implements Runnable, Processor {
     public static final String UNAUTHORIZED_PATH = "/401.html";
 
     private final Socket connection;
-    private final RequestLineParser requestLineParser = new RequestLineParser();
 
     public Http11Processor(final Socket connection) {
         this.connection = connection;
@@ -43,8 +42,10 @@ public class Http11Processor implements Runnable, Processor {
         try (BufferedReader br = new BufferedReader(new InputStreamReader(connection.getInputStream()));
              final var outputStream = connection.getOutputStream()) {
 
-            final String httpRequestMessage = readHttpRequestMessage(br);
-            final HttpRequest httpRequest = requestLineParser.parse(httpRequestMessage);
+            final String requestLine = readHttpRequestMessage(br);
+            final HttpHeaders headers = HttpHeaderParser.parse(requestLine);
+            final RequestBody requestBody = RequestBodyParser.parse(br, headers);
+            final HttpRequest httpRequest = RequestLineParser.parse(requestLine, headers, requestBody);
 
             final var response = createResponse(httpRequest);
 

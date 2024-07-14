@@ -14,8 +14,16 @@ public class HttpHeaders {
         headers.put(name, value);
     }
 
-    public String get(String name) {
-        return headers.get(name);
+    public String get(String key) {
+        return headers.get(key);
+    }
+
+    public boolean hasContentLength() {
+        return headers.containsKey("Content-Length");
+    }
+
+    public int contentLength() {
+        return Integer.parseInt(headers.get("Content-Length"));
     }
 
 }
