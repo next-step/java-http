@@ -43,6 +43,7 @@
 ## 기능 요구 사항
 
 ### 1. Executors로 Thread Pool 적용
+
 Connector 클래스의 void process(final Socket connection) 메서드에서 요청마다 스레드를 새로 생성하고 있다.
 Connector 클래스에서 Executors 클래스를 사용해서 ExecutorService 객체를 만들어보자.
 스레드 갯수는 maxThreads라는 변수로 지정한다.
@@ -53,12 +54,28 @@ public Connector(final Container container, final int port, final int acceptCoun
    // 생성자에서 스레드 풀 생성
 }
 ```
-#### 생각해보기 🤔
-- acceptCount와 maxThreads는 각각 어떤 설정일까?
-- 최대 ThradPool의 크기는 250, 모든 Thread가 사용 중인(Busy) 상태이면 100명까지 대기 상태로 만들려면 어떻게 할까?
 
+#### 생각해보기 🤔
+
+- acceptCount와 maxThreads는 각각 어떤 설정일까?
+    - https://tomcat.apache.org/tomcat-9.0-doc/config/http.html#:%7E:text=Description-,acceptCount,-The%20maximum%20length
+    - maxThreads?
+        - 이 Connector 에서 생성할 처리 스레드 수입니다. 요청을 동시에 처리할 수 있는 최대 수를 의미합니다.
+        - 지정하지 않으면 이 속성은 200으로 설정됩니다.
+
+    - acceptCount?
+        - 최대 연결 수에 도달했을 때 들어오는 연결 요청에 대해 OS 에서 제공하는 대기열의 최대 길이입니다.
+        - OS 는 이 설정을 무시할 수 있습니다.
+        - 이 대기열이 가득 차면 추가 연결을 거부하거나 타임아웃 발생시킬 수 있습니다.
+        - 기본값은 100입니다.
+
+
+- maxThreads? [Q]
+- 최대 ThreadPool 의 크기는 250, 모든 Thread 가 사용 중인(Busy) 상태이면 100명까지 대기 상태로 만들려면 어떻게 할까?
+    - maxThreads 를 250, acceptCount 를 100 으로 지정하면 250개 동시요청에 100의 대기상태를 허용할 수 있습니다.
 
 ### 2. 동시성 컬렉션 사용하기
+
 `SessionManager` 클래스에서 `Session` 컬렉션은 여러 스레드가 동시에 접근할 수 있다.
 그러다보니 `Session` 컬렉션에 여러 스레드가 동시에 접근하여 읽고 쓰다보면 스레드 안정성을 보장하기 어렵다.
 동시성 컬렉션(Concurrent Collections)을 적용해서 스레드 안정성과 원자성을 보장해보자.
