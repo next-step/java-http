@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.Socket;
 import java.util.Optional;
+import java.util.StringJoiner;
 
 public class Http11Processor implements Runnable, Processor {
 
@@ -163,16 +164,16 @@ public class Http11Processor implements Runnable, Processor {
     }
 
     private String readHttpRequestMessage(final BufferedReader br) throws IOException {
-        StringBuilder sb = new StringBuilder("\n");
+        StringJoiner sj = new StringJoiner("\n");
         while (true) {
             String line = br.readLine();
             log.info(line);
             if (line == null || line.isEmpty()) {
                 break;
             }
-            sb.append(line);
+            sj.add(line);
         }
-        return sb.toString();
+        return sj.toString();
     }
 
 }

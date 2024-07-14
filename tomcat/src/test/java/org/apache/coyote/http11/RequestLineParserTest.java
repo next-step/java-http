@@ -21,7 +21,7 @@ class RequestLineParserTest {
 
     @Test
     @DisplayName("GET 요청을 HttpMethod, HttpPath, HttpProtocol, protocolVersion 으로 파싱할 수 있다.")
-    void from_get() {
+    void parse_get() {
         final String requestLine = "GET /users HTTP/1.1";
 
         final HttpRequest expected = parser.parse(requestLine);
@@ -34,7 +34,7 @@ class RequestLineParserTest {
 
     @Test
     @DisplayName("POST 요청을 HttpMethod, HttpPath, HttpProtocol, protocolVersion 으로 파싱할 수 있다.")
-    void from_post() {
+    void parse_post() {
         final String requestLine = "POST /users HTTP/1.1";
 
         final HttpRequest expected = parser.parse(requestLine);
@@ -47,7 +47,7 @@ class RequestLineParserTest {
 
     @Test
     @DisplayName("queryString 이 포함된 GET 요청을 HttpMethod, HttpPath, HttpProtocol, protocolVersion 으로 파싱할 수 있다.")
-    void from_getWithQueryString() {
+    void parse_getWithQueryString() {
         final String requestLine = "GET /users?userId=javajigi&password=password&name=JaeSung HTTP/1.1";
 
         final HttpRequest expected = parser.parse(requestLine);
@@ -59,6 +59,25 @@ class RequestLineParserTest {
         assertThat(expected.getRequestTarget().queryParamsMap().value().get(QUERY_PARAMS_KEY_3)).isEqualTo(QUERY_PARAMS_VALUE_3);
         assertThat(expected.getRequestTarget().protocol().value()).isEqualTo(TEST_HTTP_PROTOCOL);
         assertThat(expected.getRequestTarget().protocolVersion().value()).isEqualTo(TEST_HTTPS_PROTOCOL_VERSION);
+    }
+
+    @Test
+    @DisplayName("헤더의 키, 값 들을 파싱한다")
+    void parseHeaders() {
+        final String request = String.join("\r\n",
+                "GET /register HTTP/1.1 ",
+                "Host: localhost:8080 ",
+                "Accept: text/html,charset=utf-8 ",
+                "Connection: keep-alive ",
+                "",
+                "");
+
+        final HttpRequest actual = parser.parse(request);
+
+        assertThat(actual.getHttpMethod()).isEqualTo(HttpMethod.GET);
+        assertThat(actual.getHeaders().get("Host")).isEqualTo("localhost:8080");
+        assertThat(actual.getHeaders().get("Accept")).isEqualTo("text/html,charset=utf-8");
+        assertThat(actual.getHeaders().get("Connection")).isEqualTo("keep-alive");
     }
 
 }
