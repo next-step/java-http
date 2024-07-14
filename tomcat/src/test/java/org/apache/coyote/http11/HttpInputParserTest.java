@@ -1,7 +1,7 @@
 package org.apache.coyote.http11;
 
 import org.apache.coyote.http.HttpMethod;
-import org.apache.coyote.http.Request;
+import org.apache.coyote.http.HttpRequest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import support.StubSocket;
@@ -13,7 +13,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class HttpInputParserTest {
 
-    @DisplayName("GET 요청의 RequestLine 을 파싱한다")
+    @DisplayName("GET 요청의 Request 를 파싱한다")
     @Test
     public void parseGetRequestLine() throws Exception {
         // given
@@ -21,10 +21,10 @@ class HttpInputParserTest {
         final HttpInputParser httpInputParser = new HttpInputParser(socket.getInputStream());
 
         // when
-        httpInputParser.parseRequestLine();
+        httpInputParser.parseRequest();
 
         // then
-        final Request actual = httpInputParser.getRequest();
+        final HttpRequest actual = httpInputParser.getRequest();
         assertAll(
                 () -> assertThat(actual.getMethod()).isEqualTo(HttpMethod.GET),
                 () -> assertThat(actual.getPath()).isEqualTo("/"),
@@ -33,7 +33,7 @@ class HttpInputParserTest {
         );
     }
 
-    @DisplayName("POSt 요청의 RequestLine 을 파싱한다")
+    @DisplayName("POST 요청의 Request 를 파싱한다")
     @Test
     public void parsePostRequestLine() throws Exception {
         // given
@@ -41,10 +41,10 @@ class HttpInputParserTest {
         final HttpInputParser httpInputParser = new HttpInputParser(socket.getInputStream());
 
         // when
-        httpInputParser.parseRequestLine();
+        httpInputParser.parseRequest();
 
         // then
-        final Request actual = httpInputParser.getRequest();
+        final HttpRequest actual = httpInputParser.getRequest();
         assertAll(
                 () -> assertThat(actual.getMethod()).isEqualTo(HttpMethod.POST),
                 () -> assertThat(actual.getPath()).isEqualTo("/"),
@@ -61,10 +61,10 @@ class HttpInputParserTest {
         final HttpInputParser httpInputParser = new HttpInputParser(socket.getInputStream());
 
         // when
-        httpInputParser.parseRequestLine();
+        httpInputParser.parseRequest();
 
         // then
-        final Request actual = httpInputParser.getRequest();
+        final HttpRequest actual = httpInputParser.getRequest();
         assertAll(
                 () -> assertThat(actual.getMethod()).isEqualTo(HttpMethod.GET),
                 () -> assertThat(actual.getPath()).isEqualTo("/users"),

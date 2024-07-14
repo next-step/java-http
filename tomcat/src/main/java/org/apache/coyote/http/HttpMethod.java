@@ -17,4 +17,8 @@ public enum HttpMethod {
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException("Method not found: " + requestMethod));
     }
+
+    public String getMethod() {
+        return method;
+    }
 }

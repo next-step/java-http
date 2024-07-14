@@ -1,8 +1,6 @@
 package org.apache.coyote.http;
 
-import java.util.Map;
-
-public class RequestLine {
+public class HttpRequestLine {
     public static final String REQUEST_PATH_QUERY_SEPARATOR = "\\?";
     private static final String REQUEST_PROTOCOL_SEPARATOR = "/";
 

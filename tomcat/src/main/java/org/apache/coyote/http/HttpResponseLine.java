@@ -1,6 +1,6 @@
 package org.apache.coyote.http;
 
-public class ResponseLine {
+public class HttpResponseLine {
     public static final String RESPONSE_LINE_SEPARATOR = " ";
     private HttpVersion httpVersion;
     private StatusCode statusCode;
