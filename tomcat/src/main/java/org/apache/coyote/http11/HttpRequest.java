@@ -1,5 +1,7 @@
 package org.apache.coyote.http11;
 
+import org.apache.catalina.Session;
+
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.Predicate;
@@ -14,6 +16,7 @@ public class HttpRequest {
     private final HttpHeaders httpHeaders;
     private final RequestBody requestBody;
     private final Cookies cookies;
+    private Session session;
 
     private HttpRequest(final RequestLine requestLine, final HttpHeaders httpHeaders, final RequestBody requestBody, final Cookies cookies) {
         this.requestLine = requestLine;
@@ -82,6 +85,14 @@ public class HttpRequest {
         return cookies.stream()
                 .filter(cookie -> cookie.equalsName(name))
                 .findAny()
-                .orElseGet(Cookie::empty);
+                .orElse(null);
+    }
+
+    public void setSession(final Session session) {
+        this.session = session;
+    }
+
+    public Session getSession() {
+        return session;
     }
 }

@@ -1,6 +1,7 @@
 package org.apache.coyote.http11;
 
 import camp.nextstep.exception.UncheckedServletException;
+import org.apache.catalina.Session;
 import org.apache.coyote.Processor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,10 +21,12 @@ public class Http11Processor implements Runnable, Processor {
 
     private final Socket connection;
     private final RequestHandler requestHandler;
+    private final Session session;
 
-    public Http11Processor(final Socket connection, final RequestHandler requestHandler) {
+    public Http11Processor(final Socket connection, final RequestHandler requestHandler, final Session session) {
         this.connection = connection;
         this.requestHandler = requestHandler;
+        this.session = session;
     }
 
     @Override
@@ -37,6 +40,7 @@ public class Http11Processor implements Runnable, Processor {
         try (BufferedReader br = new BufferedReader(new InputStreamReader(connection.getInputStream()));
              OutputStream outputStream = connection.getOutputStream()) {
             HttpRequest httpRequest = parseHttpRequest(br);
+            httpRequest.setSession(session);
             HttpResponse httpResponse = HttpResponse.from(httpRequest.getProtocol());
             requestHandler.handle(httpRequest, httpResponse);
 
