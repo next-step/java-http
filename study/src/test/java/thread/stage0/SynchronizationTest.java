@@ -30,22 +30,26 @@ class SynchronizationTest {
         var executorService = Executors.newFixedThreadPool(3);
         var synchronizedMethods = new SynchronizedMethods();
 
-        IntStream.range(0, 1000)
+        IntStream.range(0, 100000)
                 .forEach(count -> executorService.submit(synchronizedMethods::calculate));
         executorService.awaitTermination(500, TimeUnit.MILLISECONDS);
 
-        assertThat(synchronizedMethods.getSum()).isEqualTo(1000);
+        assertThat(synchronizedMethods.getSum()).isEqualTo(100000);
     }
 
     private static final class SynchronizedMethods {
 
+//        private AtomicInteger sum = new AtomicInteger(0);
+
         private int sum = 0;
 
-        public void calculate() {
+        public synchronized void calculate() {
+//            sum.getAndIncrement();
             setSum(getSum() + 1);
         }
 
         public int getSum() {
+//            return sum.get();
             return sum;
         }
 

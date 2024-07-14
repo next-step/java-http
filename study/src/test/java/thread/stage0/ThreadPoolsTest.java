@@ -26,16 +26,16 @@ class ThreadPoolsTest {
     @Test
     void testNewFixedThreadPool() {
         final var executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(2);
-        executor.submit(logWithSleep("hello fixed thread pools"));
+        executor.submit(logWithSleep("hello fixed thread pools"));  // 1초 후 로그
         executor.submit(logWithSleep("hello fixed thread pools"));
         executor.submit(logWithSleep("hello fixed thread pools"));
 
         // 올바른 값으로 바꿔서 테스트를 통과시키자.
-        final int expectedPoolSize = 0;
-        final int expectedQueueSize = 0;
+        final int expectedPoolSize = 2;
+        final int expectedQueueSize = 1;
 
         assertThat(expectedPoolSize).isEqualTo(executor.getPoolSize());
-        assertThat(expectedQueueSize).isEqualTo(executor.getQueue().size());
+        assertThat(expectedQueueSize).isEqualTo(executor.getQueue().size());  // 대기하고 있는 작업 수
     }
 
     @Test
@@ -46,7 +46,7 @@ class ThreadPoolsTest {
         executor.submit(logWithSleep("hello cached thread pools"));
 
         // 올바른 값으로 바꿔서 테스트를 통과시키자.
-        final int expectedPoolSize = 0;
+        final int expectedPoolSize = 3;
         final int expectedQueueSize = 0;
 
         assertThat(expectedPoolSize).isEqualTo(executor.getPoolSize());
