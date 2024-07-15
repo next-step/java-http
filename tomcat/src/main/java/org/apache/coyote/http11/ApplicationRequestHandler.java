@@ -20,9 +20,9 @@ public class ApplicationRequestHandler implements RequestHandler {
             return new Response(requestLine.getHttpProtocol(), HttpStatusCode.OK, ContentType.TEXT_HTML, StandardCharsets.UTF_8, responseBody.getBytes());
         }
         if (requestLine.getPath().equals("/login")) {
-            Map<String, Object> queryParamMap = requestLine.getQueryParamMap();
-            ViewModel viewModel = userController.findUser(queryParamMap);
             try {
+                Map<String, Object> queryParamMap = requestLine.getQueryParamMap();
+                ViewModel viewModel = userController.findUser(queryParamMap);
                 // TODO: 질문하기
                 return new Response(requestLine.getHttpProtocol(), HttpStatusCode.OK, ContentType.TEXT_HTML, StandardCharsets.UTF_8, FileLoader.read("static" + viewModel.path()));
             } catch (IOException | RuntimeException e) {
