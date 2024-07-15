@@ -22,8 +22,9 @@
 
 
 ## 1단계 요구사항 정리
+![fileImage](./image/filetest.png)
 - [] 사전요구사항 - 학습테스트
-  - [] FILE, I/0 STREAM
+  - [x] FILE, I/0 STREAM
   - [] HTTP Cache
   - [] Thread
 - [] 요구사항 1 - GET 요청
