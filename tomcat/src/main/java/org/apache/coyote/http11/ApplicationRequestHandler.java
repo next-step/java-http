@@ -23,6 +23,7 @@ public class ApplicationRequestHandler implements RequestHandler {
             Map<String, Object> queryParamMap = requestLine.getQueryParamMap();
             ViewModel viewModel = userController.findUser(queryParamMap);
             try {
+                // TODO: 질문하기
                 return new Response(requestLine.getHttpProtocol(), HttpStatusCode.OK, ContentType.TEXT_HTML, StandardCharsets.UTF_8, FileLoader.read("static" + viewModel.path()));
             } catch (IOException e) {
                 throw new UncheckedServletException(e);
