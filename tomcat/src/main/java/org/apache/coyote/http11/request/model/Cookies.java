@@ -30,4 +30,11 @@ public class Cookies {
                 .findFirst()
                 .orElse(null);
     }
+
+    public String getResponseCookies() {
+        return cookies.stream()
+                .map(cookie -> cookie.getName() + "=" + cookie.getValue())
+                .reduce((cookie1, cookie2) -> cookie1 + "; " + cookie2)
+                .orElse("");
+    }
 }

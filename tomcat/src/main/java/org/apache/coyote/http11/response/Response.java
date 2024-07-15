@@ -20,16 +20,12 @@ public class Response {
 		String responseBody = responseResource.getResponseBody();
 		StatusCode statusCode = responseResource.getStatusCode();
 		Cookies cookies = responseResource.getCookies();
-		String jSessionResponse = "";
-		if (cookies.hasJSessionId()) {
-			jSessionResponse = "Set-Cookie: JSESSIONID=" + cookies.getJSessionId() + ";";
-		}
 
 		final var response = String.join("\r\n",
 				"HTTP/1.1 " + statusCode.getCode() + " " + statusCode.name(),
 				"Content-Type: " + contentType + ";charset=utf-8 ",
 				"Content-Length: " + responseBody.getBytes().length + " ",
-				jSessionResponse,
+				cookies.getResponseCookies(),
 				"",
 				responseBody);
 
