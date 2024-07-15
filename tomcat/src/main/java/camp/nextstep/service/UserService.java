@@ -8,7 +8,11 @@ import java.util.Objects;
 
 public class UserService {
 
-    public User findLoginUser(final Session session) {
+    public boolean isNotLogin(final Session session) {
+        return findLoginUser(session) != null;
+    }
+
+    private User findLoginUser(final Session session) {
         final Object user = session.getAttribute("user");
 
         if (user != null && !(user instanceof User)) {
