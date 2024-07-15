@@ -6,14 +6,16 @@ import java.util.Objects;
 
 public class Session {
     private final String id;
+    private boolean isNew;
     private final Map<String, Object> values = new HashMap<>();
 
-    private Session(final String id) {
+    private Session(final String id, final boolean isNew) {
         this.id = id;
+        this.isNew = isNew;
     }
 
     public static Session from(final String id) {
-        return new Session(id);
+        return new Session(id, true);
     }
 
     public String getId() {
@@ -24,12 +26,20 @@ public class Session {
         return values.get(name);
     }
 
-    public void setAttribute(final String name, final Object value) {
+    public void addAttribute(final String name, final Object value) {
         values.put(name, value);
     }
 
     public void removeAttribute(final String name) {
         values.remove(name);
+    }
+
+    public void setIsNew(boolean isNew) {
+        this.isNew = isNew;
+    }
+
+    public boolean isNew() {
+        return isNew;
     }
 
     @Override

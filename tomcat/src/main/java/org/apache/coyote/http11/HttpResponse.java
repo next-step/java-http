@@ -1,5 +1,7 @@
 package org.apache.coyote.http11;
 
+import org.apache.session.Session;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -8,30 +10,53 @@ public class HttpResponse {
     private static final String CRLF = "\r\n";
     private static final String EMPTY = "";
 
+    private final HttpRequest httpRequest;
     private final ResourceFinder resourceFinder;
 
     private final StatusLine statusLine;
     private final HttpHeaders httpHeaders;
     private String responseBody;
 
-    private HttpResponse(final ResourceFinder resourceFinder, final StatusLine statusLine, final HttpHeaders httpHeaders, final String responseBody) {
+    private HttpResponse(
+            final HttpRequest httpRequest,
+            final ResourceFinder resourceFinder,
+            final StatusLine statusLine,
+            final HttpHeaders httpHeaders,
+            final String responseBody
+    ) {
+        this.httpRequest = httpRequest;
         this.resourceFinder = resourceFinder;
         this.statusLine = statusLine;
         this.httpHeaders = httpHeaders;
         this.responseBody = responseBody;
     }
 
-    public static HttpResponse of(final HttpProtocol protocol, final ResourceFinder resourceFinder) {
-        HttpHeaders httpHeaders = HttpHeaders.create();
-        return new HttpResponse(resourceFinder, StatusLine.from(protocol), httpHeaders, EMPTY);
+    public static HttpResponse of(final HttpRequest httpRequest, final ResourceFinder resourceFinder) {
+        return new HttpResponse(
+                httpRequest,
+                resourceFinder,
+                StatusLine.from(httpRequest.getProtocol()),
+                HttpHeaders.create(),
+                EMPTY
+        );
     }
 
-    public String createFormat() {
+    public String createMessage() {
+        handleSetCookieHeader();
         return String.join(CRLF,
                 "%s ".formatted(statusLine.createResponseMessage()),
                 "%s".formatted(httpHeaders.createMessage()),
                 "",
                 responseBody);
+    }
+
+    private void handleSetCookieHeader() {
+        Session session = httpRequest.getSession();
+        if (session != null && session.isNew()) {
+            session.setIsNew(false);
+            Cookie cookie = Cookie.createJSessionCookie(session.getId());
+            httpHeaders.addHeader(HttpHeader.of(HttpHeaderName.SET_COOKIE.getValue(), cookie.createMessage()));
+        }
     }
 
     public void addHeader(final HttpHeader httpHeader) {
@@ -45,10 +70,6 @@ public class HttpResponse {
     public void sendRedirect(final String path) {
         addHeader(HttpHeader.of(HttpHeaderName.LOCATION.getValue(), path));
         setHttpStatus(HttpStatus.FOUND);
-    }
-
-    public void setCookie(final Cookie cookie) {
-        addHeader(HttpHeader.of(HttpHeaderName.SET_COOKIE.getValue(), cookie.createMessage()));
     }
 
     public void sendResource(final String resourcePath) {

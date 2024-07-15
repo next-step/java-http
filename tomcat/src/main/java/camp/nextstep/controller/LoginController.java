@@ -4,7 +4,6 @@ import camp.nextstep.db.InMemoryUserRepository;
 import camp.nextstep.exception.UserNotFoundException;
 import camp.nextstep.model.User;
 import org.apache.coyote.http11.AbstractController;
-import org.apache.coyote.http11.Cookie;
 import org.apache.coyote.http11.HttpRequest;
 import org.apache.coyote.http11.HttpResponse;
 import org.apache.session.Session;
@@ -24,9 +23,7 @@ public class LoginController extends AbstractController {
 
         if (user.checkPassword(password)) {
             Session session = request.getSession(true);
-            session.setAttribute("user", user);
-
-            response.setCookie(Cookie.createJSessionCookie(session.getId()));
+            session.addAttribute("user", user);
             response.sendRedirect(INDEX_PATH);
             return;
         }
