@@ -37,6 +37,8 @@ public class Http11Processor implements Runnable, Processor {
              final BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream))) {
 
             HttpRequest httpRequest = HttpRequestParser.parse(bufferedReader);
+            //todo handler 필요
+
             ResponseResource responseResource = ResponseResource.of(httpRequest.getPath(),  httpRequest.getRequestBodies(), httpRequest.getHttpMethod(), httpRequest.getCookies());
 
             Response response = Response.createResponse(responseResource);

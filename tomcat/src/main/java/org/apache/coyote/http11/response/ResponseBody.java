@@ -6,23 +6,19 @@ import java.net.URL;
 import java.nio.file.Files;
 
 public class ResponseBody {
-	private final String responseBody;
+    private final String responseBody;
 
-	public ResponseBody(final String filePath) throws IOException {
-		this.responseBody = createResponseBody(filePath);
-	}
+    public ResponseBody(final String responseBody) {
+        this.responseBody = responseBody;
+    }
 
-	public String getResponseBody() {
-		return responseBody;
-	}
+    static ResponseBody create(String urlPath) throws IOException {
+        URL resource = createResource(urlPath);
+        String responseBody = new String(Files.readAllBytes(new File(resource.getFile()).toPath()));
+        return new ResponseBody(responseBody);
+    }
 
-	private String createResponseBody(String filePath) throws IOException {
-		URL resource = createResource(filePath);
-		String responseBody = new String(Files.readAllBytes(new File(resource.getFile()).toPath()));
-		return responseBody;
-	}
-
-	private  URL createResource(String filePath) {
-		return getClass().getClassLoader().getResource("static" + filePath);
-	}
+    private static URL createResource(String filePath) {
+        return ResponseBody.class.getClassLoader().getResource("static" + filePath);
+    }
 }

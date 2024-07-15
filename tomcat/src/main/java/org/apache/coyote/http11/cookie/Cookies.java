@@ -1,4 +1,4 @@
-package org.apache.coyote.http11.request.model;
+package org.apache.coyote.http11.cookie;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,14 +23,6 @@ public class Cookies {
         return new Cookies(new ArrayList<>());
     }
 
-    public String getJSessionId() {
-        return cookies.stream()
-                .filter(cookie -> "JSESSIONID".equals(cookie.getName()))
-                .map(Cookie::getValue)
-                .findFirst()
-                .orElse(null);
-    }
-
     public String getResponseCookies() {
         String ResponseCookies = cookies.stream()
                 .map(cookie -> cookie.getName() + "=" + cookie.getValue())
@@ -40,5 +32,21 @@ public class Cookies {
             return "";
         }
         return "Set-Cookie: " + ResponseCookies;
+    }
+
+    public String getJSessionId() {
+        return cookies.stream()
+                .filter(cookie -> "JSESSIONID".equals(cookie.getName()))
+                .map(Cookie::getValue)
+                .findFirst()
+                .orElse(null);
+    }
+
+    public boolean isEmpty() {
+        return cookies.isEmpty();
+    }
+
+    public boolean isNotEmpty() {
+        return !isEmpty();
     }
 }

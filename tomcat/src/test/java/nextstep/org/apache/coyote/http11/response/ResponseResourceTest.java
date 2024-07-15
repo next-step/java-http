@@ -1,14 +1,10 @@
 package nextstep.org.apache.coyote.http11.response;
 
-import org.apache.coyote.http11.request.HttpRequest;
-import org.apache.coyote.http11.request.model.Cookies;
+import org.apache.coyote.http11.cookie.Cookies;
 import org.apache.coyote.http11.request.model.RequestBodies;
 import org.apache.coyote.http11.request.model.RequestLine;
-import org.apache.coyote.http11.request.parser.HttpRequestParser;
 import org.apache.coyote.http11.request.parser.RequestLineParser;
-import org.apache.coyote.http11.response.Response;
 import org.apache.coyote.http11.response.ResponseResource;
-import org.apache.coyote.http11.response.StatusCode;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 

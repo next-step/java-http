@@ -6,7 +6,9 @@ import jakarta.servlet.http.HttpSession;
 import org.apache.coyote.http11.HttpMethod;
 import org.apache.coyote.http11.cookie.Cookie;
 import org.apache.coyote.http11.cookie.Cookies;
-import org.apache.coyote.http11.request.model.*;
+import org.apache.coyote.http11.request.HttpRequest;
+import org.apache.coyote.http11.request.model.Path;
+import org.apache.coyote.http11.request.model.RequestBodies;
 import org.apache.coyote.http11.session.Session;
 import org.apache.coyote.http11.session.SessionManager;
 
@@ -14,28 +16,23 @@ import java.io.IOException;
 import java.util.NoSuchElementException;
 import java.util.UUID;
 
-public class ResponseResource {
+public class ResponseHandler {
 
-    private final String responseBody;
-    private final String filePath;
-    private final StatusCode statusCode;
-    private final Cookies cookies;
+    private final String response;
 
-    private ResponseResource(final String responseBody, String filePath, StatusCode statusCode, Cookies cookies) {
-        this.responseBody = responseBody;
-        this.filePath = filePath;
-        this.statusCode = statusCode;
-        this.cookies = cookies;
+    private ResponseHandler(final String response) {
+        this.response = response;
     }
 
-    public static ResponseResource of(final Path path, final RequestBodies requestBodies, final HttpMethod httpMethod, final Cookies cookies) throws IOException {
-        if (HttpMethod.POST.name().equals(httpMethod.name())) {
-            return postResponseResource(path, requestBodies, cookies);
+    public static ResponseHandler handler(final HttpRequest httpRequest) throws IOException {
+        if (HttpMethod.POST.equals(httpRequest.getHttpMethod())) {
+            // todo: response 구현 예정
+            return postResponseResource(httpRequest);
         }
-        return getResponseResource(path, cookies);
+        return getResponseResource(httpRequest);
     }
 
-    private static ResponseResource postResponseResource(Path path, RequestBodies requestBodies, Cookies cookies) throws IOException {
+    private static ResponseHandler postResponseResource(Path path, RequestBodies requestBodies, Cookies cookies) throws IOException {
         if (path.urlPath().equals("/register")) {
             String account = requestBodies.getRequestBodyValueByKey("account");
             String password = requestBodies.getRequestBodyValueByKey("password");
@@ -44,7 +41,7 @@ public class ResponseResource {
             InMemoryUserRepository.save(new User(account, password, email));
 
             String responseBody = new ResponseBody2("/index.html").getResponseBody();
-            return new ResponseResource(responseBody, "/index.html", StatusCode.FOUND, Cookies.emptyCookies());
+            return new ResponseHandler(responseBody, "/index.html", StatusCode.FOUND, Cookies.emptyCookies());
         }
 
         if (path.urlPath().equals("/login")) {
@@ -55,22 +52,22 @@ public class ResponseResource {
             if (loginSuccess) {
                 String filePath = "/index.html";
                 String responseBody = new ResponseBody2(filePath).getResponseBody();
-                return new ResponseResource(responseBody, filePath, StatusCode.FOUND, cookies);
+                return new ResponseHandler(responseBody, filePath, StatusCode.FOUND, cookies);
             }
 
             String filePath = "/401.html";
             String responseBody = new ResponseBody2(filePath).getResponseBody();
-            return new ResponseResource(responseBody, filePath, StatusCode.NOT_FOUND, cookies);
+            return new ResponseHandler(responseBody, filePath, StatusCode.NOT_FOUND, cookies);
         }
         String responseBody = new ResponseBody2(path.urlPath()).getResponseBody();
-        return new ResponseResource(responseBody, path.urlPath(), StatusCode.OK, cookies);
+        return new ResponseHandler(responseBody, path.urlPath(), StatusCode.OK, cookies);
     }
 
-    private static ResponseResource getResponseResource(Path path, Cookies cookies) throws IOException {
+    private static ResponseHandler getResponseResource(Path path, Cookies cookies) throws IOException {
         if (isRootPath(path)) {
             String filePath = "/index.html";
             String responseBody = new ResponseBody2(filePath).getResponseBody();
-            return new ResponseResource(responseBody, filePath, StatusCode.OK, cookies);
+            return new ResponseHandler(responseBody, filePath, StatusCode.OK, cookies);
         }
 
         if (path.urlPath().equals("/login")) {
@@ -81,23 +78,23 @@ public class ResponseResource {
                 if (jsessionid != null) {
                     String filePath = "/index.html";
                     String responseBody = new ResponseBody2(filePath).getResponseBody();
-                    return new ResponseResource(responseBody, filePath, StatusCode.OK, cookies);
+                    return new ResponseHandler(responseBody, filePath, StatusCode.OK, cookies);
                 }
             }
 
             String filePath = "/login.html";
             String responseBody = new ResponseBody2(filePath).getResponseBody();
-            return new ResponseResource(responseBody, filePath, StatusCode.OK, cookies);
+            return new ResponseHandler(responseBody, filePath, StatusCode.OK, cookies);
         }
 
         if (path.urlPath().equals("/register")) {
             String filePath = "/register.html";
             String responseBody = new ResponseBody2(filePath).getResponseBody();
-            return new ResponseResource(responseBody, filePath, StatusCode.OK, cookies);
+            return new ResponseHandler(responseBody, filePath, StatusCode.OK, cookies);
         }
 
         String responseBody = new ResponseBody2(path.urlPath()).getResponseBody();
-        return new ResponseResource(responseBody, path.urlPath(), StatusCode.OK, cookies);
+        return new ResponseHandler(responseBody, path.urlPath(), StatusCode.OK, cookies);
     }
 
     public Cookies getCookies() {

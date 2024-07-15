@@ -1,5 +1,7 @@
 package org.apache.coyote.http11.request;
 
+import org.apache.coyote.http11.HttpMethod;
+import org.apache.coyote.http11.cookie.Cookies;
 import org.apache.coyote.http11.request.model.*;
 
 public class HttpRequest {
@@ -19,6 +21,10 @@ public class HttpRequest {
         return requestLine.getPath();
     }
 
+    public String getUrlPath() {
+        return requestLine.getUrlPath();
+    }
+
     public RequestBodies getRequestBodies() {
         return requestBodies;
     }
@@ -29,5 +35,9 @@ public class HttpRequest {
 
     public Cookies getCookies() {
         return cookies;
+    }
+
+    public boolean hasCookies() {
+        return cookies.isNotEmpty();
     }
 }

@@ -1,5 +1,7 @@
 package org.apache.coyote.http11.request.model;
 
+import org.apache.coyote.http11.HttpMethod;
+
 public class RequestLine {
     private final HttpMethod httpMethod;
     private final Path path;
