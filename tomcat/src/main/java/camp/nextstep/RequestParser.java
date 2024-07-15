@@ -19,12 +19,12 @@ public class RequestParser {
 		List<String> request = getRequest(is);
 		String[] requestInfos = request.get(0).split(" "); // GET /hello HTTP/1.1
 		String[] protocolAndVersion = requestInfos[2].split("\\/");
-		String[] uri = requestInfos[1].split("\\?");
-		if (uri.length == 1) {
-			return RequestLine.of(requestInfos[0], uri[0], protocolAndVersion[0], protocolAndVersion[1]);
+		if (!requestInfos[1].contains("?")) {
+			return RequestLine.of(requestInfos[0], requestInfos[1], protocolAndVersion[0], protocolAndVersion[1]);
 		}
-		Map<String, String> queryStringMap = getQueryStringMap(uri[1]);
-		return RequestLine.of(requestInfos[0], uri[0], protocolAndVersion[0], protocolAndVersion[1], queryStringMap);
+		String[] uriAndQueryString = requestInfos[1].split("\\?");
+		Map<String, String> queryStringMap = getQueryStringMap(uriAndQueryString[1]);
+		return RequestLine.of(requestInfos[0], uriAndQueryString[0], protocolAndVersion[0], protocolAndVersion[1], queryStringMap);
 	}
 
 	private static Map<String, String> getQueryStringMap(String queryStrings) {

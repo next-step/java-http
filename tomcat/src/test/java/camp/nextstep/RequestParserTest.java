@@ -15,17 +15,19 @@ class RequestParserTest {
     void parseGetRequest() {
         // given
         final String httpRequest= String.join("\r\n",
-                "GET /index.html HTTP/1.1 ",
-                "Host: localhost:8080 ",
-                "Connection: keep-alive ",
-                "",
-                "");
+            "GET /index.html HTTP/1.1 ",
+            "Host: localhost:8080 ",
+            "Connection: keep-alive ",
+            "",
+            "");
         try(StubInputStream stubInputStream = new StubInputStream(httpRequest)) {
             RequestLine requestLine = RequestParser.parseRequest(stubInputStream);
-            assertEquals(requestLine.getMethod(), HttpMethod.GET);
-            assertEquals(requestLine.getPath(), "/index.html");
-            assertEquals(requestLine.getProtocol(), "HTTP");
-            assertEquals(requestLine.getVersion(), "1.1");
+            assertAll("Request Line 검증",
+                () -> assertEquals(HttpMethod.GET, requestLine.getMethod()),
+                () -> assertEquals("/index.html", requestLine.getPath()),
+                () -> assertEquals("HTTP", requestLine.getProtocol()),
+                () -> assertEquals("1.1", requestLine.getVersion())
+            );
         } catch (IOException e) {
             System.err.println(e.getMessage());
         }
@@ -35,38 +37,43 @@ class RequestParserTest {
     void parsePostRequest() {
         // given
         final String httpRequest= String.join("\r\n",
-                "POST /user HTTP/1.1 ",
-                "Host: localhost:8080 ",
-                "Connection: keep-alive ",
-                "",
-                "");
+            "POST /user HTTP/1.1 ",
+            "Host: localhost:8080 ",
+            "Connection: keep-alive ",
+            "",
+            "");
         try(StubInputStream stubInputStream = new StubInputStream(httpRequest)) {
             RequestLine requestLine = RequestParser.parseRequest(stubInputStream);
-            assertEquals(requestLine.getMethod(), HttpMethod.POST);
-            assertEquals(requestLine.getPath(), "/user");
-            assertEquals(requestLine.getProtocol(), "HTTP");
-            assertEquals(requestLine.getVersion(), "1.1");
+            assertAll("Request Line 검증",
+                () -> assertEquals(HttpMethod.POST, requestLine.getMethod()),
+                () -> assertEquals("/user", requestLine.getPath()),
+                () -> assertEquals("HTTP", requestLine.getProtocol()),
+                () -> assertEquals("1.1", requestLine.getVersion())
+            );
         } catch (IOException e) {
             System.err.println(e.getMessage());
         }
     }
+
     @Test
     void parseGetQueryStringRequest() {
         // given
         final String httpRequest= String.join("\r\n",
-                "GET /user?userId=lsh&password=pw HTTP/1.1 ",
-                "Host: localhost:8080 ",
-                "Connection: keep-alive ",
-                "",
-                "");
+            "GET /user?userId=lsh&password=pw HTTP/1.1 ",
+            "Host: localhost:8080 ",
+            "Connection: keep-alive ",
+            "",
+            "");
         try(StubInputStream stubInputStream = new StubInputStream(httpRequest)) {
             RequestLine requestLine = RequestParser.parseRequest(stubInputStream);
-            assertEquals(requestLine.getMethod(), HttpMethod.GET);
-            assertEquals(requestLine.getPath(), "/user");
-            assertEquals(requestLine.getQueryStringMap().get("userId"), "lsh");
-            assertEquals(requestLine.getQueryStringMap().get("password"), "pw");
-            assertEquals(requestLine.getProtocol(), "HTTP");
-            assertEquals(requestLine.getVersion(), "1.1");
+            assertAll("Request Line 검증",
+                () -> assertEquals(HttpMethod.GET, requestLine.getMethod()),
+                () -> assertEquals("/user", requestLine.getPath()),
+                () -> assertEquals("lsh", requestLine.getQueryStringMap().get("userId")),
+                () -> assertEquals("pw", requestLine.getQueryStringMap().get("password")),
+                () -> assertEquals("HTTP", requestLine.getProtocol()),
+                () -> assertEquals("1.1", requestLine.getVersion())
+            );
         } catch (IOException e) {
             System.err.println(e.getMessage());
         }
