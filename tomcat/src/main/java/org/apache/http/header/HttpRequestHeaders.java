@@ -43,18 +43,12 @@ public class HttpRequestHeaders {
     }
 
     public int contentLength() {
-        var header = (ContentLength) headers.get(RequestHeaderParser.CONTENT_LENGTH);
-        if (header == null) {
-            return -1;
-        }
+        var header = (ContentLength) headers.getOrDefault(RequestHeaderParser.CONTENT_LENGTH, new ContentLength());
         return header.length;
     }
 
     public HttpSession getSession() {
-        var header = (Cookie) headers.get(RequestHeaderParser.COOKIE);
-        if (header == null) {
-            return null;
-        }
+        var header = (Cookie) headers.getOrDefault(RequestHeaderParser.COOKIE, new Cookie());
         return header.findSession();
     }
 

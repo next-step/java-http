@@ -9,14 +9,14 @@ import org.apache.http.header.HttpRequestHeaders;
 import org.apache.http.session.HttpSession;
 import org.apache.http.session.SessionManager;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.function.Function;
 
 public class StubHttpRequest extends HttpRequest {
     private static final SessionManager sessionManager = new SessionManager();
-    private static HttpSession createdSession = sessionManager.create();
     private static Function<Boolean, HttpSession> createSession = (c) -> {
-        if(c) return createdSession;
+        if(c) return sessionManager.findOrCreateSession(null);
         else return null;
     };
 
@@ -49,8 +49,8 @@ public class StubHttpRequest extends HttpRequest {
 
     public StubHttpRequest(final Cookie cookie) {
         super(
-                new HttpRequestLine("POST /login HTTP/1.1"),
-                new HttpRequestHeaders(cookie),
+                new HttpRequestLine("GET /login HTTP/1.1"),
+                new HttpRequestHeaders(Collections.singletonList(cookie.toString())),
                 null,
                 (c) -> {
                     var session = sessionManager.findSession(cookie.findSession());

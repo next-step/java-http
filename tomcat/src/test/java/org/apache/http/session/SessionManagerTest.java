@@ -16,4 +16,10 @@ class SessionManagerTest {
         assertThat(manager2.findSession("1")).isNotNull();
     }
 
+    @Test
+    void find_or_create() {
+        var session = manager1.findOrCreateSession(new HttpSession("3"));
+
+        assertThat(session).isNotNull();
+    }
 }

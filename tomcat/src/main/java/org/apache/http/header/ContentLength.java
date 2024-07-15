@@ -14,6 +14,10 @@ public class ContentLength extends HttpRequestHeader implements HttpResponseHead
         this.length = length;
     }
 
+    public ContentLength() {
+        this.length = -1;
+    }
+
     public ContentLength(String length) {
         this.length = Integer.parseInt(length);
     }
