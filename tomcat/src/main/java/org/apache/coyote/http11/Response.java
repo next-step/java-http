@@ -19,6 +19,10 @@ public class Response {
         this.contentBody = contentBody;
     }
 
+    public Response(HttpProtocol httpProtocol, HttpStatusCode httpStatusCode, ContentType contentType, Charset utf8) {
+        this(httpProtocol, httpStatusCode, contentType, utf8, "".getBytes());
+    }
+
     public String generateMessage() {
 
         var sb = new StringBuilder();

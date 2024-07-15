@@ -29,6 +29,6 @@ public class ApplicationRequestHandler implements RequestHandler {
             }
         }
 
-        return new Response(requestLine.getHttpProtocol(), HttpStatusCode.NOT_FOUND, ContentType.TEXT_HTML, StandardCharsets.UTF_8, "Hello World!".getBytes());
+        return new Response(requestLine.getHttpProtocol(), HttpStatusCode.NOT_FOUND, ContentType.TEXT_HTML, StandardCharsets.UTF_8);
     }
 }

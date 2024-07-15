@@ -153,9 +153,9 @@ class Http11ProcessorTest {
         String expected = String.join("\r\n",
                 "HTTP/1.1 404 Not Found ",
                 "Content-Type: text/html;charset=utf-8 ",
-                "Content-Length: 12 ", // 운영체제 환경에 따라 다른 값이 나올 수 있음. 자신의 개발 환경에 맞춰 수정할 것.
+                "Content-Length: 0 ", // 운영체제 환경에 따라 다른 값이 나올 수 있음. 자신의 개발 환경에 맞춰 수정할 것.
                 "",
-                "Hello World!");
+                "");
 
 
         assertThat(socket.output()).isEqualTo(expected);
