@@ -48,10 +48,6 @@ public class HttpRequest {
 
     private static Session findSession(final SessionManager sessionManager, final Cookies cookies) {
         Cookie jSessionCookie = cookies.findJSessionCookie();
-        if (jSessionCookie == null) {
-            return null;
-        }
-
         return sessionManager.findSession(jSessionCookie.getValue());
     }
 
@@ -103,17 +99,17 @@ public class HttpRequest {
     }
 
     public Session getSession(boolean requiresNew) {
-        if (session != null) {
-            return session;
-        }
-
-        if (requiresNew) {
+        if (session == null && requiresNew) {
             Session newSession = sessionManager.createSession();
             sessionManager.add(newSession);
             session = newSession;
             return newSession;
         }
 
-        return null;
+        return session;
+    }
+
+    public boolean hasSession() {
+        return session != null;
     }
 }

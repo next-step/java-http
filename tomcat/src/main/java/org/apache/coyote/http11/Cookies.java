@@ -8,6 +8,7 @@ import java.util.function.Predicate;
 public class Cookies implements Iterable<Cookie> {
     private static final String COOKIE_SEPARATOR = ";";
     private static final String JSESSIONID = "JSESSIONID";
+    private static final String EMPTY = "";
 
     private final List<Cookie> values;
 
@@ -37,6 +38,6 @@ public class Cookies implements Iterable<Cookie> {
         return values.stream()
                 .filter(cookie -> cookie.equalsName(name))
                 .findAny()
-                .orElse(null);
+                .orElseGet(() -> Cookie.of(name, EMPTY));
     }
 }
