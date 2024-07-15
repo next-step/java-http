@@ -2,6 +2,7 @@ package camp.nextstep.servlet;
 
 import camp.nextstep.db.InMemoryUserRepository;
 import camp.nextstep.model.User;
+import camp.nextstep.service.UserService;
 import com.javax.servlet.http.HttpServlet;
 import org.apache.coyote.http.HttpRequest;
 import org.apache.coyote.http.HttpResponse;
@@ -13,12 +14,17 @@ import org.slf4j.LoggerFactory;
 
 public class LoginServlet extends HttpServlet {
 
+    private final UserService userService;
+
     private final static Logger log = LoggerFactory.getLogger(LoginServlet.class);
+
+    public LoginServlet(final UserService userService) {
+        this.userService = userService;
+    }
 
     @Override
     public void doGet(final HttpRequest httpRequest, final HttpResponse httpResponse) throws Exception {
-        final Session session = httpRequest.getSession(true);
-        final Object user = session.getAttribute("user");
+        final Object user = userService.findLoginUser(httpRequest.getSession(true));
 
         if (user != null) {
             httpResponse.sendRedirect("/index.html");
@@ -40,21 +46,17 @@ public class LoginServlet extends HttpServlet {
             return;
         }
 
-        final User user = InMemoryUserRepository.findByAccount(account).orElse(null);
+        final User user = userService.findUserByAccount(account);
 
-        if (isInvalidLoginUser(user, password)) {
+        if (userService.isInvalidLoginUser(user, password)) {
             httpResponse.sendRedirect("/401.html");
             return;
         }
 
         log.debug("user: {}", user);
 
-        final Session session = httpRequest.getSession(true);
-        session.setAttribute("user", user);
+        userService.login(user, httpRequest.getSession(true));
 
         httpResponse.sendRedirect("/index.html");
-    }
-    private boolean isInvalidLoginUser(final User foundAccount, final String password) {
-        return foundAccount == null || !foundAccount.checkPassword(password);
     }
 }

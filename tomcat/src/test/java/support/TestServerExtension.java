@@ -9,11 +9,9 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 import java.util.concurrent.CountDownLatch;
 
-public class TestServerExtension implements BeforeAllCallback, AfterAllCallback {
+public class TestServerExtension implements BeforeAllCallback {
 
-    private final CountDownLatch latch = new CountDownLatch(1);
     private final TestTomcat tomcat = TestTomcat.getInstance();
-    private Thread thread;
 
     @Override
     public void beforeAll(final ExtensionContext extensionContext) throws Exception {
@@ -21,24 +19,21 @@ public class TestServerExtension implements BeforeAllCallback, AfterAllCallback 
 
         Arrays.stream(annotation.servletMappings()).forEach(servletMapping -> {
             try {
-                tomcat.addServlet(servletMapping.path(), (Servlet) servletMapping.servlet().getDeclaredConstructor().newInstance());
-            } catch (InstantiationException | IllegalAccessException | InvocationTargetException |
-                     NoSuchMethodException e) {
+                final Class[] parametersClazz = servletMapping.parameters();
+                final Object[] parameters = Arrays.stream(parametersClazz).map(clazz -> {
+                    try {
+                        return clazz.getDeclaredConstructor().newInstance();
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
+                }).toArray();
+                tomcat.addServlet(servletMapping.path(), servletMapping.servlet().getDeclaredConstructor(parametersClazz).newInstance(parameters));
+            } catch (Exception e) {
                 throw new RuntimeException(e);
             }
         });
 
-//        thread = new Thread(() -> {
-//            try {
-                tomcat.start();
-//                latch.countDown();
-//            } catch (Exception e) {
-//            }
-//        });
-//
-//        thread.start();
-//
-//        latch.await();
+        tomcat.start();
     }
 
     private TomcatServerTest getTomcatServerTest(final ExtensionContext extensionContext) {
@@ -55,11 +50,4 @@ public class TestServerExtension implements BeforeAllCallback, AfterAllCallback 
         return annotation;
     }
 
-    @Override
-    public void afterAll(final ExtensionContext extensionContext) throws Exception {
-        if (thread != null && thread.isAlive()) {
-            thread.interrupt();
-            thread.join();
-        }
-    }
 }

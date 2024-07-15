@@ -7,6 +7,8 @@ public class Cookie {
     private static final String COOKIE_ASSIGNMENT = "=";
     private static final int COOKIE_KEY_VALUE_NUM = 2;
     private static final String JSESSIONID = "JSESSIONID";
+    private static final int COOKIE_NAME_POINT = 0;
+    private static final int COOKIE_VALUE_POINT = 1;
 
     public static Cookie createSessionCookie() {
         return new Cookie(JSESSIONID, UUID.randomUUID().toString());
@@ -18,8 +20,8 @@ public class Cookie {
     public Cookie(final String cookieLine) {
         final String[] parsedCookie = cookieLine.split(COOKIE_ASSIGNMENT, COOKIE_KEY_VALUE_NUM);
 
-        this.name = parsedCookie[0];
-        this.value = parsedCookie[1];
+        this.name = parsedCookie[COOKIE_NAME_POINT];
+        this.value = parsedCookie[COOKIE_VALUE_POINT];
     }
 
     public Cookie(final String name, final String value) {
