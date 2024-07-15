@@ -57,17 +57,17 @@ public class ResponseResource {
 
             String filePath = "/401.html";
             String responseBody = new ResponseBody(filePath).getResponseBody();
-            return new ResponseResource(responseBody, filePath, StatusCode.NOT_FOUND, Cookies.emptyCookies());
+            return new ResponseResource(responseBody, filePath, StatusCode.NOT_FOUND, cookies);
         }
         String responseBody = new ResponseBody(path.urlPath()).getResponseBody();
-        return new ResponseResource(responseBody, path.urlPath(), StatusCode.OK, Cookies.emptyCookies());
+        return new ResponseResource(responseBody, path.urlPath(), StatusCode.OK, cookies);
     }
 
     private static ResponseResource getResponseResource(Path path, Cookies cookies) throws IOException {
         if (isRootPath(path)) {
             String filePath = "/index.html";
             String responseBody = new ResponseBody(filePath).getResponseBody();
-            return new ResponseResource(responseBody, filePath, StatusCode.OK, Cookies.emptyCookies());
+            return new ResponseResource(responseBody, filePath, StatusCode.OK, cookies);
         }
 
         if (path.urlPath().equals("/login")) {
@@ -84,17 +84,17 @@ public class ResponseResource {
 
             String filePath = "/login.html";
             String responseBody = new ResponseBody(filePath).getResponseBody();
-            return new ResponseResource(responseBody, filePath, StatusCode.OK, Cookies.emptyCookies());
+            return new ResponseResource(responseBody, filePath, StatusCode.OK, cookies);
         }
 
         if (path.urlPath().equals("/register")) {
             String filePath = "/register.html";
             String responseBody = new ResponseBody(filePath).getResponseBody();
-            return new ResponseResource(responseBody, filePath, StatusCode.OK, Cookies.emptyCookies());
+            return new ResponseResource(responseBody, filePath, StatusCode.OK, cookies);
         }
 
         String responseBody = new ResponseBody(path.urlPath()).getResponseBody();
-        return new ResponseResource(responseBody, path.urlPath(), StatusCode.OK, Cookies.emptyCookies());
+        return new ResponseResource(responseBody, path.urlPath(), StatusCode.OK, cookies);
     }
 
     public Cookies getCookies() {
