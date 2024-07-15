@@ -15,8 +15,11 @@ class ResponseTest {
         @DisplayName("ok Response 객체를 생성할 수 있다.")
         @Test
         void create_Ok_Response() {
-            // given & when
-            final var result = Response.ok(ContentType.HTML, "Hello world!");
+            // given
+            final var result = new Response();
+
+            // & when
+            result.ok(ContentType.HTML, "Hello world!");
 
             // then
             var expected = String.join("\r\n",
@@ -32,8 +35,11 @@ class ResponseTest {
         @DisplayName("notFound Response 객체를 생성할 수 있다.")
         @Test
         void create_NotFound_Response() {
-            // given & when
-            final var result = Response.notFound(ContentType.HTML, "");
+            // given
+            final var result = new Response();
+
+            // when
+            result.notFound(ContentType.HTML, "");
 
             // then
             var expected = String.join("\r\n",
@@ -49,8 +55,10 @@ class ResponseTest {
         @DisplayName("found Response 객체를 생성할 수 있다.")
         @Test
         void create_Found_Response() {
-            // given & when
-            final var result = Response.found(HttpCookie.from(), "/users");
+            //given
+            final Response result = new Response();
+            //when
+            result.found(HttpCookie.from(), "/users");
 
             // then
             var expected = String.join("\r\n",
@@ -65,8 +73,10 @@ class ResponseTest {
         @DisplayName("unauthorized Response 객체를 생성할 수 있다.")
         @Test
         void create_Unauthorized_Response() {
-            // given & when
-            final var result = Response.unauthorized("Unauthorized");
+            // given
+            final Response result = new Response();
+            // when
+            result.unauthorized("Unauthorized");
 
             // then
             var expected = String.join("\r\n",

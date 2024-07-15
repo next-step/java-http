@@ -18,7 +18,9 @@ public class SessionManager {
             cookies.addSessionId(session.getSessionId());
             return session;
         }
-
+        if (!sessions.containsKey(cookies.getJSessionId())) {
+            return addSession(cookies.getJSessionId());
+        }
         return sessions.get(cookies.getJSessionId());
     }
 
@@ -35,6 +37,12 @@ public class SessionManager {
 
     private static Session addSession() {
         Session session = new Session(UUID.randomUUID().toString());
+        sessions.put(session.getSessionId(), session);
+        return session;
+    }
+
+    private static Session addSession(String sessionId) {
+        Session session = new Session(sessionId);
         sessions.put(session.getSessionId(), session);
         return session;
     }
