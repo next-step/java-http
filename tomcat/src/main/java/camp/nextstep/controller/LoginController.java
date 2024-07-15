@@ -8,8 +8,6 @@ import org.apache.coyote.http11.HttpRequest;
 import org.apache.coyote.http11.HttpResponse;
 import org.apache.session.Session;
 
-import java.util.Objects;
-
 public class LoginController extends AbstractController {
     private static final String INDEX_PATH = "/index.html";
     private static final String UNAUTHORIZED_PATH = "/401.html";
@@ -33,7 +31,7 @@ public class LoginController extends AbstractController {
 
     @Override
     protected void doGet(final HttpRequest request, final HttpResponse response) {
-        if (Objects.nonNull(request.getSession())) {
+        if (request.hasSession()) {
             response.sendRedirect(INDEX_PATH);
             return;
         }
