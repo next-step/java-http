@@ -23,10 +23,10 @@
 
 ## 1단계 요구사항 정리
 ![fileImage](./image/filetest.png)
-- [] 사전요구사항 - 학습테스트
+- [x] 사전요구사항 - 학습테스트
   - [x] FILE, I/0 STREAM
-  - [] HTTP Cache
-  - [] Thread
+  - [x] HTTP Cache
+  - [x] Thread
 - [] 요구사항 1 - GET 요청
    - [] GET 요청 RequestLine 파싱
      - [] Method

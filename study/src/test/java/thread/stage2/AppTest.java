@@ -23,23 +23,32 @@ class AppTest {
      */
     @Test
     void test() throws Exception {
-        final var NUMBER_OF_THREAD = 10;
+        final var NUMBER_OF_THREAD = 5;
         var threads = new Thread[NUMBER_OF_THREAD];
-
+        // 5번 요청한다.
         for (int i = 0; i < NUMBER_OF_THREAD; i++) {
             threads[i] = new Thread(() -> incrementIfOk(TestHttpUtils.send("/test")));
         }
 
         for (final var thread : threads) {
-            thread.start();
-            Thread.sleep(50);
+            thread.start();  // 작업 처리
+            Thread.sleep(50); // MAIN 스레드 SLEEP
         }
 
         for (final var thread : threads) {
             thread.join();
         }
 
-        assertThat(count.intValue()).isEqualTo(2);
+        assertThat(count.intValue()).isEqualTo(5);
+        // 테스트 결과 스레드 풀 개수가 5개 일때, 배운것에 따르면, 5개만 처리가 되어야하는데 스레드풀 개수보다 많은 6개가 처리됨
+        //    accept-count: 10 # work queue 사이즈
+        //    max-connections: 20 # 최대 맺을 수 있는 커넥션 수 -> 동시 수용 가능한 요청 수
+        //    threads:
+        //      min-spare: 1 # 영향 없음
+        //      max: 5 # 스레드 풀 개수
+        // 결론:
+        // 1. 요청을 빠르게 처리하고 다시 사용 가능한 상태
+        // 2. 혹은 TOMCAT의 NIO 사용으로 인한 1 쓰레드 1 요청 처리가 아닐 수도 있음
     }
 
     private static void incrementIfOk(final HttpResponse<String> response) {

@@ -34,6 +34,8 @@ import static org.mockito.Mockito.*;
  *         - FLUSH 못할때, 데드락? -> 원리가 궁금하다.
  *      - Reader
  *      - Writer
+ *     3. reactive 즉, 다른 웹서버에서 reactive를 어떻게 구현했는지 확인해볼것이다.
+ *      - reactive에서는 buffer에 stream을 넣어두고 즉시 가져가서 읽을 수 있도록 해놨다.
  *
  */
 @DisplayName("Java I/O Stream 클래스 학습 테스트")
