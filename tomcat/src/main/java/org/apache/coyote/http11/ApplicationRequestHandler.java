@@ -10,6 +10,8 @@ import java.util.Map;
 
 public class ApplicationRequestHandler implements RequestHandler {
 
+    private final UserController userController = new UserController();
+
     @Override
     public Response service(RequestLine requestLine) {
 
@@ -19,7 +21,7 @@ public class ApplicationRequestHandler implements RequestHandler {
         }
         if (requestLine.getPath().startsWith("/login")) {
             Map<String, Object> queryParamMap = requestLine.getQueryParamMap();
-            ViewModel viewModel = UserController.findUser(queryParamMap);
+            ViewModel viewModel = userController.findUser(queryParamMap);
             try {
                 return new Response(requestLine.getHttpProtocol(), HttpStatusCode.OK, ContentType.TEXT_HTML, StandardCharsets.UTF_8, FileLoader.read("static" + viewModel.path()));
             } catch (IOException e) {

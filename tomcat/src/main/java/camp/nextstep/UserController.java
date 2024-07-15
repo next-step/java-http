@@ -14,7 +14,7 @@ public class UserController {
     private static final Logger log = LoggerFactory.getLogger(UserController.class);
     private final static UserService userService = new UserService();
 
-    public static ViewModel findUser(Map<String, Object> queryParamMap) {
+    public ViewModel findUser(Map<String, Object> queryParamMap) {
         User user = userService.getUser(queryParamMap);
         log.info("user account: {}", user.getAccount());
         return new ViewModel("/login.html");
