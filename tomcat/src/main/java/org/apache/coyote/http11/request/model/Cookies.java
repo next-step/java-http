@@ -32,9 +32,13 @@ public class Cookies {
     }
 
     public String getResponseCookies() {
-        return cookies.stream()
+        String ResponseCookies = cookies.stream()
                 .map(cookie -> cookie.getName() + "=" + cookie.getValue())
                 .reduce((cookie1, cookie2) -> cookie1 + "; " + cookie2)
                 .orElse("");
+        if (ResponseCookies.isEmpty()) {
+            return "";
+        }
+        return "Set-Cookie: " + ResponseCookies;
     }
 }

@@ -1,19 +1,19 @@
 package org.apache.coyote.http11.session;
 
+import camp.nextstep.model.User;
 import jakarta.servlet.ServletContext;
 import jakarta.servlet.http.HttpSession;
 import jakarta.servlet.http.HttpSessionContext;
 
 import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Map;
 
 public class Session implements HttpSession {
     private final String id;
-    private final Map<String, Object> values = new HashMap<>();
+    private final User user;
 
-    public Session(final String id) {
+    public Session(final String id, final User user) {
         this.id = id;
+        this.user = user;
     }
 
     @Override
@@ -51,7 +51,7 @@ public class Session implements HttpSession {
     }
 
     public Object getAttribute(final String name) {
-        return values.get(name);
+        return null;
     }
 
     @Override
@@ -70,7 +70,6 @@ public class Session implements HttpSession {
     }
 
     public void setAttribute(final String name, final Object value) {
-        values.put(name, value);
     }
 
     @Override
@@ -79,7 +78,6 @@ public class Session implements HttpSession {
     }
 
     public void removeAttribute(final String name) {
-        values.remove(name);
     }
 
     @Override
@@ -88,7 +86,6 @@ public class Session implements HttpSession {
     }
 
     public void invalidate() {
-        values.clear();
     }
 
     @Override

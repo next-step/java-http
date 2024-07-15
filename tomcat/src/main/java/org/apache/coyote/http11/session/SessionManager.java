@@ -26,6 +26,10 @@ public class SessionManager implements Manager {
         return session;
     }
 
+    public boolean isExistJSession(String jSessionId) {
+        return SESSIONS.containsKey(jSessionId);
+    }
+
     @Override
     public void remove(HttpSession session) {
         SESSIONS.remove(session.getId());

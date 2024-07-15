@@ -123,14 +123,14 @@ public class ResponseResource {
     private static boolean login(String account, String password, Cookies cookies) {
         final User user = InMemoryUserRepository.findByAccount(account).orElseThrow(NoSuchElementException::new);
         if (cookies.hasJSessionId()) {
-            return true;
+            String jSessionId = cookies.getJSessionId();
+            return SessionManager.getInstance().isExistJSession(jSessionId);
         }
 
         if (user.checkPassword(password)) {
-            String string = UUID.randomUUID().toString();
-            cookies.addCookie(new Cookie("JSESSIONID", string));
-
-            SessionManager.getInstance().add(new Session(string));
+            String uuid = UUID.randomUUID().toString();
+            cookies.addCookie(new Cookie("JSESSIONID", uuid));
+            SessionManager.getInstance().add(new Session(uuid, user));
             return true;
         }
 
