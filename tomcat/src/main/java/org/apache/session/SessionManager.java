@@ -1,5 +1,6 @@
 package org.apache.session;
 
+import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -19,7 +20,12 @@ public class SessionManager {
     }
 
     public Session findSession(final String id) {
-        return SESSIONS.get(id);
+        Session session = SESSIONS.get(id);
+        if (session != null && session.isNotValid(LocalDateTime.now())) {
+            remove(session);
+            return null;
+        }
+        return session;
     }
 
     public void remove(final Session session) {

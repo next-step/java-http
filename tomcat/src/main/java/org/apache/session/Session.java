@@ -1,21 +1,27 @@
 package org.apache.session;
 
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
 public class Session {
-    private final String id;
-    private boolean isNew;
-    private final Map<String, Object> values = new HashMap<>();
+    private static final int DEFAULT_EXPIRATION_TIME = 30;
 
-    private Session(final String id, final boolean isNew) {
+    private final String id;
+    private final LocalDateTime expiredAt;
+    private final Map<String, Object> values = new HashMap<>();
+    private boolean isNew;
+
+    private Session(final String id, final LocalDateTime expiredAt, final boolean isNew) {
         this.id = id;
+        this.expiredAt = expiredAt;
         this.isNew = isNew;
     }
 
     public static Session from(final String id) {
-        return new Session(id, true);
+        LocalDateTime now = LocalDateTime.now();
+        return new Session(id, now.plusMinutes(DEFAULT_EXPIRATION_TIME), true);
     }
 
     public String getId() {
@@ -40,6 +46,10 @@ public class Session {
 
     public boolean isNew() {
         return isNew;
+    }
+
+    public boolean isNotValid(final LocalDateTime localDateTime) {
+        return expiredAt.isBefore(localDateTime);
     }
 
     @Override
