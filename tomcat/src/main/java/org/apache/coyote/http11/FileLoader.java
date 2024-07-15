@@ -8,13 +8,13 @@ import java.util.regex.Pattern;
 
 public final class FileLoader {
 
-    private static final Pattern FILE_EXTENSION_PATTERN = Pattern.compile(".+(\\.html|.css|.js)$");
+    private static final Pattern FILE_EXTENSION_PATTERN = Pattern.compile(".+\\.("+ ContentType.extensionPattern() +")$");
 
     private FileLoader() {
     }
 
     public static byte[] read(String resourceName) throws IOException {
-        if (!FILE_EXTENSION_PATTERN.matcher(resourceName).matches()) {
+        if (!isStaticResource(resourceName)) {
             throw new IllegalArgumentException("Invalid file extension: " + resourceName);
         }
 

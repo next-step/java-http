@@ -27,4 +27,11 @@ public enum ContentType {
     public String getDescription() {
         return description;
     }
+
+    public static String extensionPattern() {
+        return Arrays.stream(ContentType.values())
+                .map(it -> it.extenstion)
+                .reduce((a, b) -> a + "|" + b)
+                .orElse("");
+    }
 }
