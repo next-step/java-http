@@ -7,6 +7,7 @@ import java.nio.charset.StandardCharsets;
 
 public class StaticResourceRequestHandler implements RequestHandler {
 
+    public static final StaticResourceRequestHandler INSTANCE = new StaticResourceRequestHandler();
     private static final String STATIC_RESOURCE_PATH = "static";
 
     @Override

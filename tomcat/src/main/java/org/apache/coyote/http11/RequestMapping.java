@@ -1,13 +1,19 @@
 package org.apache.coyote.http11;
 
 
+import java.util.Map;
+
 public class RequestMapping {
 
-    public RequestHandler getHandler(RequestLine requestLine) {
+    private static final Map<String, RequestHandler> REQUEST_HANDLER_MAP = Map.of(
+            "/", ApplicationRequestHandler.INSTANCE,
+            "/login", ApplicationRequestHandler.INSTANCE
+    );
 
+    public RequestHandler getHandler(RequestLine requestLine) {
         if (FileLoader.isStaticResource(requestLine.getPath())) {
-            return new StaticResourceRequestHandler();
+            return StaticResourceRequestHandler.INSTANCE;
         }
-        return new ApplicationRequestHandler();
+        return REQUEST_HANDLER_MAP.getOrDefault(requestLine.getPath(), NotFoundHandler.INSTACNE);
     }
 }
