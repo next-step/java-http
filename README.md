@@ -19,3 +19,17 @@
 1. [File, I/O Stream](study/src/test/java/study)
 2. [HTTP Cache](study/src/test/java/cache)
 3. [Thread](study/src/test/java/thread)
+
+---
+
+### 2단계 미션
+
+- [X] GET /index.html 응답하기
+  - [X] line이 null인 경우에 예외 처리를 해준다
+- [X] CSS 지원하기
+  - [X] CSS인 경우 응답 헤더의 Content-Type을 text/css로 전송한다.
+- [X] Query String 파싱
+  - [X] http request의 첫 번째 라인에서 request uri를 추출한다
+  - [ ] login.html 파일에서 태그에 name을 추가해준다.
+  - [X] 추출한 request uri에서 접근 경로와 이름=값으로 전달되는 데이터를 추출해서 User 객체를 조회하자.
+  - [X] InMemoryUserRepository를 사용해서 미리 가입되어 있는 회원을 조회하고 로그로 확인해보자.

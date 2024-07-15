@@ -1,5 +1,7 @@
 package nextstep.org.apache.coyote.http11;
 
+import nextstep.org.apache.coyote.http11.fixtures.TestHttpRequestMessageBuilder;
+import org.junit.jupiter.api.DisplayName;
 import support.StubSocket;
 import org.apache.coyote.http11.Http11Processor;
 import org.junit.jupiter.api.Test;
@@ -17,10 +19,9 @@ class Http11ProcessorTest {
     void process() {
         // given
         final var socket = new StubSocket();
-        final var processor = new Http11Processor(socket);
 
         // when
-        processor.process(socket);
+        doHttp11Process(socket);
 
         // then
         var expected = String.join("\r\n",
@@ -29,25 +30,20 @@ class Http11ProcessorTest {
                 "Content-Length: 12 ",
                 "",
                 "Hello world!");
-
         assertThat(socket.output()).isEqualTo(expected);
     }
 
     @Test
     void index() throws IOException {
+
         // given
-        final String httpRequest= String.join("\r\n",
-                "GET /index.html HTTP/1.1 ",
-                "Host: localhost:8080 ",
-                "Connection: keep-alive ",
-                "",
-                "");
-
-        final var socket = new StubSocket(httpRequest);
-        final Http11Processor processor = new Http11Processor(socket);
-
+        final var builder = new TestHttpRequestMessageBuilder();
+        String httpRequest = builder.baseGetMessage()
+                .emptyLine()
+                .build();
         // when
-        processor.process(socket);
+        final var socket = new StubSocket(httpRequest);
+        doHttp11Process(socket);
 
         // then
         final URL resource = getClass().getClassLoader().getResource("static/index.html");
@@ -56,8 +52,126 @@ class Http11ProcessorTest {
             "Content-Type: text/html;charset=utf-8 ",
             "Content-Length: 5564 ", // 운영체제 환경에 따라 다른 값이 나올 수 있음. 자신의 개발 환경에 맞춰 수정할 것.
             "",
-            new String(Files.readAllBytes(new File(resource.getFile()).toPath())));
+            actualResource("static/index.html"));
 
         assertThat(socket.output()).isEqualTo(expected);
+    }
+
+    @Test
+    @DisplayName("requestLine 이 null일 경우 500.html 반환한다")
+    public void requestLineNullTest() throws IOException {
+        final String httpRequest= String.join("\r\n",
+                "",
+                "");
+
+        final var socket = new StubSocket(httpRequest);
+
+        // when
+        doHttp11Process(socket);
+
+        // then
+        var expected = String.join("\r\n",
+                "HTTP/1.1 500 Internal Server Error ",
+                "Content-Type: text/html;charset=utf-8 ",
+                "Content-Length: 2357 ",
+                "",
+                actualResource("static/500.html"));
+
+        assertThat(socket.output()).isEqualTo(expected);
+    }
+
+    @Test
+    @DisplayName("css 정적 리소스를 요청할 경우 content-type이 text/css 여야 한다")
+    public void cssResourceRequestTest() throws IOException {
+
+        // given
+        final var builder = new TestHttpRequestMessageBuilder();
+        String httpRequest = builder
+                .requestLine("GET", "/css/styles.css", "HTTP/1.1")
+                .acceptHeader("text/css,*/*;q=0.1")
+                .emptyLine()
+                .build();
+
+        final var socket = new StubSocket(httpRequest);
+
+        // when
+        doHttp11Process(socket);
+
+        // then
+        var expected = String.join("\r\n",
+                "HTTP/1.1 200 OK ",
+                "Content-Type: text/css;charset=utf-8 ",
+                "Content-Length: 211991 ", // 운영체제 환경에 따라 다른 값이 나올 수 있음. 자신의 개발 환경에 맞춰 수정할 것.
+                "",
+                actualResource("static/css/styles.css"));
+
+        assertThat(socket.output()).isEqualTo(expected);
+    }
+
+    @Test
+    @DisplayName("/login 요청을 처리한다")
+    public void loginRequestTest() throws IOException {
+
+        // /login?account=gugu&password=password
+        final var builder = new TestHttpRequestMessageBuilder();
+        String httpRequest = builder
+                .requestLine("GET", "/login?account=gugu&password=password", "HTTP/1.1")
+                .acceptHeader("text/css,*/*;q=0.1")
+                .emptyLine()
+                .build();
+
+        StubSocket socket = new StubSocket(httpRequest);
+        doHttp11Process(socket);
+
+
+        String expected = String.join("\r\n",
+                "HTTP/1.1 200 OK ",
+                "Content-Type: text/html;charset=utf-8 ",
+                "Content-Length: 3796 ", // 운영체제 환경에 따라 다른 값이 나올 수 있음. 자신의 개발 환경에 맞춰 수정할 것.
+                "",
+                actualResource("static/login.html"));
+
+
+        assertThat(socket.output()).isEqualTo(expected);
+    }
+
+    @Test
+    @DisplayName("/login/v2처럼 path에 버전을 명시할 경우 /login으로 요청이 처리되지 않는다")
+    public void loginPathVersioningTest() {
+
+        final var builder = new TestHttpRequestMessageBuilder();
+        String httpRequest = builder
+                .requestLine("GET", "/login/v2?account=gugu&password=password", "HTTP/1.1")
+                .acceptHeader("text/css,*/*;q=0.1")
+                .emptyLine()
+                .build();
+
+        StubSocket socket = new StubSocket(httpRequest);
+        doHttp11Process(socket);
+
+
+        String expected = String.join("\r\n",
+                "HTTP/1.1 404 Not Found ",
+                "Content-Type: text/html;charset=utf-8 ",
+                "Content-Length: 0 ", // 운영체제 환경에 따라 다른 값이 나올 수 있음. 자신의 개발 환경에 맞춰 수정할 것.
+                "",
+                "");
+
+
+        assertThat(socket.output()).isEqualTo(expected);
+    }
+
+
+    private void doHttp11Process(StubSocket socket) {
+        new Http11Processor(socket).process(socket);
+    }
+
+    private String actualResource(String resourceName) {
+        final URL resource = getClass().getClassLoader().getResource(resourceName);
+        try {
+            return new String(Files.readAllBytes(new File(resource.getFile()).toPath()));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
