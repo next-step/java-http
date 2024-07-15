@@ -37,19 +37,24 @@ public class ResponseResource {
             String account = requestBodies.getRequestBodyValueByKey("account");
             String password = requestBodies.getRequestBodyValueByKey("password");
             String email = requestBodies.getRequestBodyValueByKey("email");
+
             InMemoryUserRepository.save(new User(account, password, email));
+
             String responseBody = new ResponseBody("/index.html").getResponseBody();
             return new ResponseResource(responseBody, "/index.html", StatusCode.FOUND, Cookies.emptyCookies());
         }
+
         if (path.urlPath().equals("/login")) {
             String account = requestBodies.getRequestBodyValueByKey("account");
             String password = requestBodies.getRequestBodyValueByKey("password");
             boolean loginSuccess = login(account, password, cookies);
+
             if (loginSuccess) {
                 String filePath = "/index.html";
                 String responseBody = new ResponseBody(filePath).getResponseBody();
                 return new ResponseResource(responseBody, filePath, StatusCode.FOUND, cookies);
             }
+
             String filePath = "/401.html";
             String responseBody = new ResponseBody(filePath).getResponseBody();
             return new ResponseResource(responseBody, filePath, StatusCode.NOT_FOUND, Cookies.emptyCookies());
@@ -69,6 +74,7 @@ public class ResponseResource {
             if (cookies.hasJSessionId()) {
                 String jSessionId = cookies.getJSessionId();
                 HttpSession jsessionid = SessionManager.getInstance().findSession(jSessionId);
+
                 if (jsessionid != null) {
                     String filePath = "/index.html";
                     String responseBody = new ResponseBody(filePath).getResponseBody();
@@ -119,12 +125,15 @@ public class ResponseResource {
         if (cookies.hasJSessionId()) {
             return true;
         }
+
         if (user.checkPassword(password)) {
             String string = UUID.randomUUID().toString();
             cookies.addCookie(new Cookie("JSESSIONID", string));
+
             SessionManager.getInstance().add(new Session(string));
             return true;
         }
+
         return false;
     }
 
