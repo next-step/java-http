@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 public class PathResolver {
 
   private static final Logger log = LoggerFactory.getLogger(PathResolver.class);
+
   private final String filePath;
 
   public String getFilePath() {
@@ -38,8 +39,6 @@ public class PathResolver {
 
   private static void checkUserInformation(String userId, String password) {
 
-    System.out.println("userId = " + userId);
-    System.out.println("password = " + password);
     final User user = InMemoryUserRepository.findByAccount(userId)
         .orElseThrow(() -> new NoSuchElementException("사용자를 찾을 수 없습니다."));
 
