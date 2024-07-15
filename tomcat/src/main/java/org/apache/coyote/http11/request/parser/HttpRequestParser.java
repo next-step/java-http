@@ -9,15 +9,19 @@ import java.util.List;
 public class HttpRequestParser {
     public static HttpRequest parse(BufferedReader bufferedReader) {
         List<String> requestLines = bufferedReader.lines().takeWhile(line -> !line.isEmpty()).toList();
+
         if(requestLines.isEmpty()) {
             throw new IllegalArgumentException("Request headers are empty");
         }
+
         RequestLine requestLine = RequestLineParser.parse(requestLines.get(0));
         RequestHeaders requestHeaders = RequestHeadersParser.parse(requestLines);
         Cookies cookies = CookiesParser.parse(requestHeaders.requestHeaders());
-        if (requestHeaders.hasContentLength()) {
+
+        if (requestHeaders.hasContentType()) {
             int contentLength = requestHeaders.getContentLength();
             StringBuilder body = new StringBuilder();
+
             for (int i = 0; i < contentLength; i++) {
                 try {
                     body.append((char) bufferedReader.read());
@@ -25,6 +29,7 @@ public class HttpRequestParser {
                     e.printStackTrace();
                 }
             }
+
             RequestBodies requestBodies = RequestBodiesParser.parse(body.toString());
             return new HttpRequest(requestLine, requestHeaders, requestBodies, cookies);
         }
