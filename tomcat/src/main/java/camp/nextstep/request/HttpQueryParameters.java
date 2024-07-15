@@ -2,19 +2,18 @@ package camp.nextstep.request;
 
 import java.util.*;
 
-public class QueryParameters {
+public class HttpQueryParameters {
     private static final String QUERY_PARAMS_REGEX_SEPARATOR = "&";
     private static final String QUERY_PARAMS_KEY_VALUE_REGEX_SEPARATOR = "=";
 
-    private static final QueryParameters EMPTY = new QueryParameters(Collections.unmodifiableMap(new HashMap<>()));
-
+    private static final HttpQueryParameters EMPTY = new HttpQueryParameters(Collections.unmodifiableMap(new HashMap<>()));
     private final Map<String, List<Object>> queryParamsMap;
 
-    private QueryParameters(Map<String, List<Object>> queryParamsMap) {
+    private HttpQueryParameters(Map<String, List<Object>> queryParamsMap) {
         this.queryParamsMap = queryParamsMap;
     }
 
-    public static QueryParameters parse(String queryString) {
+    public static HttpQueryParameters parse(String queryString) {
         if (queryString == null) return EMPTY;
 
         Map<String, List<Object>> map = new HashMap<>();
@@ -27,7 +26,7 @@ public class QueryParameters {
             map.computeIfAbsent(key, s -> new ArrayList<>()).add(value);
         }
 
-        return new QueryParameters(map);
+        return new HttpQueryParameters(map);
     }
 
     public boolean hasKey(String key) {
@@ -44,6 +43,10 @@ public class QueryParameters {
 
     public String getString(String key) {
         return getOne(key).map(Object::toString).orElse(null);
+    }
+
+    public Set<String> getAllKeys() {
+        return queryParamsMap.keySet();
     }
 
     private Optional<Object> getOne(String key) {

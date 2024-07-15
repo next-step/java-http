@@ -6,16 +6,14 @@ import java.util.List;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
-class RequestParserTest {
-
-    private final RequestParser requestParser = new RequestParser();
+class HttpRequestParserTest {
 
     @Test
     void parseGetRequest() {
         String requestLineString = "GET /docs/index.html HTTP/1.1";
-        RequestLine requestLine = RequestLine.parse(requestLineString);
+        HttpRequestLine requestLine = HttpRequestLine.parse(requestLineString);
 
-        assertThat(requestLine.getMethod()).isEqualTo(RequestMethod.GET);
+        assertThat(requestLine.getMethod()).isEqualTo(HttpRequestMethod.GET);
         assertThat(requestLine.getPath()).isEqualTo("/docs/index.html");
         assertThat(requestLine.getHttpVersion()).isEqualTo("HTTP/1.1");
     }
@@ -23,9 +21,9 @@ class RequestParserTest {
     @Test
     void parsePostRequest() {
         String requestLineString = "POST /docs/index.html HTTP/1.1";
-        RequestLine requestLine = RequestLine.parse(requestLineString);
+        HttpRequestLine requestLine = HttpRequestLine.parse(requestLineString);
 
-        assertThat(requestLine.getMethod()).isEqualTo(RequestMethod.POST);
+        assertThat(requestLine.getMethod()).isEqualTo(HttpRequestMethod.POST);
         assertThat(requestLine.getPath()).isEqualTo("/docs/index.html");
         assertThat(requestLine.getQueryParameter("somekey")).isEqualTo(null);
         assertThat(requestLine.getHttpVersion()).isEqualTo("HTTP/1.1");
@@ -34,10 +32,10 @@ class RequestParserTest {
     @Test
     void parseQueryString() {
         String requestLineString = "GET /users?userId=javajigi&password=password&name=JaeSung HTTP/1.1";
-        RequestLine requestLine = RequestLine.parse(requestLineString);
-        QueryParameters queryParameters = requestLine.getQueryParameters();
+        HttpRequestLine requestLine = HttpRequestLine.parse(requestLineString);
+        HttpQueryParameters queryParameters = requestLine.getQueryParameters();
 
-        assertThat(requestLine.getMethod()).isEqualTo(RequestMethod.GET);
+        assertThat(requestLine.getMethod()).isEqualTo(HttpRequestMethod.GET);
         assertThat(requestLine.getPath()).isEqualTo("/users");
         assertThat(queryParameters.get("userId")).isEqualTo("javajigi");
         assertThat(queryParameters.get("password")).isEqualTo("password");
@@ -49,8 +47,8 @@ class RequestParserTest {
     @Test
     void parseQueryString2() {
         String requestLineString = "GET /users?userId=javajigi&userId=abc HTTP/1.1";
-        RequestLine requestLine = RequestLine.parse(requestLineString);
-        QueryParameters queryParameters = requestLine.getQueryParameters();
+        HttpRequestLine requestLine = HttpRequestLine.parse(requestLineString);
+        HttpQueryParameters queryParameters = requestLine.getQueryParameters();
 
         assertThat(queryParameters.get("userId")).isEqualTo("javajigi");
         assertThat(queryParameters.getAll("userId")).isEqualTo(List.of("javajigi", "abc"));

@@ -1,30 +1,20 @@
 package org.apache.coyote.http11;
 
-import camp.nextstep.db.InMemoryUserRepository;
+import camp.nextstep.controller.RequestMapping;
 import camp.nextstep.exception.RequestNotFoundException;
-import camp.nextstep.exception.UncheckedServletException;
-import camp.nextstep.model.User;
-import camp.nextstep.request.Cookie;
-import camp.nextstep.request.QueryParameters;
-import camp.nextstep.request.Request;
-import camp.nextstep.request.RequestParser;
+import camp.nextstep.request.HttpRequest;
+import camp.nextstep.request.HttpRequestParser;
+import camp.nextstep.response.HttpResponse;
+import camp.nextstep.response.ResponseStatusCode;
+import camp.nextstep.response.ResponseWriter;
 import camp.nextstep.staticresource.StaticResourceLoader;
-import org.apache.catalina.Session;
 import org.apache.coyote.Processor;
-import org.apache.util.MimeTypes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.net.Socket;
-import java.net.URISyntaxException;
-import java.util.Optional;
-
-import static camp.nextstep.request.Cookie.JSESSIONID_NAME;
-import static java.util.Objects.requireNonNull;
 
 public class Http11Processor implements Runnable, Processor {
 
@@ -32,16 +22,16 @@ public class Http11Processor implements Runnable, Processor {
 
     private final Socket connection;
 
-    private final RequestParser requestParser;
+    private final HttpRequestParser requestParser;
+    private final RequestMapping requestMapping;
     private final StaticResourceLoader staticResourceLoader;
-    private final MimeTypes mimeTypes;
 
     public Http11Processor(final Socket connection) {
         this.connection = connection;
 
-        this.requestParser = new RequestParser();
+        this.requestParser = new HttpRequestParser();
+        this.requestMapping = new RequestMapping();
         this.staticResourceLoader = new StaticResourceLoader();
-        this.mimeTypes = new MimeTypes();
     }
 
     @Override
@@ -57,200 +47,20 @@ public class Http11Processor implements Runnable, Processor {
              final var bufferedReader = new BufferedReader(inputStreamReader);
              final var outputStream = connection.getOutputStream()
         ) {
-            Request request = requestParser.parse(bufferedReader);
+            HttpRequest request = requestParser.parse(bufferedReader);
+            HttpResponse response = new HttpResponse(request, staticResourceLoader);
+            response.setSessionCookie();
+
             try {
-                processRequest(request, outputStream);
+                requestMapping.getController(request).service(request, response);
             } catch (RequestNotFoundException e) {
-                render404(request, outputStream);
+                response.render(ResponseStatusCode.NotFound, "/404.html");
                 throw e;
+            } finally {
+                new ResponseWriter(response, outputStream).write();
             }
-        } catch (IOException | UncheckedServletException | URISyntaxException e) {
+        } catch (Exception e) {
             log.error(e.getMessage(), e);
         }
-    }
-
-    private void processRequest(Request request, OutputStream outputStream) throws IOException, URISyntaxException {
-        String requestPath = request.getPath();
-
-        if (requestPath.equals("/")) {
-            processHelloWorld(request, outputStream);
-            return;
-        }
-
-        if (requestPath.equals("/login") && request.isGET()) {
-            processGetLogin(request, outputStream);
-            return;
-        }
-
-        if (requestPath.equals("/login") && request.isPOST()) {
-            processPostLogin(request, outputStream);
-            return;
-        }
-
-        if (requestPath.equals("/register") && request.isGET()) {
-            processGetRegister(request, outputStream);
-            return;
-        }
-
-        if (requestPath.equals("/register") && request.isPOST()) {
-            processPostRegister(request, outputStream);
-            return;
-        }
-
-        if (requestPath.equals("/index.html")) {
-            processRenderStaticPage(request, outputStream);
-            log.debug("세션 조회: {}", request.getSession());
-            return;
-        }
-
-        processRenderStaticPage(request, outputStream);
-    }
-
-    private void processHelloWorld(Request request, OutputStream outputStream) throws IOException {
-        render("200 OK", "Hello world!", "text/html", request, outputStream);
-    }
-
-    private void processGetLogin(Request request, OutputStream outputStream) throws IOException {
-        if (isLoggedIn(request)) {
-            redirectTo("/index.html", request, outputStream);
-            return;
-        }
-        renderStaticResource("/login.html", request, outputStream);
-    }
-
-    private boolean isLoggedIn(Request request) throws IOException {
-        Session session = request.getSession();
-        return session.getAttribute("user") != null;
-    }
-
-    private void processPostLogin(Request request, OutputStream outputStream) throws IOException {
-        QueryParameters requestBody = request.getRequestBody().toQueryParameters();
-
-        String account = requireNonNull(requestBody.getString("account"));
-        String password = requireNonNull(requestBody.getString("password"));
-
-        Optional<User> user = InMemoryUserRepository.findByAccount(account);
-        Boolean found = user
-                .map(acc -> acc.checkPassword(password))
-                .orElse(false);
-        if (!found) {
-            redirectTo("/401.html", request, outputStream);
-            return;
-        }
-
-        signInAs(user.get(), request);
-
-        redirectTo("/index.html", request, outputStream);
-    }
-
-    private void signInAs(User user, Request request) throws IOException {
-        final var session = request.getSession();
-
-        session.setAttribute("user", user);
-        log.debug("로그인: {}", user);
-    }
-
-    private void processGetRegister(Request request, OutputStream outputStream) throws IOException {
-        renderStaticResource("/register.html", request, outputStream);
-    }
-
-    private void processPostRegister(Request request, OutputStream outputStream) throws IOException {
-        final QueryParameters requestBody = request.getRequestBody().toQueryParameters();
-
-        final String account = requireNonNull(requestBody.getString("account"));
-        final String email = requireNonNull(requestBody.getString("email"));
-        final String password = requireNonNull(requestBody.getString("password"));
-
-        User user = new User(account, password, email);
-        InMemoryUserRepository.save(user);
-        signInAs(user, request);
-        log.debug("사용자 생성 후 로그인: {}", user);
-
-        redirectTo("/index.html", request, outputStream);
-    }
-
-    private void processRenderStaticPage(Request request, OutputStream outputStream) throws IOException {
-        renderStaticResource(request.getPath(), request, outputStream);
-    }
-
-    private void renderStaticResource(String staticFilePath, Request request, OutputStream outputStream) throws IOException {
-        final String content = staticResourceLoader.readAllLines("static" + staticFilePath);
-        final String mimeType = guessMimeTypeFromPath(staticFilePath);
-
-        render("200 OK", content, mimeType, request, outputStream);
-    }
-
-    private void render404(Request request, OutputStream outputStream) throws IOException {
-        final String content = staticResourceLoader.readAllLines("static/404.html");
-
-        render("404 Not Found", content, "text/html", request, outputStream);
-    }
-
-    private void redirectTo(String redirectTo, Request request, OutputStream outputStream) throws IOException {
-        String responseStatus = "302 Found";
-        StringBuilder responseBuilder = new StringBuilder();
-        responseBuilder.append("HTTP/1.1 ").append(responseStatus).append(" ").append("\r\n");
-        responseBuilder.append("Location: ").append(redirectTo).append(" ").append("\r\n");
-        if (needToUpdateSessionId(request)) {
-            responseBuilder.append("Set-Cookie: ")
-                    .append(JSESSIONID_NAME)
-                    .append("=")
-                    .append(request.getSession().getId())
-                    .append("; Path=/ ")
-                    .append("\r\n");
-        }
-        outputStream.write(responseBuilder.toString().getBytes());
-        outputStream.flush();
-    }
-
-    private boolean needToUpdateSessionId(Request request) throws IOException {
-        Cookie sessionCookie = request.getRequestCookies().get(JSESSIONID_NAME);
-        if (sessionCookie == null) return true;
-
-        Session session = request.getSession();
-        return !session.getId().equals(sessionCookie.getValue());
-    }
-
-    private void render(String responseStatus,
-                        String content,
-                        String mimeType,
-                        Request request, OutputStream outputStream) throws IOException {
-        StringBuilder responseBuilder = new StringBuilder();
-        responseBuilder.append("HTTP/1.1 ").append(responseStatus).append(" ").append("\r\n");
-        responseBuilder.append("Content-Type: ").append(mimeType).append(";charset=utf-8 ").append("\r\n");
-        responseBuilder.append("Content-Length: ").append(content.getBytes().length).append(" ").append("\r\n");
-        if (needToUpdateSessionId(request)) {
-            responseBuilder.append("Set-Cookie: ")
-                    .append(JSESSIONID_NAME)
-                    .append("=")
-                    .append(request.getSession().getId())
-                    .append("; Path=/ ")
-                    .append("\r\n");
-        }
-        responseBuilder.append("\r\n").append(content);
-
-        outputStream.write(responseBuilder.toString().getBytes());
-        outputStream.flush();
-    }
-
-    private String guessMimeTypeFromPath(String path) {
-        final String FALLBACK_MIME_TYPE = "text/html";
-
-        if (path.equals("/")) return "text/html";
-
-        String extension = extractExtensionFromPath(path);
-        if (extension == null) return FALLBACK_MIME_TYPE;
-
-        String mimeType = mimeTypes.guessByExtension(extension);
-        if (mimeType == null) return FALLBACK_MIME_TYPE;
-
-        return mimeType;
-    }
-
-    private String extractExtensionFromPath(String path) {
-        int lastPeriod = path.lastIndexOf(".");
-        if (lastPeriod < 0) return null;
-
-        return path.substring(lastPeriod);
     }
 }

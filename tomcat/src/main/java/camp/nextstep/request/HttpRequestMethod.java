@@ -1,6 +1,6 @@
 package camp.nextstep.request;
 
-public enum RequestMethod {
+public enum HttpRequestMethod {
     GET,
     POST
 }

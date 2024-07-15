@@ -5,46 +5,57 @@ import org.apache.coyote.http11.SessionManager;
 
 import java.io.IOException;
 
-import static camp.nextstep.request.Cookie.JSESSIONID_NAME;
+import static camp.nextstep.request.HttpRequestCookie.JSESSIONID_NAME;
 
-public class Request {
-    private final RequestLine requestLine;
-    private final RequestHeaders requestHeaders;
-    private final RequestCookies requestCookies;
-    private final RequestBody requestBody;
+public class HttpRequest {
+    private final HttpRequestLine requestLine;
+    private final HttpRequestHeaders requestHeaders;
+    private final HttpRequestCookies cookies;
+    private final HttpRequestBody requestBody;
 
-    public Request(RequestLine requestLine,
-                   RequestHeaders requestHeaders,
-                   RequestCookies requestCookies,
-                   RequestBody requestBody) {
+    public HttpRequest(HttpRequestLine requestLine,
+                       HttpRequestHeaders requestHeaders,
+                       HttpRequestCookies cookies,
+                       HttpRequestBody requestBody) {
         this.requestLine = requestLine;
         this.requestHeaders = requestHeaders;
-        this.requestCookies = requestCookies;
+        this.cookies = cookies;
         this.requestBody = requestBody;
     }
 
     public boolean isGET() {
-        return requestLine.getMethod() == RequestMethod.GET;
+        return requestLine.getMethod() == HttpRequestMethod.GET;
     }
 
     public boolean isPOST() {
-        return requestLine.getMethod() == RequestMethod.POST;
+        return requestLine.getMethod() == HttpRequestMethod.POST;
     }
 
     public String getPath() {
         return requestLine.getPath();
     }
 
-    public RequestHeaders getRequestHeaders() {
+    public HttpQueryParameters getQueryParameters() {
+        return requestLine.getQueryParameters();
+    }
+
+    public HttpRequestHeaders getRequestHeaders() {
         return requestHeaders;
     }
 
-    public RequestBody getRequestBody() {
+    public HttpRequestBody getRequestBody() {
         return requestBody;
     }
 
-    public RequestCookies getRequestCookies() {
-        return requestCookies;
+    public HttpRequestCookies getCookies() {
+        return cookies;
+    }
+
+    /**
+     * 요청에서 세션을 가지고 있었는지 확인
+     */
+    public boolean hasSession() {
+        return SessionManager.INSTANCE.findSession(getSessionIdFromCookie()) != null;
     }
 
     /**
@@ -61,13 +72,13 @@ public class Request {
         if (session != null) {
             return session;
         }
-        Session newSession = new Session(Cookie.randomJsessionId());
+        Session newSession = new Session(HttpRequestCookie.randomJsessionId());
         SessionManager.INSTANCE.add(newSession);
         return newSession;
     }
 
     private String getSessionIdFromCookie() {
-        Cookie cookie = getRequestCookies().get(JSESSIONID_NAME);
+        HttpRequestCookie cookie = getCookies().get(JSESSIONID_NAME);
         if (cookie == null) return null;
 
         return cookie.getValue();

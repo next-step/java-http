@@ -8,11 +8,9 @@ class MimeTypesTest {
 
     @Test
     void 확장자로_mime_type_추정한다() {
-        final MimeTypes mimeTypes = new MimeTypes();
-
-        assertThat(mimeTypes.guessByExtension(".html")).isEqualTo("text/html");
-        assertThat(mimeTypes.guessByExtension(".css")).isEqualTo("text/css");
-        assertThat(mimeTypes.guessByExtension(".js")).isEqualTo("application/javascript");
-        assertThat(mimeTypes.guessByExtension(".svg")).isEqualTo("image/svg+xml");
+        assertThat(MimeTypes.guessByExtension(".html")).isEqualTo("text/html");
+        assertThat(MimeTypes.guessByExtension(".css")).isEqualTo("text/css");
+        assertThat(MimeTypes.guessByExtension(".js")).isEqualTo("application/javascript");
+        assertThat(MimeTypes.guessByExtension(".svg")).isEqualTo("image/svg+xml");
     }
 }

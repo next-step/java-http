@@ -4,14 +4,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class RequestHeaders {
+public class HttpRequestHeaders {
     private final Map<String, String> headersMap;
 
-    private RequestHeaders(Map<String, String> headersMap) {
+    private HttpRequestHeaders(Map<String, String> headersMap) {
         this.headersMap = headersMap;
     }
 
-    public static RequestHeaders parse(List<String> list) {
+    public static HttpRequestHeaders parse(List<String> list) {
         final Map<String, String> headersMap = new HashMap<>();
         list.forEach(line -> {
             int index = line.indexOf(": ");
@@ -20,7 +20,7 @@ public class RequestHeaders {
             headersMap.put(key, value);
         });
 
-        return new RequestHeaders(headersMap);
+        return new HttpRequestHeaders(headersMap);
     }
 
     public Integer getContentLength() {
