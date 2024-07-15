@@ -8,7 +8,6 @@ import org.apache.coyote.http11.session.Session;
 import org.apache.coyote.http11.session.SessionManager;
 
 import java.io.IOException;
-import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.UUID;
 
@@ -117,10 +116,10 @@ public class ResponseResource {
 
     private static boolean login(String account, String password, Cookies cookies) {
         final User user = InMemoryUserRepository.findByAccount(account).orElseThrow(NoSuchElementException::new);
+        if (cookies.hasJSessionId()) {
+            return true;
+        }
         if (user.checkPassword(password)) {
-            if (cookies.hasJSessionId()) {
-                return true;
-            }
             String string = UUID.randomUUID().toString();
             cookies.addCookie(new Cookie("JSESSIONID", string));
             SessionManager.getInstance().add(new Session(string));
