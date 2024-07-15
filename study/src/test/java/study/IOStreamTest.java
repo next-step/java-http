@@ -21,6 +21,20 @@ import static org.mockito.Mockito.*;
  * Stream은 데이터를 바이트(byte) 단위로 읽고 쓴다.
  * 바이트가 아닌 텍스트(문자열)를 읽고 쓰려면 Reader와 Writer 클래스를 연결한다.
  * Reader, Writer는 다양한 문자 인코딩(e.g. UTF-8)을 처리할 수 있다.
+ *
+ *      배운 부분들
+ *     1. I/O Stream
+ *      - Read
+ *      - Write
+ *      - try with resources
+ *      - close의 중요성
+ *     2. FilterStream
+ *      - BufferedInputStream(default size)
+ *         - Flush로 IO를 줄이는 방법
+ *         - FLUSH 못할때, 데드락? -> 원리가 궁금하다.
+ *      - Reader
+ *      - Writer
+ *
  */
 @DisplayName("Java I/O Stream 클래스 학습 테스트")
 class IOStreamTest {
@@ -74,8 +88,9 @@ class IOStreamTest {
         void BufferedOutputStream을_사용하면_버퍼링이_가능하다() throws IOException {
             final OutputStream outputStream = mock(BufferedOutputStream.class);
             outputStream.flush();
+
             /**
-             * todo
+             *
              * flush를 사용해서 테스트를 통과시킨다.
              * ByteArrayOutputStream과 어떤 차이가 있을까?
              */
@@ -89,17 +104,16 @@ class IOStreamTest {
          */
         @Test
         void OutputStream은_사용하고_나서_close_처리를_해준다() throws IOException {
-
+            final OutputStream outputStream = mock(OutputStream.class);
 
             /**
-             * todo
+             *
              * try-with-resources를 사용한다.
              * java 9 이상에서는 변수를 try-with-resources로 처리할 수 있다.
              */
-            try (final OutputStream outputStream = mock(OutputStream.class)) {
-                outputStream.close();
-                verify(outputStream, atLeastOnce()).close();
+            try (outputStream) {
             }
+            verify(outputStream, atLeastOnce()).close();
 
         }
     }
@@ -144,17 +158,16 @@ class IOStreamTest {
          */
         @Test
         void InputStream은_사용하고_나서_close_처리를_해준다() throws IOException {
-
+            final InputStream inputStream = mock(InputStream.class);
 
             /**
-             * todo
+             *
              * try-with-resources를 사용한다.
              * java 9 이상에서는 변수를 try-with-resources로 처리할 수 있다.
              */
-            try (final InputStream inputStream = mock(InputStream.class)) {
-                inputStream.close();
-                verify(inputStream, atLeastOnce()).close();
+            try (inputStream) {
             }
+            verify(inputStream, atLeastOnce()).close();
 
         }
     }
@@ -173,6 +186,7 @@ class IOStreamTest {
          * BufferedInputStream은 데이터 처리 속도를 높이기 위해 데이터를 버퍼에 저장한다.
          * InputStream 객체를 생성하고 필터 생성자에 전달하면 필터에 연결된다.
          * 버퍼 크기를 지정하지 않으면 버퍼의 기본 사이즈는 얼마일까?
+         * 8192 bytes
          */
         @Test
         void 필터인_BufferedInputStream를_사용해보자() throws IOException {
@@ -219,8 +233,8 @@ class IOStreamTest {
                 actual.append(bufferedReader.readLine()).append("\r\n");
             }
 
-
             assertThat(actual).hasToString(emoji);
         }
     }
+
 }
