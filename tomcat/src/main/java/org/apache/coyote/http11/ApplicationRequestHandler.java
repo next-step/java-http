@@ -19,7 +19,7 @@ public class ApplicationRequestHandler implements RequestHandler {
             final var responseBody = "Hello world!";
             return new Response(requestLine.getHttpProtocol(), HttpStatusCode.OK, ContentType.TEXT_HTML, StandardCharsets.UTF_8, responseBody.getBytes());
         }
-        if (requestLine.getPath().startsWith("/login")) {
+        if (requestLine.getPath().equals("/login")) {
             Map<String, Object> queryParamMap = requestLine.getQueryParamMap();
             ViewModel viewModel = userController.findUser(queryParamMap);
             try {
