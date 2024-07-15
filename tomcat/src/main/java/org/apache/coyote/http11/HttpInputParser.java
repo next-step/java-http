@@ -14,7 +14,9 @@ public class HttpInputParser {
 
     private static final String HEADER_SEPARATOR = ";";
     private static final String HEADER_ASSIGNMENT = ": ";
-    public static final int HEADER_KEY_VALUE_NUMBER = 2;
+    private static final int HEADER_KEY_VALUE_NUMBER = 2;
+    private static final int HEADER_LINE_NAME_POINT = 0;
+    private static final int HEADER_LINE_VALUES_POINT = 1;
 
     private final HttpRequest httpRequest = new HttpRequest();
     private final BufferedReader reader;
@@ -37,15 +39,11 @@ public class HttpInputParser {
     private void parseHeader() throws IOException {
         String line;
         while ((line = this.reader.readLine()) != null && !line.isEmpty()) {
-            final String[] header = line.split(HEADER_ASSIGNMENT, HEADER_KEY_VALUE_NUMBER);
+            final String[] headers = line.split(HEADER_ASSIGNMENT, HEADER_KEY_VALUE_NUMBER);
 
-            if (header.length != HEADER_KEY_VALUE_NUMBER) {
-                return;
-            }
+            final String[] headerValues = headers[HEADER_LINE_VALUES_POINT].split(HEADER_SEPARATOR);
 
-            final String[] headerValues = header[1].split(HEADER_SEPARATOR);
-
-            this.httpRequest.appendHeader(header[0], headerValues);
+            this.httpRequest.appendHeader(headers[HEADER_LINE_NAME_POINT], headerValues);
         }
 
         final List<String> cookies = this.httpRequest.getHeader(HttpHeader.COOKIE);
@@ -65,7 +63,7 @@ public class HttpInputParser {
         final int bodyLength = httpRequest.getBodyLength();
 
         final char[] bodyChars = new char[bodyLength];
-        reader.read(bodyChars, 0, bodyLength);
+        reader.read(bodyChars, HEADER_LINE_NAME_POINT, bodyLength);
 
         this.httpRequest.setBody(new String(bodyChars));
     }

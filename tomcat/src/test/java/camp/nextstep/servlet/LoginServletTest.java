@@ -1,5 +1,6 @@
 package camp.nextstep.servlet;
 
+import camp.nextstep.service.UserService;
 import org.apache.coyote.http.ContentType;
 import org.apache.coyote.http.HttpHeader;
 import org.apache.coyote.http.HttpMethod;
@@ -22,7 +23,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 @TomcatServerTest(
-        servletMappings = @ServletMapping(path = "/login", servlet = LoginServlet.class)
+        servletMappings = @ServletMapping(
+                path = "/login",
+                servlet = LoginServlet.class,
+                parameters = {UserService.class}
+        )
 )
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class LoginServletTest {
@@ -57,7 +62,7 @@ class LoginServletTest {
     public void getAlreadyLogin() throws Exception {
         // given
         final RestTemplate givenRestTemplate = new RestTemplate("/login", HttpMethod.POST);
-        givenRestTemplate.setHeaders(Map.of(HttpHeader.CONTENT_TYPE, new String[] {ContentType.APPLICATION_FORM_URLENCODED.type()}));
+        givenRestTemplate.setHeaders(Map.of(HttpHeader.CONTENT_TYPE, new String[]{ContentType.APPLICATION_FORM_URLENCODED.type()}));
         givenRestTemplate.setParams(Map.of("account", "gugu", "password", "password"));
         givenRestTemplate.execute();
 
@@ -86,7 +91,7 @@ class LoginServletTest {
     public void postLoginSuccess() throws Exception {
         // given
         final RestTemplate restTemplate = new RestTemplate("/login", HttpMethod.POST);
-        restTemplate.setHeaders(Map.of(HttpHeader.CONTENT_TYPE, new String[] {ContentType.APPLICATION_FORM_URLENCODED.type()}));
+        restTemplate.setHeaders(Map.of(HttpHeader.CONTENT_TYPE, new String[]{ContentType.APPLICATION_FORM_URLENCODED.type()}));
         restTemplate.setParams(Map.of("account", "gugu", "password", "password"));
 
         // when
@@ -116,7 +121,7 @@ class LoginServletTest {
     public void postLoginFail() throws Exception {
         // given
         final RestTemplate restTemplate = new RestTemplate("/login", HttpMethod.POST);
-        restTemplate.setHeaders(Map.of(HttpHeader.CONTENT_TYPE, new String[] {ContentType.APPLICATION_FORM_URLENCODED.type()}));
+        restTemplate.setHeaders(Map.of(HttpHeader.CONTENT_TYPE, new String[]{ContentType.APPLICATION_FORM_URLENCODED.type()}));
         restTemplate.setParams(Map.of("account", "gugu", "password", "123"));
 
         // when

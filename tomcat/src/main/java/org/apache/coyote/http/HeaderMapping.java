@@ -13,21 +13,44 @@ public class HeaderMapping {
 
     private static String toHeaderLine(final Map.Entry<HttpHeader, List<String>> header) {
         final String valueLine = toHeaderValueLine(header);
-
-        return header.getKey().header() + HEADER_ASSIGNMENT + valueLine + HEADER_SPACE;
+        return String.format("%s%s%s%s", header.getKey().header(), HEADER_ASSIGNMENT, valueLine, HEADER_SPACE);
     }
 
     private static String toHeaderValueLine(final Map.Entry<HttpHeader, List<String>> header) {
         return String.join(CONTENT_TYPE_SEPARATOR, header.getValue());
     }
 
-    public void addHeader(final HttpHeader header, final String... value) {
-        addHeader(header, Arrays.asList(value));
+    public void addHeader(final HttpHeader header, final String value) {
+        final List<String> headerValues = headerMapping.getOrDefault(header, new ArrayList<>());
+
+        if (!isAddableValue(value, headerValues)) {
+            return;
+        }
+
+        headerValues.add(value.trim());
+
+        headerMapping.put(header, headerValues);
     }
 
-    public void addHeader(final HttpHeader header, final List<String> values) {
+    public void addHeader(final HttpHeader header, final String value1, final String value2) {
         final List<String> headerValues = headerMapping.getOrDefault(header, new ArrayList<>());
-        headerValues.addAll(values.stream().filter(value -> isAddableValue(value, headerValues)).map(value -> value.trim()).toList());
+
+        if (isAddableValue(value1, headerValues)) {
+            headerValues.add(value1.trim());
+        }
+
+        if (isAddableValue(value2, headerValues)) {
+            headerValues.add(value2.trim());
+        }
+
+        headerMapping.put(header, headerValues);
+    }
+
+    public void addHeader(final HttpHeader header, final String... values) {
+        final List<String> headerValues = headerMapping.getOrDefault(header, new ArrayList<>());
+        headerValues.addAll(Arrays.stream(values)
+                .filter(value -> isAddableValue(value, headerValues))
+                .map(String::trim).toList());
 
         headerMapping.put(header, headerValues);
     }

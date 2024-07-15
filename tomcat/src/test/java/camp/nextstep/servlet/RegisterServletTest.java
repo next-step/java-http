@@ -1,5 +1,7 @@
 package camp.nextstep.servlet;
 
+import camp.nextstep.db.InMemoryUserRepository;
+import camp.nextstep.service.UserService;
 import org.apache.coyote.http.ContentType;
 import org.apache.coyote.http.HttpHeader;
 import org.apache.coyote.http.HttpMethod;
@@ -20,7 +22,9 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 
 @TomcatServerTest(
         servletMappings = @ServletMapping(
-                path = "/register", servlet = RegisterServlet.class
+                path = "/register",
+                servlet = RegisterServlet.class,
+                parameters = {UserService.class}
         )
 )
 class RegisterServletTest {
@@ -54,7 +58,8 @@ class RegisterServletTest {
         // given
         final RestTemplate restTemplate = new RestTemplate("/register", HttpMethod.POST);
         restTemplate.setHeaders(Map.of(HttpHeader.CONTENT_TYPE, new String[] {ContentType.APPLICATION_FORM_URLENCODED.type()}));
-        restTemplate.setParams(Map.of("account", "gugu", "password", "123", "email", "gugu@gugu.com"));
+        final String account = "test1";
+        restTemplate.setParams(Map.of("account", account, "password", "123", "email", "gugu@gugu.com"));
 
         // when
         final HttpResponse actual = restTemplate.execute();
@@ -71,6 +76,8 @@ class RegisterServletTest {
                 () -> assertThat(actual.headers()).contains(expected.headers()),
                 () -> assertThat(actual.body()).isEqualTo(expected.body())
         );
+
+        InMemoryUserRepository.delete(account);
     }
 
     @DisplayName("회원가입에 필요한 정보 중 하나라도 공백이거나 null 이면 400 을 반환한다")
