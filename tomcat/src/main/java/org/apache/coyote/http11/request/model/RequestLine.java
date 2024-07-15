@@ -36,4 +36,8 @@ public class RequestLine {
     public String getVersion() {
         return version;
     }
+
+    public boolean hasRequestBody() {
+        return HttpMethod.hasPostOrPutOrPatchMethod(httpMethod);
+    }
 }

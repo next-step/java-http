@@ -2,7 +2,11 @@ package org.apache.coyote.http11.request.model;
 
 public enum HttpMethod {
     POST,
-    GET;
+    GET,
+    PUT,
+    DELETE,
+    PATCH,
+    ;
 
     public static boolean isPostMethod(HttpMethod httpMethod) {
         return httpMethod == POST;
@@ -10,5 +14,9 @@ public enum HttpMethod {
 
     public static boolean isGetMethod(HttpMethod httpMethod) {
         return httpMethod == GET;
+    }
+
+    public static boolean hasPostOrPutOrPatchMethod(HttpMethod httpMethod) {
+        return httpMethod == POST || httpMethod == PUT || httpMethod == PATCH;
     }
 }

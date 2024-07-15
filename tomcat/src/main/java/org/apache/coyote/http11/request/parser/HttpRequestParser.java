@@ -18,7 +18,7 @@ public class HttpRequestParser {
         RequestHeaders requestHeaders = RequestHeadersParser.parse(requestLines);
         Cookies cookies = CookiesParser.parse(requestHeaders.requestHeaders());
 
-        if (requestHeaders.hasContentType()) {
+        if (requestLine.hasRequestBody()) {
             int contentLength = requestHeaders.getContentLength();
             StringBuilder body = new StringBuilder();
 
