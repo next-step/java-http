@@ -28,6 +28,16 @@ public class UserController {
         log.info("register info: {}", queryParamMap);
         User user = userService.register(queryParamMap);
 
-        return new ViewModel("/index.html");
+        return new ViewModel("/index.html", true);
+    }
+
+
+    public ViewModel login() {
+        return new ViewModel("/login.html");
+    }
+
+    public ViewModel login(Map<String, Object> queryParamMap) {
+       userService.login(queryParamMap);
+        return new ViewModel("/index.html", true);
     }
 }

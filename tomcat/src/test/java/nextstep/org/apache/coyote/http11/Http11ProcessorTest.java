@@ -115,7 +115,7 @@ class Http11ProcessorTest {
         // /login?account=gugu&password=password
         final var builder = new TestHttpRequestMessageBuilder();
         String httpRequest = builder
-                .requestLine("GET", "/login?account=gugu&password=password", "HTTP/1.1")
+                .requestLine("GET", "/login", "HTTP/1.1")
                 .hostHeader("localhost:8080")
                 .acceptHeader("text/css,*/*;q=0.1")
                 .emptyLine()
@@ -126,10 +126,11 @@ class Http11ProcessorTest {
 
 
         String expected = String.join("\r\n",
-                "HTTP/1.1 302 Found ",
+                "HTTP/1.1 200 OK ",
                 "Content-Type: text/html;charset=utf-8 ",
-                "Location: http://localhost:8080/index.html ");
-
+                "Content-Length: 3797 ",
+                "",
+                actualResource("static/login.html"));
 
         assertThat(socket.output()).contains(expected);
     }
@@ -166,11 +167,14 @@ class Http11ProcessorTest {
 
         // /login?account=gugu&password=password
         final var builder = new TestHttpRequestMessageBuilder();
+        String requestBody = "account=wrong&password=password";
         String httpRequest = builder
-                .requestLine("GET", "/login?account=wrong&password=password", "HTTP/1.1")
+                .requestLine("POST", "/login", "HTTP/1.1")
                 .hostHeader("localhost:8080")
                 .acceptHeader("text/css,*/*;q=0.1")
+                .contentLength(requestBody.getBytes().length)
                 .emptyLine()
+                .requestBody(requestBody)
                 .build();
 
         StubSocket socket = new StubSocket(httpRequest);

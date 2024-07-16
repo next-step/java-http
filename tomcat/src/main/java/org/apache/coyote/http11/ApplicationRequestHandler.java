@@ -15,8 +15,6 @@ import java.util.Map;
 public class ApplicationRequestHandler implements RequestHandler {
 
     public static final ApplicationRequestHandler INSTANCE = new ApplicationRequestHandler();
-    private static final Logger log = LoggerFactory.getLogger(ApplicationRequestHandler.class);
-
     private final UserController userController = new UserController();
 
     @Override
@@ -29,18 +27,20 @@ public class ApplicationRequestHandler implements RequestHandler {
             return new HttpResponse(requestLine.getHttpProtocol(), HttpStatusCode.OK, new HttpResponseHeaders(MimeType.TEXT_HTML), new ResponseBody(responseBody.getBytes()));
         }
 
-        if (requestLine.getPath().equals("/login")) {
+        if (HttpMethod.GET == requestLine.getMethod() && requestLine.getPath().equals("/login")) {
+            ViewModel viewModel = userController.login();
+            return new HttpResponse(requestLine.getHttpProtocol(), HttpStatusCode.OK, new HttpResponseHeaders(MimeType.TEXT_HTML), new ResponseBody(FileLoader.read("static/" + viewModel.path())));
+        }
+
+        if (HttpMethod.POST == requestLine.getMethod() && requestLine.getPath().equals("/login")) {
+            Map<String, Object> requestBodyMap = httpRequest.getRequestBody().toMap();
             try {
-                Map<String, Object> queryParamMap = requestLine.getQueryParamMap();
-                userController.findUser(queryParamMap);
-                var location = Location.of(requestLine.protocol(), requestHeaders.host(), "/index.html");
+                ViewModel viewModel = userController.login(requestBodyMap);
+                var location = Location.of(requestLine.protocol(), requestHeaders.host(), viewModel.path());
                 return new HttpResponse(requestLine.getHttpProtocol(), HttpStatusCode.FOUND, new HttpResponseHeaders(MimeType.TEXT_HTML, location));
             } catch (UnauthroizedUserException e) {
                 var location = Location.of(requestLine.protocol(), requestHeaders.host(), "/401.html");
                 return new HttpResponse(requestLine.getHttpProtocol(), HttpStatusCode.FOUND, new HttpResponseHeaders(MimeType.TEXT_HTML, location));
-            } catch (RuntimeException e) {
-                log.error(e.getMessage());
-                return new HttpResponse(requestLine.getHttpProtocol(), HttpStatusCode.INTERNAL_SERVER_ERROR, new HttpResponseHeaders(MimeType.TEXT_HTML));
             }
         }
 
