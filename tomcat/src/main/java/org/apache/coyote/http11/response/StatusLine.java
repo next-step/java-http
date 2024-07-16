@@ -12,4 +12,16 @@ public class StatusLine {
     public static StatusLine create(String httpVersion, StatusCode statusCode) {
         return new StatusLine(httpVersion, statusCode);
     }
+
+    public String getHttpVersion() {
+        return httpVersion;
+    }
+
+    public int getStatusCode() {
+        return statusCode.getCode();
+    }
+
+    public String getStatusReason() {
+        return statusCode.getReason();
+    }
 }

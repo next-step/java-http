@@ -2,10 +2,9 @@ package org.apache.coyote.http11;
 
 import camp.nextstep.exception.UncheckedServletException;
 import org.apache.coyote.Processor;
-import org.apache.coyote.http11.request.parser.HttpRequestParser;
 import org.apache.coyote.http11.request.HttpRequest;
-import org.apache.coyote.http11.response.Response;
-import org.apache.coyote.http11.response.ResponseResource;
+import org.apache.coyote.http11.request.parser.HttpRequestParser;
+import org.apache.coyote.http11.response.ResponseHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,11 +36,8 @@ public class Http11Processor implements Runnable, Processor {
              final BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream))) {
 
             HttpRequest httpRequest = HttpRequestParser.parse(bufferedReader);
-            //todo handler 필요
-
-            ResponseResource responseResource = ResponseResource.of(httpRequest.getPath(),  httpRequest.getRequestBodies(), httpRequest.getHttpMethod(), httpRequest.getCookies());
-
-            Response response = Response.createResponse(responseResource);
+            ResponseHandler handler = ResponseHandler.handler(httpRequest);
+            String response = handler.getResponse();
 
             outputStream.write(response.getBytes());
             outputStream.flush();

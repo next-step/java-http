@@ -17,6 +17,18 @@ public class HttpRequest {
         this.cookies = cookies;
     }
 
+    public static HttpRequest createHttpRequestWithRedirectPath(HttpRequest httpRequest, String redirectPath) {
+        throw new UnsupportedOperationException("Unsupported createHttpRequestWithRedirectPath");
+    }
+
+    private RequestLine getRequestLine() {
+        return requestLine;
+    }
+
+    private RequestHeaders getRequestHeaders() {
+        return requestHeaders;
+    }
+
     public Path getPath() {
         return requestLine.getPath();
     }
@@ -39,5 +51,21 @@ public class HttpRequest {
 
     public boolean hasCookies() {
         return cookies.isNotEmpty();
+    }
+
+    public String getRequestBodyValueByKey(String key) {
+        return requestBodies.getRequestBodyValueByKey(key);
+    }
+
+    public String getExtension() {
+        return requestLine.getExtension();
+    }
+
+    public boolean hasJSessionId() {
+        return cookies.hasJSessionId();
+    }
+
+    public String getJSessionId() {
+        return cookies.getJSessionId();
     }
 }

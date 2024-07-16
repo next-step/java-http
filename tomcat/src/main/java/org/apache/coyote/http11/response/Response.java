@@ -1,7 +1,6 @@
 package org.apache.coyote.http11.response;
 
-import org.apache.coyote.http11.request.model.ContentType;
-import org.apache.coyote.http11.cookie.Cookies;
+import java.util.Map;
 
 public class Response {
 	private final String response;
@@ -10,29 +9,26 @@ public class Response {
 		this.response = response;
 	}
 
-	private static Response from(final String response) {
-		return new Response(response);
-	}
+	public static Response parsingResponse(HttpResponse httpResponse) {
+		StatusLine statusLine = httpResponse.getStatusLine();
+		String responseBody = httpResponse.getResponseBody();
+		Map<String, String> headers = httpResponse.getHeaders();
 
-	public static Response createResponse(ResponseResource responseResource) {
-		String extension = responseResource.parseExtension();
-		String contentType = ContentType.findByExtension(extension).getContentType();
-		String responseBody = responseResource.getResponseBody();
-		StatusCode statusCode = responseResource.getStatusCode();
-		Cookies cookies = responseResource.getCookies();
+		StringBuffer header = new StringBuffer();
+		for (Map.Entry<String, String> entry : headers.entrySet()) {
+			header.append(entry.getKey()).append(": ").append(entry.getValue()).append("\n");
+		}
 
 		final var response = String.join("\r\n",
-				"HTTP/1.1 " + statusCode.getCode() + " " + statusCode.name(),
-				"Content-Type: " + contentType + ";charset=utf-8 ",
-				"Content-Length: " + responseBody.getBytes().length + " ",
-				cookies.getResponseCookies(),
+				statusLine.getHttpVersion() + " " + statusLine.getStatusCode() + " " + statusLine.getStatusReason(),
+				header.toString(),
 				"",
 				responseBody);
 
-		return from(response);
+		return new Response(response);
 	}
 
-	public byte[] getBytes() {
-		return response.getBytes();
+	public String getResponse() {
+		return response;
 	}
 }

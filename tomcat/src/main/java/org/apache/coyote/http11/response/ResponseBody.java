@@ -21,4 +21,12 @@ public class ResponseBody {
     private static URL createResource(String filePath) {
         return ResponseBody.class.getClassLoader().getResource("static" + filePath);
     }
+
+    public String getContentLength() {
+        return String.valueOf(responseBody.length());
+    }
+
+    public String getResponseBody() {
+        return responseBody;
+    }
 }

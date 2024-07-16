@@ -15,6 +15,10 @@ public class RequestLine {
         this.version = version;
     }
 
+    public static RequestLine createRequestLineWithRedirectPath(RequestLine requestLine, String redirectPath) {
+        return new RequestLine(requestLine.getHttpMethod(), Path.createPathWithRedirectPath(requestLine.getPath(), redirectPath), requestLine.getProtocol(), requestLine.getVersion());
+    }
+
     public HttpMethod getHttpMethod() {
         return httpMethod;
     }
@@ -41,5 +45,9 @@ public class RequestLine {
 
     public boolean hasRequestBody() {
         return HttpMethod.hasPostOrPutOrPatchMethod(httpMethod);
+    }
+
+    public String getExtension() {
+        return path.getExtension();
     }
 }
