@@ -9,7 +9,8 @@ public class RequestMapping {
 
     private static final Map<String, RequestHandler> REQUEST_HANDLER_MAP = Map.of(
             "/", ApplicationRequestHandler.INSTANCE,
-            "/login", ApplicationRequestHandler.INSTANCE
+            "/login", ApplicationRequestHandler.INSTANCE,
+            "/register", ApplicationRequestHandler.INSTANCE
     );
 
     public RequestHandler getHandler(RequestLine requestLine) {

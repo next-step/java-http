@@ -9,7 +9,6 @@ public class RequestLine {
 
     private final static String DELIMITER = " ";
     private final static int REQUEST_LINE_CHUNK_LIMIT = 3;
-    public final static RequestLine SERVER_ERROR_REQUEST_LINE = new RequestLine("GET /500.html HTTP/1.1");
 
     private HttpMethod method;
     private Path path;

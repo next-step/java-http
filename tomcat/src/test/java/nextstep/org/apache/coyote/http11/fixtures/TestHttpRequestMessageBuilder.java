@@ -8,6 +8,7 @@ public class TestHttpRequestMessageBuilder {
     private static final String HOST_HEADER_FORMAT = "Host: %s";
     private static final String CONNECTION_HEADER_FORMAT = "Connection: %s";
     private static final String ACCEPT_HEADER_FORMAT = "Accept: %s";
+    private static final String CONTENT_LENGTH_HEADER_FORMAT = "Content-Length: %s";
     private static final String EMPTY_LINE = "";
 
     private static final String method = "GET";
@@ -42,6 +43,16 @@ public class TestHttpRequestMessageBuilder {
 
     public TestHttpRequestMessageBuilder emptyLine() {
         sj.add(EMPTY_LINE);
+        return this;
+    }
+
+    public TestHttpRequestMessageBuilder contentLength(int length) {
+        sj.add(CONTENT_LENGTH_HEADER_FORMAT.formatted(length));
+        return this;
+    }
+
+    public TestHttpRequestMessageBuilder requestBody(String body) {
+        sj.add(body);
         return this;
     }
 

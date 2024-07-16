@@ -43,10 +43,10 @@
   - [X] 로그인에 성공하면 응답 헤더에 http status code를 302로 반환하고 /index.html로 리다이렉트 한다.
   - [X] 로그인에 실패하면 401.html로 리다이렉트한다.
 - [ ] POST 방식으로 회원가입
-  - [ ] http://localhost:8080/register으로 접속하면 회원가입 페이지(register.html)를 반환한다
-  - [ ] 회원가입 페이지 요청은 GET을 사용한다.
-  - [ ] 회원가입을 버튼을 누르면 HTTP method를 GET이 아닌 POST를 사용한다.
-  - [ ] 회원가입을 완료하면 index.html로 리다이렉트한다.
+  - [X] http://localhost:8080/register으로 접속하면 회원가입 페이지(register.html)를 반환한다
+  - [X] 회원가입 페이지 요청은 GET을 사용한다.
+  - [X] 회원가입을 버튼을 누르면 HTTP method를 GET이 아닌 POST를 사용한다.
+  - [X] 회원가입을 완료하면 index.html로 리다이렉트한다.
   - [ ] 로그인 페이지도 버튼을 눌렀을 때 GET 방식에서 POST 방식으로 전송하도록 변경한다
 - [ ] Cookie에 JSESSIONID 값 저장하기
   - [ ] 세션을 구현하기 전에 먼저 쿠키를 구현해본다.

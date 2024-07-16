@@ -4,6 +4,8 @@ package org.apache.coyote.http11;
 import org.apache.coyote.http11.request.HttpRequest;
 import org.apache.coyote.http11.response.HttpResponse;
 
+import java.io.IOException;
+
 public interface RequestHandler {
-    HttpResponse service(HttpRequest httpRequest);
+    HttpResponse service(HttpRequest httpRequest) throws IOException;
 }

@@ -19,4 +19,15 @@ public class UserController {
         log.info("user account: {}", user.getAccount());
         return new ViewModel("/login.html");
     }
+
+    public ViewModel register() {
+        return new ViewModel("/register.html");
+    }
+
+    public ViewModel register(Map<String, Object> queryParamMap) {
+        log.info("register info: {}", queryParamMap);
+        User user = userService.register(queryParamMap);
+
+        return new ViewModel("/index.html");
+    }
 }

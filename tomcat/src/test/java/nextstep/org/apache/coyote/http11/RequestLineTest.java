@@ -34,7 +34,7 @@ public class RequestLineTest {
     }
 
     @Test
-    public void postTest() {
+    public void postTest() throws IOException {
         final String httpRequest= String.join("\r\n",
                 "POST /users HTTP/1.1 ",
                 "Host: localhost:8080 ",
@@ -54,7 +54,7 @@ public class RequestLineTest {
 
 
     @Test
-    public void queryParamTest() {
+    public void queryParamTest() throws IOException {
         final String httpRequest= String.join("\r\n",
                 "GET /users?userId=javajigi&password=password&name=JaeSung HTTP/1.1 ",
                 "Host: localhost:8080 ",

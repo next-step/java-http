@@ -14,3 +14,13 @@ GET http://{{host}}/css/styles.css
 
 ### GET /login?account=gugu&password=password
 GET http://{{host}}/login?account=gugu&password=password
+###
+
+
+## POST /register
+POST http://{{host}}/register
+Content-Type: application/x-www-form-urlencoded
+
+account=wef &
+email=wefr@gsadf.com &
+password=ef

@@ -187,6 +187,65 @@ class Http11ProcessorTest {
     }
 
 
+
+    @Test
+    @DisplayName("/register 요청시 register.html 반환한다")
+    public void registerTest() throws IOException {
+
+        final var builder = new TestHttpRequestMessageBuilder();
+        String httpRequest = builder
+                .requestLine("GET", "/register", "HTTP/1.1")
+                .hostHeader("localhost:8080")
+                .acceptHeader("text/css,*/*;q=0.1")
+                .emptyLine()
+                .build();
+
+        StubSocket socket = new StubSocket(httpRequest);
+        doHttp11Process(socket);
+
+
+        String expected = String.join("\r\n",
+                "HTTP/1.1 200 OK ",
+                "Content-Type: text/html;charset=utf-8 ",
+                "Content-Length: 4319 ",
+                "",
+                actualResource("static/register.html"));
+
+
+        assertThat(socket.output()).isEqualTo(expected);
+    }
+
+
+    @Test
+    @DisplayName("POST /register 요청이 정상적으로 처리되면 index.html 로 리다이렉트된다")
+    public void registerRedirectTest() throws IOException {
+
+        final var builder = new TestHttpRequestMessageBuilder();
+        String requestBody = "account=a1&email=gutenlee@github.com&password=password";
+        String httpRequest = builder
+                .requestLine("POST", "/register", "HTTP/1.1")
+                .hostHeader("localhost:8080")
+                .acceptHeader("text/css,*/*;q=0.1")
+                .contentLength(requestBody.getBytes().length)
+                .emptyLine()
+                .requestBody(requestBody)
+                .build();
+
+        StubSocket socket = new StubSocket(httpRequest);
+        doHttp11Process(socket);
+
+
+        String expected = String.join("\r\n",
+                "HTTP/1.1 302 Found ",
+                "Content-Type: text/html;charset=utf-8 ",
+                "Location: http://localhost:8080/index.html ",
+                "Content-Length: 0 ",
+                "");
+
+        assertThat(socket.output()).contains(expected);
+    }
+
+
     private void doHttp11Process(StubSocket socket) {
         new Http11Processor(socket).process(socket);
     }

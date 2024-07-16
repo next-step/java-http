@@ -1,7 +1,6 @@
 package org.apache.coyote.http11.request;
 
 
-import camp.nextstep.exception.UncheckedServletException;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -13,32 +12,39 @@ import java.util.List;
 
 public final class RequestParser {
 
-    public static HttpRequest parse(InputStream inputStream) {
+    public static HttpRequest parse(InputStream inputStream) throws IOException {
         return RequestParser.parse(inputStream, Charset.defaultCharset());
     }
 
-    public static HttpRequest parse(InputStream inputStream, Charset charset) {
-        try {
-            final var br = new BufferedReader(new InputStreamReader(inputStream, charset));
-            final var readLine = br.readLine();
+    public static HttpRequest parse(InputStream inputStream, Charset charset) throws IOException {
+        final var br = new BufferedReader(new InputStreamReader(inputStream, charset));
+        final var readLine = br.readLine();
 
-            final var requestLine = new RequestLine(readLine);
-            final var requestHeaders = new HttpRequestHeaders(parseHeaders(br));
+        final var requestLine = new RequestLine(readLine);
+        final var requestHeaders = new HttpRequestHeaders(parseHeaders(br));
+        final var requestBody = new RequestBody(parseRequestBody(br, requestHeaders.contentLength()));
 
-            return new HttpRequest(requestLine, requestHeaders);
-        } catch (IOException e) {
-            throw new UncheckedServletException(e);
-        } catch (HttpRequestLineInvalidException e) {
-            return new HttpRequest(RequestLine.SERVER_ERROR_REQUEST_LINE, new HttpRequestHeaders(List.of()));
-        }
+        return new HttpRequest(requestLine, requestHeaders, requestBody);
     }
 
     public static List<String> parseHeaders(BufferedReader bufferedReader) throws IOException {
         final var headers = new ArrayList<String>();
         String line;
-        while ((line = bufferedReader.readLine()) != null && !line.isBlank()) {
+        while ((line = bufferedReader.readLine()) != null) {
+            if (line.isEmpty()) {
+                break;
+            }
             headers.add(line);
         }
         return headers;
+    }
+
+    private static String parseRequestBody(BufferedReader bufferedReader, int contentLength) throws IOException {
+        final var buffer = new char[contentLength];
+        int readCount = bufferedReader.read(buffer, 0, contentLength);
+        if (contentLength != readCount) {
+            throw new IOException("Content-Length is not matched: " + contentLength + " != " + readCount);
+        }
+        return new String(buffer);
     }
 }
