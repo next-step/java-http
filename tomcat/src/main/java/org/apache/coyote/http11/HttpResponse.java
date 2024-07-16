@@ -6,18 +6,18 @@ public class HttpResponse {
 
     private final HttpProtocol httpProtocol;
     private final HttpStatusCode httpStatusCode;
-    private final HttpHeaders httpHeaders;
+    private final HttpResponseHeaders httpResponseHeaders;
     private final ResponseBody responseBody;
 
-    public HttpResponse(HttpProtocol httpProtocol, HttpStatusCode httpStatusCode, HttpHeaders httpHeaders, ResponseBody responseBody) {
+    public HttpResponse(HttpProtocol httpProtocol, HttpStatusCode httpStatusCode, HttpResponseHeaders httpResponseHeaders, ResponseBody responseBody) {
         this.httpProtocol = httpProtocol;
         this.httpStatusCode = httpStatusCode;
-        this.httpHeaders = httpHeaders;
+        this.httpResponseHeaders = httpResponseHeaders;
         this.responseBody = responseBody;
     }
 
-    public HttpResponse(HttpProtocol httpProtocol, HttpStatusCode httpStatusCode, HttpHeaders httpHeaders) {
-        this(httpProtocol, httpStatusCode, httpHeaders, ResponseBody.EMPTY);
+    public HttpResponse(HttpProtocol httpProtocol, HttpStatusCode httpStatusCode, HttpResponseHeaders httpResponseHeaders) {
+        this(httpProtocol, httpStatusCode, httpResponseHeaders, ResponseBody.EMPTY);
     }
 
 
@@ -25,7 +25,7 @@ public class HttpResponse {
 
         var sb = new StringBuilder();
         sb.append(firstLine()).append(" ").append("\r\n");
-        sb.append(httpHeaders.toMessage());
+        sb.append(httpResponseHeaders.toMessage());
         sb.append(contentInfo()).append(" ").append("\r\n");
         sb.append("\r\n");
         sb.append(content());

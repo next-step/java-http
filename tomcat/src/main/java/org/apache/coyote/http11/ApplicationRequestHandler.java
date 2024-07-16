@@ -21,23 +21,23 @@ public class ApplicationRequestHandler implements RequestHandler {
 
         if ("/".equals(requestLine.getPath())) {
             final var responseBody = "Hello world!";
-            return new HttpResponse(requestLine.getHttpProtocol(), HttpStatusCode.OK, new HttpHeaders(MimeType.TEXT_HTML), new ResponseBody(responseBody.getBytes()));
+            return new HttpResponse(requestLine.getHttpProtocol(), HttpStatusCode.OK, new HttpResponseHeaders(MimeType.TEXT_HTML), new ResponseBody(responseBody.getBytes()));
         }
         if (requestLine.getPath().equals("/login")) {
             try {
                 Map<String, Object> queryParamMap = requestLine.getQueryParamMap();
                 userController.findUser(queryParamMap);
                 var location = Location.of(requestLine.protocol(), requestHeaders.host(), "/index.html");
-                return new HttpResponse(requestLine.getHttpProtocol(), HttpStatusCode.FOUND, new HttpHeaders(MimeType.TEXT_HTML, location));
+                return new HttpResponse(requestLine.getHttpProtocol(), HttpStatusCode.FOUND, new HttpResponseHeaders(MimeType.TEXT_HTML, location));
             } catch (UnauthroizedUserException e) {
                 var location = Location.of(requestLine.protocol(), requestHeaders.host(), "/401.html");
-                return new HttpResponse(requestLine.getHttpProtocol(), HttpStatusCode.FOUND, new HttpHeaders(MimeType.TEXT_HTML, location));
+                return new HttpResponse(requestLine.getHttpProtocol(), HttpStatusCode.FOUND, new HttpResponseHeaders(MimeType.TEXT_HTML, location));
             } catch (RuntimeException e) {
                 log.error(e.getMessage());
-                return new HttpResponse(requestLine.getHttpProtocol(), HttpStatusCode.INTERNAL_SERVER_ERROR, new HttpHeaders(MimeType.TEXT_HTML));
+                return new HttpResponse(requestLine.getHttpProtocol(), HttpStatusCode.INTERNAL_SERVER_ERROR, new HttpResponseHeaders(MimeType.TEXT_HTML));
             }
         }
 
-        return new HttpResponse(requestLine.getHttpProtocol(), HttpStatusCode.INTERNAL_SERVER_ERROR, new HttpHeaders(MimeType.TEXT_HTML));
+        return new HttpResponse(requestLine.getHttpProtocol(), HttpStatusCode.INTERNAL_SERVER_ERROR, new HttpResponseHeaders(MimeType.TEXT_HTML));
     }
 }

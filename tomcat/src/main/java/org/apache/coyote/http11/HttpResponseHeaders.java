@@ -2,17 +2,17 @@ package org.apache.coyote.http11;
 
 import java.nio.charset.Charset;
 
-public record HttpHeaders(MimeType mimeType, Charset charset, Location location) {
+public record HttpResponseHeaders(MimeType mimeType, Charset charset, Location location) {
 
-    public HttpHeaders(MimeType mimeType) {
+    public HttpResponseHeaders(MimeType mimeType) {
         this(mimeType, Charset.defaultCharset(), null);
     }
 
-    public HttpHeaders(Location location) {
+    public HttpResponseHeaders(Location location) {
         this(MimeType.ALL, Charset.defaultCharset(), location);
     }
 
-    public HttpHeaders(MimeType mimeType, Location location) {
+    public HttpResponseHeaders(MimeType mimeType, Location location) {
         this(mimeType, Charset.defaultCharset(), location);
     }
 
