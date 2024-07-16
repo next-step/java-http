@@ -3,7 +3,7 @@ package org.apache.coyote.http11;
 
 import java.nio.charset.Charset;
 
-public class Response {
+public class HttpResponse {
 
     private final HttpProtocol httpProtocol;
     private final HttpStatusCode httpStatusCode;
@@ -11,7 +11,7 @@ public class Response {
     private final Charset charset;
     private final byte[] contentBody;
 
-    public Response(HttpProtocol httpProtocol, HttpStatusCode httpStatusCode, ContentType contentType, Charset charset, byte[] contentBody) {
+    public HttpResponse(HttpProtocol httpProtocol, HttpStatusCode httpStatusCode, ContentType contentType, Charset charset, byte[] contentBody) {
         this.httpProtocol = httpProtocol;
         this.httpStatusCode = httpStatusCode;
         this.contentType = contentType;
@@ -19,7 +19,7 @@ public class Response {
         this.contentBody = contentBody;
     }
 
-    public Response(HttpProtocol httpProtocol, HttpStatusCode httpStatusCode, ContentType contentType, Charset utf8) {
+    public HttpResponse(HttpProtocol httpProtocol, HttpStatusCode httpStatusCode, ContentType contentType, Charset utf8) {
         this(httpProtocol, httpStatusCode, contentType, utf8, "".getBytes());
     }
 
