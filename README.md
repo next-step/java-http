@@ -74,3 +74,19 @@
   - [x] 로그인 상태에서 `/login` 페이지에 `GET` 요청으로 접근 시 `index.html`로 리다이렉트
   - [x] 쿠키가 `key=value; key2=value2;` 형태일 때도 파싱해서 가지고 있을 수 있어야 함 
   - [x] `Session`, `SessionManager` 구현
+
+
+## 4단계 - 리팩터링 
+- 요구사항 생략
+
+## 5단계 - 동시성 확장하기 
+- [x] Connector 클래스에 `Executors`로 `Thread pool` 적용하기 
+- [x] `acceptCount`에 대해 정리하기
+  - acceptCount는 `ServerSocket`에 할당되는 값으로, 요청 대기열의 최대 길이를 의미한다.
+  - 모든 스레드가 바쁘게 요청을 처리하고 있다면 acceptCount에 설정된 값 개수 만큼의 요청이 대기할 수 있다. 
+- [x] `maxThreads`에 대해 정리하기
+  - 스레드 풀에 최대로 생성될 수 있는 Thread 개수를 의미한다. 
+- [x] `ThreadPool`의 크기는 250, 모든 Thread가 busy 상태인 경우, 100명까지 대기 상태로 만들려면 어떻게 해야하는가? 
+  - `maxThread=250`,`acceptCount=100`으로 설정한다 
+- [x] 동시성 컬렉션 사용하기 
+
