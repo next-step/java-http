@@ -2,6 +2,7 @@ package org.apache.coyote.http11;
 
 
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 
 public class HttpResponse {
 
@@ -9,19 +10,20 @@ public class HttpResponse {
     private final HttpStatusCode httpStatusCode;
     private final ContentType contentType;
     private final Charset charset;
-    private final byte[] contentBody;
+    private final ResponseBody responseBody;
 
-    public HttpResponse(HttpProtocol httpProtocol, HttpStatusCode httpStatusCode, ContentType contentType, Charset charset, byte[] contentBody) {
+    public HttpResponse(HttpProtocol httpProtocol, HttpStatusCode httpStatusCode, ContentType contentType, ResponseBody responseBody) {
         this.httpProtocol = httpProtocol;
         this.httpStatusCode = httpStatusCode;
         this.contentType = contentType;
-        this.charset = charset;
-        this.contentBody = contentBody;
+        this.charset = StandardCharsets.UTF_8;
+        this.responseBody = responseBody;
     }
 
-    public HttpResponse(HttpProtocol httpProtocol, HttpStatusCode httpStatusCode, ContentType contentType, Charset utf8) {
-        this(httpProtocol, httpStatusCode, contentType, utf8, "".getBytes());
+    public HttpResponse(HttpProtocol httpProtocol, HttpStatusCode httpStatusCode, ContentType contentType) {
+        this(httpProtocol, httpStatusCode, contentType, ResponseBody.EMPTY);
     }
+
 
     public String generateMessage() {
 
@@ -44,11 +46,11 @@ public class HttpResponse {
     }
 
     private String contentInfo() {
-        return "Content-Length: " + contentBody.length;
+        return "Content-Length: " + responseBody.length();
     }
 
     private String content() {
-        return new String(contentBody, charset);
+        return responseBody.toString();
     }
 
 
