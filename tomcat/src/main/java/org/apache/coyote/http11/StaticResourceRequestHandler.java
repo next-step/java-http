@@ -3,7 +3,6 @@ package org.apache.coyote.http11;
 import camp.nextstep.exception.UncheckedServletException;
 
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 
 public class StaticResourceRequestHandler implements RequestHandler {
 
@@ -15,9 +14,9 @@ public class StaticResourceRequestHandler implements RequestHandler {
         try {
             byte[] readFile = FileLoader.read(STATIC_RESOURCE_PATH + requestLine.getPath());
             if (requestLine.pathEndsWith("500.html")) {
-                return new HttpResponse(requestLine.getHttpProtocol(), HttpStatusCode.INTERNAL_SERVER_ERROR, ContentType.from(requestLine.getPath()), new ResponseBody(readFile));
+                return new HttpResponse(requestLine.getHttpProtocol(), HttpStatusCode.INTERNAL_SERVER_ERROR, MimeType.from(requestLine.getPath()), new ResponseBody(readFile));
             }
-            return new HttpResponse(requestLine.getHttpProtocol(), HttpStatusCode.OK, ContentType.from(requestLine.getPath()), new ResponseBody(readFile));
+            return new HttpResponse(requestLine.getHttpProtocol(), HttpStatusCode.OK, MimeType.from(requestLine.getPath()), new ResponseBody(readFile));
         } catch (IOException e) {
             throw new UncheckedServletException(e);
         }

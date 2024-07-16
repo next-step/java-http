@@ -8,20 +8,20 @@ public class HttpResponse {
 
     private final HttpProtocol httpProtocol;
     private final HttpStatusCode httpStatusCode;
-    private final ContentType contentType;
+    private final MimeType mimeType;
     private final Charset charset;
     private final ResponseBody responseBody;
 
-    public HttpResponse(HttpProtocol httpProtocol, HttpStatusCode httpStatusCode, ContentType contentType, ResponseBody responseBody) {
+    public HttpResponse(HttpProtocol httpProtocol, HttpStatusCode httpStatusCode, MimeType mimeType, ResponseBody responseBody) {
         this.httpProtocol = httpProtocol;
         this.httpStatusCode = httpStatusCode;
-        this.contentType = contentType;
+        this.mimeType = mimeType;
         this.charset = StandardCharsets.UTF_8;
         this.responseBody = responseBody;
     }
 
-    public HttpResponse(HttpProtocol httpProtocol, HttpStatusCode httpStatusCode, ContentType contentType) {
-        this(httpProtocol, httpStatusCode, contentType, ResponseBody.EMPTY);
+    public HttpResponse(HttpProtocol httpProtocol, HttpStatusCode httpStatusCode, MimeType mimeType) {
+        this(httpProtocol, httpStatusCode, mimeType, ResponseBody.EMPTY);
     }
 
 
@@ -42,7 +42,7 @@ public class HttpResponse {
     }
 
     private String header() {
-        return "Content-Type: " +  contentType.getDescription() + ";charset=" + charset.name().toLowerCase();
+        return "Content-Type: " +  mimeType.getDescription() + ";charset=" + charset.name().toLowerCase();
     }
 
     private String contentInfo() {

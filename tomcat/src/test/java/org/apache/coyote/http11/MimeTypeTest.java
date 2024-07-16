@@ -6,7 +6,7 @@ import org.junit.jupiter.params.provider.CsvSource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class ContentTypeTest {
+class MimeTypeTest {
 
     @ParameterizedTest
     @CsvSource(value = {
@@ -15,7 +15,7 @@ class ContentTypeTest {
         "TEXT_JS, .js",
     }, delimiter = ',')
     public void fromTest(String name, String extension) {
-        assertThat(ContentType.from(extension)).isEqualTo(ContentType.valueOf(name));
+        assertThat(MimeType.from(extension)).isEqualTo(MimeType.valueOf(name));
     }
 
 }
