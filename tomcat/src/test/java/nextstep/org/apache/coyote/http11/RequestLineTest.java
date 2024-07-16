@@ -1,8 +1,7 @@
 package nextstep.org.apache.coyote.http11;
 
-import org.apache.coyote.http11.HttpMethod;
-import org.apache.coyote.http11.RequestLine;
-import org.apache.coyote.http11.RequestParser;
+import org.apache.coyote.http11.request.HttpMethod;
+import org.apache.coyote.http11.request.RequestParser;
 import org.junit.jupiter.api.Test;
 import support.StubSocket;
 

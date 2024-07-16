@@ -1,6 +1,8 @@
 package org.apache.coyote.http11;
 
 
+import org.apache.coyote.http11.request.RequestLine;
+
 import java.util.Map;
 
 public class RequestMapping {

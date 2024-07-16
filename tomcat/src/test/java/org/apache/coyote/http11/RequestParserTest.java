@@ -1,11 +1,11 @@
 package org.apache.coyote.http11;
 
+import org.apache.coyote.http11.request.RequestParser;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.io.ByteArrayInputStream;
-import java.nio.charset.StandardCharsets;
 
 
 class RequestParserTest {

@@ -2,6 +2,8 @@ package org.apache.coyote.http11;
 
 import camp.nextstep.UserController;
 import camp.nextstep.service.UnauthroizedUserException;
+import org.apache.coyote.http11.request.HttpRequest;
+import org.apache.coyote.http11.response.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
