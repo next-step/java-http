@@ -1,8 +1,6 @@
 package org.apache.coyote.http11;
 
 
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
 
 public class HttpResponse {
 
@@ -27,7 +25,7 @@ public class HttpResponse {
 
         var sb = new StringBuilder();
         sb.append(firstLine()).append(" ").append("\r\n");
-        sb.append(httpHeaders.contentTypeField()).append(" ").append("\r\n");
+        sb.append(httpHeaders.toMessage());
         sb.append(contentInfo()).append(" ").append("\r\n");
         sb.append("\r\n");
         sb.append(content());

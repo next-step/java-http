@@ -1,7 +1,6 @@
 package org.apache.coyote.http11;
 
 import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
 
 public record ResponseBody(byte[] contentBody, Charset charset) {
 

@@ -7,7 +7,9 @@ public enum MimeType {
     TEXT_HTML("text/html", "html"),
     TEXT_CSS("text/css", "css"),
     TEXT_JS("text/javascript", "js"),
-    JSON("application/json", "json"),;
+    JSON("application/json", "json"),
+    ALL("*/*", "")
+    ;
 
     private final String description;
     private final String extenstion;

@@ -125,14 +125,12 @@ class Http11ProcessorTest {
 
 
         String expected = String.join("\r\n",
-                "HTTP/1.1 200 OK ",
+                "HTTP/1.1 302 Found ",
                 "Content-Type: text/html;charset=utf-8 ",
-                "Content-Length: 3796 ", // 운영체제 환경에 따라 다른 값이 나올 수 있음. 자신의 개발 환경에 맞춰 수정할 것.
-                "",
-                actualResource("static/login.html"));
+                "Location: http://localhost:8080/index.html ");
 
 
-        assertThat(socket.output()).isEqualTo(expected);
+        assertThat(socket.output()).contains(expected);
     }
 
     @Test
@@ -159,6 +157,31 @@ class Http11ProcessorTest {
 
 
         assertThat(socket.output()).isEqualTo(expected);
+    }
+
+    @Test
+    @DisplayName("/login 로그인 요청 실패시 /401.html로 리다이렉트한다")
+    public void loginFailRedirectTo401Test() throws IOException {
+
+        // /login?account=gugu&password=password
+        final var builder = new TestHttpRequestMessageBuilder();
+        String httpRequest = builder
+                .requestLine("GET", "/login?account=wrong&password=password", "HTTP/1.1")
+                .acceptHeader("text/css,*/*;q=0.1")
+                .emptyLine()
+                .build();
+
+        StubSocket socket = new StubSocket(httpRequest);
+        doHttp11Process(socket);
+
+
+        String expected = String.join("\r\n",
+                "HTTP/1.1 401 Unauthorized ",
+                "Content-Type: text/html;charset=utf-8 ",
+                "Location: http://localhost:8080/401.html ");
+
+
+        assertThat(socket.output()).contains(expected);
     }
 
 

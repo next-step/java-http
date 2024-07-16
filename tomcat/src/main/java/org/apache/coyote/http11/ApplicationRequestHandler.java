@@ -1,6 +1,7 @@
 package org.apache.coyote.http11;
 
 import camp.nextstep.UserController;
+import camp.nextstep.service.UnauthroizedUserException;
 import org.apache.catalina.ViewModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,9 +26,13 @@ public class ApplicationRequestHandler implements RequestHandler {
         if (requestLine.getPath().equals("/login")) {
             try {
                 Map<String, Object> queryParamMap = requestLine.getQueryParamMap();
-                ViewModel viewModel = userController.findUser(queryParamMap);
-                return new HttpResponse(requestLine.getHttpProtocol(), HttpStatusCode.OK, new HttpHeaders(MimeType.TEXT_HTML), new ResponseBody(FileLoader.read("static" + viewModel.path())));
-            } catch (IOException | RuntimeException e) {
+                userController.findUser(queryParamMap);
+                Location location = new Location("http://localhost:8080/index.html");
+                return new HttpResponse(requestLine.getHttpProtocol(), HttpStatusCode.FOUND, new HttpHeaders(MimeType.TEXT_HTML, location));
+            } catch (UnauthroizedUserException e) {
+                Location location = new Location("http://localhost:8080/401.html");
+                return new HttpResponse(requestLine.getHttpProtocol(), HttpStatusCode.FOUND, new HttpHeaders(MimeType.TEXT_HTML, location));
+            } catch (RuntimeException e) {
                 log.error(e.getMessage());
                 return new HttpResponse(requestLine.getHttpProtocol(), HttpStatusCode.INTERNAL_SERVER_ERROR, new HttpHeaders(MimeType.TEXT_HTML));
             }
