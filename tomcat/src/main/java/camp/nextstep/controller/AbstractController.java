@@ -23,7 +23,9 @@ public abstract class AbstractController implements Controller {
         }
     }
 
-    protected abstract void doPost(Request request, Response response) throws Exception;
+    protected void doPost(Request request, Response response) throws Exception {
+        response.notAllowed();
+    }
 
     protected void doGet(Request request, Response response) throws Exception {
         RequestLine requestLine = request.getRequestLine();

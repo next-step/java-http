@@ -10,11 +10,6 @@ public class RootController extends AbstractController {
 
 
     @Override
-    protected void doPost(Request request, Response response) throws Exception {
-        response.notAllowed();
-    }
-
-    @Override
     protected void doGet(Request request, Response response) throws Exception {
         response.ok(ContentType.HTML, ROOT_PATH_BODY);
     }
