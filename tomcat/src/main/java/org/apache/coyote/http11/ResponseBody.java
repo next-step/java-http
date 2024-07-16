@@ -5,11 +5,10 @@ import java.nio.charset.StandardCharsets;
 
 public record ResponseBody(byte[] contentBody, Charset charset) {
 
-    public final static ResponseBody EMPTY = new ResponseBody(new byte[0], StandardCharsets.UTF_8);
-    private final static Charset DEFAULT_CHARSET = StandardCharsets.UTF_8;
+    public final static ResponseBody EMPTY = new ResponseBody(new byte[0], Charset.defaultCharset());
 
     public ResponseBody(byte[] contentBody) {
-        this(contentBody, DEFAULT_CHARSET);
+        this(contentBody, Charset.defaultCharset());
     }
 
     public int length() {

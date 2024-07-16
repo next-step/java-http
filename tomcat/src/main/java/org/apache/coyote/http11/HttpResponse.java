@@ -8,20 +8,18 @@ public class HttpResponse {
 
     private final HttpProtocol httpProtocol;
     private final HttpStatusCode httpStatusCode;
-    private final MimeType mimeType;
-    private final Charset charset;
+    private final HttpHeaders httpHeaders;
     private final ResponseBody responseBody;
 
-    public HttpResponse(HttpProtocol httpProtocol, HttpStatusCode httpStatusCode, MimeType mimeType, ResponseBody responseBody) {
+    public HttpResponse(HttpProtocol httpProtocol, HttpStatusCode httpStatusCode, HttpHeaders httpHeaders, ResponseBody responseBody) {
         this.httpProtocol = httpProtocol;
         this.httpStatusCode = httpStatusCode;
-        this.mimeType = mimeType;
-        this.charset = StandardCharsets.UTF_8;
+        this.httpHeaders = httpHeaders;
         this.responseBody = responseBody;
     }
 
-    public HttpResponse(HttpProtocol httpProtocol, HttpStatusCode httpStatusCode, MimeType mimeType) {
-        this(httpProtocol, httpStatusCode, mimeType, ResponseBody.EMPTY);
+    public HttpResponse(HttpProtocol httpProtocol, HttpStatusCode httpStatusCode, HttpHeaders httpHeaders) {
+        this(httpProtocol, httpStatusCode, httpHeaders, ResponseBody.EMPTY);
     }
 
 
@@ -29,7 +27,7 @@ public class HttpResponse {
 
         var sb = new StringBuilder();
         sb.append(firstLine()).append(" ").append("\r\n");
-        sb.append(header()).append(" ").append("\r\n");
+        sb.append(httpHeaders.contentTypeField()).append(" ").append("\r\n");
         sb.append(contentInfo()).append(" ").append("\r\n");
         sb.append("\r\n");
         sb.append(content());
@@ -41,9 +39,6 @@ public class HttpResponse {
         return httpProtocol.description() + " " + httpStatusCode.getCode() + " " + httpStatusCode.getDescription();
     }
 
-    private String header() {
-        return "Content-Type: " +  mimeType.getDescription() + ";charset=" + charset.name().toLowerCase();
-    }
 
     private String contentInfo() {
         return "Content-Length: " + responseBody.length();

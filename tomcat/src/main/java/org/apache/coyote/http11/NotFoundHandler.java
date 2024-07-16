@@ -7,8 +7,7 @@ public class NotFoundHandler implements RequestHandler {
 
     @Override
     public HttpResponse service(RequestLine requestLine) {
-        return new HttpResponse(requestLine.getHttpProtocol(), HttpStatusCode.NOT_FOUND, MimeType.TEXT_HTML);
+        return new HttpResponse(requestLine.getHttpProtocol(), HttpStatusCode.NOT_FOUND, new HttpHeaders(MimeType.TEXT_HTML));
     }
-
 
 }

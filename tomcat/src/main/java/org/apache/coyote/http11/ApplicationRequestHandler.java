@@ -20,19 +20,19 @@ public class ApplicationRequestHandler implements RequestHandler {
 
         if ("/".equals(requestLine.getPath())) {
             final var responseBody = "Hello world!";
-            return new HttpResponse(requestLine.getHttpProtocol(), HttpStatusCode.OK, MimeType.TEXT_HTML, new ResponseBody(responseBody.getBytes()));
+            return new HttpResponse(requestLine.getHttpProtocol(), HttpStatusCode.OK, new HttpHeaders(MimeType.TEXT_HTML), new ResponseBody(responseBody.getBytes()));
         }
         if (requestLine.getPath().equals("/login")) {
             try {
                 Map<String, Object> queryParamMap = requestLine.getQueryParamMap();
                 ViewModel viewModel = userController.findUser(queryParamMap);
-                return new HttpResponse(requestLine.getHttpProtocol(), HttpStatusCode.OK, MimeType.TEXT_HTML, new ResponseBody(FileLoader.read("static" + viewModel.path())));
+                return new HttpResponse(requestLine.getHttpProtocol(), HttpStatusCode.OK, new HttpHeaders(MimeType.TEXT_HTML), new ResponseBody(FileLoader.read("static" + viewModel.path())));
             } catch (IOException | RuntimeException e) {
                 log.error(e.getMessage());
-                return new HttpResponse(requestLine.getHttpProtocol(), HttpStatusCode.INTERNAL_SERVER_ERROR, MimeType.TEXT_HTML);
+                return new HttpResponse(requestLine.getHttpProtocol(), HttpStatusCode.INTERNAL_SERVER_ERROR, new HttpHeaders(MimeType.TEXT_HTML));
             }
         }
 
-        return new HttpResponse(requestLine.getHttpProtocol(), HttpStatusCode.INTERNAL_SERVER_ERROR, MimeType.TEXT_HTML);
+        return new HttpResponse(requestLine.getHttpProtocol(), HttpStatusCode.INTERNAL_SERVER_ERROR, new HttpHeaders(MimeType.TEXT_HTML));
     }
 }

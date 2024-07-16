@@ -13,10 +13,12 @@ public class StaticResourceRequestHandler implements RequestHandler {
     public HttpResponse service(RequestLine requestLine) {
         try {
             byte[] readFile = FileLoader.read(STATIC_RESOURCE_PATH + requestLine.getPath());
+            HttpHeaders httpHeaders = new HttpHeaders(MimeType.from(requestLine.getPath()));
+
             if (requestLine.pathEndsWith("500.html")) {
-                return new HttpResponse(requestLine.getHttpProtocol(), HttpStatusCode.INTERNAL_SERVER_ERROR, MimeType.from(requestLine.getPath()), new ResponseBody(readFile));
+                return new HttpResponse(requestLine.getHttpProtocol(), HttpStatusCode.INTERNAL_SERVER_ERROR, httpHeaders, new ResponseBody(readFile));
             }
-            return new HttpResponse(requestLine.getHttpProtocol(), HttpStatusCode.OK, MimeType.from(requestLine.getPath()), new ResponseBody(readFile));
+            return new HttpResponse(requestLine.getHttpProtocol(), HttpStatusCode.OK, httpHeaders, new ResponseBody(readFile));
         } catch (IOException e) {
             throw new UncheckedServletException(e);
         }
