@@ -34,4 +34,8 @@ public enum HttpProtocol {
     public String getVersion() {
         return version;
     }
+
+    public String toUrlSyntax() {
+        return protocol.toLowerCase() + "://";
+    }
 }

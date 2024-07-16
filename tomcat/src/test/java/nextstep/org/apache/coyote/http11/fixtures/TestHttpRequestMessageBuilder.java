@@ -35,6 +35,11 @@ public class TestHttpRequestMessageBuilder {
         return this;
     }
 
+    public TestHttpRequestMessageBuilder hostHeader(String host) {
+        sj.add(HOST_HEADER_FORMAT.formatted(host));
+        return this;
+    }
+
     public TestHttpRequestMessageBuilder emptyLine() {
         sj.add(EMPTY_LINE);
         return this;
@@ -43,5 +48,4 @@ public class TestHttpRequestMessageBuilder {
     public String build() {
         return sj.toString();
     }
-
 }

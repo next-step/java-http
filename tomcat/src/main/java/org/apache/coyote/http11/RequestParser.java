@@ -8,18 +8,38 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
+import java.sql.Array;
+import java.util.ArrayList;
+import java.util.List;
 
 public final class RequestParser {
 
-    public static RequestLine parse(InputStream inputStream, Charset charset)  {
+    public static HttpRequest parse(InputStream inputStream) {
+        return RequestParser.parse(inputStream, Charset.defaultCharset());
+    }
+
+    public static HttpRequest parse(InputStream inputStream, Charset charset) {
         try {
             final var br = new BufferedReader(new InputStreamReader(inputStream, charset));
             final var readLine = br.readLine();
-            return new RequestLine(readLine);
+
+            final var requestLine = new RequestLine(readLine);
+            final var requestHeaders = new HttpRequestHeaders(parseHeaders(br));
+
+            return new HttpRequest(requestLine, requestHeaders);
         } catch (IOException e) {
             throw new UncheckedServletException(e);
         } catch (HttpRequestLineInvalidException e) {
-            return RequestLine.SERVER_ERROR_REQUEST_LINE;
+            return new HttpRequest(RequestLine.SERVER_ERROR_REQUEST_LINE, new HttpRequestHeaders(List.of()));
         }
+    }
+
+    public static List<String> parseHeaders(BufferedReader bufferedReader) throws IOException {
+        final var headers = new ArrayList<String>();
+        String line;
+        while ((line = bufferedReader.readLine()) != null && !line.isBlank()) {
+            headers.add(line);
+        }
+        return headers;
     }
 }

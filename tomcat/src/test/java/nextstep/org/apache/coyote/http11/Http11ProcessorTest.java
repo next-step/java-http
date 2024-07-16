@@ -116,6 +116,7 @@ class Http11ProcessorTest {
         final var builder = new TestHttpRequestMessageBuilder();
         String httpRequest = builder
                 .requestLine("GET", "/login?account=gugu&password=password", "HTTP/1.1")
+                .hostHeader("localhost:8080")
                 .acceptHeader("text/css,*/*;q=0.1")
                 .emptyLine()
                 .build();
@@ -160,13 +161,14 @@ class Http11ProcessorTest {
     }
 
     @Test
-    @DisplayName("/login 로그인 요청 실패시 /401.html로 리다이렉트한다")
+    @DisplayName("/login 로그인 실패시 /401.html로 리다이렉트한다")
     public void loginFailRedirectTo401Test() throws IOException {
 
         // /login?account=gugu&password=password
         final var builder = new TestHttpRequestMessageBuilder();
         String httpRequest = builder
                 .requestLine("GET", "/login?account=wrong&password=password", "HTTP/1.1")
+                .hostHeader("localhost:8080")
                 .acceptHeader("text/css,*/*;q=0.1")
                 .emptyLine()
                 .build();
@@ -176,7 +178,7 @@ class Http11ProcessorTest {
 
 
         String expected = String.join("\r\n",
-                "HTTP/1.1 401 Unauthorized ",
+                "HTTP/1.1 302 Found ",
                 "Content-Type: text/html;charset=utf-8 ",
                 "Location: http://localhost:8080/401.html ");
 

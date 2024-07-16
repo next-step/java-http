@@ -43,6 +43,10 @@ public class RequestLine {
         return protocol;
     }
 
+    public HttpProtocol protocol() {
+        return protocol;
+    }
+
     public String getProtocol() {
         return protocol.getProtocol();
     }

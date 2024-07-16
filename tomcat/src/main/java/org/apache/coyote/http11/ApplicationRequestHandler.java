@@ -2,11 +2,9 @@ package org.apache.coyote.http11;
 
 import camp.nextstep.UserController;
 import camp.nextstep.service.UnauthroizedUserException;
-import org.apache.catalina.ViewModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
 import java.util.Map;
 
 public class ApplicationRequestHandler implements RequestHandler {
@@ -17,7 +15,9 @@ public class ApplicationRequestHandler implements RequestHandler {
     private final UserController userController = new UserController();
 
     @Override
-    public HttpResponse service(RequestLine requestLine) {
+    public HttpResponse service(HttpRequest httpRequest) {
+        final var requestLine = httpRequest.getRequestLine();
+        final var requestHeaders = httpRequest.getRequestHeaders();
 
         if ("/".equals(requestLine.getPath())) {
             final var responseBody = "Hello world!";
@@ -27,10 +27,10 @@ public class ApplicationRequestHandler implements RequestHandler {
             try {
                 Map<String, Object> queryParamMap = requestLine.getQueryParamMap();
                 userController.findUser(queryParamMap);
-                Location location = new Location("http://localhost:8080/index.html");
+                var location = Location.of(requestLine.protocol(), requestHeaders.host(), "/index.html");
                 return new HttpResponse(requestLine.getHttpProtocol(), HttpStatusCode.FOUND, new HttpHeaders(MimeType.TEXT_HTML, location));
             } catch (UnauthroizedUserException e) {
-                Location location = new Location("http://localhost:8080/401.html");
+                var location = Location.of(requestLine.protocol(), requestHeaders.host(), "/401.html");
                 return new HttpResponse(requestLine.getHttpProtocol(), HttpStatusCode.FOUND, new HttpHeaders(MimeType.TEXT_HTML, location));
             } catch (RuntimeException e) {
                 log.error(e.getMessage());

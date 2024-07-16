@@ -30,11 +30,11 @@ public class Http11Processor implements Runnable, Processor {
         try (final var inputStream = connection.getInputStream();
              final var outputStream = connection.getOutputStream()) {
 
-            final var requestLine = RequestParser.parse(inputStream, StandardCharsets.UTF_8);
+            final var httpRequest = RequestParser.parse(inputStream);
             final var requestMapping = new RequestMapping();
-            final var handler = requestMapping.getHandler(requestLine);
+            final var handler = requestMapping.getHandler(httpRequest.getRequestLine());
 
-            final var response = handler.service(requestLine);
+            final var response = handler.service(httpRequest);
 
             outputStream.write(response.generateMessage().getBytes());
             outputStream.flush();

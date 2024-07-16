@@ -10,7 +10,8 @@ public class StaticResourceRequestHandler implements RequestHandler {
     private static final String STATIC_RESOURCE_PATH = "static";
 
     @Override
-    public HttpResponse service(RequestLine requestLine) {
+    public HttpResponse service(HttpRequest httpRequest) {
+        final var requestLine = httpRequest.getRequestLine();
         try {
             byte[] readFile = FileLoader.read(STATIC_RESOURCE_PATH + requestLine.getPath());
             HttpHeaders httpHeaders = new HttpHeaders(MimeType.from(requestLine.getPath()));

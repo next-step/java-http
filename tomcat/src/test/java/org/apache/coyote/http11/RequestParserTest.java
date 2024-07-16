@@ -15,7 +15,7 @@ class RequestParserTest {
     public void inputStreamIsEmptyTest() {
 
         Assertions.assertThatIllegalArgumentException()
-                .isThrownBy(() -> RequestParser.parse(new ByteArrayInputStream(new byte[]{}), StandardCharsets.UTF_8))
+                .isThrownBy(() -> RequestParser.parse(new ByteArrayInputStream(new byte[]{})))
                 .withMessageContaining("RequestLine is null or empty:");
     }
 

@@ -25,7 +25,8 @@ public class RequestLineTest {
                 "");
 
         final var socket = new StubSocket(httpRequest);
-        RequestLine parsed = RequestParser.parse(socket.getInputStream(), StandardCharsets.UTF_8);
+        final var request = RequestParser.parse(socket.getInputStream(), StandardCharsets.UTF_8);
+        final var parsed = request.getRequestLine();
 
         assertThat(parsed.getMethod()).isEqualTo(HttpMethod.GET);
         assertThat(parsed.getPath()).isEqualTo("/users");
@@ -43,7 +44,8 @@ public class RequestLineTest {
                 "");
 
         final var socket = new StubSocket(httpRequest);
-        RequestLine parsed = RequestParser.parse(socket.getInputStream(), StandardCharsets.UTF_8);
+        final var request = RequestParser.parse(socket.getInputStream(), StandardCharsets.UTF_8);
+        final var parsed = request.getRequestLine();
 
         assertThat(parsed.getMethod()).isEqualTo(HttpMethod.POST);
         assertThat(parsed.getPath()).isEqualTo("/users");
@@ -62,7 +64,8 @@ public class RequestLineTest {
                 "");
 
         final var socket = new StubSocket(httpRequest);
-        RequestLine parsed = RequestParser.parse(socket.getInputStream(), StandardCharsets.UTF_8);
+        final var request = RequestParser.parse(socket.getInputStream(), StandardCharsets.UTF_8);
+        final var parsed = request.getRequestLine();
 
         assertThat(parsed.getMethod()).isEqualTo(HttpMethod.GET);
         assertThat(parsed.getPath()).isEqualTo("/users");
