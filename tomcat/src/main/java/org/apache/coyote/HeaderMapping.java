@@ -15,6 +15,6 @@ public class HeaderMapping {
         return headerMapping.entrySet()
                 .stream()
                 .map(entry -> entry.getKey() + ": " + entry.getValue())
-                .collect(Collectors.joining("\r\n"));
+                .collect(Collectors.joining(System.lineSeparator()));
     }
 }

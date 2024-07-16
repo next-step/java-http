@@ -1,12 +1,10 @@
 package camp.nextstep.servlet;
 
-import camp.nextstep.db.InMemoryUserRepository;
 import camp.nextstep.model.User;
 import camp.nextstep.service.UserService;
 import com.javax.servlet.http.HttpServlet;
 import org.apache.coyote.http.HttpRequest;
 import org.apache.coyote.http.HttpResponse;
-import org.apache.coyote.http.Session;
 import org.apache.coyote.view.StaticResource;
 import org.apache.coyote.view.StaticResourceResolver;
 import org.slf4j.Logger;
@@ -24,9 +22,7 @@ public class LoginServlet extends HttpServlet {
 
     @Override
     public void doGet(final HttpRequest httpRequest, final HttpResponse httpResponse) throws Exception {
-        final Object user = userService.findLoginUser(httpRequest.getSession(true));
-
-        if (user != null) {
+        if (userService.isNotLogin(httpRequest.getSession(true))) {
             httpResponse.sendRedirect("/index.html");
 
             return;
