@@ -14,6 +14,6 @@ public class RequestMapping {
         if (FileLoader.isStaticResource(requestLine.getPath())) {
             return StaticResourceRequestHandler.INSTANCE;
         }
-        return REQUEST_HANDLER_MAP.getOrDefault(requestLine.getPath(), NotFoundHandler.INSTACNE);
+        return REQUEST_HANDLER_MAP.getOrDefault(requestLine.getPath(), NotFoundHandler.INSTANCE);
     }
 }
