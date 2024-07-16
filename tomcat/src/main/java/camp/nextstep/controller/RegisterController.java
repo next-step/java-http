@@ -10,7 +10,7 @@ public class RegisterController extends AbstractController {
     private static final String INDEX_PATH = "/index.html";
 
     @Override
-    protected void doPost(final HttpRequest request, final HttpResponse response) throws Exception {
+    protected void doPost(final HttpRequest request, final HttpResponse response) {
         String account = request.getBodyValue("account");
         String password = request.getBodyValue("password");
         String email = request.getBodyValue("email");
@@ -21,7 +21,7 @@ public class RegisterController extends AbstractController {
     }
 
     @Override
-    protected void doGet(final HttpRequest request, final HttpResponse response) throws Exception {
+    protected void doGet(final HttpRequest request, final HttpResponse response) {
         response.sendResource("/register.html");
     }
 }

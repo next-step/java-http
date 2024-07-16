@@ -1,8 +1,8 @@
 package org.apache.coyote.http11;
 
 import camp.nextstep.exception.UncheckedServletException;
-import org.apache.session.Session;
 import org.apache.coyote.Processor;
+import org.apache.session.SessionManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,12 +21,12 @@ public class Http11Processor implements Runnable, Processor {
 
     private final Socket connection;
     private final RequestHandler requestHandler;
-    private final Session session;
+    private final SessionManager sessionManager;
 
-    public Http11Processor(final Socket connection, final RequestHandler requestHandler, final Session session) {
+    public Http11Processor(final Socket connection, final RequestHandler requestHandler, final SessionManager sessionManager) {
         this.connection = connection;
         this.requestHandler = requestHandler;
-        this.session = session;
+        this.sessionManager = sessionManager;
     }
 
     @Override
@@ -40,11 +40,10 @@ public class Http11Processor implements Runnable, Processor {
         try (BufferedReader br = new BufferedReader(new InputStreamReader(connection.getInputStream()));
              OutputStream outputStream = connection.getOutputStream()) {
             HttpRequest httpRequest = parseHttpRequest(br);
-            httpRequest.setSession(session);
-            HttpResponse httpResponse = HttpResponse.from(httpRequest.getProtocol());
+            HttpResponse httpResponse = HttpResponse.of(httpRequest, new ResourceFinder());
             requestHandler.handle(httpRequest, httpResponse);
 
-            outputStream.write(httpResponse.createFormat().getBytes());
+            outputStream.write(httpResponse.createMessage().getBytes());
             outputStream.flush();
         } catch (IOException | UncheckedServletException e) {
             log.error(e.getMessage(), e);
@@ -53,7 +52,7 @@ public class Http11Processor implements Runnable, Processor {
 
     private HttpRequest parseHttpRequest(final BufferedReader br) throws IOException {
         String httpRequestMessage = readHttpRequestMessage(br);
-        HttpRequest httpRequest = HttpRequest.from(httpRequestMessage);
+        HttpRequest httpRequest = HttpRequest.of(httpRequestMessage, sessionManager);
         handleRequestBody(httpRequest, br);
         return httpRequest;
     }

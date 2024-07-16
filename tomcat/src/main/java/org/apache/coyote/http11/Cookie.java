@@ -3,6 +3,7 @@ package org.apache.coyote.http11;
 public class Cookie {
     private static final String KEY_VALUE_SEPARATOR = "=";
     private static final String MESSAGE_FORMAT = "%s=%s";
+    private static final String JSESSIONID = "JSESSIONID";
 
     private final String name;
     private final String value;
@@ -14,6 +15,10 @@ public class Cookie {
 
     public static Cookie of(final String name, final String value) {
         return new Cookie(name, value);
+    }
+
+    public static Cookie createJSessionCookie(final String sessionId) {
+        return new Cookie(JSESSIONID, sessionId);
     }
 
     public static Cookie from(final String cookie) {

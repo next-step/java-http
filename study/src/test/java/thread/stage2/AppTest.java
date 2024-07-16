@@ -23,23 +23,24 @@ class AppTest {
      */
     @Test
     void test() throws Exception {
-        final var NUMBER_OF_THREAD = 10;
+        final var NUMBER_OF_THREAD = 20;
         var threads = new Thread[NUMBER_OF_THREAD];
 
+        // 10번 요청
         for (int i = 0; i < NUMBER_OF_THREAD; i++) {
             threads[i] = new Thread(() -> incrementIfOk(TestHttpUtils.send("/test")));
         }
 
         for (final var thread : threads) {
-            thread.start();
-            Thread.sleep(50);
+            thread.start();  // 작업 처리해 !
+            Thread.sleep(150);  // main 스레드가 잔다. 이 시간 내에 작업이 처리되어야 함
         }
 
         for (final var thread : threads) {
             thread.join();
         }
 
-        assertThat(count.intValue()).isEqualTo(2);
+        assertThat(count.intValue()).isEqualTo(20);
     }
 
     private static void incrementIfOk(final HttpResponse<String> response) {

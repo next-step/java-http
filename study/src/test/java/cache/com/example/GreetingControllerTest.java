@@ -64,6 +64,7 @@ class GreetingControllerTest {
                 .expectHeader().exists(HttpHeaders.ETAG)
                 .expectBody(String.class).returnResult();
 
+        log.info("response header\n{}", response.getResponseHeaders());
         log.info("response body\n{}", response.getResponseBody());
     }
 

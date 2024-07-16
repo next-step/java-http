@@ -1,22 +1,27 @@
 package org.apache.session;
 
+import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
-import java.util.concurrent.ConcurrentHashMap;
 
 public class Session {
-    private final String id;
-    private final Manager sessionManager;
-    private final Map<String, Object> values = new ConcurrentHashMap<>();
+    private static final int DEFAULT_EXPIRATION_TIME = 30;
 
-    private Session(final String id, final Manager sessionManager) {
+    private final String id;
+    private final LocalDateTime expiredAt;
+    private final Map<String, Object> values = new HashMap<>();
+    private boolean isNew;
+
+    private Session(final String id, final LocalDateTime expiredAt, final boolean isNew) {
         this.id = id;
-        this.sessionManager = sessionManager;
-        sessionManager.add(this);
+        this.expiredAt = expiredAt;
+        this.isNew = isNew;
     }
 
-    public static Session of(final String id, final Manager manager) {
-        return new Session(id, manager);
+    public static Session from(final String id) {
+        LocalDateTime now = LocalDateTime.now();
+        return new Session(id, now.plusMinutes(DEFAULT_EXPIRATION_TIME), true);
     }
 
     public String getId() {
@@ -27,7 +32,7 @@ public class Session {
         return values.get(name);
     }
 
-    public void setAttribute(final String name, final Object value) {
+    public void addAttribute(final String name, final Object value) {
         values.put(name, value);
     }
 
@@ -35,9 +40,16 @@ public class Session {
         values.remove(name);
     }
 
-    public void invalidate() {
-        values.clear();
-        sessionManager.remove(this);
+    public void setIsNew(boolean isNew) {
+        this.isNew = isNew;
+    }
+
+    public boolean isNew() {
+        return isNew;
+    }
+
+    public boolean isNotValid(final LocalDateTime localDateTime) {
+        return expiredAt.isBefore(localDateTime);
     }
 
     @Override

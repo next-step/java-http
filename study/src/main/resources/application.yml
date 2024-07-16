@@ -3,8 +3,11 @@ handlebars:
 
 server:
   tomcat:
-    accept-count: 1
-    max-connections: 1
+    accept-count: 1  # work queue 사이즈
+    max-connections: 20  # 최대 맺을 수 있는 커넥션 수 -> 동시 수용 가능한 요청 수
     threads:
-      min-spare: 1
-      max: 2
+      min-spare: 1  # ??
+      max: 5 # 스레드 풀 개수 -> 그 요청을 처리할 worker들
+  compression:
+    enabled: true
+    min-response-size: 1
