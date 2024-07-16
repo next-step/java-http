@@ -1,4 +1,4 @@
-package org.apache.coyote.http11.request;
+package org.apache.coyote.http11.request.model;
 
 import java.util.Collections;
 import java.util.Map;
@@ -16,5 +16,9 @@ public class QueryStrings {
 
     public String getQueryStringValueByKey(String key) {
         return queryString.get(key);
+    }
+
+    public boolean isEmpty() {
+        return queryString.isEmpty();
     }
 }

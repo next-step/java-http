@@ -1,11 +1,11 @@
 package nextstep.org.apache.coyote.http11.request;
 
-import org.apache.coyote.http11.request.RequestLine;
-import org.apache.coyote.http11.request.RequestLineParser;
+import org.apache.coyote.http11.request.model.RequestLine;
+import org.apache.coyote.http11.request.parser.RequestLineParser;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import static org.apache.coyote.http11.request.HttpMethod.*;
+import static org.apache.coyote.http11.request.model.HttpMethod.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -16,8 +16,7 @@ class RequestLineTest {
         //given
         String request = "GET /users HTTP/1.1";
         //when
-        RequestLineParser requestLineParser = new RequestLineParser(request);
-        RequestLine requestLine = RequestLine.from(requestLineParser);
+        RequestLine requestLine = RequestLineParser.parse(request);
         //then
         assertAll(
                 () -> assertThat(requestLine.getHttpMethod()).isEqualTo(GET),
@@ -33,8 +32,7 @@ class RequestLineTest {
         //given
         String request = "POST /users HTTP/1.1";
         //when
-        RequestLineParser requestLineParser = new RequestLineParser(request);
-        RequestLine requestLine = RequestLine.from(requestLineParser);
+        RequestLine requestLine = RequestLineParser.parse(request);
         //then
         assertAll(
                 () -> assertThat(requestLine.getHttpMethod()).isEqualTo(POST),
@@ -50,8 +48,7 @@ class RequestLineTest {
         //given
         String request = "GET /users?userId=javajigi&password=password&name=JaeSung HTTP/1.1";
         //when
-        RequestLineParser requestLineParser = new RequestLineParser(request);
-        RequestLine requestLine = RequestLine.from(requestLineParser);
+        RequestLine requestLine = RequestLineParser.parse(request);
         //then
         assertAll(
                 () -> assertThat(requestLine.getHttpMethod()).isEqualTo(GET),

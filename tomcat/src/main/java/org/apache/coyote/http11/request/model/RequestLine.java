@@ -1,4 +1,4 @@
-package org.apache.coyote.http11.request;
+package org.apache.coyote.http11.request.model;
 
 public class RequestLine {
     private final HttpMethod httpMethod;
@@ -11,14 +11,6 @@ public class RequestLine {
         this.path = path;
         this.protocol = protocol;
         this.version = version;
-    }
-
-    public static RequestLine from(RequestLineParser requestLineParser) {
-        HttpMethod httpMethod = requestLineParser.getHttpMethod();
-        Path path = requestLineParser.getPath();
-        String protocol = requestLineParser.getProtocol();
-        String version = requestLineParser.getVersion();
-        return new RequestLine(httpMethod, path, protocol, version);
     }
 
     public HttpMethod getHttpMethod() {
@@ -43,5 +35,9 @@ public class RequestLine {
 
     public String getVersion() {
         return version;
+    }
+
+    public boolean hasRequestBody() {
+        return HttpMethod.hasPostOrPutOrPatchMethod(httpMethod);
     }
 }

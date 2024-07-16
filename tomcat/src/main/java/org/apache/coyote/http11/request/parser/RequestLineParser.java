@@ -1,4 +1,9 @@
-package org.apache.coyote.http11.request;
+package org.apache.coyote.http11.request.parser;
+
+import org.apache.coyote.http11.request.model.HttpMethod;
+import org.apache.coyote.http11.request.model.Path;
+import org.apache.coyote.http11.request.model.QueryStrings;
+import org.apache.coyote.http11.request.model.RequestLine;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -10,34 +15,36 @@ public class RequestLineParser {
     public static final String QUERY_STRING_DELIMITER_CHARACTER = "&";
     public static final String KEY_AND_VALUE_DELIMITER_CHARACTER = "=";
 
-    private final String request;
-
-    public RequestLineParser(String request) {
-        this.request = request;
+    public static RequestLine parse(String request) {
+        HttpMethod httpMethod = getHttpMethod(request);
+        Path path = getPath(request);
+        String protocol = getProtocol(request);
+        String version = getVersion(request);
+        return new RequestLine(httpMethod, path, protocol, version);
     }
 
-    public HttpMethod getHttpMethod() {
+    private static HttpMethod getHttpMethod(String request) {
         String[] tokens = splitWord(request, HTTP_METHOD_AND_PATH_DELIMITER_CHARACTER);
         return HttpMethod.valueOf(tokens[0]);
     }
 
-    public String getProtocol() {
+    private static String getProtocol(String request) {
         String[] tokens = splitWord(request, HTTP_METHOD_AND_PATH_DELIMITER_CHARACTER);
         String[] protocolAndVersion = splitWord(tokens[2], PROTOCOL_AND_VERSION_DELIMITER_CHARACTER);
         return protocolAndVersion[0];
     }
 
-    public String getVersion() {
+    private static String getVersion(String request) {
         String[] tokens = splitWord(request, HTTP_METHOD_AND_PATH_DELIMITER_CHARACTER);
         String[] protocolAndVersion = splitWord(tokens[2], PROTOCOL_AND_VERSION_DELIMITER_CHARACTER);
         return protocolAndVersion[1];
     }
 
-    private String[] splitWord(String token, String delimiter) {
+    private static String[] splitWord(String token, String delimiter) {
         return token.split(delimiter);
     }
 
-    public Path getPath() {
+    private static Path getPath(String request) {
         String[] tokens = splitWord(request, HTTP_METHOD_AND_PATH_DELIMITER_CHARACTER);
         String path = tokens[1];
         if (hasQuestionMark(tokens)) {
@@ -49,7 +56,7 @@ public class RequestLineParser {
         return new Path(path, QueryStrings.emptyQueryStrings());
     }
 
-    private QueryStrings parseQueryStrings(String[] queryStringList){
+    private static QueryStrings parseQueryStrings(String[] queryStringList){
         Map<String, String> queryStringMap = new HashMap<>();
         for (String query : queryStringList) {
             String[] keyAndValue = query.split(KEY_AND_VALUE_DELIMITER_CHARACTER);
@@ -58,7 +65,7 @@ public class RequestLineParser {
         return new QueryStrings(queryStringMap);
     }
 
-    private boolean hasQuestionMark(String[] tokens) {
+    private static boolean hasQuestionMark(String[] tokens) {
         return tokens[1].contains("?");
     }
 }
