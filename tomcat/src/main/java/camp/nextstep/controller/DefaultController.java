@@ -12,7 +12,6 @@ public class DefaultController extends AbstractController {
 
     public DefaultController() {
         super(MAPPING_PATH);
-        RequestMapping.addDefault(this);
     }
 
     @Override
