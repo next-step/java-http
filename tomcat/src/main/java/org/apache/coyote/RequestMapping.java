@@ -7,19 +7,19 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class RequestMapping {
-    private static final Map<String, Controller> controllers = new HashMap<>();
-    private static Controller defaultController;
+    private static final Map<String, Controller> CONTROLLERS = new HashMap<>();
+    private static Controller DEFAULT_CONTROLLER;
 
     public static void addMapping(final String mappingPath, final Controller controller) {
-        controllers.put(mappingPath, controller);
+        CONTROLLERS.put(mappingPath, controller);
     }
 
     public static void addDefault(final Controller controller) {
-        defaultController = controller;
+        DEFAULT_CONTROLLER = controller;
     }
 
     public HttpResponse handle(HttpRequest request) {
-        var controller = controllers.get(request.path());
+        var controller = CONTROLLERS.get(request.path());
         if (controller != null) {
             return handle(controller, request);
         }
@@ -29,7 +29,7 @@ public class RequestMapping {
             return file;
         }
 
-        return handle(defaultController, request);
+        return handle(DEFAULT_CONTROLLER, request);
     }
 
     private HttpResponse handle(Controller controller, HttpRequest request) {
