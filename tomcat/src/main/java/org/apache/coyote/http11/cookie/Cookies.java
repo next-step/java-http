@@ -31,7 +31,7 @@ public class Cookies {
         if (ResponseCookies.isEmpty()) {
             return "";
         }
-        return "Set-Cookie: " + ResponseCookies;
+        return ResponseCookies;
     }
 
     public String getJSessionId() {
