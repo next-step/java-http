@@ -3,9 +3,9 @@ package camp.nextstep;
 import camp.nextstep.model.User;
 import camp.nextstep.service.UserService;
 import jakarta.HttpServletRequest;
-import org.apache.catalina.Cookie;
+import jakarta.Cookie;
 import org.apache.catalina.Session;
-import org.apache.catalina.ViewModel;
+import jakarta.ViewModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

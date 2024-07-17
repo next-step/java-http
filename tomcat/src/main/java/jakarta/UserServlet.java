@@ -2,7 +2,6 @@ package jakarta;
 
 import camp.nextstep.UserController;
 import camp.nextstep.service.UnauthroizedUserException;
-import org.apache.catalina.Cookie;
 import org.apache.catalina.Session;
 import org.apache.catalina.SessionManager;
 import org.apache.coyote.http11.FileLoader;

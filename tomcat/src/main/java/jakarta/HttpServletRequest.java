@@ -1,6 +1,5 @@
 package jakarta;
 
-import org.apache.catalina.Cookie;
 import org.apache.catalina.Session;
 
 import java.util.Map;
