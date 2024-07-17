@@ -2,9 +2,12 @@ package org.apache.coyote.http11;
 
 import camp.nextstep.exception.UncheckedServletException;
 import org.apache.coyote.Processor;
+import org.apache.coyote.http11.controller.Controller;
+import org.apache.coyote.http11.controller.RequestMapping;
 import org.apache.coyote.http11.request.HttpRequest;
 import org.apache.coyote.http11.request.parser.HttpRequestParser;
-import org.apache.coyote.http11.response.ResponseHandler;
+import org.apache.coyote.http11.response.HttpResponse;
+import org.apache.coyote.http11.response.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,13 +39,29 @@ public class Http11Processor implements Runnable, Processor {
              final BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream))) {
 
             HttpRequest httpRequest = HttpRequestParser.parse(bufferedReader);
-            ResponseHandler handler = ResponseHandler.handler(httpRequest);
-            String response = handler.getResponse();
+
+            RequestMapping requestMapping = new RequestMapping();
+            Controller controller = requestMapping.getController(httpRequest.getUrlPath());
+
+            HttpResponse httpResponse;
+
+            if (controller == null) {
+                httpResponse = getStaticResourceResponse(httpRequest);
+            } else {
+                httpResponse = controller.service(httpRequest);
+            }
+
+            String response = Response.parsingResponse(httpResponse).getResponse();
 
             outputStream.write(response.getBytes());
             outputStream.flush();
         } catch (IOException | UncheckedServletException e) {
             log.error(e.getMessage(), e);
+        } catch (Exception e) {
+	        throw new RuntimeException(e);
         }
+    }
+    private HttpResponse getStaticResourceResponse(final HttpRequest request) throws IOException {
+        return HttpResponse.responseOk(request);
     }
 }

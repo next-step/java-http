@@ -53,4 +53,12 @@ public class HttpRequest {
     public void addCookie(final Cookie cookie) {
         cookies.addCookie(cookie);
     }
+
+    public boolean isPost() {
+        return HttpMethod.POST.equals(requestLine.getHttpMethod());
+    }
+
+    public boolean isGet() {
+        return HttpMethod.GET.equals(requestLine.getHttpMethod());
+    }
 }

@@ -51,6 +51,13 @@ public class HttpResponse {
         return new HttpResponse(statusLine, headers, body);
     }
 
+    public static HttpResponse responseNotFound(HttpRequest httpRequest) throws IOException {
+        StatusLine statusLine = StatusLine.create("HTTP/1.1", StatusCode.NOT_FOUND);
+        ResponseBody body = ResponseBody.create("/404.html");
+        ResponseHeaders headers = ResponseHeaders.create(httpRequest, body);
+        return new HttpResponse(statusLine, headers, body);
+    }
+
     public String getResponseBody() {
         return body.getResponseBody();
     }
