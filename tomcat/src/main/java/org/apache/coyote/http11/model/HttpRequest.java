@@ -7,13 +7,15 @@ public class HttpRequest {
     private final RequestTarget requestTarget;
     private final HttpHeaders headers;
     private final RequestBody body;
+    private final Protocol protocol;
     private HttpCookie cookie;
 
-    public HttpRequest(HttpMethod httpMethod, RequestTarget requestTarget, HttpHeaders headers, RequestBody body) {
+    public HttpRequest(HttpMethod httpMethod, RequestTarget requestTarget, HttpHeaders headers, RequestBody body, Protocol protocol) {
         this.httpMethod = httpMethod;
         this.requestTarget = requestTarget;
         this.headers = headers;
         this.body = body;
+        this.protocol = protocol;
     }
 
     public HttpMethod getHttpMethod() {
@@ -29,11 +31,11 @@ public class HttpRequest {
     }
 
     public Protocol getProtocol() {
-        return requestTarget.protocol();
+        return protocol;
     }
 
-    public ProtocolVersion getProtocolVersion() {
-        return requestTarget.protocolVersion();
+    public String getProtocolVersion() {
+        return protocol.version();
     }
 
     public HttpHeaders getHeaders() {

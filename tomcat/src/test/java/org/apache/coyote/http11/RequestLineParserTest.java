@@ -10,7 +10,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class RequestLineParserTest {
 
     private static final String TEST_HTTP_PATH = "/users";
-    private static final String TEST_HTTP_PROTOCOL = "HTTP";
+    private static final String TEST_HTTP_PROTOCOL = "HTTP/1.1";
     private static final String TEST_HTTPS_PROTOCOL_VERSION = "1.1";
     private static final String QUERY_PARAMS_KEY_1 = "userId";
     private static final String QUERY_PARAMS_KEY_2 = "password";
@@ -28,8 +28,8 @@ class RequestLineParserTest {
 
         assertThat(expected.getHttpMethod()).isEqualTo(HttpMethod.GET);
         assertThat(expected.getRequestTarget().path()).isEqualTo(TEST_HTTP_PATH);
-        assertThat(expected.getRequestTarget().protocol().value()).isEqualTo(TEST_HTTP_PROTOCOL);
-        assertThat(expected.getRequestTarget().protocolVersion().value()).isEqualTo(TEST_HTTPS_PROTOCOL_VERSION);
+        assertThat(expected.getProtocol().value()).isEqualTo(TEST_HTTP_PROTOCOL);
+        assertThat(expected.getProtocol().version()).isEqualTo(TEST_HTTPS_PROTOCOL_VERSION);
     }
 
     @Test
@@ -41,8 +41,8 @@ class RequestLineParserTest {
 
         assertThat(expected.getHttpMethod()).isEqualTo(HttpMethod.POST);
         assertThat(expected.getRequestTarget().path()).isEqualTo(TEST_HTTP_PATH);
-        assertThat(expected.getRequestTarget().protocol().value()).isEqualTo(TEST_HTTP_PROTOCOL);
-        assertThat(expected.getRequestTarget().protocolVersion().value()).isEqualTo(TEST_HTTPS_PROTOCOL_VERSION);
+        assertThat(expected.getProtocol().value()).isEqualTo(TEST_HTTP_PROTOCOL);
+        assertThat(expected.getProtocol().version()).isEqualTo(TEST_HTTPS_PROTOCOL_VERSION);
     }
 
     @Test
@@ -57,8 +57,8 @@ class RequestLineParserTest {
         assertThat(expected.getRequestTarget().queryParamsMap().value().get(QUERY_PARAMS_KEY_1)).isEqualTo(QUERY_PARAMS_VALUE_1);
         assertThat(expected.getRequestTarget().queryParamsMap().value().get(QUERY_PARAMS_KEY_2)).isEqualTo(QUERY_PARAMS_VALUE_2);
         assertThat(expected.getRequestTarget().queryParamsMap().value().get(QUERY_PARAMS_KEY_3)).isEqualTo(QUERY_PARAMS_VALUE_3);
-        assertThat(expected.getRequestTarget().protocol().value()).isEqualTo(TEST_HTTP_PROTOCOL);
-        assertThat(expected.getRequestTarget().protocolVersion().value()).isEqualTo(TEST_HTTPS_PROTOCOL_VERSION);
+        assertThat(expected.getProtocol().value()).isEqualTo(TEST_HTTP_PROTOCOL);
+        assertThat(expected.getProtocol().version()).isEqualTo(TEST_HTTPS_PROTOCOL_VERSION);
     }
 
 }
