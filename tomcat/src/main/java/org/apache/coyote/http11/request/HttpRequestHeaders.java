@@ -31,13 +31,6 @@ public class HttpRequestHeaders {
         return Integer.parseInt((String) headers.getOrDefault("Content-Length", "0"));
     }
 
-    public boolean hasCookie(String key) {
-        if (!headers.containsKey(HttpCookies.COOKIE_HEADER_FIELD)) {
-            return false;
-        }
-        var httpCookie = new HttpCookie((String) headers.get(HttpCookies.COOKIE_HEADER_FIELD));
-        return httpCookie.contains(key);
-    }
 
     private void parseField(String line) {
         String[] arr = line.split(": ");
@@ -45,6 +38,10 @@ public class HttpRequestHeaders {
     }
 
     public HttpCookie getCookie() {
-        return new HttpCookie((String) headers.get(HttpCookies.COOKIE_HEADER_FIELD));
+        Object cookie = headers.get(HttpCookies.COOKIE_REQUEST_HEADER_FIELD);
+        if (cookie == null) {
+            return null;
+        }
+        return new HttpCookie((String) cookie);
     }
 }

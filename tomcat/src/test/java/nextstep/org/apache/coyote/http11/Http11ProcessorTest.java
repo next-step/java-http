@@ -155,6 +155,8 @@ class Http11ProcessorTest {
                 .requestBody(requestBody)
                 .build();
 
+        System.out.println("httpRequest = " + httpRequest);
+
         StubSocket socket = new StubSocket(httpRequest);
         doHttp11Process(socket);
 

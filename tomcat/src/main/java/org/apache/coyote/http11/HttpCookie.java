@@ -1,9 +1,8 @@
 package org.apache.coyote.http11;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import org.apache.coyote.http11.constants.HttpCookies;
+
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class HttpCookie {
@@ -21,11 +20,10 @@ public class HttpCookie {
         this.cookies = toMap(line);
     }
 
-    private Map<String, String> toMap(String line) {
-        return Arrays.stream(line.split(COOKIE_DELIMITER))
-                .map(cookie -> cookie.split("="))
-                .map(cookie -> Map.entry(cookie[0], cookie[1]))
-                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+    public static HttpCookie ofSessionId(String sessionId) {
+        HttpCookie httpCookie = new HttpCookie();
+        httpCookie.addSessionId(UUID.fromString(sessionId));
+        return httpCookie;
     }
 
     public void addSessionId(UUID uuid) {
@@ -41,5 +39,20 @@ public class HttpCookie {
 
     public boolean contains(String key) {
         return cookies.containsKey(key);
+    }
+
+    public String getSessionId() {
+        return cookies.get(HttpCookies.JSESSIONID);
+    }
+
+    public Map<String, String> getMap() {
+        return Collections.unmodifiableMap(cookies);
+    }
+
+    private Map<String, String> toMap(String line) {
+        return Arrays.stream(line.split(COOKIE_DELIMITER))
+                .map(cookie -> cookie.split("="))
+                .map(cookie -> Map.entry(cookie[0], cookie[1]))
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 }

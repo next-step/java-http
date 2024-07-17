@@ -1,5 +1,6 @@
 package jakarta;
 
+import org.apache.catalina.Session;
 import org.apache.coyote.http11.constants.HttpCookies;
 import org.apache.coyote.http11.request.HttpRequest;
 import org.apache.coyote.http11.request.HttpRequestHeaders;
@@ -13,6 +14,7 @@ import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -45,14 +47,16 @@ class UserServletTest {
 
         final var requestBody = new RequestBody("account=gugu&password=password");
         final var requestLine = new RequestLine("POST /login HTTP/1.1");
-        final var requestHeaders = new HttpRequestHeaders(List.of("Host: localhost:8080", "Set-Cookie: JSESSIONID=1234"));
+        final var requestHeaders = new HttpRequestHeaders(List.of("Host: localhost:8080", "Cookie: JSESSIONID=1234"));
         final var httpRequest = new HttpRequest(requestLine, requestHeaders, requestBody);
+        Session session = new Session(UUID.randomUUID().toString());
+        httpRequest.setSession(session);
         final var httpResponse = new HttpResponse(requestLine.getHttpProtocol());
 
         servlet.delegate(httpRequest, httpResponse);
 
         System.out.println(httpResponse.generateMessage());
-        assertTrue(httpResponse.generateMessage().contains("JSESSIONID=1234"));
+        assertTrue(httpResponse.generateMessage().contains("JSESSIONID="+session.getId()));
     }
 
 

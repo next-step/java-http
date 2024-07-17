@@ -6,6 +6,7 @@ public final class HttpCookies {
     }
 
     public static final String COOKIE_HEADER_FIELD = "Set-Cookie";
+    public static final String COOKIE_REQUEST_HEADER_FIELD = "Cookie";
     public static final String JSESSIONID = "JSESSIONID";
 
 }

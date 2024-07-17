@@ -1,5 +1,7 @@
 package nextstep.org.apache.coyote.http11.fixtures;
 
+import org.apache.coyote.http11.constants.HttpCookies;
+
 import java.util.StringJoiner;
 
 public class TestHttpRequestMessageBuilder {
@@ -9,7 +11,7 @@ public class TestHttpRequestMessageBuilder {
     private static final String CONNECTION_HEADER_FORMAT = "Connection: %s";
     private static final String ACCEPT_HEADER_FORMAT = "Accept: %s";
     private static final String CONTENT_LENGTH_HEADER_FORMAT = "Content-Length: %s";
-    private static final String COOKIE_HEADER_FORMAT = "Set-Cookie: %s";
+    private static final String COOKIE_REQUEST_HEADER_FORMAT = HttpCookies.COOKIE_REQUEST_HEADER_FIELD + ": %s";
     private static final String EMPTY_LINE = "";
 
     private static final String method = "GET";
@@ -58,7 +60,7 @@ public class TestHttpRequestMessageBuilder {
     }
 
     public TestHttpRequestMessageBuilder cookieHeader(String cookie) {
-        sj.add(COOKIE_HEADER_FORMAT.formatted(cookie));
+        sj.add(COOKIE_REQUEST_HEADER_FORMAT.formatted(cookie));
         return this;
     }
 

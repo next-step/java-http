@@ -22,11 +22,11 @@ public class UserService {
         return InMemoryUserRepository.save(new User(account, password, email));
     }
 
-    public void login(Map<String, Object> queryParamMap) {
+    public User login(Map<String, Object> queryParamMap) {
         String account = (String) queryParamMap.get("account");
         String password = (String) queryParamMap.get("password");
 
-        InMemoryUserRepository.findByAccount(account)
+        return InMemoryUserRepository.findByAccount(account)
                 .filter(user -> user.matchPassword(password))
                 .orElseThrow(() -> new UnauthroizedUserException("회원 정보를 찾을 수 없습니다"));
     }
