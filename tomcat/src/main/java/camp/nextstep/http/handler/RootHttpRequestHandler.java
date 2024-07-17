@@ -1,18 +1,16 @@
 package camp.nextstep.http.handler;
 
-import java.util.List;
-
 import camp.nextstep.http.domain.RequestLine;
-import camp.nextstep.http.domain.Response;
+import camp.nextstep.http.domain.HttpResponse;
 
-public class RootRequestHandler implements RequestHandler{
+public class RootHttpRequestHandler implements HttpRequestHandler {
     @Override
     public boolean isMatchPathPattern(String path) {
         return "/".equals(path);
     }
     @Override
-    public Response makeResponse(RequestLine requestLine) {
+    public HttpResponse makeResponse(RequestLine requestLine) {
         final var responseBody = "Hello world!";
-        return Response.createResponseByString(responseBody);
+        return HttpResponse.createResponseByString(responseBody);
     }
 }

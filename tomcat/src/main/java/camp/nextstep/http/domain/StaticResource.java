@@ -6,7 +6,7 @@ import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
 
-public class Resource {
+public class StaticResource {
     private File resourceFile;
     private static final String ROOT = "static";
 
@@ -14,11 +14,11 @@ public class Resource {
         return resourceFile;
     }
 
-    private Resource(File resourceFile) {
+    private StaticResource(File resourceFile) {
         this.resourceFile = resourceFile;
     }
 
-    public static Resource createResourceFromRequestLine(
+    public static StaticResource createResourceFromRequestLine(
             RequestLine requestLine,
             ClassLoader classLoader
     ) {
@@ -28,7 +28,7 @@ public class Resource {
         );
     }
 
-    public static Resource createResourceFromPath(
+    public static StaticResource createResourceFromPath(
             String path,
             ClassLoader classLoader
     ) {
@@ -38,10 +38,10 @@ public class Resource {
                 throw new ResourceNotFoundException("파일을 찾을 수 없습니다");
             }
 
-            return new Resource(file);
+            return new StaticResource(file);
         }  catch (Exception exception) {
             exception.printStackTrace();
-            return new Resource(new File("static/404.html"));
+            return new StaticResource(new File("static/404.html"));
         }
     }
 

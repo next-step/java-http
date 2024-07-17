@@ -1,11 +1,8 @@
 package org.apache.coyote.http11;
 
 import camp.nextstep.exception.UncheckedServletException;
-import camp.nextstep.http.domain.RequestLine;
-import camp.nextstep.http.domain.Resource;
-import camp.nextstep.http.domain.Response;
-import camp.nextstep.http.exception.InvalidHttpRequestSpecException;
-import camp.nextstep.http.handler.RequestHandlerContainer;
+import camp.nextstep.http.domain.HttpResponse;
+import camp.nextstep.http.handler.HttpRequestHandlerContainer;
 
 import org.apache.coyote.Processor;
 import org.slf4j.Logger;
@@ -19,13 +16,13 @@ public class Http11Processor implements Runnable, Processor {
 
     private static final Logger log = LoggerFactory.getLogger(Http11Processor.class);
     private final Socket connection;
-    private final RequestHandlerContainer requestHandlerContainer;
+    private final HttpRequestHandlerContainer httpRequestHandlerContainer;
 
     public Http11Processor(
         final Socket connection
     ) {
         this.connection = connection;
-        this.requestHandlerContainer = new RequestHandlerContainer();
+        this.httpRequestHandlerContainer = new HttpRequestHandlerContainer();
     }
 
     @Override
@@ -42,8 +39,8 @@ public class Http11Processor implements Runnable, Processor {
             // TODO 다 읽으면 응답이 내려가지않음 해결 필요
             // List<String> requestStrs = bufferedReader.lines().toList();
             List<String> requestStrs = List.of(bufferedReader.readLine());
-            Response response = requestHandlerContainer.handleRequest(requestStrs);
-            writeResponse(response.getResponseStr(), outputStream);
+            HttpResponse httpResponse = httpRequestHandlerContainer.handleRequest(requestStrs);
+            writeResponse(httpResponse.getResponseStr(), outputStream);
         } catch (IOException | UncheckedServletException e) {
             log.error(e.getMessage(), e);
         }

@@ -1,20 +1,17 @@
 package camp.nextstep.http.handler;
 
-import camp.nextstep.db.InMemoryUserRepository;
 import camp.nextstep.http.domain.RequestLine;
-import camp.nextstep.http.domain.Resource;
-import camp.nextstep.http.domain.Response;
-import camp.nextstep.model.User;
+import camp.nextstep.http.domain.StaticResource;
+import camp.nextstep.http.domain.HttpResponse;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.Map;
-import java.util.Optional;
 
 import static camp.nextstep.db.InMemoryUserRepository.findByAccount;
-import static camp.nextstep.http.domain.Resource.createResourceFromPath;
+import static camp.nextstep.http.domain.StaticResource.createResourceFromPath;
 
-public class LoginRequestHandler implements RequestHandler{
+public class LoginHttpRequestHandler implements HttpRequestHandler {
     private final String LOGIN_PATH = "/login";
     private final String LOGIN_PAGE_PATH = "/login.html";
     private final String ACCOUNT = "account";
@@ -24,24 +21,24 @@ public class LoginRequestHandler implements RequestHandler{
         return path.startsWith(LOGIN_PATH);
     }
     @Override
-    public Response makeResponse(RequestLine requestLine) {
+    public HttpResponse makeResponse(RequestLine requestLine) {
         if (!isLoginPageRequest(requestLine.getPath().getUrlPath())) {
             checkUser(requestLine.getPath().getQueryParams());
         }
 
-        Resource resource = createResourceFromPath(
+        StaticResource staticResource = createResourceFromPath(
                 LOGIN_PAGE_PATH,
                 getClass().getClassLoader()
         );
 
         try {
-            return Response.createResponseByFile(resource.getResourceFile());
+            return HttpResponse.createResponseByFile(staticResource.getResourceFile());
         } catch (IOException e) {
             e.printStackTrace();
             try {
-                return Response.createResponseByFile(new File("static/404.html"));
+                return HttpResponse.createResponseByFile(new File("static/404.html"));
             } catch (IOException ex) {
-                return Response.createNotFoundResponseByString();
+                return HttpResponse.createNotFoundResponseByString();
             }
         }
     }

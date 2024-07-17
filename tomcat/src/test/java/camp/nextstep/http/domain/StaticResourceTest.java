@@ -4,7 +4,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class ResourceTest {
+class StaticResourceTest {
     @Test
     void 있는파일을_경로로_넘길경우_해당파일의_객체를_생성한다() {
         // given
@@ -12,10 +12,10 @@ class ResourceTest {
         ClassLoader classLoader = getClass().getClassLoader();
 
         // when
-        Resource resource = Resource.createResourceFromPath(path, classLoader);
+        StaticResource staticResource = StaticResource.createResourceFromPath(path, classLoader);
 
         // then
-        assertTrue(resource.getResourceFile().getName().contains("register.html"));
+        assertTrue(staticResource.getResourceFile().getName().contains("register.html"));
     }
 
     @Test
@@ -25,9 +25,9 @@ class ResourceTest {
         ClassLoader classLoader = getClass().getClassLoader();
 
         // when
-        Resource resource = Resource.createResourceFromPath(path, classLoader);
+        StaticResource staticResource = StaticResource.createResourceFromPath(path, classLoader);
 
         // then
-        assertTrue(resource.getResourceFile().getName().contains("404.html"));
+        assertTrue(staticResource.getResourceFile().getName().contains("404.html"));
     }
 }

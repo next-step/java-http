@@ -7,7 +7,7 @@ import java.io.*;
 import java.nio.file.Files;
 import java.util.Optional;
 
-public class Response {
+public class HttpResponse {
     private static final String SUCCESS_HEADER = "HTTP/1.1 200 OK ";
     private static final String NOTFOUND_HEADER = "HTTP/1.1 404 OK ";
     private static final String DEFAULT_CHARSET = "charset=utf-8 ";
@@ -16,7 +16,7 @@ public class Response {
 
     private String responseStr;
 
-    private Response(String responseStr) {
+    private HttpResponse(String responseStr) {
         this.responseStr = responseStr;
     }
 
@@ -24,7 +24,7 @@ public class Response {
         return responseStr;
     }
 
-    public static Response createResponseByFile(File file) throws IOException {
+    public static HttpResponse createResponseByFile(File file) throws IOException {
         String fileExt = getExtensionByStringHandling(file.getName())
                 .orElseThrow(() -> new ResourceNotFoundException("파일확장자 불명확 : " + file.getName()));
 
@@ -44,10 +44,10 @@ public class Response {
                 "",
                 fileStr);
 
-        return new Response(response);
+        return new HttpResponse(response);
     }
 
-    public static Response createResponseByString(String responseBody) {
+    public static HttpResponse createResponseByString(String responseBody) {
         String contentTypeStr = getContentTypeHeader(
                 ContentType.TEXT_HTML,
                 DEFAULT_CHARSET
@@ -60,7 +60,7 @@ public class Response {
         );
     }
 
-    public static Response createNotFoundResponseByString() {
+    public static HttpResponse createNotFoundResponseByString() {
         String responseBody = "NOT FOUND";
         String contentTypeStr = getContentTypeHeader(
             ContentType.TEXT_HTML,
@@ -74,7 +74,7 @@ public class Response {
         );
     }
 
-    private static Response createResponse(
+    private static HttpResponse createResponse(
         String contentTypeStr,
         String responseBody,
         String header
@@ -86,7 +86,7 @@ public class Response {
             "",
             responseBody);
 
-        return new Response(response);
+        return new HttpResponse(response);
     }
 
     private static String getContentTypeHeader(ContentType contentType, String charSet) {
