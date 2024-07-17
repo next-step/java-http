@@ -130,7 +130,7 @@ public class Http11Processor implements Runnable, Processor {
                 final String password = request.getBody().get("password");
                 Optional<User> userOptional = InMemoryUserRepository.findByAccount(account);
                 if(userOptional.isEmpty() || !userOptional.get().checkPassword(password)) {
-                    yield  unauthorizedResponse();
+                    yield unauthorizedResponse();
                 }
 
                 log.info(userOptional.get().toString());
@@ -148,10 +148,11 @@ public class Http11Processor implements Runnable, Processor {
     }
 
     private static boolean existSession(HttpRequest request) {
-        final String key = request.getCookie().JSessionId();
-        Optional<HttpSession> session = SessionManager.findSession(key);
+        if(request.getCookie() == null || !request.getCookie().hasJSessionId()) {
+            return false;
+        }
 
-        return session.isPresent();
+        return SessionManager.findSession(request.getCookie().JSessionId()).isPresent();
     }
 
     private String redirectResponse(HttpCookie cookie) throws IOException {
