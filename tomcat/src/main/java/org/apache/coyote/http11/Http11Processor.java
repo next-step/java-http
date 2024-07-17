@@ -137,8 +137,8 @@ public class Http11Processor implements Runnable, Processor {
 
                 /* 세션 설정 */
                 final String key = UUID.randomUUID().toString();
-                SessionManager.getInstance().add(new HttpSession(key));
-                HttpSession session = SessionManager.getInstance().findSession(key);
+                SessionManager.add(new HttpSession(key));
+                HttpSession session = SessionManager.findSession(key);
                 session.setAttribute("user", userOptional.get());
 
                 yield redirectResponse(request.getCookie());
@@ -148,7 +148,7 @@ public class Http11Processor implements Runnable, Processor {
 
     private static boolean existSession(HttpRequest request) {
         final String key = request.getCookie().JSessionId();
-        final HttpSession session = SessionManager.getInstance().findSession(key);
+        final HttpSession session = SessionManager.findSession(key);
 
         return session == null;
     }
