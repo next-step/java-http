@@ -5,6 +5,9 @@ import java.util.Map;
 
 public class RequestBody {
 
+    private static final String REQUEST_BODIES_DELIMITER = "&";
+    private static final String REQUEST_BODY_DELIMITER = "=";
+
     private final Map<String, String> requestBodies;
 
     public RequestBody() {
@@ -18,9 +21,9 @@ public class RequestBody {
     public static RequestBody parse(String requestBody) {
         Map<String, String> params = new HashMap<>();
 
-        String[] pairs = requestBody.split("&");
+        String[] pairs = requestBody.split(REQUEST_BODIES_DELIMITER);
         for (String pair : pairs) {
-            String[] keyValue = pair.split("=");
+            String[] keyValue = pair.split(REQUEST_BODY_DELIMITER, 2);
             if (keyValue.length == 2) {
                 params.put(keyValue[0], keyValue[1]);
             } else {
