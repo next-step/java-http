@@ -1,20 +1,15 @@
 package org.apache.coyote.http11;
 
-import camp.nextstep.db.InMemoryUserRepository;
+import camp.nextstep.controller.Controller;
+import camp.nextstep.controller.RequestMapping;
 import camp.nextstep.exception.UncheckedServletException;
-import camp.nextstep.model.User;
 import org.apache.coyote.Processor;
 import org.apache.coyote.request.HttpCookie;
 import org.apache.coyote.request.HttpRequest;
 import org.apache.coyote.request.RequestBody;
 import org.apache.coyote.request.RequestHeaders;
 import org.apache.coyote.request.RequestLine;
-import org.apache.coyote.response.FileFinder;
 import org.apache.coyote.response.HttpResponse;
-import org.apache.coyote.response.HttpStatus;
-import org.apache.coyote.response.MimeType;
-import org.apache.coyote.session.Session;
-import org.apache.coyote.session.SessionManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,18 +18,10 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.Socket;
 import java.util.List;
-import java.util.Optional;
 
 public class Http11Processor implements Runnable, Processor {
 
     private static final Logger log = LoggerFactory.getLogger(Http11Processor.class);
-    private static final String ACCOUNT_KEY = "account";
-    private static final String ROOT_CONTENT = "Hello world!";
-
-    private static final String ROOT_PATH = "/";
-    private static final String LOGIN_PATH = "/login";
-    private static final String REGISTER_PATH = "/register";
-
     private final Socket connection;
 
     public Http11Processor(final Socket connection) {
@@ -60,7 +47,10 @@ public class Http11Processor implements Runnable, Processor {
             RequestBody requestBody = getRequestBody(bufferedReader, requestHeaders);
             HttpRequest httpRequest = new HttpRequest(requestLine, requestHeaders, httpCookie, requestBody);
 
-            HttpResponse response = getResponse(httpRequest);
+            Controller controller = RequestMapping.get(httpRequest);
+            HttpResponse response = controller.service(httpRequest);
+
+//            HttpResponse response = getResponse(httpRequest);
 
             outputStream.write(response.buildContent().getBytes());
             outputStream.flush();
@@ -91,101 +81,51 @@ public class Http11Processor implements Runnable, Processor {
         return RequestBody.parse(new String(buffer));
     }
 
-    private HttpResponse getResponse(HttpRequest request) {
-        String httpPath = request.getHttpPath();
-        return switch (httpPath) {
-            case LOGIN_PATH -> handleLogin(request);
-            case REGISTER_PATH -> handleRegister(request);
-            case ROOT_PATH -> handleRoot(request);
-            default -> handlePath(request);
-        };
-    }
+//    private HttpResponse getResponse(HttpRequest request) {
+//        String httpPath = request.getHttpPath();
+//        return switch (httpPath) {
+////            case LOGIN_PATH -> handleLogin(request);
+////            case REGISTER_PATH -> handleRegister(request);
+////            case ROOT_PATH -> handleRoot(request);
+////            default -> handlePath(request);
+//        };
+//    }
 
-    private HttpResponse handleLogin(HttpRequest request) {
-        if (request.isGet()) {
-            return handleLoginGet(request);
-        }
-        if (request.isPost()) {
-            return handleLoginPost(request);
-        }
-        return HttpResponse.notFound();
-    }
+//    private HttpResponse handleRegister(HttpRequest request) {
+//        if (request.isGet()) {
+//            return new HttpResponse(
+//                    HttpStatus.OK,
+//                    MimeType.HTML,
+//                    FileFinder.find("/register.html"));
+//        }
+//        if (request.isPost()) {
+//            RequestBody requestBody = request.getRequestBody();
+//            User user = new User(requestBody.get("account"), requestBody.get("password"), requestBody.get("email"));
+//            InMemoryUserRepository.save(user);
+//
+//            return new HttpResponse(
+//                    HttpStatus.CREATED,
+//                    MimeType.HTML,
+//                    FileFinder.find("/index.html"));
+//        }
+//        return null;
+//    }
 
-    private HttpResponse handleLoginGet(HttpRequest request) {
-        if (request.containsSessionId()) {
-            String sessionId = request.getSessionId();
-            Optional<Session> session = SessionManager.findSession(sessionId);
-            if (session.isPresent()) {
-                return new HttpResponse(
-                        HttpStatus.OK,
-                        MimeType.HTML,
-                        FileFinder.find("/index.html"));
-            }
-        }
-        MimeType mimeType = MimeType.HTML;
-        return new HttpResponse(
-                HttpStatus.OK,
-                mimeType,
-                FileFinder.find(LOGIN_PATH + mimeType.getFileExtension()));
+//    private HttpResponse handleRoot(HttpRequest request) {
+//        if (request.isGet()) {
+//            return new HttpResponse(
+//                    HttpStatus.OK,
+//                    MimeType.HTML,
+//                    ROOT_CONTENT);
+//        }
+//        return HttpResponse.notFound();
+//    }
 
-    }
-
-    private HttpResponse handleLoginPost(HttpRequest request) {
-        RequestBody requestBody = request.getRequestBody();
-        Optional<User> optionalUser = InMemoryUserRepository.findByAccount(requestBody.get(ACCOUNT_KEY));
-        if (optionalUser.isPresent() && optionalUser.get().checkPassword(requestBody.get("password"))) {
-            log.info(optionalUser.get().toString());
-            HttpResponse httpResponse = new HttpResponse(
-                    HttpStatus.FOUND,
-                    MimeType.HTML,
-                    FileFinder.find("/index.html"));
-            Session session = new Session();
-            session.setAttribute("user", optionalUser.get());
-            SessionManager.add(session);
-            httpResponse.addCookie(session.getId());
-            return httpResponse;
-        }
-        return new HttpResponse(
-                HttpStatus.UNAUTHORIZED,
-                MimeType.HTML,
-                FileFinder.find("/401.html"));
-    }
-
-    private HttpResponse handleRegister(HttpRequest request) {
-        if (request.isGet()) {
-            return new HttpResponse(
-                    HttpStatus.OK,
-                    MimeType.HTML,
-                    FileFinder.find("/register.html"));
-        }
-        if (request.isPost()) {
-            RequestBody requestBody = request.getRequestBody();
-            User user = new User(requestBody.get("account"), requestBody.get("password"), requestBody.get("email"));
-            InMemoryUserRepository.save(user);
-
-            return new HttpResponse(
-                    HttpStatus.CREATED,
-                    MimeType.HTML,
-                    FileFinder.find("/index.html"));
-        }
-        return null;
-    }
-
-    private HttpResponse handleRoot(HttpRequest request) {
-        if (request.isGet()) {
-            return new HttpResponse(
-                    HttpStatus.OK,
-                    MimeType.HTML,
-                    ROOT_CONTENT);
-        }
-        return HttpResponse.notFound();
-    }
-
-    private HttpResponse handlePath(HttpRequest request) {
-        String httpPath = request.getHttpPath();
-        return new HttpResponse(
-                HttpStatus.OK,
-                MimeType.from(httpPath),
-                FileFinder.find(httpPath));
-    }
+//    private HttpResponse handlePath(HttpRequest request) {
+//        String httpPath = request.getHttpPath();
+//        return new HttpResponse(
+//                HttpStatus.OK,
+//                MimeType.from(httpPath),
+//                FileFinder.find(httpPath));
+//    }
 }
