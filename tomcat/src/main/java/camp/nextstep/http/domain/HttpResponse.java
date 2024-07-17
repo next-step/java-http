@@ -29,7 +29,7 @@ public class HttpResponse {
                 .orElseThrow(() -> new ResourceNotFoundException("파일확장자 불명확 : " + file.getName()));
 
         ContentType contentType = ContentType.findContentTypeByFileExt(fileExt);
-
+        
         String fileStr = new String(Files.readAllBytes(file.toPath()));
 
         String contentTypeStr = getContentTypeHeader(

@@ -21,11 +21,10 @@ public class HttpRequestHandlerContainer {
             requestLines.get(0)
         );
 
-        for (HttpRequestHandler httpRequestHandler : httpRequestHandlers) {
-            if (httpRequestHandler.isMatchPathPattern(requestLine.getPath().getUrlPath())) {
-                return httpRequestHandler.makeResponse(requestLine);
-            }
-        }
-        return HttpResponse.createNotFoundResponseByString();
+        return httpRequestHandlers.stream()
+            .filter(v -> v.isMatchPathPattern(requestLine.getPath().getUrlPath()))
+            .findFirst()
+            .map(v -> v.makeResponse(requestLine))
+            .orElseGet(HttpResponse::createNotFoundResponseByString);
     }
 }
