@@ -2,11 +2,14 @@ package camp.nextstep.http.domain;
 
 import java.util.Arrays;
 import java.util.Map;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class Path {
     private static final int PATH_INDEX = 0;
     private static final int QUERY_PARAM_INDEX = 1;
+    private static final int PATH_CONTAINS_QUERY_STRING_SIZE = 2;
+    private static final Pattern QUERY_SEPARATOR = Pattern.compile("\\?");
 
     private String urlPath;
     private Map<String, String> queryParams;
@@ -29,8 +32,8 @@ public class Path {
     }
 
     public static Path createPathByPathStr(String path) {
-        String[] pathStrs = path.split("\\?");
-        if (pathStrs.length == 2) {
+        String[] pathStrs = QUERY_SEPARATOR.split(path);
+        if (pathStrs.length == PATH_CONTAINS_QUERY_STRING_SIZE) {
             Map<String, String> queryParams = getQueryParams(pathStrs[QUERY_PARAM_INDEX]);
             return new Path(pathStrs[PATH_INDEX], queryParams);
         }
