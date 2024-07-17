@@ -2,16 +2,17 @@ package jakarta;
 
 import camp.nextstep.UserController;
 import camp.nextstep.service.UnauthroizedUserException;
-import org.apache.catalina.ViewModel;
 import org.apache.coyote.http11.FileLoader;
+import org.apache.coyote.http11.HttpCookie;
 import org.apache.coyote.http11.MimeType;
+import org.apache.coyote.http11.constants.HttpCookies;
 import org.apache.coyote.http11.request.HttpMethod;
 import org.apache.coyote.http11.request.HttpRequest;
-import org.apache.coyote.http11.request.RequestLine;
 import org.apache.coyote.http11.response.*;
 
 import java.io.IOException;
 import java.util.Map;
+import java.util.UUID;
 
 public class UserServlet implements MyServlet {
 
@@ -55,7 +56,16 @@ public class UserServlet implements MyServlet {
             try {
                 var viewModel = userController.login(requestBodyMap);
                 var location = Location.of(requestLine.protocol(), requestHeaders.host(), viewModel.path());
-                response.setResponse(HttpStatusCode.FOUND, new HttpResponseHeaders(MimeType.TEXT_HTML, location));
+
+                if (!requestHeaders.hasCookie(HttpCookies.JSESSIONID)) {
+                    var httpCookie = new HttpCookie();
+                    httpCookie.addSessionId(UUID.randomUUID());
+                    response.setResponse(HttpStatusCode.OK, new HttpResponseHeaders(MimeType.TEXT_HTML, location, httpCookie));
+                    return;
+                }
+
+                var httpCookie = requestHeaders.getCookie();
+                response.setResponse(HttpStatusCode.FOUND, new HttpResponseHeaders(MimeType.TEXT_HTML, location, httpCookie));
             } catch (UnauthroizedUserException e) {
                 var location = Location.of(requestLine.protocol(), requestHeaders.host(), "/401.html");
                 response.setResponse(HttpStatusCode.FOUND, new HttpResponseHeaders(MimeType.TEXT_HTML, location));

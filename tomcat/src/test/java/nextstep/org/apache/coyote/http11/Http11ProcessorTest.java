@@ -10,6 +10,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Files;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -109,7 +110,7 @@ class Http11ProcessorTest {
     }
 
     @Test
-    @DisplayName("/login 요청을 처리한다")
+    @DisplayName("GET /login 요청을 처리한다")
     public void loginRequestTest() throws IOException {
 
         // /login?account=gugu&password=password
@@ -134,6 +135,40 @@ class Http11ProcessorTest {
 
         assertThat(socket.output()).contains(expected);
     }
+
+
+    @Test
+    @DisplayName("POST /login 요청을 처리한다")
+    public void postLoginTest() {
+
+        // /login?account=gugu&password=password
+        final var builder = new TestHttpRequestMessageBuilder();
+        final UUID jsessionId = UUID.randomUUID();
+        String requestBody = "account=gugu&password=password";
+        String httpRequest = builder
+                .requestLine("POST", "/login", "HTTP/1.1")
+                .hostHeader("localhost:8080")
+                .acceptHeader("text/css,*/*;q=0.1")
+                .cookieHeader("JSESSIONID="+jsessionId.toString())
+                .contentLength(requestBody.getBytes().length)
+                .emptyLine()
+                .requestBody(requestBody)
+                .build();
+
+        StubSocket socket = new StubSocket(httpRequest);
+        doHttp11Process(socket);
+
+
+        String expected = String.join("\r\n",
+                "HTTP/1.1 302 Found ",
+                "Content-Type: text/html;charset=utf-8 ",
+                "Location: http://localhost:8080/index.html ",
+                "Set-Cookie: JSESSIONID=" + jsessionId.toString() + " "
+        );
+
+        assertThat(socket.output()).contains(expected);
+    }
+
 
     @Test
     @DisplayName("/login/v2처럼 path에 버전을 명시할 경우 /login으로 요청이 처리되지 않는다")

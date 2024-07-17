@@ -10,9 +10,6 @@ public class HttpResponse {
     private HttpResponseHeaders httpResponseHeaders;
     private ResponseBody responseBody;
 
-    public HttpResponse() {
-    }
-
     public HttpResponse(HttpProtocol httpProtocol, HttpStatusCode httpStatusCode, HttpResponseHeaders httpResponseHeaders, ResponseBody responseBody) {
         this.httpProtocol = httpProtocol;
         this.httpStatusCode = httpStatusCode;
