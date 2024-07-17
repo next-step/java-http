@@ -2,6 +2,7 @@ package org.apache.coyote.http11;
 
 import camp.nextstep.exception.UncheckedServletException;
 import org.apache.coyote.Processor;
+import org.apache.coyote.http11.request.HttpRequestLineInvalidException;
 import org.apache.coyote.http11.request.RequestParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,7 +39,7 @@ public class Http11Processor implements Runnable, Processor {
 
             outputStream.write(response.generateMessage().getBytes());
             outputStream.flush();
-        } catch (IOException | UncheckedServletException e) {
+        } catch (IOException | UncheckedServletException | HttpRequestLineInvalidException e) {
             log.error(e.getMessage(), e);
         }
     }

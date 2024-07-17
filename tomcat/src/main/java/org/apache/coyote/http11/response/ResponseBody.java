@@ -10,6 +10,10 @@ public record ResponseBody(byte[] contentBody, Charset charset) {
         this(contentBody, Charset.defaultCharset());
     }
 
+    public String toContentLengthHeaderMessage() {
+        return "Content-Length: " + length();
+    }
+
     public int length() {
         return contentBody.length;
     }

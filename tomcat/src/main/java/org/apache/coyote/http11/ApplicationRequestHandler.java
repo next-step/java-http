@@ -1,13 +1,9 @@
 package org.apache.coyote.http11;
 
-import camp.nextstep.UserController;
-import camp.nextstep.service.UnauthroizedUserException;
-import org.apache.catalina.ViewModel;
-import org.apache.coyote.http11.request.HttpMethod;
+import jakarta.MyServlet;
+import jakarta.UserServlet;
 import org.apache.coyote.http11.request.HttpRequest;
 import org.apache.coyote.http11.response.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.Map;
@@ -15,46 +11,26 @@ import java.util.Map;
 public class ApplicationRequestHandler implements RequestHandler {
 
     public static final ApplicationRequestHandler INSTANCE = new ApplicationRequestHandler();
-    private final UserController userController = new UserController();
+
+    private static final Map<String, MyServlet> SERVLET_MAPPING = Map.of(
+            "/login", UserServlet.INSTANCE,
+            "/register", UserServlet.INSTANCE
+    );
 
     @Override
     public HttpResponse service(HttpRequest httpRequest) throws IOException {
         final var requestLine = httpRequest.getRequestLine();
-        final var requestHeaders = httpRequest.getRequestHeaders();
 
         if ("/".equals(requestLine.getPath())) {
             final var responseBody = "Hello world!";
             return new HttpResponse(requestLine.getHttpProtocol(), HttpStatusCode.OK, new HttpResponseHeaders(MimeType.TEXT_HTML), new ResponseBody(responseBody.getBytes()));
         }
 
-        if (HttpMethod.GET == requestLine.getMethod() && requestLine.getPath().equals("/login")) {
-            ViewModel viewModel = userController.login();
-            return new HttpResponse(requestLine.getHttpProtocol(), HttpStatusCode.OK, new HttpResponseHeaders(MimeType.TEXT_HTML), new ResponseBody(FileLoader.read("static/" + viewModel.path())));
-        }
+        final var servlet = SERVLET_MAPPING.get(requestLine.getPath());
+        final var httpResponse = new HttpResponse(requestLine.getHttpProtocol());
 
-        if (HttpMethod.POST == requestLine.getMethod() && requestLine.getPath().equals("/login")) {
-            Map<String, Object> requestBodyMap = httpRequest.getRequestBody().toMap();
-            try {
-                ViewModel viewModel = userController.login(requestBodyMap);
-                var location = Location.of(requestLine.protocol(), requestHeaders.host(), viewModel.path());
-                return new HttpResponse(requestLine.getHttpProtocol(), HttpStatusCode.FOUND, new HttpResponseHeaders(MimeType.TEXT_HTML, location));
-            } catch (UnauthroizedUserException e) {
-                var location = Location.of(requestLine.protocol(), requestHeaders.host(), "/401.html");
-                return new HttpResponse(requestLine.getHttpProtocol(), HttpStatusCode.FOUND, new HttpResponseHeaders(MimeType.TEXT_HTML, location));
-            }
-        }
+        servlet.delegate(httpRequest, httpResponse);
 
-        if (HttpMethod.GET == requestLine.getMethod() && requestLine.getPath().equals("/register")) {
-            final var viewModel = userController.register();
-            return new HttpResponse(requestLine.getHttpProtocol(), HttpStatusCode.OK, new HttpResponseHeaders(MimeType.TEXT_HTML), new ResponseBody(FileLoader.read( "static/" + viewModel.path())));
-        }
-
-        if (HttpMethod.POST == requestLine.getMethod() && requestLine.getPath().equals("/register")) {
-            ViewModel viewModel = userController.register(httpRequest.getRequestBody().toMap());
-            var location = Location.of(requestLine.protocol(), requestHeaders.host(), viewModel.path());
-            return new HttpResponse(requestLine.getHttpProtocol(), HttpStatusCode.FOUND, new HttpResponseHeaders(MimeType.TEXT_HTML, location));
-        }
-
-        return new HttpResponse(requestLine.getHttpProtocol(), HttpStatusCode.INTERNAL_SERVER_ERROR, new HttpResponseHeaders(MimeType.TEXT_HTML));
+        return httpResponse;
     }
 }

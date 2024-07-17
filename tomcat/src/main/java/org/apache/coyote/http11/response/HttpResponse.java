@@ -5,10 +5,13 @@ import org.apache.coyote.http11.HttpProtocol;
 
 public class HttpResponse {
 
-    private final HttpProtocol httpProtocol;
-    private final HttpStatusCode httpStatusCode;
-    private final HttpResponseHeaders httpResponseHeaders;
-    private final ResponseBody responseBody;
+    private HttpProtocol httpProtocol;
+    private HttpStatusCode httpStatusCode;
+    private HttpResponseHeaders httpResponseHeaders;
+    private ResponseBody responseBody;
+
+    public HttpResponse() {
+    }
 
     public HttpResponse(HttpProtocol httpProtocol, HttpStatusCode httpStatusCode, HttpResponseHeaders httpResponseHeaders, ResponseBody responseBody) {
         this.httpProtocol = httpProtocol;
@@ -19,6 +22,10 @@ public class HttpResponse {
 
     public HttpResponse(HttpProtocol httpProtocol, HttpStatusCode httpStatusCode, HttpResponseHeaders httpResponseHeaders) {
         this(httpProtocol, httpStatusCode, httpResponseHeaders, ResponseBody.EMPTY);
+    }
+
+    public HttpResponse(HttpProtocol httpProtocol) {
+        this.httpProtocol = httpProtocol;
     }
 
 
@@ -34,18 +41,27 @@ public class HttpResponse {
         return sb.toString();
     }
 
+    public void setResponse(HttpStatusCode httpStatusCode, HttpResponseHeaders httpResponseHeaders) {
+        this.setResponse(httpStatusCode, httpResponseHeaders, new ResponseBody(new byte[0]));
+    }
+
+    public void setResponse(HttpStatusCode httpStatusCode, HttpResponseHeaders httpResponseHeaders, ResponseBody responseBody) {
+        this.httpStatusCode = httpStatusCode;
+        this.httpResponseHeaders = httpResponseHeaders;
+        this.responseBody = responseBody;
+    }
+
     private String firstLine() {
         return httpProtocol.description() + " " + httpStatusCode.getCode() + " " + httpStatusCode.getDescription();
     }
 
 
     private String contentInfo() {
-        return "Content-Length: " + responseBody.length();
+        return responseBody.toContentLengthHeaderMessage();
     }
+
 
     private String content() {
         return responseBody.toString();
     }
-
-
 }

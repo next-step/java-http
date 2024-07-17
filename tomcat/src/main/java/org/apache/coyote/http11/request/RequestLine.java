@@ -17,7 +17,7 @@ public class RequestLine {
     public RequestLine(String requestLine) {
         String[] infos = split(requestLine);
         if (infos.length != REQUEST_LINE_CHUNK_LIMIT) {
-            throw new IllegalArgumentException("RequestLine is invalid: " + requestLine);
+            throw new HttpRequestLineInvalidException("RequestLine is invalid: " + requestLine);
         }
         this.method = HttpMethod.from(infos[0]);
         this.path = new Path(infos[1]);
