@@ -27,29 +27,29 @@
   - [x] FILE, I/0 STREAM
   - [x] HTTP Cache
   - [x] Thread
-- [] 요구사항 1 - GET 요청
-   - [] GET 요청 RequestLine 파싱
-     - [] Method
-     - [] path
-     - [] protocol
-     - [] version
-     - [] TEST 생성
-- [] 요구사항 2 - POST 요청
-  - [] GET 요청 RequestLine 파싱
-    - [] Method
-    - [] path
-    - [] protocol
-    - [] version
-    - [] TEST 생성
-- [] 요구사항 3 - QUERY STRING 파싱 
-  - [] HTTP 요청 QUERY STRING 데이터 파싱
-  - [] TEST 생성
-- [] 요구사항 4 - ENUM 적용
-  - [] Method 인 GET, POST 적용
-- [] 요구사항 5 - 공통 요구사항
-  - [] HTTP REQUEST 클래스 설계
-  - [] HTTP REQUEST를 파싱하는 책임을 분리
+- [x] 요구사항 1 - GET 요청
+   - [x] GET 요청 RequestLine 파싱
+     - [x] Method
+     - [x] path
+     - [x] protocol
+     - [x] version
+     - [x] TEST 생성
+- [x] 요구사항 2 - POST 요청
+  - [x] GET 요청 RequestLine 파싱
+    - [x] Method
+    - [x] path
+    - [x] protocol
+    - [x] version
+    - [x] TEST 생성
+- [x] 요구사항 3 - QUERY STRING 파싱 
+  - [x] HTTP 요청 QUERY STRING 데이터 파싱
+  - [x] TEST 생성
+- [x] 요구사항 4 - ENUM 적용
+  - [x] Method 인 GET, POST 적용
+- [x] 요구사항 5 - 공통 요구사항
+  - [x] HTTP REQUEST 클래스 설계
+  - [x] HTTP REQUEST를 파싱하는 책임을 분리
   - [] HTTP RESPONSE를 생성하는 책임을 분리
-  - [] 커스텀 예외 생성
+  - [x] 커스텀 예외 생성
    
 
