@@ -6,6 +6,8 @@ import camp.nextstep.http.exception.ResourceNotFoundException;
 import java.io.*;
 import java.nio.file.Files;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class HttpResponse {
     private static final String SUCCESS_HEADER = "HTTP/1.1 200 OK ";
@@ -29,8 +31,12 @@ public class HttpResponse {
                 .orElseThrow(() -> new ResourceNotFoundException("파일확장자 불명확 : " + file.getName()));
 
         ContentType contentType = ContentType.findContentTypeByFileExt(fileExt);
-        
-        String fileStr = new String(Files.readAllBytes(file.toPath()));
+
+        String fileStr;
+        try (final BufferedReader bufferedReader = new BufferedReader(new FileReader(file));
+             final Stream<String> lines = bufferedReader.lines()) {
+            fileStr = lines.collect(Collectors.joining("\r\n"));
+        }
 
         String contentTypeStr = getContentTypeHeader(
                 contentType,
