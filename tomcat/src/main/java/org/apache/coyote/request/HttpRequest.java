@@ -1,16 +1,10 @@
 package org.apache.coyote.request;
 
-import java.util.Optional;
-
 public class HttpRequest {
     private final RequestLine requestLine;
     private final RequestHeaders requestHeaders;
     private final HttpCookie httpCookie;
     private final RequestBody requestBody;
-
-    public HttpRequest(RequestLine requestLine, RequestHeaders requestHeaders, RequestBody requestBody) {
-        this(requestLine, requestHeaders, new HttpCookie(), requestBody);
-    }
 
     public HttpRequest(RequestLine requestLine, RequestHeaders requestHeaders, HttpCookie httpCookie, RequestBody requestBody) {
         this.requestLine = requestLine;

@@ -21,13 +21,17 @@ public class RegisterController extends AbstractController {
 
     @Override
     protected HttpResponse doPost(HttpRequest request) {
-        RequestBody requestBody = request.getRequestBody();
-        User user = new User(requestBody.get("account"), requestBody.get("password"), requestBody.get("email"));
-        InMemoryUserRepository.save(user);
+        registerUser(request);
 
         return new HttpResponse(
                 HttpStatus.CREATED,
                 MimeType.HTML,
                 FileFinder.find("/index.html"));
+    }
+
+    private void registerUser(HttpRequest request) {
+        RequestBody requestBody = request.getRequestBody();
+        User user = new User(requestBody.get("account"), requestBody.get("password"), requestBody.get("email"));
+        InMemoryUserRepository.save(user);
     }
 }

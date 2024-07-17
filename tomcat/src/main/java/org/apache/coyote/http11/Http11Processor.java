@@ -50,8 +50,6 @@ public class Http11Processor implements Runnable, Processor {
             Controller controller = RequestMapping.get(httpRequest);
             HttpResponse response = controller.service(httpRequest);
 
-//            HttpResponse response = getResponse(httpRequest);
-
             outputStream.write(response.buildContent().getBytes());
             outputStream.flush();
         } catch (IOException | UncheckedServletException e) {
@@ -80,52 +78,4 @@ public class Http11Processor implements Runnable, Processor {
         bufferedReader.read(buffer, 0, contentLength);
         return RequestBody.parse(new String(buffer));
     }
-
-//    private HttpResponse getResponse(HttpRequest request) {
-//        String httpPath = request.getHttpPath();
-//        return switch (httpPath) {
-////            case LOGIN_PATH -> handleLogin(request);
-////            case REGISTER_PATH -> handleRegister(request);
-////            case ROOT_PATH -> handleRoot(request);
-////            default -> handlePath(request);
-//        };
-//    }
-
-//    private HttpResponse handleRegister(HttpRequest request) {
-//        if (request.isGet()) {
-//            return new HttpResponse(
-//                    HttpStatus.OK,
-//                    MimeType.HTML,
-//                    FileFinder.find("/register.html"));
-//        }
-//        if (request.isPost()) {
-//            RequestBody requestBody = request.getRequestBody();
-//            User user = new User(requestBody.get("account"), requestBody.get("password"), requestBody.get("email"));
-//            InMemoryUserRepository.save(user);
-//
-//            return new HttpResponse(
-//                    HttpStatus.CREATED,
-//                    MimeType.HTML,
-//                    FileFinder.find("/index.html"));
-//        }
-//        return null;
-//    }
-
-//    private HttpResponse handleRoot(HttpRequest request) {
-//        if (request.isGet()) {
-//            return new HttpResponse(
-//                    HttpStatus.OK,
-//                    MimeType.HTML,
-//                    ROOT_CONTENT);
-//        }
-//        return HttpResponse.notFound();
-//    }
-
-//    private HttpResponse handlePath(HttpRequest request) {
-//        String httpPath = request.getHttpPath();
-//        return new HttpResponse(
-//                HttpStatus.OK,
-//                MimeType.from(httpPath),
-//                FileFinder.find(httpPath));
-//    }
 }

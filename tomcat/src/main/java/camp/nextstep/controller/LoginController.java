@@ -1,6 +1,7 @@
 package camp.nextstep.controller;
 
 import camp.nextstep.db.InMemoryUserRepository;
+import camp.nextstep.exception.UnauthorizedUserException;
 import camp.nextstep.model.User;
 import org.apache.coyote.request.HttpRequest;
 import org.apache.coyote.request.RequestBody;
@@ -14,47 +15,57 @@ import org.apache.coyote.session.SessionManager;
 import java.util.Optional;
 
 public class LoginController extends AbstractController {
-    private static final String LOGIN_PATH = "/login";
     private static final String ACCOUNT_KEY = "account";
 
     @Override
     protected HttpResponse doGet(HttpRequest request) {
-        if (request.containsSessionId()) {
-            String sessionId = request.getSessionId();
-            Optional<Session> session = SessionManager.findSession(sessionId);
-            if (session.isPresent()) {
-                return new HttpResponse(
-                        HttpStatus.OK,
-                        MimeType.HTML,
-                        FileFinder.find("/index.html"));
-            }
+        if (isAlreadyLoggedIn(request)) {
+            return new HttpResponse(
+                    HttpStatus.OK,
+                    MimeType.HTML,
+                    FileFinder.find("/index.html"));
         }
-        MimeType mimeType = MimeType.HTML;
         return new HttpResponse(
                 HttpStatus.OK,
-                mimeType,
-                FileFinder.find(LOGIN_PATH + mimeType.getFileExtension()));
+                MimeType.HTML,
+                FileFinder.find("/login.html"));
+    }
+
+    private boolean isAlreadyLoggedIn(HttpRequest request) {
+        if (!request.containsSessionId()) {
+            return false;
+        }
+        Optional<Session> session = SessionManager.findSession(request.getSessionId());
+        return session.isPresent();
     }
 
     @Override
     public HttpResponse doPost(HttpRequest request) {
-        RequestBody requestBody = request.getRequestBody();
-        Optional<User> optionalUser = InMemoryUserRepository.findByAccount(requestBody.get(ACCOUNT_KEY));
-        if (optionalUser.isPresent() && optionalUser.get().checkPassword(requestBody.get("password"))) {
+        try {
+            User user = getAuthorizedUser(request);
+            Session session = addSession(user);
             HttpResponse httpResponse = new HttpResponse(
                     HttpStatus.FOUND,
                     MimeType.HTML,
                     FileFinder.find("/index.html"));
-            Session session = new Session();
-            session.setAttribute("user", optionalUser.get());
-            SessionManager.add(session);
             httpResponse.addCookie(session.getId());
             return httpResponse;
+        } catch (UnauthorizedUserException e) {
+            return HttpResponse.unauthorized();
         }
-        return new HttpResponse(
-                HttpStatus.UNAUTHORIZED,
-                MimeType.HTML,
-                FileFinder.find("/401.html"));
+    }
 
+    private User getAuthorizedUser(HttpRequest request) {
+        RequestBody requestBody = request.getRequestBody();
+        return InMemoryUserRepository.findByAccount(requestBody.get(ACCOUNT_KEY))
+                .filter(user -> user.checkPassword(requestBody.get("password")))
+                .orElseThrow(UnauthorizedUserException::new);
+    }
+
+    private Session addSession(User user) {
+        Session session = new Session();
+        session.setAttribute("user", user);
+        SessionManager.add(session);
+        return session;
     }
 }

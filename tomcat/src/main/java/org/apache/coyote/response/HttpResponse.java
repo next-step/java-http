@@ -25,6 +25,12 @@ public class HttpResponse {
                 FileFinder.find("/404.html"));
     }
 
+    public static HttpResponse unauthorized() {
+        return new HttpResponse(HttpStatus.UNAUTHORIZED,
+                MimeType.HTML,
+                FileFinder.find("/401.html"));
+    }
+
     public HttpStatus getStatus() {
         return status;
     }

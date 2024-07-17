@@ -4,7 +4,6 @@ import org.apache.exception.BadHeaderException;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class RequestHeaders {
@@ -31,15 +30,11 @@ public class RequestHeaders {
         if (headerParts.length != KEY_AND_VALUE_LENGTH) {
             throw new BadHeaderException();
         }
-        return Map.entry(headerParts[REQUEST_HEADER_KEY_INDEX], headerParts[REQUEST_HEADER_VALUE_INDEX]);
+        return Map.entry(headerParts[REQUEST_HEADER_KEY_INDEX], headerParts[REQUEST_HEADER_VALUE_INDEX].trim());
     }
 
     public String getHeader(String key) {
         return headers.get(key);
-    }
-
-    public Optional<String> findCookie() {
-        return Optional.ofNullable(headers.get("Cookie"));
     }
 
     public boolean containsCookie() {

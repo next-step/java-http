@@ -6,7 +6,7 @@ import org.apache.coyote.response.HttpResponse;
 import org.apache.coyote.response.HttpStatus;
 import org.apache.coyote.response.MimeType;
 
-public class PathController extends AbstractController {
+public class StaticFileController extends AbstractController {
     @Override
     protected HttpResponse doGet(HttpRequest request) {
         String httpPath = request.getHttpPath();
