@@ -27,6 +27,8 @@ class ResponseWriterTest {
 
     @BeforeEach
     void setUp() {
+        SessionManager.INSTANCE.clearAllSessions();
+
         SessionManager.INSTANCE.add(new Session(givenSessionId));
     }
 
