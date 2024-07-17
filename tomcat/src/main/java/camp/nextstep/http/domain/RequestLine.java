@@ -5,10 +5,7 @@ import camp.nextstep.http.enums.HttpMethod;
 import camp.nextstep.http.enums.HttpVersion;
 import camp.nextstep.http.exception.InvalidHttpRequestSpecException;
 
-import java.util.Arrays;
-import java.util.Map;
-import java.util.stream.Collectors;
-
+import static camp.nextstep.http.enums.HttpVersion.NONE;
 import static camp.nextstep.http.enums.HttpVersion.getHttpVersionByVersion;
 import static camp.nextstep.util.EnumUtil.searchEnum;
 
@@ -20,18 +17,15 @@ public class RequestLine {
     private static final int HTTP_PROTOCOL_ARG_INDEX = 2;
     private static final int PROTOCOl_INDEX = 0;
     private static final int HTTP_VERSION_INDEX = 1;
-    private static final int PATH_INDEX = 0;
-    private static final int QUERY_PARAM_INDEX = 1;
 
     private HttpMethod method;
-    private String path;
     private Protocol protocol;
     private HttpVersion version;
-    private Map<String, String> queryParams;
+    private Path path;
 
     private RequestLine(
             HttpMethod method,
-            String path,
+            Path path,
             Protocol protocol,
             HttpVersion version
     ) {
@@ -41,22 +35,8 @@ public class RequestLine {
         this.version = version;
     }
 
-    private RequestLine(
-            HttpMethod method,
-            String path,
-            Protocol protocol,
-            HttpVersion version,
-            Map<String, String> queryParams
-    ) {
-        this.method = method;
-        this.path = path;
-        this.protocol = protocol;
-        this.version = version;
-        this.queryParams = queryParams;
-    }
-
-    public Map<String, String> getQueryParams() {
-        return queryParams;
+    public Path getPath() {
+        return path;
     }
 
     public static RequestLine createRequestLineByRequestLineStr(String requestLineStr) {
@@ -74,26 +54,14 @@ public class RequestLine {
 
         Protocol protocol = getProtocolFromStr(httpArgs[PROTOCOl_INDEX]);
         HttpVersion version = getHttpVersionFromStr(httpArgs[HTTP_VERSION_INDEX]);
+        Path path = Path.createPathByPathStr(requestArgs[HTTP_PATH_INDEX]);
 
-        String[] pathStrs = requestArgs[HTTP_PATH_INDEX].split("\\?");
-        if (pathStrs.length == 2) {
-            Map<String, String> queryParams = getQueryParams(pathStrs[QUERY_PARAM_INDEX]);
-
-            return new RequestLine(
-                    method,
-                    pathStrs[PATH_INDEX],
-                    protocol,
-                    version,
-                    queryParams
-            );
-        } else {
-            return new RequestLine(
-                    method,
-                    pathStrs[PATH_INDEX],
-                    protocol,
-                    version
-            );
-        }
+        return new RequestLine(
+                method,
+                path,
+                protocol,
+                version
+        );
     }
 
     private static HttpMethod getHttpMethodFromStr(String httpMethodStr) {
@@ -118,16 +86,9 @@ public class RequestLine {
 
     private static HttpVersion getHttpVersionFromStr(String httpVersionStr) {
         HttpVersion version = getHttpVersionByVersion(httpVersionStr);
-        if (version == null) {
+        if (version == NONE) {
             throw new InvalidHttpRequestSpecException("지원하는 버전이 아닙니다");
         }
         return version;
-    }
-
-    private static Map<String, String> getQueryParams(String queryParamStr) {
-        String[] queryParamArgs = queryParamStr.split("&");
-        return Arrays.stream(queryParamArgs)
-                .map(v -> v.split("="))
-                .collect(Collectors.toMap(e -> e[0], e -> e[1]));
     }
 }

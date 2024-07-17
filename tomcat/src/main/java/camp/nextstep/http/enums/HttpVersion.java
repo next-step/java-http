@@ -3,7 +3,8 @@ package camp.nextstep.http.enums;
 public enum HttpVersion {
     VERSION_1_0("1.0"),
     VERSION_1_1("1.1"),
-    VERSION_2_0("2.0");
+    VERSION_2_0("2.0"),
+    NONE("none");
 
     private String version;
 
@@ -17,6 +18,6 @@ public enum HttpVersion {
                 return httpVersion;
             }
         }
-        return null;
+        return NONE;
     }
 }
