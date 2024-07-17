@@ -45,9 +45,21 @@ public class ResponseHandler {
         if (httpRequest.getUrlPath().equals("/login")) {
             String account = httpRequest.getRequestBodyValueByKey("account");
             String password = httpRequest.getRequestBodyValueByKey("password");
-            boolean loginSuccess = login(account, password, httpRequest.getCookies());
 
-            if (loginSuccess) {
+            if (hasLoginSession(httpRequest.getCookies())) {
+                HttpResponse httpResponse = HttpResponse.redirectRoot(httpRequest);
+                Response response = Response.parsingResponse(httpResponse);
+                return new ResponseHandler(response);
+            }
+
+            final User user = InMemoryUserRepository.findByAccount(account).orElseThrow(NoSuchElementException::new);
+
+            if (user.checkPassword(password)) {
+                String uuid = UUID.randomUUID().toString();
+                httpRequest.addCookie(new Cookie("JSESSIONID", uuid));
+                Session session = new Session(uuid);
+                session.setAttribute("user", user);
+                SessionManager.getInstance().add(session);
                 HttpResponse httpResponse = HttpResponse.redirectRoot(httpRequest);
                 Response response = Response.parsingResponse(httpResponse);
                 return new ResponseHandler(response);
@@ -98,20 +110,11 @@ public class ResponseHandler {
         return new ResponseHandler(response);
     }
 
-    private static boolean login(String account, String password, Cookies cookies) {
-        final User user = InMemoryUserRepository.findByAccount(account).orElseThrow(NoSuchElementException::new);
+    private static boolean hasLoginSession(Cookies cookies) {
         if (cookies.hasJSessionId()) {
             String jSessionId = cookies.getJSessionId();
             return SessionManager.getInstance().isExistJSession(jSessionId);
         }
-
-        if (user.checkPassword(password)) {
-            String uuid = UUID.randomUUID().toString();
-            cookies.addCookie(new Cookie("JSESSIONID", uuid));
-            SessionManager.getInstance().add(new Session(uuid, user));
-            return true;
-        }
-
         return false;
     }
 

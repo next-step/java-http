@@ -1,6 +1,7 @@
 package org.apache.coyote.http11.request;
 
 import org.apache.coyote.http11.HttpMethod;
+import org.apache.coyote.http11.cookie.Cookie;
 import org.apache.coyote.http11.cookie.Cookies;
 import org.apache.coyote.http11.request.model.*;
 
@@ -17,28 +18,8 @@ public class HttpRequest {
         this.cookies = cookies;
     }
 
-    public static HttpRequest createHttpRequestWithRedirectPath(HttpRequest httpRequest, String redirectPath) {
-        throw new UnsupportedOperationException("Unsupported createHttpRequestWithRedirectPath");
-    }
-
-    private RequestLine getRequestLine() {
-        return requestLine;
-    }
-
-    private RequestHeaders getRequestHeaders() {
-        return requestHeaders;
-    }
-
-    public Path getPath() {
-        return requestLine.getPath();
-    }
-
     public String getUrlPath() {
         return requestLine.getUrlPath();
-    }
-
-    public RequestBodies getRequestBodies() {
-        return requestBodies;
     }
 
     public HttpMethod getHttpMethod() {
@@ -67,5 +48,9 @@ public class HttpRequest {
 
     public String getJSessionId() {
         return cookies.getJSessionId();
+    }
+
+    public void addCookie(final Cookie cookie) {
+        cookies.addCookie(cookie);
     }
 }
