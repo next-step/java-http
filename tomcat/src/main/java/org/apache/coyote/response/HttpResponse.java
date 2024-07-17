@@ -1,7 +1,6 @@
 package org.apache.coyote.response;
 
 import java.util.Optional;
-import java.util.UUID;
 
 public class HttpResponse {
     private final HttpStatus status;
@@ -18,6 +17,12 @@ public class HttpResponse {
         this.mimeType = mimeType;
         this.responseHeaders = responseHeaders;
         this.responseBody = responseBody;
+    }
+
+    public static HttpResponse notFound() {
+        return new HttpResponse(HttpStatus.NOT_FOUND,
+                MimeType.HTML,
+                FileFinder.find("/404.html"));
     }
 
     public HttpStatus getStatus() {

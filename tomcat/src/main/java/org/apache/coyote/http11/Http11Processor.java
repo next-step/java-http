@@ -4,6 +4,7 @@ import camp.nextstep.db.InMemoryUserRepository;
 import camp.nextstep.exception.UncheckedServletException;
 import camp.nextstep.model.User;
 import org.apache.coyote.Processor;
+import org.apache.coyote.request.HttpCookie;
 import org.apache.coyote.request.HttpRequest;
 import org.apache.coyote.request.RequestBody;
 import org.apache.coyote.request.RequestHeaders;
@@ -55,8 +56,9 @@ public class Http11Processor implements Runnable, Processor {
 
             RequestLine requestLine = getRequestLine(bufferedReader);
             RequestHeaders requestHeaders = getRequestHeaders(bufferedReader);
+            HttpCookie httpCookie = HttpCookie.from(requestHeaders);
             RequestBody requestBody = getRequestBody(bufferedReader, requestHeaders);
-            HttpRequest httpRequest = new HttpRequest(requestLine, requestHeaders, requestBody);
+            HttpRequest httpRequest = new HttpRequest(requestLine, requestHeaders, httpCookie, requestBody);
 
             HttpResponse response = getResponse(httpRequest);
 
@@ -89,37 +91,30 @@ public class Http11Processor implements Runnable, Processor {
         return RequestBody.parse(new String(buffer));
     }
 
-    private HttpResponse getResponse(HttpRequest request) throws IOException {
+    private HttpResponse getResponse(HttpRequest request) {
         String httpPath = request.getHttpPath();
-        if (httpPath.endsWith(LOGIN_PATH)) {
-            return handleLogin(request);
-        }
-        if (httpPath.endsWith(REGISTER_PATH)) {
-            return handleRegister(request);
-        }
-        if (httpPath.equals(ROOT_PATH)) {
-            return handleRoot(request);
-        }
-        return handlePath(request);
+        return switch (httpPath) {
+            case LOGIN_PATH -> handleLogin(request);
+            case REGISTER_PATH -> handleRegister(request);
+            case ROOT_PATH -> handleRoot(request);
+            default -> handlePath(request);
+        };
     }
 
-    private HttpResponse handleLogin(HttpRequest request) throws IOException {
+    private HttpResponse handleLogin(HttpRequest request) {
         if (request.isGet()) {
             return handleLoginGet(request);
         }
         if (request.isPost()) {
             return handleLoginPost(request);
         }
-        return new HttpResponse(
-                HttpStatus.NOT_FOUND,
-                MimeType.HTML,
-                FileFinder.find("/404.html"));
+        return HttpResponse.notFound();
     }
 
-    private HttpResponse handleLoginGet(HttpRequest request) throws IOException {
-        Optional<String> cookie = request.findCookie();
-        if (cookie.isPresent()) {
-            Optional<Session> session = SessionManager.findSession(cookie.get().split("=")[1]);
+    private HttpResponse handleLoginGet(HttpRequest request) {
+        if (request.containsSessionId()) {
+            String sessionId = request.getSessionId();
+            Optional<Session> session = SessionManager.findSession(sessionId);
             if (session.isPresent()) {
                 return new HttpResponse(
                         HttpStatus.OK,
@@ -135,7 +130,7 @@ public class Http11Processor implements Runnable, Processor {
 
     }
 
-    private HttpResponse handleLoginPost(HttpRequest request) throws IOException {
+    private HttpResponse handleLoginPost(HttpRequest request) {
         RequestBody requestBody = request.getRequestBody();
         Optional<User> optionalUser = InMemoryUserRepository.findByAccount(requestBody.get(ACCOUNT_KEY));
         if (optionalUser.isPresent() && optionalUser.get().checkPassword(requestBody.get("password"))) {
@@ -156,7 +151,7 @@ public class Http11Processor implements Runnable, Processor {
                 FileFinder.find("/401.html"));
     }
 
-    private HttpResponse handleRegister(HttpRequest request) throws IOException {
+    private HttpResponse handleRegister(HttpRequest request) {
         if (request.isGet()) {
             return new HttpResponse(
                     HttpStatus.OK,
@@ -176,28 +171,21 @@ public class Http11Processor implements Runnable, Processor {
         return null;
     }
 
-    private HttpResponse handleRoot(HttpRequest request) throws IOException {
+    private HttpResponse handleRoot(HttpRequest request) {
         if (request.isGet()) {
             return new HttpResponse(
                     HttpStatus.OK,
                     MimeType.HTML,
                     ROOT_CONTENT);
         }
-        return new HttpResponse(
-                HttpStatus.NOT_FOUND,
-                MimeType.HTML,
-                FileFinder.find("/404.html"));
+        return HttpResponse.notFound();
     }
 
-    private HttpResponse handlePath(HttpRequest request) throws IOException {
+    private HttpResponse handlePath(HttpRequest request) {
         String httpPath = request.getHttpPath();
         return new HttpResponse(
                 HttpStatus.OK,
-                parseMimeType(httpPath),
+                MimeType.from(httpPath),
                 FileFinder.find(httpPath));
-    }
-
-    private MimeType parseMimeType(String httpPath) {
-        return MimeType.from(httpPath);
     }
 }

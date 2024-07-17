@@ -23,6 +23,10 @@ public enum MimeType {
                 .orElse(HTML);
     }
 
+    public static MimeType parseMimeType(String httpPath) {
+        return null;
+    }
+
     public String getContentType() {
         return contentType;
     }
