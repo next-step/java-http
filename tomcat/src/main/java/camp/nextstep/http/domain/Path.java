@@ -9,7 +9,11 @@ public class Path {
     private static final int PATH_INDEX = 0;
     private static final int QUERY_PARAM_INDEX = 1;
     private static final int PATH_CONTAINS_QUERY_STRING_SIZE = 2;
+    private static final int KEY_INDEX = 0;
+    private static final int VALUE_INDEX = 1;
     private static final Pattern QUERY_SEPARATOR = Pattern.compile("\\?");
+    private static final Pattern QUERY_PARAM_SEPARATOR = Pattern.compile("&");
+    private static final Pattern KEY_VALUE_SEPARATOR = Pattern.compile("=");
 
     private String urlPath;
     private Map<String, String> queryParams;
@@ -42,9 +46,9 @@ public class Path {
     }
 
     private static Map<String, String> getQueryParams(String queryParamStr) {
-        String[] queryParamArgs = queryParamStr.split("&");
+        String[] queryParamArgs = QUERY_PARAM_SEPARATOR.split(queryParamStr);
         return Arrays.stream(queryParamArgs)
-                .map(v -> v.split("="))
-                .collect(Collectors.toMap(e -> e[0], e -> e[1]));
+                .map(KEY_VALUE_SEPARATOR::split)
+                .collect(Collectors.toMap(e -> e[KEY_INDEX], e -> e[VALUE_INDEX]));
     }
 }
