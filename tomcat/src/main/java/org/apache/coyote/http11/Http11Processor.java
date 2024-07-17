@@ -119,7 +119,7 @@ public class Http11Processor implements Runnable, Processor {
     private String loginResponse(HttpRequest request) throws IOException {
         return switch(request.getHttpMethod()) {
             case GET -> {
-                if(request.getCookie().hasJSessionId() && existSession(request)) {
+                if(existSession(request)) {
                     yield redirectResponse(request.getCookie());
                 }
 
@@ -136,9 +136,10 @@ public class Http11Processor implements Runnable, Processor {
                 log.info(userOptional.get().toString());
 
                 /* 세션 설정 */
-                final String key = UUID.randomUUID().toString();
-                SessionManager.add(new HttpSession(key));
-                HttpSession session = SessionManager.findSession(key);
+                Optional<HttpSession> sessionOptional = SessionManager.findSession(request.getCookie().JSessionId());
+                sessionOptional.ifPresent(SessionManager::remove);
+
+                final HttpSession session = SessionManager.add(new HttpSession());
                 session.setAttribute("user", userOptional.get());
 
                 yield redirectResponse(request.getCookie());
@@ -148,9 +149,9 @@ public class Http11Processor implements Runnable, Processor {
 
     private static boolean existSession(HttpRequest request) {
         final String key = request.getCookie().JSessionId();
-        final HttpSession session = SessionManager.findSession(key);
+        Optional<HttpSession> session = SessionManager.findSession(key);
 
-        return session == null;
+        return session.isPresent();
     }
 
     private String redirectResponse(HttpCookie cookie) throws IOException {

@@ -10,13 +10,13 @@ public final class SessionManager {
 
     private static final Map<String, HttpSession> SESSIONS = new ConcurrentHashMap<>(); // 동시성 이슈
 
-    public static void add(HttpSession session){
+    public static HttpSession add(HttpSession session){
         SESSIONS.put(session.getId(), session);
+        return SESSIONS.get(session.getId());
     }
 
-    public static HttpSession findSession(String id) {
-        final Optional<HttpSession> session = Optional.ofNullable(SESSIONS.get(id));
-        return session.orElse(null);
+    public static Optional<HttpSession> findSession(String id) {
+        return Optional.ofNullable(SESSIONS.get(id));
     }
 
     public static void remove(HttpSession session) {
