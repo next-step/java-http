@@ -8,10 +8,14 @@ import java.util.Objects;
 
 public class FileFinder {
 
-    public static String find(String filePath) throws IOException {
+    public static String find(String filePath) {
         ClassLoader classLoader = FileFinder.class.getClassLoader();
         URL resource = classLoader.getResource("static" + filePath);
         Path path = Path.of(Objects.requireNonNull(resource).getPath());
-        return new String(Files.readAllBytes(path));
+        try {
+            return new String(Files.readAllBytes(path));
+        } catch (IOException e) {
+            throw new RuntimeException("File not found: " + filePath);
+        }
     }
 }

@@ -26,8 +26,4 @@ public enum MimeType {
     public String getContentType() {
         return contentType;
     }
-
-    public String getFileExtension() {
-        return fileExtension;
-    }
 }

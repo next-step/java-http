@@ -30,6 +30,7 @@ class GreetingControllerTest {
         final var response = webTestClient
                 .get()
                 .uri("/")
+                .header("Cache-Control", "no-cache, private")
                 .exchange()
                 .expectStatus().isOk()
                 .expectHeader().cacheControl(CacheControl.noCache().cachePrivate())

@@ -11,10 +11,6 @@ public class ResponseHeaders {
         this.headers = new HashMap<>();
     }
 
-    public ResponseHeaders(Map<String, String> headers) {
-        this.headers = headers;
-    }
-
     public void add(String key, String value) {
         headers.put(key, value);
     }
