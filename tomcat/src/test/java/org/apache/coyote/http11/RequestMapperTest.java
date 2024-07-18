@@ -1,6 +1,6 @@
 package org.apache.coyote.http11;
 
-import camp.nextstep.controller.LoginHandler;
+import camp.nextstep.handler.LoginHandler;
 import org.apache.coyote.http11.handler.DefaultHandler;
 import org.apache.coyote.http11.handler.StaticResourceHandler;
 import org.junit.jupiter.api.DisplayName;

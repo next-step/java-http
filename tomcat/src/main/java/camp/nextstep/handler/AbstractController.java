@@ -1,4 +1,4 @@
-package camp.nextstep.controller;
+package camp.nextstep.handler;
 
 import org.apache.coyote.http11.RequestHandler;
 import org.apache.coyote.http11.model.HttpRequest;

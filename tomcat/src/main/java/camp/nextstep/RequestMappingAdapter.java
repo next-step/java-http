@@ -1,7 +1,7 @@
 package camp.nextstep;
 
-import camp.nextstep.controller.LoginHandler;
-import camp.nextstep.controller.RegisterHandler;
+import camp.nextstep.handler.LoginHandler;
+import camp.nextstep.handler.RegisterHandler;
 import org.apache.coyote.http11.RequestMapper;
 import org.apache.coyote.http11.RequestHandler;
 

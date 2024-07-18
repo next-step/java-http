@@ -1,4 +1,4 @@
-package camp.nextstep.controller;
+package camp.nextstep.handler;
 
 import camp.nextstep.db.InMemoryUserRepository;
 import camp.nextstep.model.User;
