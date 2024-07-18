@@ -98,6 +98,11 @@ public class HttpRequest {
         return getSession(false);
     }
 
+    /**
+     * 세션을 얻을 수 있습니다.
+     * @param requiresNew 세션이 없을 경우 새로 생성할 것인지 여부
+     * @return requiresNew가 true일 경우 세션이 없으면 새로 생성되고, requiresNew가 false일 경우 세션이 없으면 null이 반환됩니다.
+     */
     public Session getSession(boolean requiresNew) {
         if (session == null && requiresNew) {
             Session newSession = sessionManager.createSession();

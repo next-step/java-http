@@ -10,6 +10,8 @@ import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class Connector implements Runnable {
 
@@ -17,21 +19,24 @@ public class Connector implements Runnable {
 
     private static final int DEFAULT_PORT = 8080;
     private static final int DEFAULT_ACCEPT_COUNT = 100;
+    private static final int DEFAULT_THREAD_COUNT = 250;
 
     private final ServerSocket serverSocket;
     private final RequestHandler requestHandler;
     private final SessionManager sessionManager;
+    private final ExecutorService threadPool;
     private boolean stopped;
 
     public Connector(final RequestHandler requestHandler, final SessionManager sessionManager) {
-        this(DEFAULT_PORT, DEFAULT_ACCEPT_COUNT, requestHandler, sessionManager);
+        this(DEFAULT_PORT, DEFAULT_ACCEPT_COUNT, requestHandler, sessionManager, DEFAULT_THREAD_COUNT);
     }
 
-    public Connector(final int port, final int acceptCount, final RequestHandler requestHandler, final SessionManager sessionManager) {
+    public Connector(final int port, final int acceptCount, final RequestHandler requestHandler, final SessionManager sessionManager, final int threadCount) {
         this.requestHandler = requestHandler;
         this.serverSocket = createServerSocket(port, acceptCount);
-        this.stopped = false;
         this.sessionManager = sessionManager;
+        this.threadPool = Executors.newFixedThreadPool(threadCount);
+        this.stopped = false;
     }
 
     private ServerSocket createServerSocket(final int port, final int acceptCount) {
@@ -72,8 +77,7 @@ public class Connector implements Runnable {
         if (connection == null) {
             return;
         }
-        var processor = new Http11Processor(connection, requestHandler, sessionManager);
-        new Thread(processor).start();
+        threadPool.submit(new Http11Processor(connection, requestHandler, sessionManager));
     }
 
     public void stop() {
