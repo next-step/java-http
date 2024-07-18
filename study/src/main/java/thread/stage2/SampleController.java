@@ -7,6 +7,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import java.time.LocalDateTime;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @Controller
@@ -26,6 +27,7 @@ public class SampleController {
     @GetMapping("/test")
     @ResponseBody
     public String helloWorld() throws InterruptedException {
+        log.info("[" + LocalDateTime.now() + "] requested");
         Thread.sleep(500);
         log.info("http call count : {}", count.incrementAndGet());
         return helloWorldService.helloWorld();

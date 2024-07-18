@@ -3,8 +3,13 @@ handlebars:
 
 server:
   tomcat:
-    accept-count: 1
-    max-connections: 1
+    # 커넥션 꽉 찼을 때 accept 개수. 그런데 0개로 해 둬도 쓰레드가 충분하면 전부 소화 됨.
+    accept-count: 0
+    # 동시 요청시 2개만큼 받고, 나머지 요청은 전부 대기를 타게 된다.
+    max-connections: 2
     threads:
       min-spare: 1
       max: 2
+  compression:
+    enabled: true
+    min-response-size: 10

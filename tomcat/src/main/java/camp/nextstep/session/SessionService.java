@@ -2,6 +2,7 @@ package camp.nextstep.session;
 
 import camp.nextstep.model.User;
 import org.apache.catalina.Session;
+import org.apache.coyote.http11.SessionManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -13,8 +14,9 @@ public class SessionService {
 
     public void signInAs(final Session session, final User user) {
         requireNonNull(session).setAttribute(USER_SESSION_KEY, user);
+        SessionManager.INSTANCE.update(session.getId(), session);
 
-        log.debug("로그인: {}", user);
+        log.debug("로그인: {}, {}", user, SessionManager.INSTANCE.findSession(session.getId()));
     }
 
     public boolean isLoggedIn(final Session session) {
