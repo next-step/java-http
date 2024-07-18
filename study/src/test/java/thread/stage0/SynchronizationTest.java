@@ -30,18 +30,19 @@ class SynchronizationTest {
         var executorService = Executors.newFixedThreadPool(3);
         var synchronizedMethods = new SynchronizedMethods();
 
-        IntStream.range(0, 1000)
+        IntStream.range(0, 100000)
                 .forEach(count -> executorService.submit(synchronizedMethods::calculate));
         executorService.awaitTermination(500, TimeUnit.MILLISECONDS);
 
-        assertThat(synchronizedMethods.getSum()).isEqualTo(1000);
+        assertThat(synchronizedMethods.getSum()).isEqualTo(100000);
     }
 
     private static final class SynchronizedMethods {
 
         private int sum = 0;
+        // 혹은 AtomicInteger을 사용해도 된다.
 
-        public void calculate() {
+        public synchronized void calculate() {
             setSum(getSum() + 1);
         }
 
