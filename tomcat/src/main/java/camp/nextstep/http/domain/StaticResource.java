@@ -19,21 +19,18 @@ public class StaticResource {
     }
 
     public static StaticResource createResourceFromRequestLine(
-            RequestLine requestLine,
-            ClassLoader classLoader
+            RequestLine requestLine
     ) {
         return createResourceFromPath(
-                requestLine.getPath().getUrlPath(),
-                classLoader
+                requestLine.getPath().getUrlPath()
         );
     }
 
     public static StaticResource createResourceFromPath(
-            String path,
-            ClassLoader classLoader
+            String path
     ) {
         try {
-            final File file = new File(getUri(path, classLoader));
+            final File file = new File(getUri(path, ClassLoader.getSystemClassLoader()));
             if (!file.exists()) {
                 throw new ResourceNotFoundException("파일을 찾을 수 없습니다");
             }

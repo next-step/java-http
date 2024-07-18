@@ -5,8 +5,8 @@ import camp.nextstep.http.domain.HttpResponse;
 
 public class RootHttpRequestHandler implements HttpRequestHandler {
     @Override
-    public boolean isMatchPathPattern(String path) {
-        return "/".equals(path);
+    public boolean isExactHandler(RequestLine requestLine) {
+        return "/".equals(requestLine.getPath().getUrlPath());
     }
     @Override
     public HttpResponse makeResponse(RequestLine requestLine) {

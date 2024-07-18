@@ -13,24 +13,13 @@ import camp.nextstep.http.domain.HttpResponse;
  */
 public class FileHttpRequestHandler implements HttpRequestHandler {
     @Override
-    public boolean isMatchPathPattern(String path) {
+    public boolean isExactHandler(RequestLine requestLine) {
         return true;
     }
 
     @Override
     public HttpResponse makeResponse(RequestLine requestLine) {
-        ClassLoader classLoader = getClass().getClassLoader();
-        StaticResource resource = StaticResource.createResourceFromRequestLine(requestLine, classLoader);
-        try {
-            return HttpResponse.createResponseByFile(resource.getResourceFile());
-        } catch (IOException e) {
-            e.printStackTrace();
-            try {
-                File file = new File(classLoader.getResource("static/404.html").toURI());
-                return HttpResponse.createResponseByFile(file);
-            } catch (IOException | URISyntaxException ex) {
-                return HttpResponse.createNotFoundResponseByString();
-            }
-        }
+        StaticResource resource = StaticResource.createResourceFromRequestLine(requestLine);
+        return HttpResponse.createSuccessResponseByFile(resource.getResourceFile());
     }
 }

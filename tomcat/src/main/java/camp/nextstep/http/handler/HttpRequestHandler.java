@@ -5,5 +5,5 @@ import camp.nextstep.http.domain.HttpResponse;
 
 public interface HttpRequestHandler {
     HttpResponse makeResponse(RequestLine requestLine);
-    boolean isMatchPathPattern(String path);
+    boolean isExactHandler(RequestLine requestLine);
 }

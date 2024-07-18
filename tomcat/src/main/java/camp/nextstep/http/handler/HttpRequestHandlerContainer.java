@@ -22,7 +22,7 @@ public class HttpRequestHandlerContainer {
         );
 
         return httpRequestHandlers.stream()
-            .filter(v -> v.isMatchPathPattern(requestLine.getPath().getUrlPath()))
+            .filter(v -> v.isExactHandler(requestLine))
             .findFirst()
             .map(v -> v.makeResponse(requestLine))
             .orElseGet(HttpResponse::createNotFoundResponseByString);

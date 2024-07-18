@@ -39,6 +39,10 @@ public class RequestLine {
         return path;
     }
 
+    public HttpMethod getMethod() {
+        return method;
+    }
+
     public static RequestLine createRequestLineByRequestLineStr(String requestLineStr) {
         String[] requestArgs = requestLineStr.split("\\s+");
         if (requestArgs.length != REQUEST_LINE_ARGS_COUNT) {
