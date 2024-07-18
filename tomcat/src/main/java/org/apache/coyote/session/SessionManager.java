@@ -1,12 +1,12 @@
 package org.apache.coyote.session;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class SessionManager {
 
-    private static final Map<String, Session> sessions = new HashMap<>();
+    private static final Map<String, Session> sessions = new ConcurrentHashMap<>();
 
     public SessionManager() {
         throw new IllegalStateException();
