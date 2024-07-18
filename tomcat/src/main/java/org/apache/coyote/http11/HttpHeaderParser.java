@@ -17,15 +17,19 @@ public final class HttpHeaderParser {
 
         HashMap<String, String> map = new HashMap<>();
         for (int i = 1; i < parts.length; i++) {
-            int idx = parts[i].indexOf(COLON_DELIMITER);
-
-            if (idx != -1) {
-                String key = parts[i].substring(0, idx).trim();
-                String value = parts[i].substring(idx + 1).trim();
-                map.put(key, value);
-            }
+            putMap(parts, i, map);
         }
 
         return new HttpHeaders(map);
+    }
+
+    private static void putMap(String[] parts, int i, HashMap<String, String> map) {
+        int idx = parts[i].indexOf(COLON_DELIMITER);
+
+        if (idx != -1) {
+            String key = parts[i].substring(0, idx).trim();
+            String value = parts[i].substring(idx + 1).trim();
+            map.put(key, value);
+        }
     }
 }

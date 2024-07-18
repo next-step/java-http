@@ -11,6 +11,8 @@ import java.util.Map;
 public final class RequestBodyParser {
 
     public static final String AMPERSAND = "&";
+    public static final String EQUAL_SIGN_DELIMITER = "=";
+    public static final String EMPTY_STRING = "";
 
     private RequestBodyParser() {
     }
@@ -21,15 +23,19 @@ public final class RequestBodyParser {
         Map<String, String> bodyMap = new HashMap<>();
         String[] pairs = bodyString.split(AMPERSAND);
         for (String pair : pairs) {
-            String[] keyValue = pair.split("=", 2);
-            if (keyValue.length == 2) {
-                String key = keyValue[0];
-                String value = keyValue[1];
-                bodyMap.put(key, value);
-            }
+            putBodyMap(pair, bodyMap);
         }
 
         return new RequestBody(bodyMap);
+    }
+
+    private static void putBodyMap(String pair, Map<String, String> bodyMap) {
+        String[] keyValue = pair.split(EQUAL_SIGN_DELIMITER, 2);
+        if (keyValue.length == 2) {
+            String key = keyValue[0];
+            String value = keyValue[1];
+            bodyMap.put(key, value);
+        }
     }
 
     private static String parseToString(BufferedReader br, HttpHeaders headers) throws IOException {
@@ -42,6 +48,6 @@ public final class RequestBodyParser {
             return new String(body);
         }
 
-        return "";
+        return EMPTY_STRING;
     }
 }
