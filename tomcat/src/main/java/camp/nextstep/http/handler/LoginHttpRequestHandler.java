@@ -9,8 +9,7 @@ import camp.nextstep.service.UserService;
 import java.io.File;
 import java.util.Map;
 
-import static camp.nextstep.http.domain.HttpResponse.createBadRequestResponse;
-import static camp.nextstep.http.domain.HttpResponse.createRedirectResponseByFile;
+import static camp.nextstep.http.domain.HttpResponse.*;
 import static camp.nextstep.http.domain.StaticResource.createResourceFromPath;
 
 public class LoginHttpRequestHandler implements HttpRequestHandler {
@@ -52,9 +51,9 @@ public class LoginHttpRequestHandler implements HttpRequestHandler {
         String password = queryParams.get(PASSWORD);
 
         if (userService.isUserPresent(account, password)) {
-            return createRedirectResponseByFile(createResourceFromPath("/index.html").getResourceFile());
+            return createRedirectResponseByPath("/index.html");
         }
-        return createBadRequestResponse();
+        return createRedirectResponseByPath("/401.html");
     }
 
     private boolean isValidQueryParams(Map<String, String> queryParams) {

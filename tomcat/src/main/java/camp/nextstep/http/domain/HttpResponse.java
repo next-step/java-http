@@ -18,6 +18,7 @@ public class HttpResponse {
     private static final String DEFAULT_CHARSET = "charset=utf-8 ";
     private static final String CONTENT_TYPE_FORMAT = "Content-Type: %s;%s";
     private static final String CONTENT_LENGTH_FORMAT = "Content-Length: %s ";
+    private static final String LOCATION_FORMAT = "Location: %s ";
 
     private String responseStr;
 
@@ -38,13 +39,13 @@ public class HttpResponse {
         }
     }
 
-    public static HttpResponse createRedirectResponseByFile(File file) {
-        try {
-            return createResponseByFileAndHeader(file, REDIRECT_HEADER);
-        } catch (IOException ex) {
-            ex.printStackTrace();
-            return createNotFoundResponseByString();
-        }
+    public static HttpResponse createRedirectResponseByPath(String path) {
+        String responseBody = String.format(LOCATION_FORMAT, path);
+        final var response = String.join(System.lineSeparator(),
+                REDIRECT_HEADER,
+                responseBody);
+
+        return new HttpResponse(response);
     }
 
     public static HttpResponse createBadRequestResponse() {
