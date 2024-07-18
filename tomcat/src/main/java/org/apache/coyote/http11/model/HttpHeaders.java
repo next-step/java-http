@@ -10,6 +10,13 @@ public class HttpHeaders {
         headers.putAll(value);
     }
 
+    public HttpHeaders() {
+    }
+
+    public Map<String, String> headers() {
+        return headers;
+    }
+
     public void addHeader(String name, String value) {
         headers.put(name, value);
     }
