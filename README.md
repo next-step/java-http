@@ -23,6 +23,7 @@
 
 ## 1단계 요구사항 정리
 ![fileImage](./image/filetest.png)
+![fileImage](./image/requirement1test.png)
 - [x] 사전요구사항 - 학습테스트
   - [x] FILE, I/0 STREAM
   - [x] HTTP Cache
