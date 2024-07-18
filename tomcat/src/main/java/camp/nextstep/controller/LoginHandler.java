@@ -29,10 +29,11 @@ public class LoginHandler extends AbstractController {
 
         /* 세션 설정 */
         if(request.getCookie() != null) {
-            Optional<HttpSession> sessionOptional = SessionManager.findSession(request.getCookie().JSessionId());
-            sessionOptional.ifPresent(SessionManager::remove);
+            Optional<HttpSession> sessionOptional =
+                    SessionManager.getInstance().findSession(request.getCookie().JSessionId());
+            sessionOptional.ifPresent(SessionManager.getInstance()::remove);
         }
-        final HttpSession session = SessionManager.add(new HttpSession());
+        final HttpSession session = SessionManager.getInstance().add(new HttpSession());
         session.setAttribute("user", userOptional.get());
         response.setJSessionId(session.getId());
 
@@ -77,6 +78,6 @@ public class LoginHandler extends AbstractController {
             return false;
         }
 
-        return SessionManager.findSession(cookie.JSessionId()).isPresent();
+        return SessionManager.getInstance().findSession(cookie.JSessionId()).isPresent();
     }
 }
