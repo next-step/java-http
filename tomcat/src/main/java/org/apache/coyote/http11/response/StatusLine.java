@@ -9,19 +9,15 @@ public class StatusLine {
         this.statusCode = statusCode;
     }
 
-    public static StatusLine create(String httpVersion, StatusCode statusCode) {
-        return new StatusLine(httpVersion, statusCode);
+    public static StatusLine createOk() {
+        return new StatusLine("HTTP/1.1", StatusCode.OK);
     }
 
-    public String getHttpVersion() {
-        return httpVersion;
+    public static StatusLine createFound() {
+        return new StatusLine("HTTP/1.1", StatusCode.FOUND);
     }
 
-    public int getStatusCode() {
-        return statusCode.getCode();
-    }
-
-    public String getStatusReason() {
-        return statusCode.getReason();
+    public String convertToString() {
+        return String.format("%s %d %s", httpVersion, statusCode.getCode(), statusCode.getReason());
     }
 }

@@ -1,6 +1,7 @@
 package org.apache.coyote.http11.cookie;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 public class Cookies {
@@ -8,6 +9,21 @@ public class Cookies {
 
     public Cookies(List<Cookie> cookies) {
         this.cookies = new ArrayList<>(cookies);
+    }
+
+    public static Cookies parse(final String cookie) {
+        if (cookie == null || cookie.isEmpty()) {
+            return new Cookies(new ArrayList<>());
+        }
+        final String[] cookieParts = cookie.split(";");
+        final List<Cookie> cookies = new ArrayList<>();
+        for (String cookiePart : cookieParts) {
+            final String[] cookieKeyValue = cookiePart.split("=");
+            final String key = cookieKeyValue[0].trim();
+            final String value = cookieKeyValue[1].trim();
+            cookies.add(new Cookie(key, value));
+        }
+        return new Cookies(cookies);
     }
 
     public boolean hasJSessionId() {
@@ -24,7 +40,7 @@ public class Cookies {
     }
 
     public String getResponseCookies() {
-        String ResponseCookies = cookies.stream()
+        String ResponseCookies = "Set-Cookie: " + cookies.stream()
                 .map(cookie -> cookie.getName() + "=" + cookie.getValue())
                 .reduce((cookie1, cookie2) -> cookie1 + "; " + cookie2)
                 .orElse("");

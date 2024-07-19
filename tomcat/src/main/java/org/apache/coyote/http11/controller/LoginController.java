@@ -6,6 +6,7 @@ import jakarta.servlet.http.HttpSession;
 import org.apache.coyote.http11.cookie.Cookie;
 import org.apache.coyote.http11.cookie.Cookies;
 import org.apache.coyote.http11.request.HttpRequest;
+import org.apache.coyote.http11.request.model.ContentType;
 import org.apache.coyote.http11.response.HttpResponse;
 import org.apache.coyote.http11.session.Session;
 import org.apache.coyote.http11.session.SessionManager;
@@ -17,27 +18,29 @@ import java.util.UUID;
 public class LoginController extends AbstractController {
 
 	@Override
-	protected HttpResponse getGetResponse(final HttpRequest request) throws IOException {
+	protected void doGet(final HttpRequest request, final HttpResponse response) throws IOException {
 		if (request.hasJSessionId()) {
 			String jSessionId = request.getJSessionId();
 			HttpSession jsessionid = SessionManager.getInstance().findSession(jSessionId);
 
 			if (jsessionid != null) {
-				return HttpResponse.redirectRoot(request);
+				response.sendRedirect("/index.html");
+				return;
 			}
 		}
 
-		return HttpResponse.responseOkWithOutHtml(request);
+		response.setContentType(ContentType.TEXT_HTML);
+		response.forward("/login.html");
 	}
 
 	@Override
-	protected HttpResponse getPostResponse(final HttpRequest request) throws IOException {
+	protected void doPost(final HttpRequest request, final HttpResponse response) throws IOException {
 		String account = request.getRequestBodyValueByKey("account");
 		String password = request.getRequestBodyValueByKey("password");
 
 		if (hasLoginSession(request.getCookies())) {
-			return HttpResponse.redirectRoot(request);
-
+			response.sendRedirect("/index.html");
+			return;
 		}
 
 		final User user = InMemoryUserRepository.findByAccount(account).orElseThrow(NoSuchElementException::new);
@@ -48,10 +51,12 @@ public class LoginController extends AbstractController {
 			Session session = new Session(uuid);
 			session.setAttribute("user", user);
 			SessionManager.getInstance().add(session);
-			return HttpResponse.redirectRoot(request);
+
+			response.sendRedirect("/index.html");
+			return;
 		}
 
-		return HttpResponse.responseUnAuthorized(request);
+		response.sendRedirect("/401.html");
 	}
 
 	private static boolean hasLoginSession(Cookies cookies) {

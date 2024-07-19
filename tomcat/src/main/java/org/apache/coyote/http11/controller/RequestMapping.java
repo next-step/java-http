@@ -15,6 +15,11 @@ public class RequestMapping {
 	}
 
 	public Controller getController(final String path) {
-		return controllers.get(path);
+		Controller controller = controllers.get(path);
+		if (controller == null) {
+			controller = new StaticController();
+		}
+
+		return controller;
 	}
 }

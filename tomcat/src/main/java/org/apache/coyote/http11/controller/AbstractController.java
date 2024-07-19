@@ -5,17 +5,14 @@ import org.apache.coyote.http11.response.HttpResponse;
 
 public class AbstractController implements Controller{
 	@Override
-	public HttpResponse service(final HttpRequest request) throws Exception {
+	public void service(HttpRequest request, HttpResponse response) throws Exception {
 		if (request.isPost()) {
-			return getPostResponse(request);
+			doPost(request, response);
+			return;
 		}
-		return getGetResponse(request);
+		doGet(request, response);
 	}
 
-	protected HttpResponse getPostResponse(HttpRequest request) throws Exception {
-		return HttpResponse.responseNotFound(request);
-	}
-	protected HttpResponse getGetResponse(HttpRequest request) throws Exception {
-		return HttpResponse.responseNotFound(request);
-	}
+	protected void doPost(HttpRequest request, HttpResponse response) throws Exception {}
+	protected void doGet(HttpRequest request, HttpResponse response) throws Exception {}
 }

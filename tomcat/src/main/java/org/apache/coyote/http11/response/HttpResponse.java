@@ -1,72 +1,79 @@
 package org.apache.coyote.http11.response;
 
-import org.apache.coyote.http11.request.HttpRequest;
+import org.apache.coyote.http11.request.model.ContentType;
 
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.Map;
 
 public class HttpResponse {
-    private final StatusLine statusLine;
+    private static final String PATH_PREFIX = "static";
+
     private final ResponseHeaders headers;
-    private final ResponseBody body;
+    private final OutputStream outputStream;
 
-    private HttpResponse(StatusLine statusLine, ResponseHeaders headers, ResponseBody body) {
-        this.statusLine = statusLine;
-        this.headers = headers;
-        this.body = body;
+    private HttpResponse(final OutputStream outputStream) {
+        this.headers = new ResponseHeaders();
+        this.outputStream = outputStream;
     }
 
-    public static HttpResponse responseOk(HttpRequest httpRequest) throws IOException {
-        StatusLine statusLine = StatusLine.create("HTTP/1.1", StatusCode.OK);
-        ResponseBody body = ResponseBody.create(httpRequest.getUrlPath());
-        ResponseHeaders headers = ResponseHeaders.create(httpRequest, body);
-        return new HttpResponse(statusLine, headers, body);
-    }
-
-    public static HttpResponse responseOkWithOutHtml(HttpRequest httpRequest) throws IOException {
-        StatusLine statusLine = StatusLine.create("HTTP/1.1", StatusCode.OK);
-        ResponseBody body = ResponseBody.create(httpRequest.getUrlPath() + ".html");
-        ResponseHeaders headers = ResponseHeaders.create(httpRequest, body);
-        return new HttpResponse(statusLine, headers, body);
-    }
-
-    public static HttpResponse redirect(HttpRequest httpRequest, String redirectPath) throws IOException {
-        StatusLine statusLine = StatusLine.create("HTTP/1.1", StatusCode.FOUND);
-        ResponseBody body = ResponseBody.create(redirectPath);
-        ResponseHeaders headers = ResponseHeaders.create(httpRequest, body);
-        return new HttpResponse(statusLine, headers, body);
-    }
-
-    public static HttpResponse redirectRoot(HttpRequest httpRequest) throws IOException {
-        StatusLine statusLine = StatusLine.create("HTTP/1.1", StatusCode.FOUND);
-        ResponseBody body = ResponseBody.create("/index.html");
-        ResponseHeaders headers = ResponseHeaders.create(httpRequest, body);
-        return new HttpResponse(statusLine, headers, body);
-    }
-
-    public static HttpResponse responseUnAuthorized(HttpRequest httpRequest) throws IOException {
-        StatusLine statusLine = StatusLine.create("HTTP/1.1", StatusCode.UNAUTHORIZED);
-        ResponseBody body = ResponseBody.create("/401.html");
-        ResponseHeaders headers = ResponseHeaders.create(httpRequest, body);
-        return new HttpResponse(statusLine, headers, body);
-    }
-
-    public static HttpResponse responseNotFound(HttpRequest httpRequest) throws IOException {
-        StatusLine statusLine = StatusLine.create("HTTP/1.1", StatusCode.NOT_FOUND);
-        ResponseBody body = ResponseBody.create("/404.html");
-        ResponseHeaders headers = ResponseHeaders.create(httpRequest, body);
-        return new HttpResponse(statusLine, headers, body);
-    }
-
-    public String getResponseBody() {
-        return body.getResponseBody();
+    public static HttpResponse of(final OutputStream outputStream) {
+        return new HttpResponse(outputStream);
     }
 
     public Map<String, String> getHeaders() {
         return headers.getHeaders();
     }
 
-    public StatusLine getStatusLine() {
-        return statusLine;
+    public void setContentType(final ContentType contentType) {
+
+    }
+
+    public void forwardBody(final String responseBody) throws IOException {
+        headers.setContentType(ContentType.TEXT_HTML);
+        headers.setContentLength(responseBody.getBytes().length);
+        final var response = String.join(System.lineSeparator(),
+                StatusLine.createOk().convertToString(),
+                headers.convertToString(),
+                "",
+                responseBody);
+
+        outputStream.write(response.getBytes());
+        outputStream.flush();
+    }
+
+    public void forward(final String path) throws IOException {
+        final Resource resource = getResource(path);
+        final byte[] resourceBytes = resource.readAllBytes();
+        final String responseBody = new String(resourceBytes);
+        headers.setContentLength(resourceBytes.length);
+        final var response = String.join(System.lineSeparator(),
+                StatusLine.createOk().convertToString(),
+                headers.convertToString(),
+                "",
+                responseBody);
+
+        outputStream.write(response.getBytes());
+        outputStream.flush();
+    }
+
+    private Resource getResource(final String path) {
+        final var resource = new Resource(PATH_PREFIX + path);
+        if (resource.exists()) {
+            return resource;
+        }
+        return new Resource(PATH_PREFIX + "/404.html");
+    }
+
+    public void sendRedirect(final String location) throws IOException {
+        headers.setLocation(location);
+        final var response = String.join(System.lineSeparator(),
+                StatusLine.createFound().convertToString(),
+                headers.convertToString(),
+                "",
+                "");
+
+        outputStream.write(response.getBytes());
+        outputStream.flush();
     }
 }

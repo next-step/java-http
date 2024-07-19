@@ -7,7 +7,6 @@ import org.apache.coyote.http11.controller.RequestMapping;
 import org.apache.coyote.http11.request.HttpRequest;
 import org.apache.coyote.http11.request.parser.HttpRequestParser;
 import org.apache.coyote.http11.response.HttpResponse;
-import org.apache.coyote.http11.response.HttpResponseWriter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,29 +38,16 @@ public class Http11Processor implements Runnable, Processor {
              final BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream))) {
 
             HttpRequest httpRequest = HttpRequestParser.parse(bufferedReader);
-
             RequestMapping requestMapping = new RequestMapping();
             Controller controller = requestMapping.getController(httpRequest.getUrlPath());
+            HttpResponse httpResponse = HttpResponse.of(outputStream);
 
-            HttpResponse httpResponse;
+            controller.service(httpRequest, httpResponse);
 
-            if (controller == null) {
-                httpResponse = getStaticResourceResponse(httpRequest);
-            } else {
-                httpResponse = controller.service(httpRequest);
-            }
-
-            String response = HttpResponseWriter.parsingResponse(httpResponse).getResponse();
-
-            outputStream.write(response.getBytes());
-            outputStream.flush();
         } catch (IOException | UncheckedServletException e) {
             log.error(e.getMessage(), e);
         } catch (Exception e) {
 	        throw new RuntimeException(e);
         }
-    }
-    private HttpResponse getStaticResourceResponse(final HttpRequest request) throws IOException {
-        return HttpResponse.responseOk(request);
     }
 }

@@ -1,41 +1,44 @@
 package org.apache.coyote.http11.response;
 
-import org.apache.coyote.http11.request.HttpRequest;
 import org.apache.coyote.http11.cookie.Cookies;
 import org.apache.coyote.http11.request.model.ContentType;
+import org.apache.coyote.http11.request.parser.CookiesParser;
 
-import java.util.Collections;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class ResponseHeaders {
-    private final Map<String, String> headers;
+    public static final String DELIMITER = ":";
 
-    public ResponseHeaders(Map<String, String> headers) {
-        this.headers = Collections.unmodifiableMap(headers);
-    }
+    final private Map<String, String> headers;
+    final private Cookies cookies;
 
-    public static ResponseHeaders create(HttpRequest httpRequest, ResponseBody body) {
-        Map<String, String> headers = new HashMap<>();
-
-        ContentType contentType = ContentType.findByExtension(httpRequest.getExtension());
-
-        headers.put("Content-Type", contentType.getContentType());
-
-        headers.put("Content-Length", body.getContentLength());
-
-        if (httpRequest.hasCookies()) {
-            headers.put("Set-Cookie", createHeaderSetCookie(httpRequest.getCookies()));
-        }
-
-        return new ResponseHeaders(headers);
+    public ResponseHeaders() {
+        this.headers = new LinkedHashMap<>();
+        this.cookies = CookiesParser.parse(headers);
     }
 
     public Map<String, String> getHeaders() {
         return headers;
     }
 
-    private static String createHeaderSetCookie(Cookies cookies) {
-        return cookies.getResponseCookies();
+    public void setContentType(final ContentType contentType) {
+        headers.put("Content-Type", contentType.getContentType());
+    }
+
+    public void setContentLength(final int length) {
+        headers.put("Content-Length", String.valueOf(length));
+    }
+
+    public String convertToString() {
+        return cookies.getResponseCookies() + headers.entrySet()
+                .stream()
+                .map(entry -> String.format("%s%s %s ", entry.getKey(), DELIMITER, entry.getValue()))
+                .collect(Collectors.joining(System.lineSeparator()));
+    }
+
+    public void setLocation(final String location) {
+        headers.put("Location", location);
     }
 }
