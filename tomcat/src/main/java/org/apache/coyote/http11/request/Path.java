@@ -1,6 +1,5 @@
 package org.apache.coyote.http11.request;
 
-import java.util.Map;
 
 public class Path {
 
@@ -9,7 +8,7 @@ public class Path {
     private static final int QUERY_PARAM_INDEX = 1;
 
     private final String path;
-    private QueryString queryString = QueryString.EMPTY;
+    private QueryString queryString;
 
     public Path(String fullPath) {
         String[] values = fullPath.split(PATH_QUERY_PARAM_SEPARATOR);
@@ -27,8 +26,8 @@ public class Path {
         return path;
     }
 
-    public Map<String, Object> getQueryString() {
-        return queryString.value();
+    public QueryString getQueryString() {
+        return queryString;
     }
 
     private static boolean hasQueryParam(String[] values) {

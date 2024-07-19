@@ -14,6 +14,7 @@ import java.util.Map;
 
 public class UserController {
 
+    private static final String USER = "user";
     private static final Logger log = LoggerFactory.getLogger(UserController.class);
     private final static UserService userService = new UserService();
 
@@ -31,7 +32,7 @@ public class UserController {
 
     public ViewModel getLogin(HttpServletRequest httpServletRequest) {
         Session session = httpServletRequest.getSession();
-        if (session != null && session.getAttribute("user") != null) {
+        if (session != null && session.getAttribute(USER) != null) {
             return new ViewModel("/index.html");
         }
         return new ViewModel("/login.html");
@@ -39,18 +40,18 @@ public class UserController {
 
 
     public ViewModel login(HttpServletRequest httpServletRequest) {
-        if (httpServletRequest.getSession() != null) {
-            Session session = httpServletRequest.getSession();
-            return new ViewModel("/index.html", null, Cookie.ofJsessionId(session.getId()), session);
+        Session oldSession = httpServletRequest.getSession();
+        if (oldSession != null && oldSession.getAttribute(USER) != null) {
+            return new ViewModel("/index.html", null, Cookie.ofJsessionId(oldSession.getId()), oldSession);
         }
         UserDto userDto = UserDto.map(httpServletRequest.getMessageBody().toMap());
         User user = userService.login(userDto);
 
-        Session session = httpServletRequest.getSession(true);
-        session.setAttribute("user", user);
-        Cookie cookie = Cookie.ofJsessionId(session.getId());
+        Session newSession = httpServletRequest.getSession(true);
+        newSession.setAttribute(USER, user);
+        Cookie cookie = Cookie.ofJsessionId(newSession.getId());
 
-        return new ViewModel("/index.html", null, cookie, session);
+        return new ViewModel("/index.html", null, cookie, newSession);
     }
 
 }

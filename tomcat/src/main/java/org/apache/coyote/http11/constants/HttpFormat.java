@@ -19,5 +19,7 @@ public final class HttpFormat {
         public static final String COOKIE_REQUEST_HEADER_FIELD = "Cookie";
         public static final String HOST = "Host";
         public static final String JSESSIONID = "JSESSIONID";
+        public static final String LOCATION = "Location";
+        public static final String CONTENT_TYPE = "Content-Type";
     }
 }

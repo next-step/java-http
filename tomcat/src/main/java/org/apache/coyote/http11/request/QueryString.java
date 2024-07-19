@@ -2,6 +2,7 @@ package org.apache.coyote.http11.request;
 
 import java.util.Arrays;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class QueryString {
@@ -38,5 +39,19 @@ public class QueryString {
     private static Map.Entry<String, Object> parseKeyValue(String query) {
         String[] pair = query.split(KEY_VALUE_PAIR_DELIMITER);
         return Map.entry(pair[KEY_INDEX], pair[VALUE_INDEX]);
+    }
+
+    @Override
+    public final boolean equals(Object o) {
+
+        if (this == o) return true;
+        if (!(o instanceof QueryString that)) return false;
+
+        return Objects.equals(queryParamMap, that.queryParamMap);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(queryParamMap);
     }
 }

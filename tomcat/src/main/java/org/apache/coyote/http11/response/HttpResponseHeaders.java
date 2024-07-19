@@ -2,6 +2,7 @@ package org.apache.coyote.http11.response;
 
 import org.apache.coyote.http11.HttpCookie;
 import org.apache.coyote.http11.MimeType;
+import org.apache.coyote.http11.constants.HttpFormat;
 
 import java.nio.charset.Charset;
 
@@ -24,12 +25,12 @@ public record HttpResponseHeaders(MimeType mimeType, Charset charset, Location l
     }
 
     public String toMessage() {
-        String message = "Content-Type: " + mimeType.getDescription() + ";charset=" + charset.name().toLowerCase() + " \r\n";
+        String message = HttpFormat.headerFieldValue(HttpFormat.HEADERS.CONTENT_TYPE, mimeType.getDescription() + ";charset=" + charset.name().toLowerCase());
         if (location != null) {
-            message += "Location: " + location.url() + " \r\n";
+            message += HttpFormat.headerFieldValue(HttpFormat.HEADERS.LOCATION, location.url());
         }
         if (cookie != null) {
-            message += "Set-Cookie: " + cookie.toValue() + " \r\n";
+            message += HttpFormat.headerFieldValue(HttpFormat.HEADERS.COOKIE_RESPONSE_HEADER_FIELD, cookie.toValue());
         }
         return message;
     }

@@ -8,7 +8,7 @@ import org.apache.coyote.http11.constants.HttpFormat;
  */
 public record StatusLine(HttpProtocol protocol, HttpStatusCode statusCode) {
 
-    public String generateMessage() {
-        return protocol.description() + HttpFormat.SP + statusCode.getCode() + HttpFormat.SP + statusCode.getDescription();
+    public String toMessage() {
+        return protocol.description() + HttpFormat.SP + statusCode.getCode() + HttpFormat.SP + statusCode.getDescription() + HttpFormat.SP + HttpFormat.CRLF;
     }
 }

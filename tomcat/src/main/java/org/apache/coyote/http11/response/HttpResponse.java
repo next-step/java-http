@@ -1,6 +1,8 @@
 package org.apache.coyote.http11.response;
 
 
+import org.apache.coyote.http11.constants.HttpFormat;
+
 public class HttpResponse {
 
     private StatusLine statusLine;
@@ -25,11 +27,15 @@ public class HttpResponse {
     public String generateMessage() {
 
         var sb = new StringBuilder();
-        sb.append(statusLine()).append(" ").append("\r\n");
+        sb.append(statusLine.toMessage());
         sb.append(httpResponseHeaders.toMessage());
-        sb.append(contentInfo()).append(" ").append("\r\n");
-        sb.append("\r\n");
-        sb.append(content());
+        if (messageBody != null) {
+            sb.append(messageBody.toContentLengthMessage());
+        }
+        sb.append(HttpFormat.CRLF);
+        if (messageBody != null) {
+            sb.append(messageBody);
+        }
 
         return sb.toString();
     }
@@ -46,17 +52,5 @@ public class HttpResponse {
         this.messageBody = messageBody;
     }
 
-    private String statusLine() {
-        return statusLine.generateMessage();
-    }
 
-
-    private String contentInfo() {
-        return messageBody.toContentLengthHeaderMessage();
-    }
-
-
-    private String content() {
-        return messageBody.toString();
-    }
 }

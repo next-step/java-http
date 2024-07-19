@@ -15,7 +15,7 @@ class PathTest {
 
         final var path = new Path("GET /users HTTP/1.1");
 
-        assertThat(path.getQueryString()).isEmpty();
+        assertThat(path.getQueryString()).isNull();
     }
 
 }

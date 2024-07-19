@@ -1,6 +1,7 @@
 package nextstep.org.apache.coyote.http11;
 
 import org.apache.coyote.http11.request.HttpMethod;
+import org.apache.coyote.http11.request.QueryString;
 import org.apache.coyote.http11.request.RequestParser;
 import org.junit.jupiter.api.Test;
 import support.StubSocket;
@@ -71,10 +72,7 @@ public class RequestLineTest {
         assertThat(parsed.getProtocol()).isEqualTo("HTTP");
         assertThat(parsed.getVersion()).isEqualTo("1.1");
         assertThat(parsed.getQueryString())
-                .containsAllEntriesOf(
-                        Map.of("userId", "javajigi",
-                                "password", "password",
-                                "name", "JaeSung"));
+                .isEqualTo(new QueryString("userId=javajigi&password=password&name=JaeSung"));
     }
 
 

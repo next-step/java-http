@@ -36,7 +36,7 @@ public class RequestLine {
         return path.getPath();
     }
 
-    public Map<String, Object> getQueryString() {
+    public QueryString getQueryString() {
         return path.getQueryString();
     }
 

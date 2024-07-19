@@ -1,5 +1,7 @@
 package org.apache.coyote.http11.response;
 
+import org.apache.coyote.http11.constants.HttpFormat;
+
 import java.nio.charset.Charset;
 
 public record MessageBody(byte[] contentBody, Charset charset) {
@@ -10,8 +12,8 @@ public record MessageBody(byte[] contentBody, Charset charset) {
         this(contentBody, Charset.defaultCharset());
     }
 
-    public String toContentLengthHeaderMessage() {
-        return "Content-Length: " + length();
+    public String toContentLengthMessage() {
+        return HttpFormat.headerFieldValue(HttpFormat.HEADERS.CONTENT_LENGTH, Integer.toString(length()));
     }
 
     public int length() {
