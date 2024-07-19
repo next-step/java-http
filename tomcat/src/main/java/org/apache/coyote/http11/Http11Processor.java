@@ -7,7 +7,7 @@ import org.apache.coyote.http11.controller.RequestMapping;
 import org.apache.coyote.http11.request.HttpRequest;
 import org.apache.coyote.http11.request.parser.HttpRequestParser;
 import org.apache.coyote.http11.response.HttpResponse;
-import org.apache.coyote.http11.response.Response;
+import org.apache.coyote.http11.response.HttpResponseWriter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -51,7 +51,7 @@ public class Http11Processor implements Runnable, Processor {
                 httpResponse = controller.service(httpRequest);
             }
 
-            String response = Response.parsingResponse(httpResponse).getResponse();
+            String response = HttpResponseWriter.parsingResponse(httpResponse).getResponse();
 
             outputStream.write(response.getBytes());
             outputStream.flush();

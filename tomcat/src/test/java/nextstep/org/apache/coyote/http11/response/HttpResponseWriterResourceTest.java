@@ -13,7 +13,7 @@ import java.io.IOException;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
-class ResponseResourceTest {
+class HttpResponseWriterResourceTest {
 	@DisplayName("root 경로 접근")
 	@Test
 	void getRandingPage() throws IOException {

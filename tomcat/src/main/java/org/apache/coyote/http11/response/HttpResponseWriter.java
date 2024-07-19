@@ -2,14 +2,14 @@ package org.apache.coyote.http11.response;
 
 import java.util.Map;
 
-public class Response {
+public class HttpResponseWriter {
 	private final String response;
 
-	public Response(final String response) {
+	public HttpResponseWriter(final String response) {
 		this.response = response;
 	}
 
-	public static Response parsingResponse(HttpResponse httpResponse) {
+	public static HttpResponseWriter parsingResponse(HttpResponse httpResponse) {
 		StatusLine statusLine = httpResponse.getStatusLine();
 		String responseBody = httpResponse.getResponseBody();
 		Map<String, String> headers = httpResponse.getHeaders();
@@ -25,7 +25,7 @@ public class Response {
 				"",
 				responseBody);
 
-		return new Response(response);
+		return new HttpResponseWriter(response);
 	}
 
 	public String getResponse() {
