@@ -6,7 +6,7 @@ import camp.nextstep.http.domain.HttpResponse;
 public class RootHttpRequestHandler implements HttpRequestHandler {
     @Override
     public boolean isExactHandler(RequestLine requestLine) {
-        return "/".equals(requestLine.getPath().getUrlPath());
+        return "/".equals(requestLine.getHttpStartLine().getPath().getUrlPath());
     }
     @Override
     public HttpResponse makeResponse(RequestLine requestLine) {

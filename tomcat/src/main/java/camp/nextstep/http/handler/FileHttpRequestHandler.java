@@ -19,7 +19,8 @@ public class FileHttpRequestHandler implements HttpRequestHandler {
 
     @Override
     public HttpResponse makeResponse(RequestLine requestLine) {
-        StaticResource resource = StaticResource.createResourceFromRequestLine(requestLine);
+        ClassLoader classLoader = getClass().getClassLoader();
+        StaticResource resource = StaticResource.createResourceFromRequestLine(requestLine, classLoader);
         return HttpResponse.createSuccessResponseByFile(resource.getResourceFile());
     }
 }

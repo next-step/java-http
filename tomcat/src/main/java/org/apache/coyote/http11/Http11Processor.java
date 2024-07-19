@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.net.Socket;
+import java.util.Arrays;
 import java.util.List;
 
 public class Http11Processor implements Runnable, Processor {
@@ -34,13 +35,15 @@ public class Http11Processor implements Runnable, Processor {
     @Override
     public void process(final Socket connection) {
         try (final var inputStream = connection.getInputStream();
-             final var outputStream = connection.getOutputStream();
-            final BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream))) {
-            // TODO 다 읽으면 응답이 내려가지않음 해결 필요
-            // List<String> requestStrs = bufferedReader.lines().toList();
-            List<String> requestStrs = List.of(bufferedReader.readLine());
-            HttpResponse httpResponse = httpRequestHandlerContainer.handleRequest(requestStrs);
-            writeResponse(httpResponse.getResponseStr(), outputStream);
+             final var outputStream = connection.getOutputStream()
+        ) {
+//            StringBuilder stringBuilder = new StringBuilder();
+//            writeInputStream(bufferedReader, stringBuilder);
+//            List<String> requestStrs = Arrays.stream(stringBuilder.toString().split("\r\n")).toList();
+//            HttpResponse httpResponse = httpRequestHandlerContainer.handleRequest(requestStrs);
+
+             HttpResponse httpResponse = httpRequestHandlerContainer.handleRequest(inputStream);
+             writeResponse(httpResponse.getResponseStr(), outputStream);
         } catch (IOException | UncheckedServletException e) {
             log.error(e.getMessage(), e);
         }
@@ -50,4 +53,35 @@ public class Http11Processor implements Runnable, Processor {
         outputStream.write(string.getBytes());
         outputStream.flush();
     }
+
+    private void writeInputStream(
+            final BufferedReader reader,
+            final StringBuilder actual
+    ) throws IOException {
+        String s;
+        boolean hasContent = false;
+        while ((s = reader.readLine()) != null) {
+            if (s.contains("Content-Length")) {
+                hasContent = true;
+            }
+            if (s.isEmpty()) {
+                break;
+            }
+            actual.append(s);
+            actual.append("\r\n");
+        }
+
+        if (hasContent) {
+            char[] buffer = new char[57];
+            reader.read(buffer, 0, 57);
+            actual.append(buffer);
+        }
+    }
+
+//    private void writeInputStream(final Reader reader, final StringBuilder actual) throws IOException {
+//        int c;
+//        while ((c = reader.read()) != -1) {
+//            actual.append((char) c);
+//        }
+//    }
 }

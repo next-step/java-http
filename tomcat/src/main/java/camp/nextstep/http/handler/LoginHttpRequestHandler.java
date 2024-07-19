@@ -1,12 +1,12 @@
 package camp.nextstep.http.handler;
 
+import camp.nextstep.http.domain.HttpStartLine;
 import camp.nextstep.http.domain.RequestLine;
 import camp.nextstep.http.domain.StaticResource;
 import camp.nextstep.http.domain.HttpResponse;
 import camp.nextstep.http.enums.HttpMethod;
 import camp.nextstep.service.UserService;
 
-import java.io.File;
 import java.util.Map;
 
 import static camp.nextstep.http.domain.HttpResponse.*;
@@ -22,30 +22,37 @@ public class LoginHttpRequestHandler implements HttpRequestHandler {
 
     @Override
     public boolean isExactHandler(RequestLine requestLine) {
-        return requestLine.getPath().getUrlPath().startsWith(LOGIN_PATH);
+        return requestLine
+                .getHttpStartLine()
+                .getPath()
+                .getUrlPath()
+                .startsWith(LOGIN_PATH);
     }
 
     @Override
     public HttpResponse makeResponse(RequestLine requestLine) {
         if (!isLoginPageRequest(requestLine)) {
-            return handleLogin(requestLine.getPath().getQueryParams());
+            return handleLogin(requestLine.getHttpStartLine().getPath().getQueryParams());
         }
 
         StaticResource staticResource = createResourceFromPath(
-                LOGIN_PAGE_PATH
+                LOGIN_PAGE_PATH,
+                getClass().getClassLoader()
         );
 
         return HttpResponse.createSuccessResponseByFile(staticResource.getResourceFile());
     }
 
     private boolean isLoginPageRequest(RequestLine requestLine) {
-        return requestLine.getMethod() == HttpMethod.GET
-                && (requestLine.getPath().getQueryParams() == null || requestLine.getPath().getQueryParams().isEmpty());
+        HttpStartLine httpStartLine = requestLine.getHttpStartLine();
+        return httpStartLine.getMethod() == HttpMethod.GET
+                && (httpStartLine.getPath().getQueryParams() == null || httpStartLine.getPath().getQueryParams().isEmpty());
     }
 
     private HttpResponse handleLogin(Map<String, String> queryParams) {
         if (!isValidQueryParams(queryParams)) {
-            return createBadRequestResponse();
+            ClassLoader classLoader = getClass().getClassLoader();
+            return createBadRequestResponse(classLoader);
         }
         String account = queryParams.get(ACCOUNT);
         String password = queryParams.get(PASSWORD);

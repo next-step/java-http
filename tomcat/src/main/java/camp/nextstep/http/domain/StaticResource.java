@@ -19,18 +19,21 @@ public class StaticResource {
     }
 
     public static StaticResource createResourceFromRequestLine(
-            RequestLine requestLine
+            RequestLine requestLine,
+            ClassLoader classLoader
     ) {
         return createResourceFromPath(
-                requestLine.getPath().getUrlPath()
+                requestLine.getHttpStartLine().getPath().getUrlPath(),
+                classLoader
         );
     }
 
     public static StaticResource createResourceFromPath(
-            String path
+            String path,
+            ClassLoader classLoader
     ) {
         try {
-            final File file = new File(getUri(path, ClassLoader.getSystemClassLoader()));
+            final File file = new File(getUri(path, classLoader));
             if (!file.exists()) {
                 throw new ResourceNotFoundException("파일을 찾을 수 없습니다");
             }
@@ -38,7 +41,11 @@ public class StaticResource {
             return new StaticResource(file);
         }  catch (Exception exception) {
             exception.printStackTrace();
-            return new StaticResource(new File("static/404.html"));
+            try {
+                return new StaticResource(new File(getUri("/404.html", classLoader)));
+            } catch (URISyntaxException e) {
+                throw new ResourceNotFoundException("파일을 찾을 수 없습니다");
+            }
         }
     }
 

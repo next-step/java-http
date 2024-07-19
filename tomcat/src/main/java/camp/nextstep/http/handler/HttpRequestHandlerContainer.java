@@ -1,5 +1,6 @@
 package camp.nextstep.http.handler;
 
+import java.io.InputStream;
 import java.util.List;
 
 import camp.nextstep.http.domain.RequestLine;
@@ -13,18 +14,18 @@ public class HttpRequestHandlerContainer {
         httpRequestHandlers = List.of(
             new RootHttpRequestHandler(),
             new LoginHttpRequestHandler(),
+            new RegisterHttpRequestHandler(),
             new FileHttpRequestHandler()
         );
     }
-    public HttpResponse handleRequest(List<String> requestLines) {
-        RequestLine requestLine = RequestLine.createRequestLineByRequestLineStr(
-            requestLines.get(0)
-        );
+
+    public HttpResponse handleRequest(InputStream inputStream) {
+        RequestLine requestLine = RequestLine.createRequestLineByInputStream(inputStream);
 
         return httpRequestHandlers.stream()
-            .filter(v -> v.isExactHandler(requestLine))
-            .findFirst()
-            .map(v -> v.makeResponse(requestLine))
-            .orElseGet(HttpResponse::createNotFoundResponseByString);
+                .filter(v -> v.isExactHandler(requestLine))
+                .findFirst()
+                .map(v -> v.makeResponse(requestLine))
+                .orElseGet(HttpResponse::createNotFoundResponseByString);
     }
 }

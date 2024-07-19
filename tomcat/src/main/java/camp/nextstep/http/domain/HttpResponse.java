@@ -41,16 +41,16 @@ public class HttpResponse {
 
     public static HttpResponse createRedirectResponseByPath(String path) {
         String responseBody = String.format(LOCATION_FORMAT, path);
-        final var response = String.join(System.lineSeparator(),
+        final var response = String.join("\r\n",
                 REDIRECT_HEADER,
                 responseBody);
 
         return new HttpResponse(response);
     }
 
-    public static HttpResponse createBadRequestResponse() {
+    public static HttpResponse createBadRequestResponse(ClassLoader classLoader) {
         try {
-            File notFoundFile = createResourceFromPath("/401.html").getResourceFile();
+            File notFoundFile = createResourceFromPath("/401.html", classLoader).getResourceFile();
             return createResponseByFileAndHeader(notFoundFile, BAD_REQUEST_HEADER);
         } catch (IOException ex) {
             ex.printStackTrace();
@@ -102,7 +102,7 @@ public class HttpResponse {
                 DEFAULT_CHARSET
         );
 
-        final var response = String.join(System.lineSeparator(),
+        final var response = String.join("\r\n",
                 header,
                 contentTypeStr,
                 getContentLengthHeader(fileStr),
@@ -117,7 +117,7 @@ public class HttpResponse {
         String responseBody,
         String header
     ) {
-        final var response = String.join(System.lineSeparator(),
+        final var response = String.join("\r\n",
             header,
             contentTypeStr,
             getContentLengthHeader(responseBody),

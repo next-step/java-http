@@ -11,7 +11,7 @@ class StaticResourceTest {
         String path = "/register.html";
 
         // when
-        StaticResource staticResource = StaticResource.createResourceFromPath(path);
+        StaticResource staticResource = StaticResource.createResourceFromPath(path, getClass().getClassLoader());
 
         // then
         assertTrue(staticResource.getResourceFile().getName().contains("register.html"));
@@ -23,7 +23,7 @@ class StaticResourceTest {
         String path = "/없음.html";
 
         // when
-        StaticResource staticResource = StaticResource.createResourceFromPath(path);
+        StaticResource staticResource = StaticResource.createResourceFromPath(path, getClass().getClassLoader());
 
         // then
         assertTrue(staticResource.getResourceFile().getName().contains("404.html"));
