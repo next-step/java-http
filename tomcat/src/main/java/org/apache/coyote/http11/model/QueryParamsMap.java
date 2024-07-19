@@ -1,4 +1,4 @@
-package org.apache.coyote.http11;
+package org.apache.coyote.http11.model;
 
 import org.apache.commons.lang3.ObjectUtils;
 

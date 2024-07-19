@@ -1,5 +1,6 @@
 package nextstep.org.apache.coyote.http11;
 
+import org.junit.jupiter.api.DisplayName;
 import support.StubSocket;
 import org.apache.coyote.http11.Http11Processor;
 import org.junit.jupiter.api.Test;
@@ -55,7 +56,7 @@ class Http11ProcessorTest {
         var expected = String.join("\r\n",
             "HTTP/1.1 200 OK ",
             "Content-Type: text/html;charset=utf-8 ",
-            "Content-Length: 5564 ", // 운영체제 환경에 따라 다른 값이 나올 수 있음. 자신의 개발 환경에 맞춰 수정할 것.
+            "Content-Length: 5670 ", // 운영체제 환경에 따라 다른 값이 나올 수 있음. 자신의 개발 환경에 맞춰 수정할 것.
             "",
             new String(Files.readAllBytes(new File(resource.getFile()).toPath())));
 
@@ -84,7 +85,7 @@ class Http11ProcessorTest {
         var expected = String.join("\r\n",
                 "HTTP/1.1 200 OK ",
                 "Content-Type: text/css;charset=utf-8 ",
-                "Content-Length: 211991 ", // 운영체제 환경에 따라 다른 값이 나올 수 있음. 자신의 개발 환경에 맞춰 수정할 것.
+                "Content-Length: 223255 ", // 운영체제 환경에 따라 다른 값이 나올 수 있음. 자신의 개발 환경에 맞춰 수정할 것.
                 "",
                 new String(Files.readAllBytes(new File(resource.getFile()).toPath())));
 
@@ -92,10 +93,11 @@ class Http11ProcessorTest {
     }
 
     @Test
-    void login() throws IOException {
+    @DisplayName("로그인 페이지를 호출한다")
+    void loginPage() throws IOException {
         // given
         final String httpRequest= String.join("\r\n",
-            "GET /login?account=heedoitdox&password=password HTTP/1.1 ",
+            "GET /login HTTP/1.1 ",
             "Host: localhost:8080 ",
             "Accept: text/html,charset=utf-8 ",
             "Connection: keep-alive ",
@@ -113,9 +115,69 @@ class Http11ProcessorTest {
         var expected = String.join("\r\n",
             "HTTP/1.1 200 OK ",
             "Content-Type: text/html;charset=utf-8 ",
-            "Content-Length: 3796 ", // 운영체제 환경에 따라 다른 값이 나올 수 있음. 자신의 개발 환경에 맞춰 수정할 것.
+            "Content-Length: 3863 ", // 운영체제 환경에 따라 다른 값이 나올 수 있음. 자신의 개발 환경에 맞춰 수정할 것.
             "",
             new String(Files.readAllBytes(new File(resource.getFile()).toPath())));
+
+        assertThat(socket.output()).isEqualTo(expected);
+    }
+
+    @Test
+    @DisplayName("GET 회원 가입 페이지를 호출한다")
+    void registerPage() throws IOException {
+        // given
+        final String httpRequest= String.join("\r\n",
+                "GET /register HTTP/1.1 ",
+                "Host: localhost:8080 ",
+                "Accept: text/html,charset=utf-8 ",
+                "Connection: keep-alive ",
+                "",
+                "");
+
+        final var socket = new StubSocket(httpRequest);
+        final Http11Processor processor = new Http11Processor(socket);
+
+        // when
+        processor.process(socket);
+
+        // then
+        final URL resource = getClass().getClassLoader().getResource("static/register.html");
+        var expected = String.join("\r\n",
+                "HTTP/1.1 200 OK ",
+                "Content-Type: text/html;charset=utf-8 ",
+                "Content-Length: 4391 ", // 운영체제 환경에 따라 다른 값이 나올 수 있음. 자신의 개발 환경에 맞춰 수정할 것.
+                "",
+                new String(Files.readAllBytes(new File(resource.getFile()).toPath())));
+
+        assertThat(socket.output()).isEqualTo(expected);
+    }
+
+    @Test
+    @DisplayName("POST 로 회원가입을 호출한 뒤 가입이 완료되면 index.html 으로 리다이렉트 한다")
+    void registerSuccess() throws IOException {
+        // given
+        final String httpRequest= String.join("\r\n",
+                "GET /register HTTP/1.1 ",
+                "Host: localhost:8080 ",
+                "Accept: text/html,charset=utf-8 ",
+                "Connection: keep-alive ",
+                "",
+                "");
+
+        final var socket = new StubSocket(httpRequest);
+        final Http11Processor processor = new Http11Processor(socket);
+
+        // when
+        processor.process(socket);
+
+        // then
+        final URL resource = getClass().getClassLoader().getResource("static/register.html");
+        var expected = String.join("\r\n",
+                "HTTP/1.1 200 OK ",
+                "Content-Type: text/html;charset=utf-8 ",
+                "Content-Length: 4391 ", // 운영체제 환경에 따라 다른 값이 나올 수 있음. 자신의 개발 환경에 맞춰 수정할 것.
+                "",
+                new String(Files.readAllBytes(new File(resource.getFile()).toPath())));
 
         assertThat(socket.output()).isEqualTo(expected);
     }

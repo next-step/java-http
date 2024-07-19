@@ -36,5 +36,9 @@ class ConcurrencyTest {
         // 이미 gugu로 가입한 사용자가 있어서 UserServlet.join() 메서드의 if절 조건은 false가 되고 크기는 1이다.
         // 하지만 디버거로 개별 스레드를 일시 중지하면 if절 조건이 true가 되고 크기가 2가 된다. 왜 그럴까?
         assertThat(userServlet.getUsers()).hasSize(1);
+
+
+        // join 동작에 대해서 잘 알아두기
+        // https://www.baeldung.com/java-thread-join
     }
 }

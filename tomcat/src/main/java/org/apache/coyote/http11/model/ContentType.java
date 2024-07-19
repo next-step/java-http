@@ -1,4 +1,4 @@
-package org.apache.coyote.http11;
+package org.apache.coyote.http11.model;
 
 import java.util.Collections;
 import java.util.Map;
@@ -11,6 +11,7 @@ public enum ContentType {
     TEXT_HTML( "text/html", "html"),
     TEXT_CSS("text/css", "css"),
     TEXT_JS("text/javascript", "js"),
+    IMAGE_SVG( "image/svg+xml", "svg"),
     ;
 
     private final String type;

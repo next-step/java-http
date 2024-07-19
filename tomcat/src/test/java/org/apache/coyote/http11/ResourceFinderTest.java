@@ -8,14 +8,11 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Files;
-import java.nio.file.Path;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class ResourceFinderTest {
-
-    private ResourceFinder sut = new ResourceFinder();
 
     @Nested
     @DisplayName("httpPath 로 파일 내용 조회")
@@ -26,7 +23,7 @@ class ResourceFinderTest {
         void success_getDefaultContext() throws IOException {
             final URL resource = ResourceFinder.class.getClassLoader().getResource("static/index.html");
 
-            final String actual = sut.findContent(resource);
+            final String actual = ResourceFinder.findContent(resource);
 
             final URL expectedResource = getClass().getClassLoader().getResource("static/index.html");
             var expected = new String(Files.readAllBytes(new File(expectedResource.getFile()).toPath()));
@@ -45,7 +42,7 @@ class ResourceFinderTest {
         void success() {
             String httpPath = "/index.html";
 
-            final File actual = sut.findFile(httpPath);
+            final File actual = ResourceFinder.findFile(httpPath);
 
             final URL resource = getClass().getClassLoader().getResource("static/index.html");
             var expected = new File(resource.getFile());
@@ -59,7 +56,7 @@ class ResourceFinderTest {
             String httpPath = "/heedoitdox.html";
 
             assertThrows(ResourceNotFoundException.class,
-                    () -> sut.findFile(httpPath));
+                    () -> ResourceFinder.findFile(httpPath));
         }
 
         @Test
@@ -67,7 +64,7 @@ class ResourceFinderTest {
         void success_login() {
             String httpPath = "/login";
 
-            final File actual = sut.findFile(httpPath);
+            final File actual = ResourceFinder.findFile(httpPath);
 
             final URL resource = getClass().getClassLoader().getResource("static/login.html");
             var expected = new File(resource.getFile());
