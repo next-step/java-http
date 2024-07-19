@@ -2,10 +2,7 @@ package org.apache.coyote.http11;
 
 import camp.nextstep.exception.UncheckedServletException;
 import org.apache.coyote.http11.request.HttpRequest;
-import org.apache.coyote.http11.response.HttpResponse;
-import org.apache.coyote.http11.response.HttpResponseHeaders;
-import org.apache.coyote.http11.response.HttpStatusCode;
-import org.apache.coyote.http11.response.ResponseBody;
+import org.apache.coyote.http11.response.*;
 
 import java.io.IOException;
 
@@ -22,9 +19,11 @@ public class StaticResourceRequestHandler implements RequestHandler {
             HttpResponseHeaders httpResponseHeaders = new HttpResponseHeaders(MimeType.from(requestLine.getPath()));
 
             if (requestLine.pathEndsWith("500.html")) {
-                return new HttpResponse(requestLine.getHttpProtocol(), HttpStatusCode.INTERNAL_SERVER_ERROR, httpResponseHeaders, new ResponseBody(readFile));
+                StatusLine statusLine = new StatusLine(requestLine.getHttpProtocol(), HttpStatusCode.INTERNAL_SERVER_ERROR);
+                return new HttpResponse(statusLine, httpResponseHeaders, new MessageBody(readFile));
             }
-            return new HttpResponse(requestLine.getHttpProtocol(), HttpStatusCode.OK, httpResponseHeaders, new ResponseBody(readFile));
+            StatusLine statusLine = new StatusLine(requestLine.getHttpProtocol(), HttpStatusCode.OK);
+            return new HttpResponse(statusLine, httpResponseHeaders, new MessageBody(readFile));
         } catch (IOException e) {
             throw new UncheckedServletException(e);
         }

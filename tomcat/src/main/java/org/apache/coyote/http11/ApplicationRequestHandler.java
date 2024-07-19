@@ -23,11 +23,11 @@ public class ApplicationRequestHandler implements RequestHandler {
 
         if ("/".equals(requestLine.getPath())) {
             final var responseBody = "Hello world!";
-            return new HttpResponse(requestLine.getHttpProtocol(), HttpStatusCode.OK, new HttpResponseHeaders(MimeType.TEXT_HTML), new ResponseBody(responseBody.getBytes()));
+            return new HttpResponse(new StatusLine(requestLine.getHttpProtocol(), HttpStatusCode.OK), new HttpResponseHeaders(MimeType.TEXT_HTML), new MessageBody(responseBody.getBytes()));
         }
 
         final var servlet = SERVLET_MAPPING.get(requestLine.getPath());
-        final var httpResponse = new HttpResponse(requestLine.getHttpProtocol());
+        final var httpResponse = new HttpResponse(new StatusLine(requestLine.getHttpProtocol(), null));
 
         servlet.delegate(httpRequest, httpResponse);
 

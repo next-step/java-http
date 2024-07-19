@@ -22,7 +22,7 @@ public final class RequestParser {
 
         final var requestLine = new RequestLine(readLine);
         final var requestHeaders = new HttpRequestHeaders(parseHeaders(br));
-        final var requestBody = new RequestBody(parseRequestBody(br, requestHeaders.contentLength()));
+        final var requestBody = new MessageBody(parseRequestBody(br, requestHeaders.contentLength()));
 
         return new HttpRequest(requestLine, requestHeaders, requestBody);
     }

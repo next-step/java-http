@@ -9,7 +9,6 @@ import org.apache.coyote.http11.HttpCookie;
 import org.apache.coyote.http11.MimeType;
 import org.apache.coyote.http11.request.HttpMethod;
 import org.apache.coyote.http11.request.HttpRequest;
-import org.apache.coyote.http11.request.RequestBody;
 import org.apache.coyote.http11.response.*;
 
 import java.io.IOException;
@@ -37,17 +36,21 @@ public class UserServlet implements MyServlet {
         var requestLine = request.getRequestLine();
         Session session = request.getSession();
         HttpCookie cookie = request.getRequestHeaders().getCookie();
-        RequestBody requestBody = request.getRequestBody();
-        var httpServletRequest = new HttpServletRequest(session, Cookie.from(cookie), requestBody.toMap());
+        org.apache.coyote.http11.request.MessageBody messageBody = request.getRequestBody();
+        var httpServletRequest = new HttpServletRequest(session, Cookie.from(cookie), messageBody.toMap());
 
         if (requestLine.getPath().equals("/login")) {
             final var viewModel = userController.getLogin(httpServletRequest);
-            response.setResponse(HttpStatusCode.OK, new HttpResponseHeaders(MimeType.TEXT_HTML), new ResponseBody(FileLoader.read("static/" + viewModel.path())));
+            response.setStatusLine(new StatusLine(requestLine.getHttpProtocol(), HttpStatusCode.OK));
+            response.setHttpResponseHeaders(new HttpResponseHeaders(MimeType.TEXT_HTML));
+            response.setResponseBody(new MessageBody(FileLoader.read("static/" + viewModel.path())));
         }
 
         if (requestLine.getPath().equals("/register")) {
             final var viewModel = userController.register();
-            response.setResponse(HttpStatusCode.OK, new HttpResponseHeaders(MimeType.TEXT_HTML), new ResponseBody(FileLoader.read("static/" + viewModel.path())));
+            response.setStatusLine(new StatusLine(requestLine.getHttpProtocol(), HttpStatusCode.OK));
+            response.setHttpResponseHeaders(new HttpResponseHeaders(MimeType.TEXT_HTML));
+            response.setResponseBody(new MessageBody(FileLoader.read("static/" + viewModel.path())));
         }
     }
 
@@ -57,8 +60,8 @@ public class UserServlet implements MyServlet {
         var requestHeaders = request.getRequestHeaders();
         Session session = request.getSession();
         HttpCookie cookie = request.getRequestHeaders().getCookie();
-        RequestBody requestBody = request.getRequestBody();
-        HttpServletRequest httpServletRequest = new HttpServletRequest(session, Cookie.from(cookie), requestBody.toMap());
+        org.apache.coyote.http11.request.MessageBody messageBody = request.getRequestBody();
+        HttpServletRequest httpServletRequest = new HttpServletRequest(session, Cookie.from(cookie), messageBody.toMap());
 
         if (requestLine.getPath().equals("/login")) {
             try {
@@ -66,11 +69,12 @@ public class UserServlet implements MyServlet {
                 var location = Location.of(requestLine.protocol(), requestHeaders.host(), viewModel.path());
                 session = viewModel.session();
                 sessionManager.add(session);
-
-                response.setResponse(HttpStatusCode.FOUND, new HttpResponseHeaders(MimeType.TEXT_HTML, location, HttpCookie.ofSessionId(session.getId())));
+                response.setStatusLine(new StatusLine(requestLine.getHttpProtocol(), HttpStatusCode.FOUND));
+                response.setHttpResponseHeaders(new HttpResponseHeaders(MimeType.TEXT_HTML, location, HttpCookie.ofSessionId(session.getId())));
             } catch (UnauthroizedUserException e) {
                 var location = Location.of(requestLine.protocol(), requestHeaders.host(), "/401.html");
-                response.setResponse(HttpStatusCode.FOUND, new HttpResponseHeaders(MimeType.TEXT_HTML, location));
+                response.setStatusLine(new StatusLine(requestLine.getHttpProtocol(), HttpStatusCode.FOUND));
+                response.setHttpResponseHeaders(new HttpResponseHeaders(MimeType.TEXT_HTML, location));
             }
         }
 
@@ -78,7 +82,8 @@ public class UserServlet implements MyServlet {
         if (requestLine.getPath().equals("/register")) {
             var viewModel = userController.register(request.getRequestBody().toMap());
             var location = Location.of(requestLine.protocol(), requestHeaders.host(), viewModel.path());
-            response.setResponse(HttpStatusCode.FOUND, new HttpResponseHeaders(MimeType.TEXT_HTML, location));
+            response.setStatusLine(new StatusLine(requestLine.getHttpProtocol(), HttpStatusCode.FOUND));
+            response.setHttpResponseHeaders(new HttpResponseHeaders(MimeType.TEXT_HTML, location));
         }
 
     }
