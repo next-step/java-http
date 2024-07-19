@@ -1,9 +1,6 @@
 package camp.nextstep.http.handler;
 
-import camp.nextstep.http.domain.HttpStartLine;
-import camp.nextstep.http.domain.RequestLine;
-import camp.nextstep.http.domain.StaticResource;
-import camp.nextstep.http.domain.HttpResponse;
+import camp.nextstep.http.domain.*;
 import camp.nextstep.http.enums.HttpMethod;
 import camp.nextstep.service.UserService;
 
@@ -32,7 +29,7 @@ public class LoginHttpRequestHandler implements HttpRequestHandler {
     @Override
     public HttpResponse makeResponse(RequestLine requestLine) {
         if (!isLoginPageRequest(requestLine)) {
-            return handleLogin(requestLine.getHttpStartLine().getPath().getQueryParams());
+            return handleLogin(requestLine.getHttpRequestBody());
         }
 
         StaticResource staticResource = createResourceFromPath(
@@ -45,17 +42,17 @@ public class LoginHttpRequestHandler implements HttpRequestHandler {
 
     private boolean isLoginPageRequest(RequestLine requestLine) {
         HttpStartLine httpStartLine = requestLine.getHttpStartLine();
-        return httpStartLine.getMethod() == HttpMethod.GET
-                && (httpStartLine.getPath().getQueryParams() == null || httpStartLine.getPath().getQueryParams().isEmpty());
+        return httpStartLine.getMethod() == HttpMethod.GET;
     }
 
-    private HttpResponse handleLogin(Map<String, String> queryParams) {
-        if (!isValidQueryParams(queryParams)) {
+    private HttpResponse handleLogin(HttpRequestBody httpRequestBody) {
+        Map<String, String> parsedRequestBody = httpRequestBody.getFormUrlEncodedRequestBody();
+        if (!isValidQueryParams(parsedRequestBody)) {
             ClassLoader classLoader = getClass().getClassLoader();
             return createBadRequestResponse(classLoader);
         }
-        String account = queryParams.get(ACCOUNT);
-        String password = queryParams.get(PASSWORD);
+        String account = parsedRequestBody.get(ACCOUNT);
+        String password = parsedRequestBody.get(PASSWORD);
 
         if (userService.isUserPresent(account, password)) {
             return createRedirectResponseByPath("/index.html");
