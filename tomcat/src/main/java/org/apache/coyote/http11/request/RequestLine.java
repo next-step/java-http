@@ -1,5 +1,7 @@
-package org.apache.coyote.http11;
+package org.apache.coyote.http11.request;
 
+
+import org.apache.coyote.http11.HttpProtocol;
 
 import java.util.Map;
 
@@ -7,7 +9,6 @@ public class RequestLine {
 
     private final static String DELIMITER = " ";
     private final static int REQUEST_LINE_CHUNK_LIMIT = 3;
-    public final static RequestLine SERVER_ERROR_REQUEST_LINE = new RequestLine("GET /500.html HTTP/1.1");
 
     private HttpMethod method;
     private Path path;
@@ -16,7 +17,7 @@ public class RequestLine {
     public RequestLine(String requestLine) {
         String[] infos = split(requestLine);
         if (infos.length != REQUEST_LINE_CHUNK_LIMIT) {
-            throw new IllegalArgumentException("RequestLine is invalid: " + requestLine);
+            throw new HttpRequestLineInvalidException("RequestLine is invalid: " + requestLine);
         }
         this.method = HttpMethod.from(infos[0]);
         this.path = new Path(infos[1]);
@@ -40,6 +41,10 @@ public class RequestLine {
     }
 
     public HttpProtocol getHttpProtocol() {
+        return protocol;
+    }
+
+    public HttpProtocol protocol() {
         return protocol;
     }
 

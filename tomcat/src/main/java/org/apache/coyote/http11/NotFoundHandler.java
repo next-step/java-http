@@ -1,16 +1,19 @@
 package org.apache.coyote.http11;
 
 
-import java.nio.charset.StandardCharsets;
+import org.apache.coyote.http11.request.HttpRequest;
+import org.apache.coyote.http11.response.HttpResponse;
+import org.apache.coyote.http11.response.HttpResponseHeaders;
+import org.apache.coyote.http11.response.HttpStatusCode;
 
 public class NotFoundHandler implements RequestHandler {
 
-    public static final RequestHandler INSTACNE = new NotFoundHandler();
+    public static final RequestHandler INSTANCE = new NotFoundHandler();
 
     @Override
-    public Response service(RequestLine requestLine) {
-        return new Response(requestLine.getHttpProtocol(), HttpStatusCode.NOT_FOUND, ContentType.TEXT_HTML, StandardCharsets.UTF_8);
+    public HttpResponse service(HttpRequest httpRequest) {
+        final var requestLine = httpRequest.getRequestLine();
+        return new HttpResponse(requestLine.getHttpProtocol(), HttpStatusCode.NOT_FOUND, new HttpResponseHeaders(MimeType.TEXT_HTML));
     }
-
 
 }

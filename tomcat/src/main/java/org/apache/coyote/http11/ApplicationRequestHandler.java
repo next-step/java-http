@@ -1,35 +1,36 @@
 package org.apache.coyote.http11;
 
-import camp.nextstep.UserController;
-import org.apache.catalina.ViewModel;
+import jakarta.MyServlet;
+import jakarta.UserServlet;
+import org.apache.coyote.http11.request.HttpRequest;
+import org.apache.coyote.http11.response.*;
 
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
 public class ApplicationRequestHandler implements RequestHandler {
 
     public static final ApplicationRequestHandler INSTANCE = new ApplicationRequestHandler();
-    private final UserController userController = new UserController();
+
+    private static final Map<String, MyServlet> SERVLET_MAPPING = Map.of(
+            "/login", UserServlet.INSTANCE,
+            "/register", UserServlet.INSTANCE
+    );
 
     @Override
-    public Response service(RequestLine requestLine) {
+    public HttpResponse service(HttpRequest httpRequest) throws IOException {
+        final var requestLine = httpRequest.getRequestLine();
 
         if ("/".equals(requestLine.getPath())) {
             final var responseBody = "Hello world!";
-            return new Response(requestLine.getHttpProtocol(), HttpStatusCode.OK, ContentType.TEXT_HTML, StandardCharsets.UTF_8, responseBody.getBytes());
-        }
-        if (requestLine.getPath().equals("/login")) {
-            try {
-                Map<String, Object> queryParamMap = requestLine.getQueryParamMap();
-                ViewModel viewModel = userController.findUser(queryParamMap);
-                // TODO: 질문하기
-                return new Response(requestLine.getHttpProtocol(), HttpStatusCode.OK, ContentType.TEXT_HTML, StandardCharsets.UTF_8, FileLoader.read("static" + viewModel.path()));
-            } catch (IOException | RuntimeException e) {
-                return new Response(requestLine.getHttpProtocol(), HttpStatusCode.INTERNAL_SERVER_ERROR, ContentType.TEXT_HTML, StandardCharsets.UTF_8);
-            }
+            return new HttpResponse(requestLine.getHttpProtocol(), HttpStatusCode.OK, new HttpResponseHeaders(MimeType.TEXT_HTML), new ResponseBody(responseBody.getBytes()));
         }
 
-        return new Response(requestLine.getHttpProtocol(), HttpStatusCode.INTERNAL_SERVER_ERROR, ContentType.TEXT_HTML, StandardCharsets.UTF_8);
+        final var servlet = SERVLET_MAPPING.get(requestLine.getPath());
+        final var httpResponse = new HttpResponse(requestLine.getHttpProtocol());
+
+        servlet.delegate(httpRequest, httpResponse);
+
+        return httpResponse;
     }
 }

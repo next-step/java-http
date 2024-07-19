@@ -1,4 +1,4 @@
-package org.apache.coyote.http11;
+package org.apache.coyote.http11.response;
 
 public enum HttpStatusCode {
 
@@ -10,6 +10,7 @@ public enum HttpStatusCode {
     FOUND(302, "Found"),
 
     BAD_REQUEST(400, "Bad Request"),
+    UNAUTHORIZED(401, "Unauthorized"),
     NOT_FOUND(404, "Not Found"),
     METHOD_NOT_ALLOWED(405, "Method Not Allowed"),
 

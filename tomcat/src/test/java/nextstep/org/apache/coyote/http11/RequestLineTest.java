@@ -1,8 +1,7 @@
 package nextstep.org.apache.coyote.http11;
 
-import org.apache.coyote.http11.HttpMethod;
-import org.apache.coyote.http11.RequestLine;
-import org.apache.coyote.http11.RequestParser;
+import org.apache.coyote.http11.request.HttpMethod;
+import org.apache.coyote.http11.request.RequestParser;
 import org.junit.jupiter.api.Test;
 import support.StubSocket;
 
@@ -25,7 +24,8 @@ public class RequestLineTest {
                 "");
 
         final var socket = new StubSocket(httpRequest);
-        RequestLine parsed = RequestParser.parse(socket.getInputStream(), StandardCharsets.UTF_8);
+        final var request = RequestParser.parse(socket.getInputStream(), StandardCharsets.UTF_8);
+        final var parsed = request.getRequestLine();
 
         assertThat(parsed.getMethod()).isEqualTo(HttpMethod.GET);
         assertThat(parsed.getPath()).isEqualTo("/users");
@@ -34,7 +34,7 @@ public class RequestLineTest {
     }
 
     @Test
-    public void postTest() {
+    public void postTest() throws IOException {
         final String httpRequest= String.join("\r\n",
                 "POST /users HTTP/1.1 ",
                 "Host: localhost:8080 ",
@@ -43,7 +43,8 @@ public class RequestLineTest {
                 "");
 
         final var socket = new StubSocket(httpRequest);
-        RequestLine parsed = RequestParser.parse(socket.getInputStream(), StandardCharsets.UTF_8);
+        final var request = RequestParser.parse(socket.getInputStream(), StandardCharsets.UTF_8);
+        final var parsed = request.getRequestLine();
 
         assertThat(parsed.getMethod()).isEqualTo(HttpMethod.POST);
         assertThat(parsed.getPath()).isEqualTo("/users");
@@ -53,7 +54,7 @@ public class RequestLineTest {
 
 
     @Test
-    public void queryParamTest() {
+    public void queryParamTest() throws IOException {
         final String httpRequest= String.join("\r\n",
                 "GET /users?userId=javajigi&password=password&name=JaeSung HTTP/1.1 ",
                 "Host: localhost:8080 ",
@@ -62,7 +63,8 @@ public class RequestLineTest {
                 "");
 
         final var socket = new StubSocket(httpRequest);
-        RequestLine parsed = RequestParser.parse(socket.getInputStream(), StandardCharsets.UTF_8);
+        final var request = RequestParser.parse(socket.getInputStream(), StandardCharsets.UTF_8);
+        final var parsed = request.getRequestLine();
 
         assertThat(parsed.getMethod()).isEqualTo(HttpMethod.GET);
         assertThat(parsed.getPath()).isEqualTo("/users");
