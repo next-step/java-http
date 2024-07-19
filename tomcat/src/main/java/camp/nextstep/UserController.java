@@ -22,10 +22,9 @@ public class UserController {
         return new ViewModel("/register.html");
     }
 
-    public ViewModel register(Map<String, Object> queryParamMap) {
-        log.info("register info: {}", queryParamMap);
-        User user = userService.register(queryParamMap);
-
+    public ViewModel register(UserDto userDto) {
+        log.info("register info: {}", userDto);
+        userService.register(userDto);
         return new ViewModel("/index.html");
     }
 
@@ -44,8 +43,8 @@ public class UserController {
             Session session = httpServletRequest.getSession();
             return new ViewModel("/index.html", null, Cookie.ofJsessionId(session.getId()), session);
         }
-        Map<String, Object> requestBody = httpServletRequest.getRequestBody();
-        User user = userService.login(requestBody);
+        UserDto userDto = UserDto.map(httpServletRequest.getMessageBody().toMap());
+        User user = userService.login(userDto);
 
         Session session = httpServletRequest.getSession(true);
         session.setAttribute("user", user);

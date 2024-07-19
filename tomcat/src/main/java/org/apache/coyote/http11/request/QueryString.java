@@ -4,34 +4,34 @@ import java.util.Arrays;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public class QueryParam {
+public class QueryString {
 
     private static final String QUERY_PARAM_DELIMITER = "&";
     private static final String KEY_VALUE_PAIR_DELIMITER = "=";
     private static final int KEY_INDEX = 0;
     private static final int VALUE_INDEX = 1;
-    public static final QueryParam EMPTY = new QueryParam();
+    public static final QueryString EMPTY = new QueryString();
 
     private Map<String, Object> queryParamMap = Map.of();
 
-    private QueryParam() {
+    private QueryString() {
     }
 
-    public QueryParam(String value) {
-        this.queryParamMap = parseQueryParam(value);
+    public QueryString(String value) {
+        this.queryParamMap = parseQueryString(value);
     }
 
     public Map<String, Object> value() {
         return queryParamMap;
     }
 
-    private Map<String, Object> parseQueryParam(String rawQueryParam) {
-        return convertToMap(rawQueryParam.split(QUERY_PARAM_DELIMITER));
+    private Map<String, Object> parseQueryString(String rawQueryString) {
+        return convertToMap(rawQueryString.split(QUERY_PARAM_DELIMITER));
     }
 
     private Map<String, Object> convertToMap(String[] params) {
         return Arrays.stream(params)
-                .map(QueryParam::parseKeyValue)
+                .map(QueryString::parseKeyValue)
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 

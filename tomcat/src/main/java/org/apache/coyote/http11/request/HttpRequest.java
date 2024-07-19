@@ -33,7 +33,7 @@ public class HttpRequest {
         return requestHeaders;
     }
 
-    public MessageBody getRequestBody() {
+    public MessageBody getMessageBody() {
         return messageBody;
     }
 

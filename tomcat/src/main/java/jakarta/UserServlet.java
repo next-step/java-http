@@ -1,6 +1,7 @@
 package jakarta;
 
 import camp.nextstep.UserController;
+import camp.nextstep.UserDto;
 import camp.nextstep.service.UnauthroizedUserException;
 import org.apache.catalina.Session;
 import org.apache.catalina.SessionManager;
@@ -36,8 +37,8 @@ public class UserServlet implements MyServlet {
         var requestLine = request.getRequestLine();
         Session session = request.getSession();
         HttpCookie cookie = request.getRequestHeaders().getCookie();
-        org.apache.coyote.http11.request.MessageBody messageBody = request.getRequestBody();
-        var httpServletRequest = new HttpServletRequest(session, Cookie.from(cookie), messageBody.toMap());
+        org.apache.coyote.http11.request.MessageBody messageBody = request.getMessageBody();
+        var httpServletRequest = new HttpServletRequest(session, Cookie.from(cookie), messageBody);
 
         if (requestLine.getPath().equals("/login")) {
             final var viewModel = userController.getLogin(httpServletRequest);
@@ -60,8 +61,8 @@ public class UserServlet implements MyServlet {
         var requestHeaders = request.getRequestHeaders();
         Session session = request.getSession();
         HttpCookie cookie = request.getRequestHeaders().getCookie();
-        org.apache.coyote.http11.request.MessageBody messageBody = request.getRequestBody();
-        HttpServletRequest httpServletRequest = new HttpServletRequest(session, Cookie.from(cookie), messageBody.toMap());
+        org.apache.coyote.http11.request.MessageBody messageBody = request.getMessageBody();
+        HttpServletRequest httpServletRequest = new HttpServletRequest(session, Cookie.from(cookie), messageBody);
 
         if (requestLine.getPath().equals("/login")) {
             try {
@@ -80,7 +81,8 @@ public class UserServlet implements MyServlet {
 
 
         if (requestLine.getPath().equals("/register")) {
-            var viewModel = userController.register(request.getRequestBody().toMap());
+            var userDto = UserDto.map(request.getMessageBody().toMap());
+            var viewModel = userController.register(userDto);
             var location = Location.of(requestLine.protocol(), requestHeaders.host(), viewModel.path());
             response.setStatusLine(new StatusLine(requestLine.getHttpProtocol(), HttpStatusCode.FOUND));
             response.setHttpResponseHeaders(new HttpResponseHeaders(MimeType.TEXT_HTML, location));

@@ -36,8 +36,8 @@ public class RequestLine {
         return path.getPath();
     }
 
-    public Map<String, Object> getQueryParamMap() {
-        return path.getQueryParamMap();
+    public Map<String, Object> getQueryString() {
+        return path.getQueryString();
     }
 
     public HttpProtocol getHttpProtocol() {

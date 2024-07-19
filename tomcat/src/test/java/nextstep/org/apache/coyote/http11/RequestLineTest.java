@@ -70,7 +70,7 @@ public class RequestLineTest {
         assertThat(parsed.getPath()).isEqualTo("/users");
         assertThat(parsed.getProtocol()).isEqualTo("HTTP");
         assertThat(parsed.getVersion()).isEqualTo("1.1");
-        assertThat(parsed.getQueryParamMap())
+        assertThat(parsed.getQueryString())
                 .containsAllEntriesOf(
                         Map.of("userId", "javajigi",
                                 "password", "password",

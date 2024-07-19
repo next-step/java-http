@@ -9,13 +9,13 @@ public class Path {
     private static final int QUERY_PARAM_INDEX = 1;
 
     private final String path;
-    private QueryParam queryParam = QueryParam.EMPTY;
+    private QueryString queryString = QueryString.EMPTY;
 
     public Path(String fullPath) {
         String[] values = fullPath.split(PATH_QUERY_PARAM_SEPARATOR);
         this.path = values[PATH_INDEX];
         if (hasQueryParam(values)) {
-            this.queryParam = new QueryParam(values[QUERY_PARAM_INDEX]);
+            this.queryString = new QueryString(values[QUERY_PARAM_INDEX]);
         }
     }
 
@@ -27,8 +27,8 @@ public class Path {
         return path;
     }
 
-    public Map<String, Object> getQueryParamMap() {
-        return queryParam.value();
+    public Map<String, Object> getQueryString() {
+        return queryString.value();
     }
 
     private static boolean hasQueryParam(String[] values) {
