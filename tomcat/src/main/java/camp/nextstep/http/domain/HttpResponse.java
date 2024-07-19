@@ -85,6 +85,20 @@ public class HttpResponse {
         );
     }
 
+    public static HttpResponse createBadRequestResponseByString() {
+        String responseBody = "BAD REQUEST";
+        String contentTypeStr = getContentTypeHeader(
+                ContentType.TEXT_HTML,
+                DEFAULT_CHARSET
+        );
+
+        return createResponse(
+                contentTypeStr,
+                responseBody,
+                BAD_REQUEST_HEADER
+        );
+    }
+
     private static HttpResponse createResponseByFileAndHeader(File file, String header) throws IOException {
         String fileExt = getExtensionByStringHandling(file.getName())
                 .orElseThrow(() -> new ResourceNotFoundException("파일확장자 불명확 : " + file.getName()));

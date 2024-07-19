@@ -31,13 +31,21 @@ public class RequestLine {
         return httpStartLine;
     }
 
+    public HttpRequestBody getHttpRequestBody() {
+        return httpRequestBody;
+    }
+
     public static RequestLine createRequestLineByInputStream(InputStream inputStream) {
-        try (BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
-        ) {
+        try {
+            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
             HttpStartLine httpStartLine = createHttpStartLineByReader(bufferedReader);
             HttpHeader httpHeader = createHeadersFromReader(bufferedReader);
             if (httpHeader.hasContentLength()) {
-                HttpRequestBody httpRequestBody = createHttpRequestBodyFromReader(bufferedReader);
+                HttpRequestBody httpRequestBody = createHttpRequestBodyFromReader(
+                        bufferedReader,
+                        httpHeader.getContentType(),
+                        httpHeader.getContentLength()
+                );
                 return new RequestLine(httpStartLine, httpHeader, httpRequestBody);
             }
             return new RequestLine(httpStartLine, httpHeader);

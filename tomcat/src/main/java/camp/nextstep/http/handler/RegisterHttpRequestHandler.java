@@ -1,21 +1,25 @@
 package camp.nextstep.http.handler;
 
+import camp.nextstep.http.domain.HttpRequestBody;
 import camp.nextstep.http.domain.HttpResponse;
 import camp.nextstep.http.domain.RequestLine;
 import camp.nextstep.http.domain.StaticResource;
 import camp.nextstep.http.enums.HttpMethod;
+import camp.nextstep.http.exception.DuplicateUserException;
 import camp.nextstep.service.UserService;
 
 import java.util.Map;
 
+import static camp.nextstep.http.domain.HttpResponse.createBadRequestResponseByString;
 import static camp.nextstep.http.domain.HttpResponse.createRedirectResponseByPath;
 import static camp.nextstep.http.domain.StaticResource.createResourceFromPath;
 
 public class RegisterHttpRequestHandler implements HttpRequestHandler {
     private final String REGISTER_PATH = "/register";
-    private final String LOGIN_PAGE_PATH = "/register.html";
+    private final String REGISTER_PAGE_PATH = "/register.html";
     private final String ACCOUNT = "account";
     private final String PASSWORD = "password";
+    private final String EMAIL = "email";
 
     private final UserService userService = new UserService();
 
@@ -31,11 +35,11 @@ public class RegisterHttpRequestHandler implements HttpRequestHandler {
     @Override
     public HttpResponse makeResponse(RequestLine requestLine) {
         if (!isRegisterPageRequest(requestLine)) {
-            return handleRegister(requestLine.getHttpStartLine().getPath().getQueryParams());
+            return handleRegister(requestLine.getHttpRequestBody());
         }
 
         StaticResource staticResource = createResourceFromPath(
-                LOGIN_PAGE_PATH,
+                REGISTER_PAGE_PATH,
                 getClass().getClassLoader()
         );
 
@@ -46,29 +50,18 @@ public class RegisterHttpRequestHandler implements HttpRequestHandler {
         return requestLine.getHttpStartLine().getMethod() == HttpMethod.GET;
     }
 
-    private HttpResponse handleRegister(Map<String, String> queryParams) {
-//        if (!isValidQueryParams(queryParams)) {
-//            return createBadRequestResponse();
-//        }
-//        String account = queryParams.get(ACCOUNT);
-//        String password = queryParams.get(PASSWORD);
-//
-//        if (userService.isUserPresent(account, password)) {
-//            return createRedirectResponseByPath("/index.html");
-//        }
-//        return createRedirectResponseByPath("/401.html");
+    private HttpResponse handleRegister(HttpRequestBody httpRequestBody) {
+        Map<String, String> parsedRequestBody = httpRequestBody.getFormUrlEncodedRequestBody();
+        try {
+            userService.registerUser(
+                    parsedRequestBody.get(ACCOUNT),
+                    parsedRequestBody.get(PASSWORD),
+                    parsedRequestBody.get(EMAIL)
+            );
+        } catch (DuplicateUserException ex) {
+            ex.printStackTrace();
+            return createBadRequestResponseByString();
+        }
         return createRedirectResponseByPath("/index.html");
-    }
-
-    private boolean isValidQueryParams(Map<String, String> queryParams) {
-        if (!queryParams.containsKey(ACCOUNT)) {
-            return false;
-        }
-
-        if (!queryParams.containsKey(PASSWORD)) {
-            return false;
-        }
-
-        return true;
     }
 }
