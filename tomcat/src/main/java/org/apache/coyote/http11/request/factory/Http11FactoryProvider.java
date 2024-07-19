@@ -5,7 +5,7 @@ import java.util.Map;
 import org.apache.coyote.http11.exception.RequestMethodNotFoundException;
 import org.apache.coyote.http11.request.RequestMethod;
 
-public class Http11FactoryProvider implements HttpFactoryProvider {
+public class Http11FactoryProvider implements HttpRequestFactoryProvider {
 
     private final Map<String, HttpRequestFactory> factories = new HashMap<>();
 

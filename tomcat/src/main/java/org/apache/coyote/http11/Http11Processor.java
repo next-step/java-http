@@ -8,7 +8,7 @@ import org.apache.coyote.http11.parser.HttpRequestDto;
 import org.apache.coyote.http11.parser.HttpRequestParser;
 import org.apache.coyote.http11.request.HttpRequest;
 import org.apache.coyote.http11.request.factory.Http11FactoryProvider;
-import org.apache.coyote.http11.request.factory.HttpFactoryProvider;
+import org.apache.coyote.http11.request.factory.HttpRequestFactoryProvider;
 import org.apache.coyote.http11.request.factory.HttpRequestFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,7 +16,7 @@ import org.slf4j.LoggerFactory;
 public class Http11Processor implements Runnable, Processor {
 
     private static final Logger log = LoggerFactory.getLogger(Http11Processor.class);
-    private static final HttpFactoryProvider httpFactoryProvider = new Http11FactoryProvider();
+    private static final HttpRequestFactoryProvider httpFactoryProvider = new Http11FactoryProvider();
     private final Socket connection;
 
     public Http11Processor(final Socket connection) {

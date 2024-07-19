@@ -56,8 +56,8 @@
 - [x] 리뷰 반영 
   - [x] Response에 미구현된 것 확인
   - [x] Review 질문 답변
-  - [] GreetingController에 'index.html'에 suffix가 있어야 하는 이유
-  - [] 동시성 문제 코멘트에 대한 정리
+  - [x] GreetingController에 'index.html'에 suffix가 있어야 하는 이유
+  - [x] 동시성 문제 코멘트에 대한 정리
   - [x] 상수 네이밍 확인 DELIMITER
   - [x] STREAM 닫지 못한것 확인
   - [x] String.SPLIT PATTERN 객체 생성 주입

@@ -9,18 +9,20 @@ import java.util.stream.Collectors;
 
 public class RequestUrl {
 
-    public static final String QUESTION_MARK = "?";
+    private static final String QUESTION_MARK = "?";
     private static final int REQUEST_URL = 0;
     private static final int REQEUST_PARAMS = 1;
     private static final Pattern KEYVALUE = Pattern.compile("(\\w+)=(\\w+)");
     private static final Pattern AMPERSAND = Pattern.compile("&");
+    private static final Pattern QUESTION_MARK_REGEX = Pattern.compile("\\?");
+
     private final String requestUrl;
     private final Map<String, String> params;
 
     public RequestUrl(final String requestUrl) {
         if (requestUrl.contains(QUESTION_MARK)) {
 
-            String[] urlAndParams = requestUrl.split("\\?");
+            String[] urlAndParams = QUESTION_MARK_REGEX.split(requestUrl);
             this.requestUrl = urlAndParams[REQUEST_URL];
             this.params = AMPERSAND.splitAsStream(urlAndParams[REQEUST_PARAMS])
                 .map(KEYVALUE::matcher)

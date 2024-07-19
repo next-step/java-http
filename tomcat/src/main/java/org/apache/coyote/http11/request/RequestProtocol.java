@@ -1,19 +1,21 @@
 package org.apache.coyote.http11.request;
 
 import java.util.Objects;
+import java.util.regex.Pattern;
 import org.apache.coyote.http11.exception.RequestProtocolInvalidException;
 
 public class RequestProtocol {
 
     private static final int PROTOCOL_NAME = 0;
     private static final int PROTOCOL_VERSION = 1;
+    private static final Pattern DELIMITER = Pattern.compile(" ");
 
     public final HttpVersion httpVersion;
     public final String protocol;
 
     public RequestProtocol(final String protocol) {
         validate(protocol);
-        String[] protocols = protocol.split("/");
+        String[] protocols = DELIMITER.split(protocol);
         assert protocols.length == 2;
         this.httpVersion = new HttpVersion(protocols[PROTOCOL_VERSION]);
         this.protocol = protocols[PROTOCOL_NAME];
