@@ -8,13 +8,13 @@ public class HttpRequest {
 
     private final RequestLine requestLine;
     private final HttpRequestHeaders requestHeaders;
-    private final RequestBody requestBody;
+    private final MessageBody messageBody;
     private Session session;
 
-    public HttpRequest(RequestLine requestLine, HttpRequestHeaders requestHeaders, RequestBody requestBody) {
+    public HttpRequest(RequestLine requestLine, HttpRequestHeaders requestHeaders, MessageBody messageBody) {
         this.requestLine = requestLine;
         this.requestHeaders = requestHeaders;
-        this.requestBody = requestBody;
+        this.messageBody = messageBody;
     }
 
     public HttpRequest(RequestLine requestLine, HttpRequestHeaders requestHeaders) {
@@ -33,8 +33,8 @@ public class HttpRequest {
         return requestHeaders;
     }
 
-    public RequestBody getRequestBody() {
-        return requestBody;
+    public MessageBody getRequestBody() {
+        return messageBody;
     }
 
     public void setSession(Session session) {

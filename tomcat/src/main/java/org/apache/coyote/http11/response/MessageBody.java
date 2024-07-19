@@ -2,11 +2,11 @@ package org.apache.coyote.http11.response;
 
 import java.nio.charset.Charset;
 
-public record ResponseBody(byte[] contentBody, Charset charset) {
+public record MessageBody(byte[] contentBody, Charset charset) {
 
-    public final static ResponseBody EMPTY = new ResponseBody(new byte[0], Charset.defaultCharset());
+    public final static MessageBody EMPTY = new MessageBody(new byte[0], Charset.defaultCharset());
 
-    public ResponseBody(byte[] contentBody) {
+    public MessageBody(byte[] contentBody) {
         this(contentBody, Charset.defaultCharset());
     }
 
