@@ -50,7 +50,30 @@
 - [x] 요구사항 5 - 공통 요구사항
   - [x] HTTP REQUEST 클래스 설계
   - [x] HTTP REQUEST를 파싱하는 책임을 분리
-  - [] HTTP RESPONSE를 생성하는 책임을 분리
   - [x] 커스텀 예외 생성
+
+## 2단계 요구사항 정리
+- [x] 리뷰 반영 
+  - [x] Response에 미구현된 것 확인
+  - [x] Review 질문 답변
+  - [] GreetingController에 'index.html'에 suffix가 있어야 하는 이유
+  - [] 동시성 문제 코멘트에 대한 정리
+  - [x] 상수 네이밍 확인 DELIMITER
+  - [x] STREAM 닫지 못한것 확인
+  - [x] String.SPLIT PATTERN 객체 생성 주입
+  - [x] 코드간 스타일 (상수 + 변수 개행)
+- [] 요구사항 1 - GET /index.html 응답하기
+  - [] Resource를 반환하는 기능 지원
+- [] 요구사항 2 - GET CSS 지원하기
+  - [] Request에 header 추가로 읽어오기 (Content-Type 추가)
+  - [] Response에 header 추가하기 (Content-Type 추가)
+- [] 요구사항 3 - GET QUERY 파싱하기
+  - [] InMemoryUserRepository 사용해서 회원 조회
+- [] 요구사항 4 - 공통 설계 요구사항
+  - [] HTTP RESPONSE를 생성하는 책임을 분리
+  - [] HTTP RESPONSE 도메인 객체 생성 + HEADER 추가
+  - [] HTTP RESPONSE Provider가 ResourceResponse, htmlResponse 분리
+  - [] HTTP REQUEST에 HEADER 추가
+
    
 
