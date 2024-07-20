@@ -62,4 +62,8 @@ public class HttpHeader {
     public ContentType getContentType() {
         return findContentTypeByContentTypeHeader(httpHeaders.get(CONTENT_TYPE_HEADER));
     }
+
+    public Map<String, String> getHttpHeaders() {
+        return httpHeaders;
+    }
 }

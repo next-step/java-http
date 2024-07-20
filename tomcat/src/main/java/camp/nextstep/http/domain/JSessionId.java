@@ -16,4 +16,8 @@ public class JSessionId {
     public static JSessionId createJSessionIdByJSessionIdStr(String jSessionId) {
         return new JSessionId(UUID.fromString(jSessionId));
     }
+
+    public static JSessionId createJSessionId() {
+        return new JSessionId(UUID.randomUUID());
+    }
 }
