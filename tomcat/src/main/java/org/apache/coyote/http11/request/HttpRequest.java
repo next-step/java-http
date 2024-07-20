@@ -4,6 +4,8 @@ import org.apache.coyote.http11.HttpMethod;
 import org.apache.coyote.http11.cookie.Cookie;
 import org.apache.coyote.http11.cookie.Cookies;
 import org.apache.coyote.http11.request.model.*;
+import org.apache.coyote.http11.session.Session;
+import org.apache.coyote.http11.session.SessionManager;
 
 public class HttpRequest {
     private final RequestLine requestLine;
@@ -60,5 +62,23 @@ public class HttpRequest {
 
     public boolean isGet() {
         return HttpMethod.GET.equals(requestLine.getHttpMethod());
+    }
+
+    public RequestHeaders getHeaders() {
+        return requestHeaders;
+    }
+
+    public QueryStrings getQueryStrings() {
+        return requestLine.getQueryStrings();
+    }
+
+    public RequestBodies getRequestBodies() {
+        return requestBodies;
+    }
+
+    public Session getSession() {
+        final Session session = SessionManager.getInstance().computeIfAbsent(cookies.getSessionCookie());
+        cookies.addSessionCookie(session.getId());
+        return session;
     }
 }

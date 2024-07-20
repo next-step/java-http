@@ -41,4 +41,8 @@ public class ResponseHeaders {
     public void setLocation(final String location) {
         headers.put("Location", location);
     }
+
+    public void addSessionCookie(String id) {
+        cookies.addSessionCookie(id);
+    }
 }

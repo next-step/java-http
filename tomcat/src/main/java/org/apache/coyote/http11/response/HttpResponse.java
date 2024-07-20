@@ -76,4 +76,8 @@ public class HttpResponse {
         outputStream.write(response.getBytes());
         outputStream.flush();
     }
+
+    public void setSession(String id) {
+        headers.addSessionCookie(id);
+    }
 }
