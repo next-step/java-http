@@ -12,6 +12,7 @@ import static camp.nextstep.http.enums.ContentType.findContentTypeByContentTypeH
 
 public class HttpHeader {
     private Map<String, String> httpHeaders;
+    private HttpCookie httpCookie;
 
     private static final String CONTENT_LENGTH_HEADER = "Content-Length";
     private static final String CONTENT_TYPE_HEADER = "Content-Type";
@@ -19,8 +20,12 @@ public class HttpHeader {
     private static final int HEADER_KEY_INDEX = 0;
     private static final int HEADER_VALUE_INDEX = 1;
 
-    public HttpHeader(Map<String, String> httpHeaders) {
+    private HttpHeader(
+            Map<String, String> httpHeaders,
+            HttpCookie httpCookie
+    ) {
         this.httpHeaders = httpHeaders;
+        this.httpCookie = httpCookie;
     }
 
     public static HttpHeader createHeadersFromReader(
@@ -28,6 +33,7 @@ public class HttpHeader {
     ) throws IOException {
         String s;
         Map<String, String> httpHeaders = new HashMap<>();
+        HttpCookie httpCookie = null;
         while ((s = bufferedReader.readLine()) != null) {
             if (s.isEmpty()) {
                 break;
@@ -37,8 +43,12 @@ public class HttpHeader {
                     header[HEADER_KEY_INDEX].trim(),
                     header[HEADER_VALUE_INDEX].trim()
             );
+
+            if (header[HEADER_KEY_INDEX].equals(HttpCookie.COOKIE_KEY)) {
+                httpCookie = HttpCookie.createHttpCookie(header[HEADER_VALUE_INDEX]);
+            }
         }
-        return new HttpHeader(httpHeaders);
+        return new HttpHeader(httpHeaders, httpCookie);
     }
 
     public boolean hasContentLength() {
