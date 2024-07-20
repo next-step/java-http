@@ -19,7 +19,7 @@ class RequestMapperTest {
     void findHandler_valid() {
         final String path = "/";
 
-        final RequestHandler actual = RequestMapper.findHandler(path);
+        final RequestHandler actual = RequestMapping.findHandler(path);
 
         assertThat(actual).isInstanceOf(DefaultHandler.class);
     }
@@ -30,7 +30,7 @@ class RequestMapperTest {
     void findHandler_staticResource() {
         final String path = "/index.html";
 
-        final RequestHandler actual = RequestMapper.findHandler(path);
+        final RequestHandler actual = RequestMapping.findHandler(path);
 
         assertThat(actual).isInstanceOf(StaticResourceHandler.class);
     }
@@ -38,10 +38,10 @@ class RequestMapperTest {
     @Test
     @DisplayName("/login http path 를 넣으면 LoginHandler 를 반환한다")
     void findHandler_login() {
-        RequestMapper.addHandlers(Map.of("/login", new LoginHandler()));
+        RequestMapping.addHandlers(Map.of("/login", new LoginHandler()));
         final String path = "/login";
 
-        final RequestHandler actual = RequestMapper.findHandler(path);
+        final RequestHandler actual = RequestMapping.findHandler(path);
 
         assertThat(actual).isInstanceOf(LoginHandler.class);
     }
