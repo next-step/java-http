@@ -1,35 +1,34 @@
 package org.apache.coyote.http11;
 
-import jakarta.MyServlet;
+import jakarta.AbstractController;
 import jakarta.UserServlet;
 import org.apache.coyote.http11.request.HttpRequest;
 import org.apache.coyote.http11.response.*;
 
-import java.io.IOException;
 import java.util.Map;
 
 public class ApplicationRequestHandler implements RequestHandler {
 
     public static final ApplicationRequestHandler INSTANCE = new ApplicationRequestHandler();
 
-    private static final Map<String, MyServlet> SERVLET_MAPPING = Map.of(
+    private static final Map<String, AbstractController> SERVLET_MAPPING = Map.of(
             "/login", UserServlet.INSTANCE,
             "/register", UserServlet.INSTANCE
     );
 
     @Override
-    public HttpResponse service(HttpRequest httpRequest) throws IOException {
+    public HttpResponse service(HttpRequest httpRequest) throws Exception {
         final var requestLine = httpRequest.getRequestLine();
 
         if ("/".equals(requestLine.getPath())) {
             final var responseBody = "Hello world!";
-            return new HttpResponse(requestLine.getHttpProtocol(), HttpStatusCode.OK, new HttpResponseHeaders(MimeType.TEXT_HTML), new ResponseBody(responseBody.getBytes()));
+            return new HttpResponse(new StatusLine(requestLine.getHttpProtocol(), HttpStatusCode.OK), new HttpResponseHeaders(MimeType.TEXT_HTML), new MessageBody(responseBody.getBytes()));
         }
 
-        final var servlet = SERVLET_MAPPING.get(requestLine.getPath());
-        final var httpResponse = new HttpResponse(requestLine.getHttpProtocol());
+        final var controller = SERVLET_MAPPING.get(requestLine.getPath());
+        final var httpResponse = new HttpResponse(new StatusLine(requestLine.getHttpProtocol()), httpRequest.getRequestHeaders().host());
 
-        servlet.delegate(httpRequest, httpResponse);
+        controller.service(httpRequest, httpResponse);
 
         return httpResponse;
     }

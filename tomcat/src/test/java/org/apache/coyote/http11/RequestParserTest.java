@@ -1,5 +1,6 @@
 package org.apache.coyote.http11;
 
+import org.apache.coyote.http11.request.HttpRequestLineInvalidException;
 import org.apache.coyote.http11.request.RequestParser;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
@@ -14,9 +15,9 @@ class RequestParserTest {
     @DisplayName("파싱할 데이터가 없을 경우 RequestLine 생성에 실패한다")
     public void inputStreamIsEmptyTest() {
 
-        Assertions.assertThatIllegalArgumentException()
-                .isThrownBy(() -> RequestParser.parse(new ByteArrayInputStream(new byte[]{})))
-                .withMessageContaining("RequestLine is null or empty:");
+        Assertions.assertThatThrownBy(() -> RequestParser.parse(new ByteArrayInputStream(new byte[]{})))
+                .isInstanceOf(HttpRequestLineInvalidException.class)
+                .hasMessage("RequestLine is null or empty: null");
     }
 
 

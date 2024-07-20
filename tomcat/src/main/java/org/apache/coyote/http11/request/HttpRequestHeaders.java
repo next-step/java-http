@@ -1,15 +1,15 @@
 package org.apache.coyote.http11.request;
 
 import org.apache.coyote.http11.HttpCookie;
-import org.apache.coyote.http11.constants.HttpCookies;
+import org.apache.coyote.http11.constants.HttpFormat;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 public class HttpRequestHeaders {
 
-    private static final String HOST = "Host";
 
     private final Map<String, Object> headers = new HashMap<>();
 
@@ -23,25 +23,24 @@ public class HttpRequestHeaders {
     }
 
     public String host() {
-        return (String) headers.get(HOST);
+        return (String) headers.get(HttpFormat.HEADERS.HOST);
     }
 
-
-    public int contentLength() {
-        return Integer.parseInt((String) headers.getOrDefault("Content-Length", "0"));
-    }
-
-
-    private void parseField(String line) {
-        String[] arr = line.split(": ");
-        headers.put(arr[0], arr[1]);
-    }
 
     public HttpCookie getCookie() {
-        Object cookie = headers.get(HttpCookies.COOKIE_REQUEST_HEADER_FIELD);
+        Object cookie = headers.get(HttpFormat.HEADERS.COOKIE_REQUEST_HEADER_FIELD);
         if (cookie == null) {
             return null;
         }
         return new HttpCookie((String) cookie);
+    }
+
+    public Optional<Object> get(String key) {
+        return Optional.ofNullable(headers.get(key));
+    }
+
+    private void parseField(String line) {
+        String[] arr = line.split(HttpFormat.HEADERS.FIELD_VALUE_DELIMITER);
+        headers.put(arr[0], arr[1]);
     }
 }

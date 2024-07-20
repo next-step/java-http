@@ -1,35 +1,49 @@
 package org.apache.coyote.http11.response;
 
+import jakarta.Cookie;
 import org.apache.coyote.http11.HttpCookie;
 import org.apache.coyote.http11.MimeType;
+import org.apache.coyote.http11.constants.HttpFormat;
 
 import java.nio.charset.Charset;
 
-public record HttpResponseHeaders(MimeType mimeType, Charset charset, Location location, HttpCookie cookie) {
+public class HttpResponseHeaders {
+
+    private MimeType mimeType = MimeType.ALL;
+    private Charset charset = Charset.defaultCharset();
+    private Location location;
+    private HttpCookie httpCookie = new HttpCookie();
+
+    public HttpResponseHeaders() {
+    }
 
     public HttpResponseHeaders(MimeType mimeType) {
-        this(mimeType, Charset.defaultCharset(), null, null);
+        this.mimeType = mimeType;
     }
 
-    public HttpResponseHeaders(Location location) {
-        this(MimeType.ALL, Charset.defaultCharset(), location, null);
+    public void addMimeType(MimeType mimeType) {
+        this.mimeType = mimeType;
     }
 
-    public HttpResponseHeaders(MimeType mimeType, Location location) {
-        this(mimeType, Charset.defaultCharset(), location, null);
+    public void addCookie(Cookie cookie) {
+        if (cookie != null) {
+            this.httpCookie.addCookie(cookie);
+        }
     }
 
-    public HttpResponseHeaders(MimeType mimeType, Location location, HttpCookie httpCookie) {
-        this(mimeType, Charset.defaultCharset(), location, httpCookie);
+    public void addLocation(Location location) {
+        if (location != null) {
+            this.location = location;
+        }
     }
 
     public String toMessage() {
-        String message = "Content-Type: " + mimeType.getDescription() + ";charset=" + charset.name().toLowerCase() + " \r\n";
+        String message = HttpFormat.headerFieldValue(HttpFormat.HEADERS.CONTENT_TYPE, mimeType.getDescription() + ";charset=" + charset.name().toLowerCase());
         if (location != null) {
-            message += "Location: " + location.url() + " \r\n";
+            message += HttpFormat.headerFieldValue(HttpFormat.HEADERS.LOCATION, location.url());
         }
-        if (cookie != null) {
-            message += "Set-Cookie: " + cookie.toValue() + " \r\n";
+        if (httpCookie.hasValues()) {
+            message += HttpFormat.headerFieldValue(HttpFormat.HEADERS.COOKIE_RESPONSE_HEADER_FIELD, httpCookie.toString());
         }
         return message;
     }

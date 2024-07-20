@@ -1,64 +1,65 @@
 package org.apache.coyote.http11.response;
 
 
-import org.apache.coyote.http11.HttpProtocol;
+import jakarta.HttpServletResponse;
+import org.apache.coyote.http11.constants.HttpFormat;
 
 public class HttpResponse {
 
-    private HttpProtocol httpProtocol;
-    private HttpStatusCode httpStatusCode;
-    private HttpResponseHeaders httpResponseHeaders;
-    private ResponseBody responseBody;
+    private StatusLine statusLine;
+    private String host;
+    private HttpResponseHeaders httpResponseHeaders = new HttpResponseHeaders();
+    private MessageBody messageBody;
 
-    public HttpResponse(HttpProtocol httpProtocol, HttpStatusCode httpStatusCode, HttpResponseHeaders httpResponseHeaders, ResponseBody responseBody) {
-        this.httpProtocol = httpProtocol;
-        this.httpStatusCode = httpStatusCode;
+    public HttpResponse(StatusLine statusLine, HttpResponseHeaders httpResponseHeaders, MessageBody messageBody) {
+        this.statusLine = statusLine;
         this.httpResponseHeaders = httpResponseHeaders;
-        this.responseBody = responseBody;
+        this.messageBody = messageBody;
     }
 
-    public HttpResponse(HttpProtocol httpProtocol, HttpStatusCode httpStatusCode, HttpResponseHeaders httpResponseHeaders) {
-        this(httpProtocol, httpStatusCode, httpResponseHeaders, ResponseBody.EMPTY);
+    public HttpResponse(StatusLine statusLine, HttpResponseHeaders httpResponseHeaders) {
+        this(statusLine, httpResponseHeaders, MessageBody.EMPTY);
     }
 
-    public HttpResponse(HttpProtocol httpProtocol) {
-        this.httpProtocol = httpProtocol;
+    public HttpResponse(StatusLine statusLine, String host) {
+        this.statusLine = statusLine;
+        this.host = host;
+    }
+
+
+    public void update(HttpServletResponse httpServletResponse) {
+        this.statusLine = new StatusLine(statusLine.protocol(), httpServletResponse.getStatusCode());
+        this.messageBody = httpServletResponse.getMessageBody() != null ? httpServletResponse.getMessageBody() : MessageBody.EMPTY;
+
+        if (httpServletResponse.getCookie() != null) {
+            this.httpResponseHeaders.addCookie(httpServletResponse.getCookie());
+        }
+
+        if (httpServletResponse.getMimeType() != null) {
+            this.httpResponseHeaders.addMimeType(httpServletResponse.getMimeType());
+        }
+
+        if (httpServletResponse.getRedirectPath() != null) {
+            this.httpResponseHeaders.addLocation(Location.of(statusLine.protocol(), host, httpServletResponse.getRedirectPath()));
+        }
     }
 
 
     public String generateMessage() {
 
         var sb = new StringBuilder();
-        sb.append(firstLine()).append(" ").append("\r\n");
+        sb.append(statusLine.toMessage());
         sb.append(httpResponseHeaders.toMessage());
-        sb.append(contentInfo()).append(" ").append("\r\n");
-        sb.append("\r\n");
-        sb.append(content());
+        if (messageBody != null) {
+            sb.append(messageBody.toContentLengthMessage());
+        }
+        sb.append(HttpFormat.CRLF);
+        if (messageBody != null) {
+            sb.append(messageBody);
+        }
 
         return sb.toString();
     }
 
-    public void setResponse(HttpStatusCode httpStatusCode, HttpResponseHeaders httpResponseHeaders) {
-        this.setResponse(httpStatusCode, httpResponseHeaders, new ResponseBody(new byte[0]));
-    }
 
-    public void setResponse(HttpStatusCode httpStatusCode, HttpResponseHeaders httpResponseHeaders, ResponseBody responseBody) {
-        this.httpStatusCode = httpStatusCode;
-        this.httpResponseHeaders = httpResponseHeaders;
-        this.responseBody = responseBody;
-    }
-
-    private String firstLine() {
-        return httpProtocol.description() + " " + httpStatusCode.getCode() + " " + httpStatusCode.getDescription();
-    }
-
-
-    private String contentInfo() {
-        return responseBody.toContentLengthHeaderMessage();
-    }
-
-
-    private String content() {
-        return responseBody.toString();
-    }
 }

@@ -2,13 +2,16 @@ package org.apache.coyote.http11.request;
 
 
 
+import org.apache.coyote.http11.HttpMessageConverter;
+import org.apache.coyote.http11.constants.HttpFormat;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public final class RequestParser {
 
@@ -22,8 +25,9 @@ public final class RequestParser {
 
         final var requestLine = new RequestLine(readLine);
         final var requestHeaders = new HttpRequestHeaders(parseHeaders(br));
-        final var requestBody = new RequestBody(parseRequestBody(br, requestHeaders.contentLength()));
 
+        Optional<Object> value = requestHeaders.get(HttpFormat.HEADERS.CONTENT_LENGTH);
+        final var requestBody = new MessageBody(HttpMessageConverter.convert(br, Integer.parseInt(value.orElse("0").toString())));
         return new HttpRequest(requestLine, requestHeaders, requestBody);
     }
 
@@ -39,12 +43,5 @@ public final class RequestParser {
         return headers;
     }
 
-    private static String parseRequestBody(BufferedReader bufferedReader, int contentLength) throws IOException {
-        final var buffer = new char[contentLength];
-        int readCount = bufferedReader.read(buffer, 0, contentLength);
-        if (contentLength != readCount) {
-            throw new IOException("Content-Length is not matched: " + contentLength + " != " + readCount);
-        }
-        return new String(buffer);
-    }
+
 }

@@ -1,5 +1,6 @@
 package camp.nextstep.service;
 
+import camp.nextstep.UserDto;
 import camp.nextstep.db.InMemoryUserRepository;
 import camp.nextstep.model.User;
 
@@ -7,24 +8,19 @@ import java.util.Map;
 
 public class UserService {
 
-    public User getUser(Map<String, Object> queryParamMap) {
-        String account = (String) queryParamMap.get("account");
-        return InMemoryUserRepository.findByAccount(account)
-                .orElseThrow(() -> new UnauthroizedUserException("회원 정보를 찾을 수 없습니다"));
-    }
 
-    public User register(Map<String, Object> queryParamMap) {
+    public User register(UserDto userDto) {
 
-        String account = (String) queryParamMap.get("account");
-        String password = (String) queryParamMap.get("password");
-        String email = (String) queryParamMap.get("email");
+        var account = userDto.account();
+        var password = userDto.password();
+        var email = userDto.email();
 
         return InMemoryUserRepository.save(new User(account, password, email));
     }
 
-    public User login(Map<String, Object> queryParamMap) {
-        String account = (String) queryParamMap.get("account");
-        String password = (String) queryParamMap.get("password");
+    public User login(UserDto userDto) {
+        var account = userDto.account();
+        var password = userDto.password();
 
         return InMemoryUserRepository.findByAccount(account)
                 .filter(user -> user.matchPassword(password))

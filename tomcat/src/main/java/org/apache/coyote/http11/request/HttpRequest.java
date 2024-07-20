@@ -2,28 +2,21 @@ package org.apache.coyote.http11.request;
 
 import org.apache.catalina.Session;
 
-import java.util.List;
 
 public class HttpRequest {
 
     private final RequestLine requestLine;
     private final HttpRequestHeaders requestHeaders;
-    private final RequestBody requestBody;
+    private MessageBody messageBody;
     private Session session;
 
-    public HttpRequest(RequestLine requestLine, HttpRequestHeaders requestHeaders, RequestBody requestBody) {
+    public HttpRequest(RequestLine requestLine, HttpRequestHeaders requestHeaders, MessageBody messageBody) {
         this.requestLine = requestLine;
         this.requestHeaders = requestHeaders;
-        this.requestBody = requestBody;
+        this.messageBody = messageBody;
     }
 
-    public HttpRequest(RequestLine requestLine, HttpRequestHeaders requestHeaders) {
-        this(requestLine, requestHeaders, null);
-    }
 
-    public HttpRequest(RequestLine requestLine) {
-        this(requestLine, new HttpRequestHeaders(List.of()));
-    }
 
     public RequestLine getRequestLine() {
         return requestLine;
@@ -33,8 +26,8 @@ public class HttpRequest {
         return requestHeaders;
     }
 
-    public RequestBody getRequestBody() {
-        return requestBody;
+    public MessageBody getMessageBody() {
+        return messageBody;
     }
 
     public void setSession(Session session) {
@@ -43,5 +36,17 @@ public class HttpRequest {
 
     public Session getSession() {
         return session;
+    }
+
+    public boolean isGet() {
+        return HttpMethod.GET == requestLine.getMethod();
+    }
+
+    public boolean isPost() {
+        return HttpMethod.POST == requestLine.getMethod();
+    }
+
+    public Path getPath() {
+        return requestLine.path();
     }
 }
