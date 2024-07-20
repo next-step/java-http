@@ -47,8 +47,6 @@ public class Http11Processor implements Runnable, Processor {
 
         } catch (IOException | UncheckedServletException e) {
             log.error(e.getMessage(), e);
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
         }
     }
 
