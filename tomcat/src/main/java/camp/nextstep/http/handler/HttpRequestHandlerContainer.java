@@ -9,14 +9,8 @@ import camp.nextstep.http.domain.HttpResponse;
 public class HttpRequestHandlerContainer {
     private List<HttpRequestHandler> httpRequestHandlers;
 
-    //TODO 이부분은 나중에 외부 주입으로
-    public HttpRequestHandlerContainer() {
-        httpRequestHandlers = List.of(
-            new RootHttpRequestHandler(),
-            new LoginHttpRequestHandler(),
-            new RegisterHttpRequestHandler(),
-            new FileHttpRequestHandler()
-        );
+    public HttpRequestHandlerContainer(List<HttpRequestHandler> httpRequestHandlers) {
+        this.httpRequestHandlers = httpRequestHandlers;
     }
 
     public HttpResponse handleRequest(InputStream inputStream) {

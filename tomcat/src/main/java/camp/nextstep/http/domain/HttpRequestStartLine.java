@@ -12,7 +12,7 @@ import static camp.nextstep.http.enums.HttpVersion.NONE;
 import static camp.nextstep.http.enums.HttpVersion.getHttpVersionByVersion;
 import static camp.nextstep.util.EnumUtil.searchEnum;
 
-public class HttpStartLine {
+public class HttpRequestStartLine {
     private static final int REQUEST_LINE_ARGS_COUNT = 3;
     private static final int HTTP_PROTOCOL_ARGS_COUNT = 2;
     private static final int HTTP_METHOD_INDEX = 0;
@@ -26,7 +26,7 @@ public class HttpStartLine {
     private HttpVersion version;
     private Path path;
 
-    public HttpStartLine(
+    public HttpRequestStartLine(
             HttpMethod method,
             Path path,
             Protocol protocol,
@@ -46,7 +46,7 @@ public class HttpStartLine {
         return method;
     }
 
-    public static HttpStartLine createHttpStartLineByReader(BufferedReader bufferedReader) throws IOException {
+    public static HttpRequestStartLine createHttpStartLineByReader(BufferedReader bufferedReader) throws IOException {
         String requestLineStr = bufferedReader.readLine();
         String[] requestArgs = requestLineStr.split("\\s+");
         if (requestArgs.length != REQUEST_LINE_ARGS_COUNT) {
@@ -64,7 +64,7 @@ public class HttpStartLine {
         HttpVersion version = getHttpVersionFromStr(httpArgs[HTTP_VERSION_INDEX]);
         Path path = Path.createPathByPathStr(requestArgs[HTTP_PATH_INDEX]);
 
-        return new HttpStartLine(
+        return new HttpRequestStartLine(
                 method,
                 path,
                 protocol,

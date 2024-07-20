@@ -9,25 +9,25 @@ import java.io.InputStreamReader;
 
 import static camp.nextstep.http.domain.HttpHeader.createHeadersFromReader;
 import static camp.nextstep.http.domain.HttpRequestBody.createHttpRequestBodyFromReader;
-import static camp.nextstep.http.domain.HttpStartLine.createHttpStartLineByReader;
+import static camp.nextstep.http.domain.HttpRequestStartLine.createHttpStartLineByReader;
 
 public class RequestLine {
-    private HttpStartLine httpStartLine;
+    private HttpRequestStartLine httpStartLine;
     private HttpHeader httpHeader;
     private HttpRequestBody httpRequestBody;
 
-    private RequestLine(HttpStartLine httpStartLine, HttpHeader httpHeader) {
+    private RequestLine(HttpRequestStartLine httpStartLine, HttpHeader httpHeader) {
         this.httpStartLine = httpStartLine;
         this.httpHeader = httpHeader;
     }
 
-    private RequestLine(HttpStartLine httpStartLine, HttpHeader httpHeader, HttpRequestBody httpRequestBody) {
+    private RequestLine(HttpRequestStartLine httpStartLine, HttpHeader httpHeader, HttpRequestBody httpRequestBody) {
         this.httpStartLine = httpStartLine;
         this.httpHeader = httpHeader;
         this.httpRequestBody = httpRequestBody;
     }
 
-    public HttpStartLine getHttpStartLine() {
+    public HttpRequestStartLine getHttpStartLine() {
         return httpStartLine;
     }
 
@@ -38,7 +38,7 @@ public class RequestLine {
     public static RequestLine createRequestLineByInputStream(InputStream inputStream) {
         try {
             BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
-            HttpStartLine httpStartLine = createHttpStartLineByReader(bufferedReader);
+            HttpRequestStartLine httpStartLine = createHttpStartLineByReader(bufferedReader);
             HttpHeader httpHeader = createHeadersFromReader(bufferedReader);
             if (httpHeader.hasContentLength()) {
                 HttpRequestBody httpRequestBody = createHttpRequestBodyFromReader(

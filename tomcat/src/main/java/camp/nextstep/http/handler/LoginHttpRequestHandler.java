@@ -16,7 +16,13 @@ public class LoginHttpRequestHandler implements HttpRequestHandler {
     private final String ACCOUNT = "account";
     private final String PASSWORD = "password";
 
-    private final UserService userService = new UserService();
+    private final UserService userService;
+    private final SessionHandler sessionHandler;
+
+    public LoginHttpRequestHandler(UserService userService, SessionHandler sessionHandler) {
+        this.userService = userService;
+        this.sessionHandler = sessionHandler;
+    }
 
     @Override
     public boolean isExactHandler(RequestLine requestLine) {
@@ -42,7 +48,7 @@ public class LoginHttpRequestHandler implements HttpRequestHandler {
     }
 
     private boolean isLoginPageRequest(RequestLine requestLine) {
-        HttpStartLine httpStartLine = requestLine.getHttpStartLine();
+        HttpRequestStartLine httpStartLine = requestLine.getHttpStartLine();
         return httpStartLine.getMethod() == HttpMethod.GET;
     }
 
