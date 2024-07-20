@@ -1,7 +1,6 @@
 package org.apache.coyote.http11.request;
 
 import org.apache.coyote.http11.HttpCookie;
-import org.apache.coyote.http11.constants.HttpCookies;
 import org.apache.coyote.http11.constants.HttpFormat;
 
 import java.util.HashMap;
@@ -29,7 +28,7 @@ public class HttpRequestHeaders {
 
 
     public HttpCookie getCookie() {
-        Object cookie = headers.get(HttpCookies.COOKIE_REQUEST_HEADER_FIELD);
+        Object cookie = headers.get(HttpFormat.HEADERS.COOKIE_REQUEST_HEADER_FIELD);
         if (cookie == null) {
             return null;
         }

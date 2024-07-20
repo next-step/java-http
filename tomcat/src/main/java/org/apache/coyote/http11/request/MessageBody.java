@@ -1,8 +1,8 @@
 package org.apache.coyote.http11.request;
 
-import java.util.Arrays;
+import org.apache.coyote.http11.MapUtils;
+
 import java.util.Map;
-import java.util.stream.Collectors;
 
 public class MessageBody {
 
@@ -12,16 +12,7 @@ public class MessageBody {
         this.entityMessage = entityMessage;
     }
 
-    public String getEntityMessage() {
-        return entityMessage;
-    }
-
-
     public Map<String, Object> toMap() {
-        return Arrays.stream(entityMessage.split("&"))
-                 .map(pair -> pair.split("="))
-                 .filter(keyValue -> keyValue.length == 2)
-                 .collect(Collectors.toMap(keyValue -> keyValue[0], keyValue -> keyValue[1]));
-
+        return MapUtils.parseKeyValuePair("=", entityMessage.split("&"));
     }
 }

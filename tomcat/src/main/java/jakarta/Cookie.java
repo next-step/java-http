@@ -1,7 +1,6 @@
 package jakarta;
 
 import org.apache.coyote.http11.HttpCookie;
-import org.apache.coyote.http11.constants.HttpCookies;
 
 import java.util.Map;
 
@@ -21,6 +20,6 @@ public class Cookie {
     }
 
     public static Cookie ofJsessionId(String jsessionId) {
-        return new Cookie(Map.of(HttpCookies.JSESSIONID, jsessionId));
+        return new Cookie(Map.of(HttpCookie.JSESSIONID, jsessionId));
     }
 }

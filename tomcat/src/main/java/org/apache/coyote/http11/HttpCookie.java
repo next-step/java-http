@@ -1,7 +1,5 @@
 package org.apache.coyote.http11;
 
-import org.apache.coyote.http11.constants.HttpCookies;
-
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -17,7 +15,7 @@ public class HttpCookie {
     }
 
     public HttpCookie(String line) {
-        this.cookies = toMap(line);
+        this.cookies = MapUtils.parseKeyValuePair(KEY_VALUE_DELIMITER, line.split(COOKIE_DELIMITER));
     }
 
     public static HttpCookie ofSessionId(String sessionId) {
@@ -30,7 +28,7 @@ public class HttpCookie {
         cookies.put(JSESSIONID, uuid.toString());
     }
 
-    public String toValue() {
+    public String toString() {
         return cookies.entrySet()
                 .stream()
                 .map(entry -> entry.getKey() + KEY_VALUE_DELIMITER + entry.getValue())
@@ -42,17 +40,11 @@ public class HttpCookie {
     }
 
     public String getSessionId() {
-        return cookies.get(HttpCookies.JSESSIONID);
+        return cookies.get(JSESSIONID);
     }
 
     public Map<String, String> getMap() {
         return Collections.unmodifiableMap(cookies);
     }
 
-    private Map<String, String> toMap(String line) {
-        return Arrays.stream(line.split(COOKIE_DELIMITER))
-                .map(cookie -> cookie.split("="))
-                .map(cookie -> Map.entry(cookie[0], cookie[1]))
-                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
-    }
 }

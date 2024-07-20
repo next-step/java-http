@@ -30,7 +30,7 @@ public record HttpResponseHeaders(MimeType mimeType, Charset charset, Location l
             message += HttpFormat.headerFieldValue(HttpFormat.HEADERS.LOCATION, location.url());
         }
         if (cookie != null) {
-            message += HttpFormat.headerFieldValue(HttpFormat.HEADERS.COOKIE_RESPONSE_HEADER_FIELD, cookie.toValue());
+            message += HttpFormat.headerFieldValue(HttpFormat.HEADERS.COOKIE_RESPONSE_HEADER_FIELD, cookie.toString());
         }
         return message;
     }

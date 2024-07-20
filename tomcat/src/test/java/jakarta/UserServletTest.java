@@ -1,7 +1,7 @@
 package jakarta;
 
 import org.apache.catalina.Session;
-import org.apache.coyote.http11.constants.HttpCookies;
+import org.apache.coyote.http11.HttpCookie;
 import org.apache.coyote.http11.request.HttpRequest;
 import org.apache.coyote.http11.request.HttpRequestHeaders;
 import org.apache.coyote.http11.request.MessageBody;
@@ -39,7 +39,7 @@ class UserServletTest {
 
         servlet.delegate(httpRequest, httpResponse);
 
-        assertTrue(httpResponse.generateMessage().contains(HttpCookies.JSESSIONID));
+        assertTrue(httpResponse.generateMessage().contains(HttpCookie.JSESSIONID));
     }
 
     @Test
