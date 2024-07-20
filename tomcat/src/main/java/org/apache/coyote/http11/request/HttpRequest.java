@@ -37,4 +37,16 @@ public class HttpRequest {
     public Session getSession() {
         return session;
     }
+
+    public boolean isGet() {
+        return HttpMethod.GET == requestLine.getMethod();
+    }
+
+    public boolean isPost() {
+        return HttpMethod.POST == requestLine.getMethod();
+    }
+
+    public Path getPath() {
+        return requestLine.path();
+    }
 }

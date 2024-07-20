@@ -17,6 +17,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
 class UserServletTest {
@@ -34,12 +35,13 @@ class UserServletTest {
 
         final var requestBody = new MessageBody("account=gugu&password=password");
         final var requestLine = new RequestLine("POST /login HTTP/1.1");
-        final var httpRequest = new HttpRequest(requestLine, new HttpRequestHeaders(List.of("Host: localhost:8080")), requestBody);
-        final var httpResponse = new HttpResponse(new StatusLine(requestLine.getHttpProtocol(), HttpStatusCode.OK));
 
-        servlet.delegate(httpRequest, httpResponse);
+        var httpServletRequest = new HttpServletRequest(requestLine, null, null, requestBody);
+        var httpServletResponse = new HttpServletResponse();
 
-        assertTrue(httpResponse.generateMessage().contains(HttpCookie.JSESSIONID));
+        servlet.doPost(httpServletRequest, httpServletResponse);
+
+        assertThat(httpServletResponse.getJsessionId()).isNotNull();
     }
 
     @Test
@@ -48,16 +50,14 @@ class UserServletTest {
 
         final var requestBody = new MessageBody("account=gugu&password=password");
         final var requestLine = new RequestLine("POST /login HTTP/1.1");
-        final var requestHeaders = new HttpRequestHeaders(List.of("Host: localhost:8080", "Cookie: JSESSIONID=1234"));
-        final var httpRequest = new HttpRequest(requestLine, requestHeaders, requestBody);
         Session session = new Session(UUID.randomUUID().toString());
-        httpRequest.setSession(session);
-        final var httpResponse = new HttpResponse(new StatusLine(requestLine.getHttpProtocol(), HttpStatusCode.OK));
 
-        servlet.delegate(httpRequest, httpResponse);
+        var httpServletRequest = new HttpServletRequest(requestLine, session, Cookie.ofJsessionId(session.getId()), requestBody);
+        var httpServletResponse = new HttpServletResponse();
 
-        System.out.println(httpResponse.generateMessage());
-        assertTrue(httpResponse.generateMessage().contains("JSESSIONID="+session.getId()));
+        servlet.doPost(httpServletRequest, httpServletResponse);
+
+        assertThat(httpServletResponse.getJsessionId()).isEqualTo(session.getId());
     }
 
 

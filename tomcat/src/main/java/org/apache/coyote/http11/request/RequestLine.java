@@ -3,8 +3,6 @@ package org.apache.coyote.http11.request;
 
 import org.apache.coyote.http11.HttpProtocol;
 
-import java.util.Map;
-
 public class RequestLine {
 
     private final static String DELIMITER = " ";
@@ -34,6 +32,10 @@ public class RequestLine {
 
     public String getPath() {
         return path.getPath();
+    }
+
+    public Path path() {
+        return path;
     }
 
     public QueryString getQueryString() {

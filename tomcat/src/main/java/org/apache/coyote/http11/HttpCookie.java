@@ -1,5 +1,7 @@
 package org.apache.coyote.http11;
 
+import jakarta.Cookie;
+
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -22,6 +24,10 @@ public class HttpCookie {
         HttpCookie httpCookie = new HttpCookie();
         httpCookie.addSessionId(UUID.fromString(sessionId));
         return httpCookie;
+    }
+
+    public void addCookie(Cookie cookie) {
+        cookies.putAll(cookie.value());
     }
 
     public void addSessionId(UUID uuid) {
@@ -47,4 +53,7 @@ public class HttpCookie {
         return Collections.unmodifiableMap(cookies);
     }
 
+    public boolean hasValues() {
+        return !cookies.isEmpty();
+    }
 }

@@ -2,6 +2,7 @@ package jakarta;
 
 import org.apache.coyote.http11.HttpCookie;
 
+import java.util.Collections;
 import java.util.Map;
 
 public class Cookie {
@@ -19,7 +20,15 @@ public class Cookie {
         return new Cookie(cookie.getMap());
     }
 
+    public String getValue(String key) {
+        return cookieMap.get(key);
+    }
+
     public static Cookie ofJsessionId(String jsessionId) {
         return new Cookie(Map.of(HttpCookie.JSESSIONID, jsessionId));
+    }
+
+    public Map<String, String> value() {
+        return Collections.unmodifiableMap(cookieMap);
     }
 }

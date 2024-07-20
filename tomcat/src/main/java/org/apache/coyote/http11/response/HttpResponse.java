@@ -1,12 +1,14 @@
 package org.apache.coyote.http11.response;
 
 
+import jakarta.HttpServletResponse;
 import org.apache.coyote.http11.constants.HttpFormat;
 
 public class HttpResponse {
 
     private StatusLine statusLine;
-    private HttpResponseHeaders httpResponseHeaders;
+    private String host;
+    private HttpResponseHeaders httpResponseHeaders = new HttpResponseHeaders();
     private MessageBody messageBody;
 
     public HttpResponse(StatusLine statusLine, HttpResponseHeaders httpResponseHeaders, MessageBody messageBody) {
@@ -19,8 +21,27 @@ public class HttpResponse {
         this(statusLine, httpResponseHeaders, MessageBody.EMPTY);
     }
 
-    public HttpResponse(StatusLine statusLine) {
+    public HttpResponse(StatusLine statusLine, String host) {
         this.statusLine = statusLine;
+        this.host = host;
+    }
+
+
+    public void update(HttpServletResponse httpServletResponse) {
+        this.statusLine = new StatusLine(statusLine.protocol(), httpServletResponse.getStatusCode());
+        this.messageBody = httpServletResponse.getMessageBody() != null ? httpServletResponse.getMessageBody() : MessageBody.EMPTY;
+
+        if (httpServletResponse.getCookie() != null) {
+            this.httpResponseHeaders.addCookie(httpServletResponse.getCookie());
+        }
+
+        if (httpServletResponse.getMimeType() != null) {
+            this.httpResponseHeaders.addMimeType(httpServletResponse.getMimeType());
+        }
+
+        if (httpServletResponse.getRedirectPath() != null) {
+            this.httpResponseHeaders.addLocation(Location.of(statusLine.protocol(), host, httpServletResponse.getRedirectPath()));
+        }
     }
 
 
@@ -38,18 +59,6 @@ public class HttpResponse {
         }
 
         return sb.toString();
-    }
-
-    public void setStatusLine(StatusLine statusLine) {
-        this.statusLine = statusLine;
-    }
-
-    public void setHttpResponseHeaders(HttpResponseHeaders httpResponseHeaders) {
-        this.httpResponseHeaders = httpResponseHeaders;
-    }
-
-    public void setResponseBody(MessageBody messageBody) {
-        this.messageBody = messageBody;
     }
 
 
