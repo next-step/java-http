@@ -4,6 +4,7 @@ import camp.nextstep.http.enums.ContentType;
 import camp.nextstep.http.exception.ResourceNotFoundException;
 
 import java.io.*;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -11,14 +12,15 @@ import java.util.stream.Stream;
 import static camp.nextstep.http.domain.StaticResource.createResourceFromPath;
 
 public class HttpResponse {
-    private static final String SUCCESS_HEADER = "HTTP/1.1 200 OK ";
-    private static final String NOTFOUND_HEADER = "HTTP/1.1 404 NOT FOUND ";
-    private static final String REDIRECT_HEADER = "HTTP/1.1 302 FOUND ";
-    private static final String BAD_REQUEST_HEADER = "HTTP/1.1 401 BAD REQUEST ";
+    private static final String SUCCESS_RESPONSE_START_LINE = "HTTP/1.1 200 OK ";
+    private static final String NOTFOUND_RESPONSE_START_LINE = "HTTP/1.1 404 NOT FOUND ";
+    private static final String REDIRECT_RESPONSE_START_LINE = "HTTP/1.1 302 FOUND ";
+    private static final String BAD_REQUEST_RESPONSE_START_LINE = "HTTP/1.1 401 BAD REQUEST ";
     private static final String DEFAULT_CHARSET = "charset=utf-8 ";
     private static final String CONTENT_TYPE_FORMAT = "Content-Type: %s;%s";
     private static final String CONTENT_LENGTH_FORMAT = "Content-Length: %s ";
     private static final String LOCATION_FORMAT = "Location: %s ";
+    private static final String HEADER_JOINER = ": ";
 
     private String responseStr;
 
@@ -32,7 +34,11 @@ public class HttpResponse {
 
     public static HttpResponse createSuccessResponseByFile(File file) {
         try {
-            return createResponseByFileAndHeader(file, SUCCESS_HEADER);
+            return createResponseByFileAndHeader(
+                    file,
+                    SUCCESS_RESPONSE_START_LINE,
+                    null
+            );
         } catch (IOException ex) {
             ex.printStackTrace();
             return createNotFoundResponseByString();
@@ -42,7 +48,20 @@ public class HttpResponse {
     public static HttpResponse createRedirectResponseByPath(String path) {
         String responseBody = String.format(LOCATION_FORMAT, path);
         final var response = String.join("\r\n",
-                REDIRECT_HEADER,
+                REDIRECT_RESPONSE_START_LINE,
+                responseBody);
+
+        return new HttpResponse(response);
+    }
+
+    public static HttpResponse createRedirectResponseByPathWithHeader(
+            String path,
+            Map<String, String> headers
+    ) {
+        String responseBody = String.format(LOCATION_FORMAT, path);
+        final var response = String.join("\r\n",
+                REDIRECT_RESPONSE_START_LINE,
+                headersToHeaderStr(headers),
                 responseBody);
 
         return new HttpResponse(response);
@@ -51,7 +70,11 @@ public class HttpResponse {
     public static HttpResponse createBadRequestResponse(ClassLoader classLoader) {
         try {
             File notFoundFile = createResourceFromPath("/401.html", classLoader).getResourceFile();
-            return createResponseByFileAndHeader(notFoundFile, BAD_REQUEST_HEADER);
+            return createResponseByFileAndHeader(
+                    notFoundFile,
+                    BAD_REQUEST_RESPONSE_START_LINE,
+                    null
+            );
         } catch (IOException ex) {
             ex.printStackTrace();
             return createNotFoundResponseByString();
@@ -67,7 +90,7 @@ public class HttpResponse {
         return createResponse(
             contentTypeStr,
             responseBody,
-            SUCCESS_HEADER
+                SUCCESS_RESPONSE_START_LINE
         );
     }
 
@@ -81,7 +104,7 @@ public class HttpResponse {
         return createResponse(
             contentTypeStr,
             responseBody,
-            NOTFOUND_HEADER
+                NOTFOUND_RESPONSE_START_LINE
         );
     }
 
@@ -95,11 +118,15 @@ public class HttpResponse {
         return createResponse(
                 contentTypeStr,
                 responseBody,
-                BAD_REQUEST_HEADER
+                BAD_REQUEST_RESPONSE_START_LINE
         );
     }
 
-    private static HttpResponse createResponseByFileAndHeader(File file, String header) throws IOException {
+    private static HttpResponse createResponseByFileAndHeader(
+            File file,
+            String responseStartLine,
+            Map<String, String> headers
+    ) throws IOException {
         String fileExt = getExtensionByStringHandling(file.getName())
                 .orElseThrow(() -> new ResourceNotFoundException("파일확장자 불명확 : " + file.getName()));
 
@@ -116,8 +143,19 @@ public class HttpResponse {
                 DEFAULT_CHARSET
         );
 
+        if (headers == null) {
+            final var response = String.join("\r\n",
+                    responseStartLine,
+                    contentTypeStr,
+                    getContentLengthHeader(fileStr),
+                    "",
+                    fileStr);
+            return new HttpResponse(response);
+        }
+
         final var response = String.join("\r\n",
-                header,
+                responseStartLine,
+                headersToHeaderStr(headers),
                 contentTypeStr,
                 getContentLengthHeader(fileStr),
                 "",
@@ -153,5 +191,12 @@ public class HttpResponse {
         return Optional.ofNullable(filename)
                 .filter(f -> f.contains("."))
                 .map(f -> f.substring(filename.lastIndexOf(".") + 1));
+    }
+
+    private static String headersToHeaderStr(Map<String, String> headers) {
+        return headers.entrySet().stream()
+                .map(v -> v.getKey().concat(HEADER_JOINER).concat(v.getValue()))
+                .collect(Collectors.joining("\r\n"));
+
     }
 }

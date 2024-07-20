@@ -14,6 +14,7 @@ public class HttpHeader {
     private Map<String, String> httpHeaders;
     private HttpCookie httpCookie;
 
+    public static final String SET_COOKIE_HEADER = "Set-Cookie";
     private static final String CONTENT_LENGTH_HEADER = "Content-Length";
     private static final String CONTENT_TYPE_HEADER = "Content-Type";
     private static final Pattern HEADER_SEPARATOR = Pattern.compile(":");
@@ -48,6 +49,13 @@ public class HttpHeader {
                 httpCookie = HttpCookie.createHttpCookie(header[HEADER_VALUE_INDEX]);
             }
         }
+        return new HttpHeader(httpHeaders, httpCookie);
+    }
+
+    public static HttpHeader createNewCookieHeader(String cookie) {
+        HttpCookie httpCookie = HttpCookie.createHttpCookie(cookie);
+        Map<String, String> httpHeaders = new HashMap<>();
+        httpHeaders.put(SET_COOKIE_HEADER, httpCookie.getCookie());
         return new HttpHeader(httpHeaders, httpCookie);
     }
 

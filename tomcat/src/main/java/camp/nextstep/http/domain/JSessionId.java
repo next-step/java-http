@@ -3,6 +3,7 @@ package camp.nextstep.http.domain;
 import java.util.UUID;
 
 public class JSessionId {
+    private static final String JSESSION_ID_HEADER = "JSESSIONID=";
     private UUID jSessionId;
 
     private JSessionId(UUID jSessionId) {
@@ -19,5 +20,9 @@ public class JSessionId {
 
     public static JSessionId createJSessionId() {
         return new JSessionId(UUID.randomUUID());
+    }
+
+    public static String createJSessionIdStr() {
+        return JSESSION_ID_HEADER.concat(createJSessionId().jSessionId.toString());
     }
 }

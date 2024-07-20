@@ -7,6 +7,7 @@ import camp.nextstep.service.UserService;
 import java.util.Map;
 
 import static camp.nextstep.http.domain.HttpResponse.*;
+import static camp.nextstep.http.domain.JSessionId.createJSessionIdStr;
 import static camp.nextstep.http.domain.StaticResource.createResourceFromPath;
 
 public class LoginHttpRequestHandler implements HttpRequestHandler {
@@ -55,7 +56,11 @@ public class LoginHttpRequestHandler implements HttpRequestHandler {
         String password = parsedRequestBody.get(PASSWORD);
 
         if (userService.isUserPresent(account, password)) {
-            return createRedirectResponseByPath("/index.html");
+            String jSessionStr = createJSessionIdStr();
+
+            Map<String, String> cookieHeader = HttpHeader.createNewCookieHeader(jSessionStr)
+                    .getHttpHeaders();
+            return createRedirectResponseByPathWithHeader("/index.html", cookieHeader);
         }
         return createRedirectResponseByPath("/401.html");
     }
