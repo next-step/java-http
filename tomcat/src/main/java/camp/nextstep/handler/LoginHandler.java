@@ -37,13 +37,13 @@ public class LoginHandler extends AbstractController {
         session.setAttribute("user", userOptional.get());
         response.setJSessionId(session.getId());
 
-        sendResponse(REDIRECT_PATH, response, HttpStatus.REDIRECT);
+        sendResponse(REDIRECT_PATH, response, HttpStatus.FOUND);
     }
 
     @Override
     protected void doGet(HttpRequest request, HttpResponse response) throws IOException {
         if(existSession(request.getCookie())) {
-            sendResponse(REDIRECT_PATH, response, HttpStatus.REDIRECT);
+            sendResponse(REDIRECT_PATH, response, HttpStatus.FOUND);
         }
 
         sendResponse(LOGIN_RESOURCE_PATH, response, HttpStatus.SUCCESS);

@@ -19,7 +19,7 @@ public class RegisterHandler extends AbstractController {
     @Override
     protected void doPost(HttpRequest request, HttpResponse response) throws IOException {
         registerUser(request);
-        sendResponse(REDIRECT_PATH, response, HttpStatus.REDIRECT);
+        sendResponse(REDIRECT_PATH, response, HttpStatus.FOUND);
     }
 
     @Override
