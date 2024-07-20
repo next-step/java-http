@@ -13,6 +13,12 @@ public class UserService {
                 .orElse(false);
     }
 
+    public User findUser(String account, String password) {
+        return findByAccount(account)
+                .filter(v -> v.checkPassword(password))
+                .orElse(null);
+    }
+
     public void registerUser(String account, String password, String email) {
         findByAccount(account)
                 .ifPresent(v -> {throw new DuplicateUserException("중복 유저");});

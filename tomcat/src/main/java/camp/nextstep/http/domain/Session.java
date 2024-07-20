@@ -10,7 +10,7 @@ public class Session {
         this.id = id;
     }
 
-    private Session(String id, Map<String, Object> attributeMap) {
+    public Session(String id, Map<String, Object> attributeMap) {
         this.id = id;
         this.attributeMap = attributeMap;
     }

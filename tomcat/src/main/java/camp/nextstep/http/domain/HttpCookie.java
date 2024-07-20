@@ -31,6 +31,10 @@ public class HttpCookie {
         return cookie;
     }
 
+    public JSessionId getJsessionId() {
+        return jsessionId;
+    }
+
     public static HttpCookie createHttpCookie(String cookieStr) {
         String[] httpCookies = COOKIE_SEPARATOR.split(cookieStr);
         Map<String, String> cookieMap = new HashMap<>();

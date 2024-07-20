@@ -11,8 +11,6 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static camp.nextstep.http.domain.JSessionId.createJSessionIdStr;
-
 public class HttpResponseHeader {
     public static final HttpResponseHeader EMPTY = new HttpResponseHeader();
 

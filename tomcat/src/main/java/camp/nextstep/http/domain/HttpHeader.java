@@ -29,6 +29,10 @@ public class HttpHeader {
         this.httpCookie = httpCookie;
     }
 
+    public HttpCookie getHttpCookie() {
+        return httpCookie;
+    }
+
     public static HttpHeader createHeadersFromReader(
             BufferedReader bufferedReader
     ) throws IOException {

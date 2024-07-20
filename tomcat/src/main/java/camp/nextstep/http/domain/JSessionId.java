@@ -22,7 +22,7 @@ public class JSessionId {
         return new JSessionId(UUID.randomUUID());
     }
 
-    public static String createJSessionIdStr() {
-        return JSESSION_ID_HEADER.concat(createJSessionId().jSessionId.toString());
+    public String getJSessionIdStr() {
+        return JSESSION_ID_HEADER.concat(jSessionId.toString());
     }
 }

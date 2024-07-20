@@ -35,6 +35,10 @@ public class RequestLine {
         return httpRequestBody;
     }
 
+    public HttpHeader getHttpHeader() {
+        return httpHeader;
+    }
+
     public static RequestLine createRequestLineByInputStream(InputStream inputStream) {
         try {
             BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
