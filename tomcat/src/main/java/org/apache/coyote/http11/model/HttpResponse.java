@@ -38,7 +38,7 @@ public class HttpResponse {
 
     public void send() throws IOException {
         List<String> responseLines = new ArrayList<>();
-        responseLines.add("HTTP/1.1 " + status.getCode() + " " + status.getMessage() + " ");
+        responseLines.add("HTTP/1.1 " + status.getCode() + " " + status.getReasonPhrase() + " ");
         responseLines.add("Content-Type: " + contentType.getType() + ";charset=utf-8 ");
         responseLines.add("Content-Length: " + content.getBytes().length + " ");
 

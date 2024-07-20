@@ -9,16 +9,16 @@ public enum HttpStatus {
     ;
 
     private final int code;
-    private final String message;
+    private final String reasonPhrase;
 
     HttpStatus(int code, String message) {
         this.code = code;
-        this.message = message;
+        this.reasonPhrase = message;
     }
 
     public int getCode() {
         return code;
     }
 
-    public String getMessage() { return message; }
+    public String getReasonPhrase() { return reasonPhrase; }
 }
