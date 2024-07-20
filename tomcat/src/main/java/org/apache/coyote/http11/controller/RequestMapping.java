@@ -15,11 +15,11 @@ public class RequestMapping {
 	}
 
 	public Controller getController(final String path) {
-		Controller controller = controllers.get(path);
-		if (controller == null) {
-			controller = new StaticController();
+		if(path.startsWith("/css")||path.startsWith("/js")||path.startsWith("/images")||path.startsWith("/fonts")||path.startsWith("/favicon.ico")) {
+			return new StaticController();
 		}
 
+		Controller controller = controllers.get(path);
 		return controller;
 	}
 }
