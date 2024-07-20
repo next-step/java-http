@@ -4,7 +4,7 @@ import java.io.InputStream;
 import java.util.List;
 
 import camp.nextstep.http.domain.RequestLine;
-import camp.nextstep.http.domain.HttpResponse;
+import camp.nextstep.http.domain.response.HttpResponse;
 
 public class HttpRequestHandlerContainer {
     private List<HttpRequestHandler> httpRequestHandlers;

@@ -1,12 +1,8 @@
 package camp.nextstep.http.handler;
 
-import java.io.File;
-import java.io.IOException;
-import java.net.URISyntaxException;
-
 import camp.nextstep.http.domain.RequestLine;
 import camp.nextstep.http.domain.StaticResource;
-import camp.nextstep.http.domain.HttpResponse;
+import camp.nextstep.http.domain.response.HttpResponse;
 
 /**
  * 마지막에 동작하는 핸들러로, path의 파일이 있으면 true, 없으면 notfound 반환

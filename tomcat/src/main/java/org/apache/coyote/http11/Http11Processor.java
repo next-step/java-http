@@ -2,7 +2,7 @@ package org.apache.coyote.http11;
 
 import camp.nextstep.exception.UncheckedServletException;
 import camp.nextstep.http.config.ServerStartUpConfig;
-import camp.nextstep.http.domain.HttpResponse;
+import camp.nextstep.http.domain.response.HttpResponse;
 import org.apache.coyote.Processor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,7 +15,7 @@ public class Http11Processor implements Runnable, Processor {
 
     private static final Logger log = LoggerFactory.getLogger(Http11Processor.class);
     private final Socket connection;
-
+    private final ServerStartUpConfig serverStartUpConfig = new ServerStartUpConfig();
     public Http11Processor(
         final Socket connection
     ) {
@@ -33,7 +33,7 @@ public class Http11Processor implements Runnable, Processor {
         try (final var inputStream = connection.getInputStream();
              final var outputStream = connection.getOutputStream()
         ) {
-             HttpResponse httpResponse = ServerStartUpConfig.getHttpRequestHandlerContainer()
+             HttpResponse httpResponse = serverStartUpConfig.getHttpRequestHandlerContainer()
                      .handleRequest(inputStream);
              writeResponse(httpResponse.getResponseStr(), outputStream);
         } catch (IOException | UncheckedServletException e) {

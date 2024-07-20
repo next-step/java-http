@@ -1,7 +1,7 @@
 package camp.nextstep.http.handler;
 
 import camp.nextstep.http.domain.HttpRequestBody;
-import camp.nextstep.http.domain.HttpResponse;
+import camp.nextstep.http.domain.response.HttpResponse;
 import camp.nextstep.http.domain.RequestLine;
 import camp.nextstep.http.domain.StaticResource;
 import camp.nextstep.http.enums.HttpMethod;
@@ -10,8 +10,8 @@ import camp.nextstep.service.UserService;
 
 import java.util.Map;
 
-import static camp.nextstep.http.domain.HttpResponse.createBadRequestResponseByString;
-import static camp.nextstep.http.domain.HttpResponse.createRedirectResponseByPath;
+import static camp.nextstep.http.domain.response.HttpResponse.createBadRequestResponseByString;
+import static camp.nextstep.http.domain.response.HttpResponse.createRedirectResponseByPath;
 import static camp.nextstep.http.domain.StaticResource.createResourceFromPath;
 
 public class RegisterHttpRequestHandler implements HttpRequestHandler {

@@ -1,7 +1,7 @@
 package camp.nextstep.http.handler;
 
 import camp.nextstep.http.domain.RequestLine;
-import camp.nextstep.http.domain.HttpResponse;
+import camp.nextstep.http.domain.response.HttpResponse;
 import org.junit.jupiter.api.Test;
 
 import java.io.ByteArrayInputStream;

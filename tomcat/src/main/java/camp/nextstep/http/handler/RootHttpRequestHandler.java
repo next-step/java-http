@@ -1,7 +1,7 @@
 package camp.nextstep.http.handler;
 
 import camp.nextstep.http.domain.RequestLine;
-import camp.nextstep.http.domain.HttpResponse;
+import camp.nextstep.http.domain.response.HttpResponse;
 
 public class RootHttpRequestHandler implements HttpRequestHandler {
     @Override
@@ -11,6 +11,6 @@ public class RootHttpRequestHandler implements HttpRequestHandler {
     @Override
     public HttpResponse makeResponse(RequestLine requestLine) {
         final var responseBody = "Hello world!";
-        return HttpResponse.createResponseByString(responseBody);
+        return HttpResponse.createSuccessResponseByString(responseBody);
     }
 }

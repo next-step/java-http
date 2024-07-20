@@ -1,12 +1,13 @@
 package camp.nextstep.http.handler;
 
 import camp.nextstep.http.domain.*;
+import camp.nextstep.http.domain.response.HttpResponse;
 import camp.nextstep.http.enums.HttpMethod;
 import camp.nextstep.service.UserService;
 
 import java.util.Map;
 
-import static camp.nextstep.http.domain.HttpResponse.*;
+import static camp.nextstep.http.domain.response.HttpResponse.*;
 import static camp.nextstep.http.domain.JSessionId.createJSessionIdStr;
 import static camp.nextstep.http.domain.StaticResource.createResourceFromPath;
 
@@ -63,10 +64,7 @@ public class LoginHttpRequestHandler implements HttpRequestHandler {
 
         if (userService.isUserPresent(account, password)) {
             String jSessionStr = createJSessionIdStr();
-
-            Map<String, String> cookieHeader = HttpHeader.createNewCookieHeader(jSessionStr)
-                    .getHttpHeaders();
-            return createRedirectResponseByPathWithHeader("/index.html", cookieHeader);
+            return createRedirectResponseByPathAndSetCookie("/index.html", jSessionStr);
         }
         return createRedirectResponseByPath("/401.html");
     }
