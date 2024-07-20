@@ -16,12 +16,7 @@ public class CoyoteAdapter {
         final var cookie = request.getRequestHeaders().getCookie();
         if (cookie != null && cookie.contains(HttpCookie.JSESSIONID)) {
             String sessionId = cookie.getSessionId();
-            Session session = sessionManager.findSession(sessionId);
-            if (session == null) {
-                session = new Session(sessionId);
-                sessionManager.add(session);
-            }
-            request.setSession(session);
+            request.setSession(sessionManager.getOrCreate(sessionId));
         }
     }
 }

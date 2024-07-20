@@ -26,4 +26,10 @@ public class SessionManager implements Manager {
     public void remove(Session session) {
         SESSIONS.remove(session.getId());
     }
+
+    public Session getOrCreate(String sessionId) {
+        Session session = SESSIONS.getOrDefault(sessionId, new Session(sessionId));
+        SESSIONS.put(sessionId, session);
+        return session;
+    }
 }
