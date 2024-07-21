@@ -36,7 +36,7 @@ public class HttpServletRequest {
     }
 
     public Session getSession(boolean create) {
-        if (create) {
+        if (this.session == null && create) {
             this.session = new Session(UUID.randomUUID().toString());
         }
         return this.session;
