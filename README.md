@@ -63,19 +63,19 @@
   - [x] String.SPLIT PATTERN 객체 생성 주입
   - [x] 코드간 스타일 (상수 + 변수 개행)
 - [] 요구사항 1 - GET /index.html 응답하기
-  - [] Resource를 반환하는 기능 지원
-- [] 요구사항 2 - GET CSS 지원하기
-  - [] Request에 header 추가로 읽어오기 (Content-Type 추가)
-  - [] Response에 header 추가하기 (Content-Type 추가)
+  - [x] Resource를 반환하는 기능 지원
+- [x] 요구사항 2 - GET CSS 지원하기
+  - [x] Request에 header 추가로 읽어오기 (Content-Type 추가)
+  - [x] Response에 header 추가하기 (Content-Type 추가)
 - [] 요구사항 3 - GET QUERY 파싱하기
   - [] InMemoryUserRepository 사용해서 회원 조회
 - [] 요구사항 4 - 공통 설계 요구사항
-  - [] HTTP RESPONSE를 생성하는 책임을 분리 (Factory)
-  - [] HTTP RESPONSE 도메인 객체 생성 + HEADER 추가
-  - [] HTTP Request에 따른 Resource 맵핑 하는 책임을 가진 ControllerFactoryProvider 생성
-  - [] ControllerFactoryProvider가 url 맵핑 리소스들을 스캐닝해와서 HttpResponse를 만드는 Factory와 연결한다. 
-  - [] Factory가 RequestMethod에 따라 Strategy를 구성해서 Response를 반환합니다.
-  - [] Response Test 생성
+  - [x] HTTP RESPONSE를 생성하는 책임을 분리 (Factory)
+  - [x] HTTP RESPONSE 도메인 객체 생성 + HEADER 추가
+  - [x] HTTP Request에 따른 Resource 맵핑 하는 책임을 가진 ControllerFactoryProvider 생성
+  - [x] ControllerFactoryProvider가 url 맵핑 리소스들을 스캐닝해와서 HttpResponse를 만드는 Factory와 연결한다. 
+  - [x] Factory가 RequestMethod에 따라 Strategy를 구성해서 Response를 반환합니다.
+  - [x] Response Test 생성
   - [x] Request Test 생성
 
    
