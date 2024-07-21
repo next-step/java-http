@@ -15,17 +15,17 @@ import java.util.regex.Pattern;
 import static camp.nextstep.http.domain.StaticResource.createResourceFromPath;
 
 public class RegisterController extends AbstractController implements Controller {
-    private final String REGISTER_PATH = "/register";
+    private final Pattern REGISTER_PATH_PATTERN = Pattern.compile("/register");
     private final String REGISTER_PAGE_PATH = "/register.html";
     private final String ACCOUNT = "account";
     private final String PASSWORD = "password";
     private final String EMAIL = "email";
 
     private final RequestMappingKey REGISTER_PAGE_KEY =
-            new RequestMappingKey(Pattern.compile(REGISTER_PATH), HttpMethod.GET);
+            new RequestMappingKey(REGISTER_PATH_PATTERN, HttpMethod.GET);
 
     private final RequestMappingKey REGISTER_KEY =
-            new RequestMappingKey(Pattern.compile(REGISTER_PATH), HttpMethod.POST);
+            new RequestMappingKey(REGISTER_PATH_PATTERN, HttpMethod.POST);
 
     private final List<RequestMappingKey> requestMappingKeys =
             List.of(
