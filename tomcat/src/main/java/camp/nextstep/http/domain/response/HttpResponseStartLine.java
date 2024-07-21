@@ -1,34 +1,69 @@
 package camp.nextstep.http.domain.response;
 
+import camp.nextstep.enums.Protocol;
+import camp.nextstep.http.enums.HttpStatus;
+import camp.nextstep.http.enums.HttpVersion;
+
 public class HttpResponseStartLine {
-    private static final String SUCCESS_RESPONSE_START_LINE = "HTTP/1.1 200 OK ";
-    private static final String NOTFOUND_RESPONSE_START_LINE = "HTTP/1.1 404 NOT FOUND ";
-    private static final String REDIRECT_RESPONSE_START_LINE = "HTTP/1.1 302 FOUND ";
-    private static final String BAD_REQUEST_RESPONSE_START_LINE = "HTTP/1.1 401 BAD REQUEST ";
+    private static final String HTTP_RESPONSE_START_LINE_FORMAT = "%s/%s %s %s ";
 
-    private String responseStartLine;
+    private Protocol protocol;
+    private HttpVersion version;
+    private HttpStatus httpStatus;
 
-    private HttpResponseStartLine(String responseStartLine) {
-        this.responseStartLine = responseStartLine;
+    public HttpResponseStartLine(Protocol protocol, HttpVersion version, HttpStatus httpStatus) {
+        this.protocol = protocol;
+        this.version = version;
+        this.httpStatus = httpStatus;
     }
 
     public static HttpResponseStartLine createSuccessStartLine() {
-        return new HttpResponseStartLine(SUCCESS_RESPONSE_START_LINE);
+        return new HttpResponseStartLine(
+                Protocol.HTTP,
+                HttpVersion.VERSION_1_1,
+                HttpStatus.OK
+        );
     }
 
     public static HttpResponseStartLine createNotFoundStartLine() {
-        return new HttpResponseStartLine(NOTFOUND_RESPONSE_START_LINE);
+        return new HttpResponseStartLine(
+                Protocol.HTTP,
+                HttpVersion.VERSION_1_1,
+                HttpStatus.NOT_FOUND
+        );
     }
 
     public static HttpResponseStartLine createRedirectStartLine() {
-        return new HttpResponseStartLine(REDIRECT_RESPONSE_START_LINE);
+        return new HttpResponseStartLine(
+                Protocol.HTTP,
+                HttpVersion.VERSION_1_1,
+                HttpStatus.FOUND
+        );
     }
 
     public static HttpResponseStartLine createBadRequestStartLine() {
-        return new HttpResponseStartLine(BAD_REQUEST_RESPONSE_START_LINE);
+        return new HttpResponseStartLine(
+                Protocol.HTTP,
+                HttpVersion.VERSION_1_1,
+                HttpStatus.BAD_REQUEST
+        );
+    }
+
+    public static HttpResponseStartLine createInternalServerErrorStartLine() {
+        return new HttpResponseStartLine(
+                Protocol.HTTP,
+                HttpVersion.VERSION_1_1,
+                HttpStatus.BAD_REQUEST
+        );
     }
 
     public String getResponseStartLine() {
-        return responseStartLine;
+        return String.format(
+                HTTP_RESPONSE_START_LINE_FORMAT,
+                protocol.name(),
+                version.getVersion(),
+                httpStatus.getStatusCode(),
+                httpStatus.getMessage()
+        );
     }
 }

@@ -1,5 +1,6 @@
 package camp.nextstep.http.domain;
 
+import camp.nextstep.http.domain.request.HttpHeader;
 import org.junit.jupiter.api.Test;
 
 import java.io.BufferedReader;

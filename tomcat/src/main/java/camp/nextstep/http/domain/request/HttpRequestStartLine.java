@@ -1,6 +1,7 @@
-package camp.nextstep.http.domain;
+package camp.nextstep.http.domain.request;
 
 import camp.nextstep.enums.Protocol;
+import camp.nextstep.http.domain.Path;
 import camp.nextstep.http.enums.HttpMethod;
 import camp.nextstep.http.enums.HttpVersion;
 import camp.nextstep.http.exception.InvalidHttpRequestSpecException;

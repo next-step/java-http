@@ -1,5 +1,6 @@
 package camp.nextstep.http.domain;
 
+import camp.nextstep.http.domain.request.HttpRequest;
 import camp.nextstep.http.exception.ResourceNotFoundException;
 
 import java.io.File;
@@ -19,7 +20,7 @@ public class StaticResource {
     }
 
     public static StaticResource createResourceFromRequestLine(
-            RequestLine requestLine,
+            HttpRequest requestLine,
             ClassLoader classLoader
     ) {
         return createResourceFromPath(
