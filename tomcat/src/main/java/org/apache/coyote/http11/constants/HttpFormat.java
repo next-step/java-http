@@ -5,11 +5,11 @@ public final class HttpFormat {
     private HttpFormat() {
     }
 
-    public static final String SP = " ";
+    public static final String SPACE = " ";
     public static final String CRLF = "\r\n";
 
     public static String headerFieldValue(String key, String value) {
-        return key + HEADERS.FIELD_VALUE_DELIMITER + value + SP + CRLF;
+        return key + HEADERS.FIELD_VALUE_DELIMITER + value + SPACE + CRLF;
 
     }
     public static class HEADERS {

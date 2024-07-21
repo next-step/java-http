@@ -13,6 +13,6 @@ public record StatusLine(HttpProtocol protocol, HttpStatusCode statusCode) {
     }
 
     public String toMessage() {
-        return protocol.description() + HttpFormat.SP + statusCode.getCode() + HttpFormat.SP + statusCode.getDescription() + HttpFormat.SP + HttpFormat.CRLF;
+        return protocol.description() + HttpFormat.SPACE + statusCode.getCode() + HttpFormat.SPACE + statusCode.getDescription() + HttpFormat.SPACE + HttpFormat.CRLF;
     }
 }

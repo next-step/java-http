@@ -10,6 +10,7 @@ public class HttpResponse {
     private String host;
     private HttpResponseHeaders httpResponseHeaders = new HttpResponseHeaders();
     private MessageBody messageBody;
+    private Throwable cause;
 
     public HttpResponse(StatusLine statusLine, HttpResponseHeaders httpResponseHeaders, MessageBody messageBody) {
         this.statusLine = statusLine;
@@ -62,4 +63,8 @@ public class HttpResponse {
     }
 
 
+    public void setError(Throwable cause, HttpStatusCode httpStatusCode) {
+        this.statusLine = new StatusLine(statusLine.protocol(), httpStatusCode);
+        this.cause = cause;
+    }
 }
