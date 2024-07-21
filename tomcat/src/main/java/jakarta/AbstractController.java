@@ -7,14 +7,16 @@ public abstract class AbstractController implements Controller {
 
     @Override
     public void service(HttpRequest httpRequest, HttpResponse httpResponse) throws Exception {
-        var httpServletResponse = new HttpServletResponse();
 
         if (httpRequest.isGet()) {
+            var httpServletResponse = new HttpServletResponse();
             doGet(HttpServletRequest.from(httpRequest), httpServletResponse);
             httpResponse.update(httpServletResponse);
             return;
         }
+
         if (httpRequest.isPost()) {
+            var httpServletResponse = new HttpServletResponse();
             doPost(HttpServletRequest.from(httpRequest), httpServletResponse);
             httpResponse.update(httpServletResponse);
             return;
