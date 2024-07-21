@@ -1,8 +1,8 @@
 package camp.nextstep.http.handler;
 
-import camp.nextstep.http.domain.HttpRequestBody;
+import camp.nextstep.http.domain.request.HttpRequestBody;
 import camp.nextstep.http.domain.response.HttpResponse;
-import camp.nextstep.http.domain.RequestLine;
+import camp.nextstep.http.domain.request.HttpRequest;
 import camp.nextstep.http.domain.StaticResource;
 import camp.nextstep.http.enums.HttpMethod;
 import camp.nextstep.http.exception.DuplicateUserException;
@@ -24,7 +24,7 @@ public class RegisterHttpRequestHandler implements HttpRequestHandler {
     private final UserService userService = new UserService();
 
     @Override
-    public boolean isExactHandler(RequestLine requestLine) {
+    public boolean isExactHandler(HttpRequest requestLine) {
         return requestLine
                 .getHttpStartLine()
                 .getPath()
@@ -33,7 +33,7 @@ public class RegisterHttpRequestHandler implements HttpRequestHandler {
     }
 
     @Override
-    public HttpResponse makeResponse(RequestLine requestLine) {
+    public HttpResponse makeResponse(HttpRequest requestLine) {
         if (!isRegisterPageRequest(requestLine)) {
             return handleRegister(requestLine.getHttpRequestBody());
         }
@@ -46,7 +46,7 @@ public class RegisterHttpRequestHandler implements HttpRequestHandler {
         return HttpResponse.createSuccessResponseByFile(staticResource.getResourceFile());
     }
 
-    private boolean isRegisterPageRequest(RequestLine requestLine) {
+    private boolean isRegisterPageRequest(HttpRequest requestLine) {
         return requestLine.getHttpStartLine().getMethod() == HttpMethod.GET;
     }
 

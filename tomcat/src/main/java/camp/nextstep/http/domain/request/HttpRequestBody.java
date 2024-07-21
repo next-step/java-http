@@ -1,4 +1,4 @@
-package camp.nextstep.http.domain;
+package camp.nextstep.http.domain.request;
 
 import camp.nextstep.http.enums.ContentType;
 

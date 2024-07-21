@@ -1,5 +1,6 @@
-package camp.nextstep.http.domain;
+package camp.nextstep.http.domain.request;
 
+import camp.nextstep.http.domain.HttpCookie;
 import camp.nextstep.http.enums.ContentType;
 
 import java.io.BufferedReader;
@@ -17,7 +18,7 @@ public class HttpHeader {
     private static final Pattern HEADER_SEPARATOR = Pattern.compile(":");
     private static final int HEADER_KEY_INDEX = 0;
     private static final int HEADER_VALUE_INDEX = 1;
-    
+
     private Map<String, String> httpHeaders;
     private HttpCookie httpCookie;
 

@@ -1,6 +1,6 @@
 package camp.nextstep.http.handler;
 
-import camp.nextstep.http.domain.RequestLine;
+import camp.nextstep.http.domain.request.HttpRequest;
 import camp.nextstep.http.domain.StaticResource;
 import camp.nextstep.http.domain.response.HttpResponse;
 
@@ -9,12 +9,12 @@ import camp.nextstep.http.domain.response.HttpResponse;
  */
 public class FileHttpRequestHandler implements HttpRequestHandler {
     @Override
-    public boolean isExactHandler(RequestLine requestLine) {
+    public boolean isExactHandler(HttpRequest requestLine) {
         return true;
     }
 
     @Override
-    public HttpResponse makeResponse(RequestLine requestLine) {
+    public HttpResponse makeResponse(HttpRequest requestLine) {
         ClassLoader classLoader = getClass().getClassLoader();
         StaticResource resource = StaticResource.createResourceFromRequestLine(requestLine, classLoader);
         return HttpResponse.createSuccessResponseByFile(resource.getResourceFile());

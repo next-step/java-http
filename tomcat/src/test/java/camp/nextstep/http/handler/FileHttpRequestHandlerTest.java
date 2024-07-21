@@ -1,6 +1,6 @@
 package camp.nextstep.http.handler;
 
-import camp.nextstep.http.domain.RequestLine;
+import camp.nextstep.http.domain.request.HttpRequest;
 import camp.nextstep.http.domain.response.HttpResponse;
 import org.junit.jupiter.api.Test;
 
@@ -16,7 +16,7 @@ class FileHttpRequestHandlerTest {
         //given
         String line = "GET /index.html HTTP/1.1";
         InputStream inputStream = new ByteArrayInputStream(line.getBytes(StandardCharsets.UTF_8));
-        RequestLine requestLine = RequestLine.createRequestLineByInputStream(inputStream);
+        HttpRequest requestLine = HttpRequest.createRequestLineByInputStream(inputStream);
         FileHttpRequestHandler fileRequestHandler = new FileHttpRequestHandler();
 
         //when
@@ -31,7 +31,7 @@ class FileHttpRequestHandlerTest {
         //given
         String line = "GET /no.html HTTP/1.1";
         InputStream inputStream = new ByteArrayInputStream(line.getBytes(StandardCharsets.UTF_8));
-        RequestLine requestLine = RequestLine.createRequestLineByInputStream(inputStream);
+        HttpRequest requestLine = HttpRequest.createRequestLineByInputStream(inputStream);
         FileHttpRequestHandler fileRequestHandler = new FileHttpRequestHandler();
 
         //when

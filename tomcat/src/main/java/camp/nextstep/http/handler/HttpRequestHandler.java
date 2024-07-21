@@ -1,9 +1,9 @@
 package camp.nextstep.http.handler;
 
-import camp.nextstep.http.domain.RequestLine;
+import camp.nextstep.http.domain.request.HttpRequest;
 import camp.nextstep.http.domain.response.HttpResponse;
 
 public interface HttpRequestHandler {
-    HttpResponse makeResponse(RequestLine requestLine);
-    boolean isExactHandler(RequestLine requestLine);
+    HttpResponse makeResponse(HttpRequest requestLine);
+    boolean isExactHandler(HttpRequest requestLine);
 }

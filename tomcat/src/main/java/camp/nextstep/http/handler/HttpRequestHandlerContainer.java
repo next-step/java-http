@@ -3,7 +3,7 @@ package camp.nextstep.http.handler;
 import java.io.InputStream;
 import java.util.List;
 
-import camp.nextstep.http.domain.RequestLine;
+import camp.nextstep.http.domain.request.HttpRequest;
 import camp.nextstep.http.domain.response.HttpResponse;
 
 public class HttpRequestHandlerContainer {
@@ -14,7 +14,7 @@ public class HttpRequestHandlerContainer {
     }
 
     public HttpResponse handleRequest(InputStream inputStream) {
-        RequestLine requestLine = RequestLine.createRequestLineByInputStream(inputStream);
+        HttpRequest requestLine = HttpRequest.createRequestLineByInputStream(inputStream);
 
         return httpRequestHandlers.stream()
                 .filter(v -> v.isExactHandler(requestLine))

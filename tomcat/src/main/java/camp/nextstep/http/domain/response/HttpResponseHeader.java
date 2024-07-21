@@ -1,6 +1,6 @@
 package camp.nextstep.http.domain.response;
 
-import camp.nextstep.http.domain.HttpHeader;
+import camp.nextstep.http.domain.request.HttpHeader;
 import camp.nextstep.http.enums.ContentType;
 import camp.nextstep.http.exception.ResourceNotFoundException;
 

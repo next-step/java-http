@@ -1,5 +1,6 @@
 package camp.nextstep.http.domain;
 
+import camp.nextstep.http.domain.request.HttpRequest;
 import camp.nextstep.http.exception.InvalidHttpRequestSpecException;
 import org.junit.jupiter.api.Test;
 
@@ -9,7 +10,7 @@ import java.nio.charset.StandardCharsets;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class RequestLineTest {
+class HttpRequestTest {
     @Test
     void HTTP메소드가_유효하지_않을때_예외를_발생시킨다() {
         //given
@@ -19,7 +20,7 @@ class RequestLineTest {
         //when & then
         assertThrows(
                 InvalidHttpRequestSpecException.class,
-                () -> RequestLine.createRequestLineByInputStream(inputStream)
+                () -> HttpRequest.createRequestLineByInputStream(inputStream)
         );
     }
 
@@ -32,7 +33,7 @@ class RequestLineTest {
         //when & then
         assertThrows(
                 InvalidHttpRequestSpecException.class,
-                () -> RequestLine.createRequestLineByInputStream(inputStream)
+                () -> HttpRequest.createRequestLineByInputStream(inputStream)
         );
     }
 
@@ -45,7 +46,7 @@ class RequestLineTest {
         //when & then
         assertThrows(
                 InvalidHttpRequestSpecException.class,
-                () -> RequestLine.createRequestLineByInputStream(inputStream)
+                () -> HttpRequest.createRequestLineByInputStream(inputStream)
         );
     }
 
@@ -58,7 +59,7 @@ class RequestLineTest {
         //when & then
         assertThrows(
                 InvalidHttpRequestSpecException.class,
-                () -> RequestLine.createRequestLineByInputStream(inputStream)
+                () -> HttpRequest.createRequestLineByInputStream(inputStream)
         );
     }
 
@@ -71,7 +72,7 @@ class RequestLineTest {
         //when & then
         assertThrows(
                 InvalidHttpRequestSpecException.class,
-                () -> RequestLine.createRequestLineByInputStream(inputStream)
+                () -> HttpRequest.createRequestLineByInputStream(inputStream)
         );
     }
 
@@ -84,7 +85,7 @@ class RequestLineTest {
         //when & then
         assertThrows(
                 InvalidHttpRequestSpecException.class,
-                () -> RequestLine.createRequestLineByInputStream(inputStream)
+                () -> HttpRequest.createRequestLineByInputStream(inputStream)
         );
     }
 
@@ -95,8 +96,8 @@ class RequestLineTest {
         InputStream inputStream = new ByteArrayInputStream(requestLineStr.getBytes(StandardCharsets.UTF_8));
 
         //when
-        RequestLine requestLine =
-                RequestLine.createRequestLineByInputStream(inputStream);
+        HttpRequest requestLine =
+                HttpRequest.createRequestLineByInputStream(inputStream);
 
         //then
         assertNotNull(requestLine);
@@ -109,8 +110,8 @@ class RequestLineTest {
         InputStream inputStream = new ByteArrayInputStream(requestLineStr.getBytes(StandardCharsets.UTF_8));
 
         //when
-        RequestLine requestLine =
-                RequestLine.createRequestLineByInputStream(inputStream);
+        HttpRequest requestLine =
+                HttpRequest.createRequestLineByInputStream(inputStream);
 
         //then
         assertNotNull(requestLine);
@@ -123,8 +124,8 @@ class RequestLineTest {
         InputStream inputStream = new ByteArrayInputStream(requestLineStr.getBytes(StandardCharsets.UTF_8));
 
         //when
-        RequestLine requestLine =
-                RequestLine.createRequestLineByInputStream(inputStream);
+        HttpRequest requestLine =
+                HttpRequest.createRequestLineByInputStream(inputStream);
 
         //then
         assertNotNull(requestLine);

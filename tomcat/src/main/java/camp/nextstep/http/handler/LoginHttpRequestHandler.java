@@ -1,6 +1,9 @@
 package camp.nextstep.http.handler;
 
 import camp.nextstep.http.domain.*;
+import camp.nextstep.http.domain.request.HttpRequest;
+import camp.nextstep.http.domain.request.HttpRequestBody;
+import camp.nextstep.http.domain.request.HttpRequestStartLine;
 import camp.nextstep.http.domain.response.HttpResponse;
 import camp.nextstep.http.enums.HttpMethod;
 import camp.nextstep.model.User;
@@ -28,7 +31,7 @@ public class LoginHttpRequestHandler implements HttpRequestHandler {
     }
 
     @Override
-    public boolean isExactHandler(RequestLine requestLine) {
+    public boolean isExactHandler(HttpRequest requestLine) {
         return requestLine
                 .getHttpStartLine()
                 .getPath()
@@ -37,7 +40,7 @@ public class LoginHttpRequestHandler implements HttpRequestHandler {
     }
 
     @Override
-    public HttpResponse makeResponse(RequestLine requestLine) {
+    public HttpResponse makeResponse(HttpRequest requestLine) {
         if (!isLoginPageRequest(requestLine)) {
             return handleLogin(requestLine);
         }
@@ -54,12 +57,12 @@ public class LoginHttpRequestHandler implements HttpRequestHandler {
         return HttpResponse.createSuccessResponseByFile(staticResource.getResourceFile());
     }
 
-    private boolean isLoginPageRequest(RequestLine requestLine) {
+    private boolean isLoginPageRequest(HttpRequest requestLine) {
         HttpRequestStartLine httpStartLine = requestLine.getHttpStartLine();
         return httpStartLine.getMethod() == HttpMethod.GET;
     }
 
-    private HttpResponse handleLogin(RequestLine requestLine) {
+    private HttpResponse handleLogin(HttpRequest requestLine) {
         HttpRequestBody httpRequestBody = requestLine.getHttpRequestBody();
         Map<String, String> parsedRequestBody = httpRequestBody.getFormUrlEncodedRequestBody();
         if (!isValidQueryParams(parsedRequestBody)) {
@@ -84,7 +87,7 @@ public class LoginHttpRequestHandler implements HttpRequestHandler {
         sessionHandler.add(new Session(jSessionId.getJSessionId().toString(), map));
     }
 
-    private boolean existSession(RequestLine requestLine) {
+    private boolean existSession(HttpRequest requestLine) {
         HttpCookie httpCookie = requestLine.getHttpHeader().getHttpCookie();
 
         if (httpCookie == null) {
