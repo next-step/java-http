@@ -12,6 +12,7 @@ public class HttpCookie {
     private static final int COOKIE_VALUE_INDEX = 1;
     private static final Pattern COOKIE_SEPARATOR = Pattern.compile(";");
     private static final Pattern COOKE_KEY_VAL_SEPARATOR = Pattern.compile("=");
+    private static final HttpCookie EMPTY_COOKIE = new HttpCookie();
 
     private String cookie;
     private Map<String, String> cookieMap;
@@ -19,6 +20,9 @@ public class HttpCookie {
     private HttpCookie(String cookie, Map<String, String> cookieMap) {
         this.cookie = cookie;
         this.cookieMap = cookieMap;
+    }
+
+    public HttpCookie() {
     }
 
     public Map<String, String> getCookieMap() {
@@ -35,6 +39,9 @@ public class HttpCookie {
     }
 
     public static HttpCookie createHttpCookie(String cookieStr) {
+        if (cookieStr == null || cookieStr.isEmpty()) {
+            return EMPTY_COOKIE;
+        }
         String[] httpCookies = COOKIE_SEPARATOR.split(cookieStr);
         Map<String, String> cookieMap = new HashMap<>();
         for (String cookie : httpCookies) {
