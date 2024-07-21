@@ -55,8 +55,7 @@ public class ControllerFactoryProvider implements ControllerProvider {
         if (staticResources.containsKey(url)) {
             return staticResources.get(url);
         }
-        ControllerFactory controllerFactory = factories.get(url);
-        return controllerFactory;
-//        return Optional.ofNullable(factories.get(url)).orElse(notFoundFactory);
+
+        return Optional.ofNullable(factories.get(url)).orElse(notFoundFactory);
     }
 }
