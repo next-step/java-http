@@ -19,19 +19,14 @@ public class HttpRequestParser {
     private static final Pattern DELIMITER = Pattern.compile(" ");
     private static final Logger log = LoggerFactory.getLogger(HttpRequestParser.class);
 
-    public static HttpRequestDto parse(final InputStream inputStream) throws IOException {
-        String requestLine = parseMethodAndUrl(inputStream);
+    public static HttpRequestDto parse(final BufferedReader bufferedReader) throws IOException {
+        String requestLine = parseMethodAndUrl(bufferedReader);
         log.info(requestLine);
         return HttpRequestDto.of(List.of(DELIMITER.split(requestLine)));
     }
 
-    private static String parseMethodAndUrl(final InputStream inputStream) throws IOException {
+    private static String parseMethodAndUrl(final BufferedReader bufferedReader) throws IOException {
 
-        try (BufferedReader bufferedReader =
-            new BufferedReader(new InputStreamReader(inputStream))
-        ) {
-            return bufferedReader.readLine().trim();
-        }
-
+        return bufferedReader.readLine().trim();
     }
 }

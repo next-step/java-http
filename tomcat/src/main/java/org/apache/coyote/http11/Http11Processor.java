@@ -1,7 +1,9 @@
 package org.apache.coyote.http11;
 
 import camp.nextstep.exception.UncheckedServletException;
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.Socket;
 import org.apache.coyote.Processor;
 import org.apache.coyote.http11.controller.ControllerFactory;
@@ -36,9 +38,9 @@ public class Http11Processor implements Runnable, Processor {
 
     @Override
     public void process(final Socket connection) {
-        try (final var inputStream = connection.getInputStream();
+        try (BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
             final var outputStream = connection.getOutputStream()) {
-            HttpRequestDto httpRequestDto = HttpRequestParser.parse(inputStream);
+            HttpRequestDto httpRequestDto = HttpRequestParser.parse(bufferedReader);
 
             HttpRequestFactory httpRequestFactory = httpRequestFactoryProvider.provideFactory(
                 httpRequestDto.requestMethod);
@@ -49,7 +51,7 @@ public class Http11Processor implements Runnable, Processor {
                 httpRequest.getRequestUrl());
             HttpResponse httpResponse = controllerFactory.serve(httpRequest);
 
-            log.error(httpResponse.toString());
+            log.info(httpResponse.toString());
             String response = httpResponse.write();
             outputStream.write(response.getBytes());
             outputStream.flush();

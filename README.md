@@ -78,5 +78,15 @@
   - [x] Response Test 생성
   - [x] Request Test 생성
 
-   
-
+- [] 피드백 반영
+  - [x] 홈페이지 접속 확인
+    - STREAM 닫지 못한것 확인 -> Stream을 Manual하게 닫아줌
+    - 해당 inputStream을 닫으면서, outputstream도 닫히는 이슈입니다. (try-with-resources로 같이 선언됨)
+    - Buffer를 바로 생성해서 Parser로 넘겨주어서 try-with-resources를 사용할 수 있게 변경하였습니다.
+  - [] 사용하지 않는 커멘트 제거
+  - [] log.error 제거
+  - [] 404 일 경우 null 반환 확인
+  - [] resource static 디렉토리 허용으로 변경하기
+  - [] readAllBytes 의 OOM 이슈로 제거하기
+  - [] ContentType 에 대한 enum 생성하기
+  - [] null 반환하는 함수들 제거하기
