@@ -8,6 +8,10 @@ public enum HttpVersion {
 
     private String version;
 
+    public String getVersion() {
+        return version;
+    }
+
     HttpVersion(String version) {
         this.version = version;
     }

@@ -2,6 +2,7 @@ package org.apache.coyote.http11;
 
 import camp.nextstep.exception.UncheckedServletException;
 import camp.nextstep.http.config.ServerStartUpConfig;
+import camp.nextstep.http.domain.request.HttpRequest;
 import camp.nextstep.http.domain.response.HttpResponse;
 import org.apache.coyote.Processor;
 import org.slf4j.Logger;
@@ -33,9 +34,11 @@ public class Http11Processor implements Runnable, Processor {
         try (final var inputStream = connection.getInputStream();
              final var outputStream = connection.getOutputStream()
         ) {
-             HttpResponse httpResponse = serverStartUpConfig.getHttpRequestHandlerContainer()
-                     .handleRequest(inputStream);
-             writeResponse(httpResponse.getResponseStr(), outputStream);
+            HttpRequest httpRequest = HttpRequest.createRequestLineByInputStream(inputStream);
+            HttpResponse httpResponse = new HttpResponse();
+            serverStartUpConfig.getHttpRequestHandlerContainer()
+                    .handleRequest(httpRequest, httpResponse);
+            writeResponse(httpResponse.getResponseStr(), outputStream);
         } catch (IOException | UncheckedServletException e) {
             log.error(e.getMessage(), e);
         }

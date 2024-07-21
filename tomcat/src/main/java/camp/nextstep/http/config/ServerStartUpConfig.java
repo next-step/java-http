@@ -1,37 +1,81 @@
 package camp.nextstep.http.config;
 
+import camp.nextstep.http.controller.LoginController;
+import camp.nextstep.http.controller.RegisterController;
+import camp.nextstep.http.controller.ResourceController;
+import camp.nextstep.http.controller.RootController;
 import camp.nextstep.http.handler.*;
 import camp.nextstep.service.UserService;
 
 import java.util.List;
 
 public class ServerStartUpConfig {
-    private final UserService userService = new UserService();
-    private final SessionHandler sessionHandler = new SessionHandler();
+    private UserService userService;
+    private SessionHandler sessionHandler;
+    private RootController rootController;
+    private LoginController loginController;
+    private RegisterController registerController;
+    private ResourceController resourceController;
+    private RequestMappingHandler requestMappingHandler;
 
-    private final RootHttpRequestHandler rootHttpRequestHandler
-            = new RootHttpRequestHandler();
+    public UserService getUserService() {
+        if (userService == null) {
+            userService = new UserService();
+        }
+        return userService;
+    }
 
-    private final LoginHttpRequestHandler loginHttpRequestHandler
-            = new LoginHttpRequestHandler(userService, sessionHandler);
+    public SessionHandler getSessionHandler() {
+        if (sessionHandler == null) {
+            sessionHandler = new SessionHandler();
+        }
+        return sessionHandler;
+    }
 
-    private final RegisterHttpRequestHandler registerHttpRequestHandler
-            = new RegisterHttpRequestHandler();
+    public RootController getRootController() {
+        if (rootController == null) {
+            rootController = new RootController();
+        }
+        return rootController;
+    }
 
-    private final FileHttpRequestHandler fileHttpRequestHandler
-            = new FileHttpRequestHandler();
+    public LoginController getLoginController() {
+        if (loginController == null) {
+            loginController = new LoginController(
+                    getSessionHandler(),
+                    getUserService()
+            );
+        }
+        return loginController;
+    }
 
-    private final HttpRequestHandlerContainer httpRequestHandlerContainer
-            = new HttpRequestHandlerContainer(
+    public RegisterController getRegisterController() {
+        if (registerController == null) {
+            registerController = new RegisterController(
+                    getUserService()
+            );
+        }
+        return registerController;
+    }
+
+    public ResourceController getResourceController() {
+        if (resourceController == null) {
+            resourceController = new ResourceController();
+        }
+        return resourceController;
+    }
+
+    public RequestMappingHandler getHttpRequestHandlerContainer() {
+        if (requestMappingHandler == null) {
+            requestMappingHandler = new RequestMappingHandler(
                     List.of(
-                            rootHttpRequestHandler,
-                            loginHttpRequestHandler,
-                            registerHttpRequestHandler,
-                            fileHttpRequestHandler
+                            getRootController(),
+                            getLoginController(),
+                            getRegisterController(),
+                            getResourceController()
                     )
-    );
-
-    public HttpRequestHandlerContainer getHttpRequestHandlerContainer() {
-        return httpRequestHandlerContainer;
+            );
+        }
+       return requestMappingHandler;
     }
 }

@@ -49,11 +49,19 @@ public class HttpResponseStartLine {
         );
     }
 
+    public static HttpResponseStartLine createInternalServerErrorStartLine() {
+        return new HttpResponseStartLine(
+                Protocol.HTTP,
+                HttpVersion.VERSION_1_1,
+                HttpStatus.BAD_REQUEST
+        );
+    }
+
     public String getResponseStartLine() {
         return String.format(
                 HTTP_RESPONSE_START_LINE_FORMAT,
                 protocol.name(),
-                version.name(),
+                version.getVersion(),
                 httpStatus.getStatusCode(),
                 httpStatus.getMessage()
         );
