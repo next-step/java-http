@@ -3,12 +3,10 @@ package org.apache.coyote.http11.controller;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.regex.Pattern;
 import org.apache.coyote.http11.controller.strategy.IndexGetStrategy;
 import org.apache.coyote.http11.controller.strategy.LoginGetStrategy;
-import org.apache.coyote.http11.controller.strategy.LoginPostStrategy;
 
 public class ControllerFactoryProvider implements ControllerProvider {
 
@@ -21,7 +19,7 @@ public class ControllerFactoryProvider implements ControllerProvider {
 
         factories.put("/", new ControllerDefaultFactory(List.of()));
         factories.put("/login",
-            new ControllerLoginFactory(List.of(new LoginGetStrategy(), new LoginPostStrategy())));
+            new ControllerLoginFactory(List.of(new LoginGetStrategy())));
         factories.put("/index", new ControllerLoginFactory(List.of(new IndexGetStrategy())));
 
     }

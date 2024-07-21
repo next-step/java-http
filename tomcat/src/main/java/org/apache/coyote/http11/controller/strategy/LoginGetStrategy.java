@@ -3,6 +3,7 @@ package org.apache.coyote.http11.controller.strategy;
 import camp.nextstep.db.InMemoryUserRepository;
 import java.util.Map;
 import org.apache.coyote.http11.request.HttpRequest;
+import org.apache.coyote.http11.request.RequestMethod;
 import org.apache.coyote.http11.response.ContentType;
 import org.apache.coyote.http11.response.Http11Response;
 import org.apache.coyote.http11.response.HttpResponse;
@@ -16,7 +17,7 @@ public class LoginGetStrategy implements RequestMethodStrategy {
 
     @Override
     public boolean matched(String requestMethod) {
-        return requestMethod.equals("GET");
+        return requestMethod.equals(RequestMethod.GET.name());
     }
 
     @Override

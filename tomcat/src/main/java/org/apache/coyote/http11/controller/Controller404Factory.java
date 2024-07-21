@@ -15,6 +15,7 @@ import org.apache.coyote.http11.response.StatusCode;
 
 public class Controller404Factory implements ControllerFactory {
     private final String NOTFOUND = "/static/404.html";
+
     @Override
     public HttpResponse serve(HttpRequest httpRequest) {
 
@@ -34,7 +35,6 @@ public class Controller404Factory implements ControllerFactory {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-
 
     }
 }

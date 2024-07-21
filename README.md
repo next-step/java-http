@@ -85,8 +85,8 @@
     - Buffer를 바로 생성해서 Parser로 넘겨주어서 try-with-resources를 사용할 수 있게 변경하였습니다.
   - [x] 사용하지 않는 커멘트 제거
   - [x] log.error 제거하고 log.info로 변경하였습니다.
-  - [] 404 일 경우 null 반환 확인
+  - [x] 404 일 경우 null 반환 확인
   - [x] resource static 디렉토리 허용으로 변경하기
   - [] readAllBytes 의 OOM 이슈로 제거하기
   - [x] ContentType 에 대한 enum 생성하기
-  - [] null 반환하는 함수들 제거하기
+  - [x] null 반환하는 함수들 제거하기
