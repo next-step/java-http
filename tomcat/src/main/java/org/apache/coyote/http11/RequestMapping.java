@@ -7,7 +7,7 @@ import org.apache.coyote.http11.handler.StaticResourceHandler;
 import java.util.HashMap;
 import java.util.Map;
 
-public final class RequestMapper {
+public final class RequestMapping {
 
     private static final Map<String, RequestHandler> handlers = new HashMap<>();
 
@@ -16,11 +16,11 @@ public final class RequestMapper {
         handlers.put("/index.html", new StaticResourceHandler());
     }
 
-    private RequestMapper() {
+    private RequestMapping() {
     }
 
     public static void addHandlers(Map<String, RequestHandler> handlers) {
-        RequestMapper.handlers.putAll(handlers);
+        RequestMapping.handlers.putAll(handlers);
     }
 
     public static RequestHandler findHandler(String requestPath) {

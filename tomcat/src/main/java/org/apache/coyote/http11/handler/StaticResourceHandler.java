@@ -1,7 +1,7 @@
 package org.apache.coyote.http11.handler;
 
 import org.apache.coyote.http11.RequestHandler;
-import org.apache.coyote.http11.ResourceFinder;
+import org.apache.coyote.support.ResourceFinder;
 import org.apache.coyote.http11.constants.HttpStatus;
 import org.apache.coyote.http11.model.ContentType;
 import org.apache.coyote.http11.model.HttpRequest;

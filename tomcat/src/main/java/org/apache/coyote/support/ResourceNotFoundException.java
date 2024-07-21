@@ -1,4 +1,4 @@
-package org.apache.coyote.http11;
+package org.apache.coyote.support;
 
 public class ResourceNotFoundException extends IllegalArgumentException{
     public ResourceNotFoundException(String message) {

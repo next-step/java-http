@@ -3,7 +3,7 @@ package camp.nextstep.handler;
 import camp.nextstep.db.InMemoryUserRepository;
 import camp.nextstep.model.User;
 import org.apache.catalina.manager.SessionManager;
-import org.apache.coyote.http11.ResourceFinder;
+import org.apache.coyote.support.ResourceFinder;
 import org.apache.coyote.http11.constants.HttpStatus;
 import org.apache.coyote.http11.model.*;
 
@@ -18,7 +18,7 @@ public class LoginHandler extends AbstractController {
     private static final String UNAUTHORIZED_RESOURCE_PATH = "/401.html";
 
     @Override
-    protected void doPost(HttpRequest request, HttpResponse response) throws Exception {
+    protected void doPost(HttpRequest request, HttpResponse response) throws IOException {
         final String account = request.getBody().get("account");
         final String password = request.getBody().get("password");
         Optional<User> userOptional = InMemoryUserRepository.findByAccount(account);
@@ -37,13 +37,13 @@ public class LoginHandler extends AbstractController {
         session.setAttribute("user", userOptional.get());
         response.setJSessionId(session.getId());
 
-        sendResponse(REDIRECT_PATH, response, HttpStatus.REDIRECT);
+        sendResponse(REDIRECT_PATH, response, HttpStatus.FOUND);
     }
 
     @Override
-    protected void doGet(HttpRequest request, HttpResponse response) throws Exception {
+    protected void doGet(HttpRequest request, HttpResponse response) throws IOException {
         if(existSession(request.getCookie())) {
-            sendResponse(REDIRECT_PATH, response, HttpStatus.REDIRECT);
+            sendResponse(REDIRECT_PATH, response, HttpStatus.FOUND);
         }
 
         sendResponse(LOGIN_RESOURCE_PATH, response, HttpStatus.SUCCESS);

@@ -2,7 +2,7 @@ package camp.nextstep.handler;
 
 import camp.nextstep.db.InMemoryUserRepository;
 import camp.nextstep.model.User;
-import org.apache.coyote.http11.ResourceFinder;
+import org.apache.coyote.support.ResourceFinder;
 import org.apache.coyote.http11.constants.HttpStatus;
 import org.apache.coyote.http11.model.ContentType;
 import org.apache.coyote.http11.model.HttpRequest;
@@ -17,13 +17,13 @@ public class RegisterHandler extends AbstractController {
     private static final String REDIRECT_PATH = "/index.html";
 
     @Override
-    protected void doPost(HttpRequest request, HttpResponse response) throws Exception {
+    protected void doPost(HttpRequest request, HttpResponse response) throws IOException {
         registerUser(request);
-        sendResponse(REDIRECT_PATH, response, HttpStatus.REDIRECT);
+        sendResponse(REDIRECT_PATH, response, HttpStatus.FOUND);
     }
 
     @Override
-    protected void doGet(HttpRequest request, HttpResponse response) throws Exception {
+    protected void doGet(HttpRequest request, HttpResponse response) throws IOException {
         sendResponse(REGISTER_RESOURCE_PATH, response, HttpStatus.SUCCESS);
     }
 
