@@ -19,7 +19,7 @@ public class HttpRequestParser {
     private static final Pattern DELIMITER = Pattern.compile(" ");
     private static final Logger log = LoggerFactory.getLogger(HttpRequestParser.class);
 
-    public static HttpRequestDto of(final InputStream inputStream) throws IOException {
+    public static HttpRequestDto parse(final InputStream inputStream) throws IOException {
         String requestLine = parseMethodAndUrl(inputStream);
         log.info(requestLine);
         return HttpRequestDto.of(List.of(DELIMITER.split(requestLine)));

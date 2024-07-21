@@ -70,10 +70,13 @@
 - [] 요구사항 3 - GET QUERY 파싱하기
   - [] InMemoryUserRepository 사용해서 회원 조회
 - [] 요구사항 4 - 공통 설계 요구사항
-  - [] HTTP RESPONSE를 생성하는 책임을 분리
+  - [] HTTP RESPONSE를 생성하는 책임을 분리 (Factory)
   - [] HTTP RESPONSE 도메인 객체 생성 + HEADER 추가
-  - [] HTTP RESPONSE Provider가 ResourceResponse, htmlResponse 분리
-  - [] HTTP REQUEST에 HEADER 추가
+  - [] HTTP Request에 따른 Resource 맵핑 하는 책임을 가진 ControllerFactoryProvider 생성
+  - [] ControllerFactoryProvider가 url 맵핑 리소스들을 스캐닝해와서 HttpResponse를 만드는 Factory와 연결한다. 
+  - [] Factory가 RequestMethod에 따라 Strategy를 구성해서 Response를 반환합니다.
+  - [] Response Test 생성
+  - [x] Request Test 생성
 
    
 

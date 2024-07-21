@@ -7,7 +7,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-public class RequestUrl {
+class RequestUrl {
 
     private static final String QUESTION_MARK = "?";
     private static final int REQUEST_URL = 0;

@@ -8,7 +8,8 @@ public class RequestProtocol {
 
     private static final int PROTOCOL_NAME = 0;
     private static final int PROTOCOL_VERSION = 1;
-    private static final Pattern DELIMITER = Pattern.compile(" ");
+    private static final Pattern DELIMITER = Pattern.compile("/");
+    public static final int LENGTH = 2;
 
     public final HttpVersion httpVersion;
     public final String protocol;
@@ -16,7 +17,6 @@ public class RequestProtocol {
     public RequestProtocol(final String protocol) {
         validate(protocol);
         String[] protocols = DELIMITER.split(protocol);
-        assert protocols.length == 2;
         this.httpVersion = new HttpVersion(protocols[PROTOCOL_VERSION]);
         this.protocol = protocols[PROTOCOL_NAME];
     }
@@ -33,6 +33,11 @@ public class RequestProtocol {
         if (Objects.isNull(protocol) || protocol.isEmpty()) {
             throw new RequestProtocolInvalidException("Request Protocol의 값이 확인이 필요합니다.");
         }
+
+        if (DELIMITER.split(protocol).length != LENGTH) {
+            throw new RequestProtocolInvalidException("Request Protocol의 값이 확인이 필요합니다.");
+        }
+
     }
 
     @Override
