@@ -1,30 +1,25 @@
 package camp.nextstep.http.handler;
 
+import java.io.InputStream;
 import java.util.List;
 
 import camp.nextstep.http.domain.RequestLine;
-import camp.nextstep.http.domain.HttpResponse;
+import camp.nextstep.http.domain.response.HttpResponse;
 
 public class HttpRequestHandlerContainer {
     private List<HttpRequestHandler> httpRequestHandlers;
 
-    //TODO 이부분은 나중에 외부 주입으로
-    public HttpRequestHandlerContainer() {
-        httpRequestHandlers = List.of(
-            new RootHttpRequestHandler(),
-            new LoginHttpRequestHandler(),
-            new FileHttpRequestHandler()
-        );
+    public HttpRequestHandlerContainer(List<HttpRequestHandler> httpRequestHandlers) {
+        this.httpRequestHandlers = httpRequestHandlers;
     }
-    public HttpResponse handleRequest(List<String> requestLines) {
-        RequestLine requestLine = RequestLine.createRequestLineByRequestLineStr(
-            requestLines.get(0)
-        );
+
+    public HttpResponse handleRequest(InputStream inputStream) {
+        RequestLine requestLine = RequestLine.createRequestLineByInputStream(inputStream);
 
         return httpRequestHandlers.stream()
-            .filter(v -> v.isMatchPathPattern(requestLine.getPath().getUrlPath()))
-            .findFirst()
-            .map(v -> v.makeResponse(requestLine))
-            .orElseGet(HttpResponse::createNotFoundResponseByString);
+                .filter(v -> v.isExactHandler(requestLine))
+                .findFirst()
+                .map(v -> v.makeResponse(requestLine))
+                .orElseGet(HttpResponse::createNotFoundResponseByString);
     }
 }

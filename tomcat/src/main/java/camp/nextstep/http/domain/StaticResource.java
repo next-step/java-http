@@ -23,7 +23,7 @@ public class StaticResource {
             ClassLoader classLoader
     ) {
         return createResourceFromPath(
-                requestLine.getPath().getUrlPath(),
+                requestLine.getHttpStartLine().getPath().getUrlPath(),
                 classLoader
         );
     }
@@ -41,7 +41,11 @@ public class StaticResource {
             return new StaticResource(file);
         }  catch (Exception exception) {
             exception.printStackTrace();
-            return new StaticResource(new File("static/404.html"));
+            try {
+                return new StaticResource(new File(getUri("/404.html", classLoader)));
+            } catch (URISyntaxException e) {
+                throw new ResourceNotFoundException("파일을 찾을 수 없습니다");
+            }
         }
     }
 

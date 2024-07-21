@@ -9,10 +9,9 @@ class StaticResourceTest {
     void 있는파일을_경로로_넘길경우_해당파일의_객체를_생성한다() {
         // given
         String path = "/register.html";
-        ClassLoader classLoader = getClass().getClassLoader();
 
         // when
-        StaticResource staticResource = StaticResource.createResourceFromPath(path, classLoader);
+        StaticResource staticResource = StaticResource.createResourceFromPath(path, getClass().getClassLoader());
 
         // then
         assertTrue(staticResource.getResourceFile().getName().contains("register.html"));
@@ -22,10 +21,9 @@ class StaticResourceTest {
     void 없는파일을_경로로_넘길경우_404파일의_객체를_생성한다() {
         // given
         String path = "/없음.html";
-        ClassLoader classLoader = getClass().getClassLoader();
 
         // when
-        StaticResource staticResource = StaticResource.createResourceFromPath(path, classLoader);
+        StaticResource staticResource = StaticResource.createResourceFromPath(path, getClass().getClassLoader());
 
         // then
         assertTrue(staticResource.getResourceFile().getName().contains("404.html"));

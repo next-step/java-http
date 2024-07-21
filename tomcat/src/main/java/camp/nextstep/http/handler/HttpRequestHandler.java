@@ -1,9 +1,9 @@
 package camp.nextstep.http.handler;
 
 import camp.nextstep.http.domain.RequestLine;
-import camp.nextstep.http.domain.HttpResponse;
+import camp.nextstep.http.domain.response.HttpResponse;
 
 public interface HttpRequestHandler {
     HttpResponse makeResponse(RequestLine requestLine);
-    boolean isMatchPathPattern(String path);
+    boolean isExactHandler(RequestLine requestLine);
 }
