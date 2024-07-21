@@ -69,6 +69,7 @@ public class LoginController extends AbstractController implements Controller {
     private void handleLoginPage(HttpRequest request, HttpResponse response) {
         if (existSession(request)) {
             response.redirectResponseByPath("/index.html");
+            return;
         }
 
         StaticResource staticResource = createResourceFromPath(

@@ -15,12 +15,10 @@ public class HttpCookie {
 
     private String cookie;
     private Map<String, String> cookieMap;
-    private JSessionId jsessionId;
 
-    private HttpCookie(String cookie, Map<String, String> cookieMap, JSessionId jsessionId) {
+    private HttpCookie(String cookie, Map<String, String> cookieMap) {
         this.cookie = cookie;
         this.cookieMap = cookieMap;
-        this.jsessionId = jsessionId;
     }
 
     public Map<String, String> getCookieMap() {
@@ -32,23 +30,19 @@ public class HttpCookie {
     }
 
     public JSessionId getJsessionId() {
-        return jsessionId;
+        String jSessionIdStr = cookieMap.get(JSESSIONID_KEY);
+        return JSessionId.createJSessionIdByJSessionIdStr(jSessionIdStr);
     }
 
     public static HttpCookie createHttpCookie(String cookieStr) {
         String[] httpCookies = COOKIE_SEPARATOR.split(cookieStr);
         Map<String, String> cookieMap = new HashMap<>();
-        JSessionId jSessionId = null;
         for (String cookie : httpCookies) {
             String[] cookieKeyValArr = COOKE_KEY_VAL_SEPARATOR.split(cookie);
             String key = cookieKeyValArr[COOKIE_KEY_INDEX].trim();
             String value = cookieKeyValArr[COOKIE_VALUE_INDEX].trim();
             cookieMap.put(key, value);
-
-            if (JSESSIONID_KEY.equals(key)) {
-                jSessionId = JSessionId.createJSessionIdByJSessionIdStr(value);
-            }
         }
-        return new HttpCookie(cookieStr, cookieMap, jSessionId);
+        return new HttpCookie(cookieStr, cookieMap);
     }
 }
