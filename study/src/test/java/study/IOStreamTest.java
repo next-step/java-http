@@ -260,9 +260,7 @@ class IOStreamTest {
         verify(inputStream, atLeastOnce()).close();
     }
 
-    /**
-     * Reader는 닫지 않고 stream 객체만 닫아도 되는지 확인한다.
-     */
+    @DisplayName("stream 객체만 닫았을때, 기반스트림은 닫히지 않는다.")
     @Test
     void InputStream이_닫히면_Reader가_닫힌다() throws IOException {
 
@@ -275,12 +273,9 @@ class IOStreamTest {
         final InputStreamReader streamReader = new InputStreamReader(inputStream);
         final BufferedReader bufferedReader = new BufferedReader(streamReader);
 
-        final StringBuilder actual = new StringBuilder();
         inputStream.close();
-//
-//        actual.append(bufferedReader.readLine()).append("\r\n");
-//            assertThatThrownBy(() -> bufferedReader.readLine())
-//                .isInstanceOf(RuntimeException.class);
+
+        assertThat(streamReader.ready()).isEqualTo(true);
     }
 }
 
