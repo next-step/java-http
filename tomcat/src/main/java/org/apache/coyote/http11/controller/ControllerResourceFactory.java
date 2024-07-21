@@ -37,7 +37,8 @@ public class ControllerResourceFactory implements ControllerFactory {
         }
 
         try {
-            final URL resource = getClass().getClassLoader()
+            final URL resource = getClass()
+                .getClassLoader()
                 .getResource(url);
             final File file = new File(Objects.requireNonNull(resource).getFile());
             final Path path = file.toPath();
