@@ -11,15 +11,15 @@ import java.util.regex.Pattern;
 import static camp.nextstep.http.enums.ContentType.findContentTypeByContentTypeHeader;
 
 public class HttpHeader {
-    private Map<String, String> httpHeaders;
-    private HttpCookie httpCookie;
-
     public static final String SET_COOKIE_HEADER = "Set-Cookie";
     private static final String CONTENT_LENGTH_HEADER = "Content-Length";
     private static final String CONTENT_TYPE_HEADER = "Content-Type";
     private static final Pattern HEADER_SEPARATOR = Pattern.compile(":");
     private static final int HEADER_KEY_INDEX = 0;
     private static final int HEADER_VALUE_INDEX = 1;
+    
+    private Map<String, String> httpHeaders;
+    private HttpCookie httpCookie;
 
     private HttpHeader(
             Map<String, String> httpHeaders,
