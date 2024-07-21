@@ -42,7 +42,7 @@ public class LoginHttpRequestHandler implements HttpRequestHandler {
             return handleLogin(requestLine);
         }
 
-        if (isSessionExist(requestLine)) {
+        if (existSession(requestLine)) {
             return createRedirectResponseByPath("/index.html");
         }
 
@@ -84,7 +84,7 @@ public class LoginHttpRequestHandler implements HttpRequestHandler {
         sessionHandler.add(new Session(jSessionId.getJSessionId().toString(), map));
     }
 
-    private boolean isSessionExist(RequestLine requestLine) {
+    private boolean existSession(RequestLine requestLine) {
         HttpCookie httpCookie = requestLine.getHttpHeader().getHttpCookie();
 
         if (httpCookie == null) {
