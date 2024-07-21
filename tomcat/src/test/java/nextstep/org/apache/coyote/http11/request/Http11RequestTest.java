@@ -1,4 +1,4 @@
-package nextstep.org.apache.coyote.http11.parser;
+package nextstep.org.apache.coyote.http11.request;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -10,41 +10,16 @@ import java.io.InputStream;
 import org.apache.coyote.http11.parser.HttpRequestDto;
 import org.apache.coyote.http11.parser.HttpRequestParser;
 import org.apache.coyote.http11.request.HttpRequest;
-import org.apache.coyote.http11.request.RequestMethod;
 import org.apache.coyote.http11.request.factory.Http11RequestFactoryProvider;
 import org.apache.coyote.http11.request.factory.HttpRequestFactory;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.EnumSource;
 
+class Http11RequestTest {
 
-public class HttpRequestParserTest {
-
-    @ParameterizedTest
-    @EnumSource(value = RequestMethod.class)
-    @DisplayName("GET 요청에 대한 HttpRequestMethod를 파싱한다.")
-    void parseRequestLine(RequestMethod method) throws IOException {
-        final String request = String.join("\r\n",
-            "%s /index.html HTTP/1.1 ".formatted(method.toString()),
-            "Host: localhost:8080 ",
-            "Connection: keep-alive ",
-            "");
-        final InputStream inputStream = new ByteArrayInputStream(request.getBytes());
-        final InputStream bufferedInputStream = new BufferedInputStream(inputStream);
-
-        HttpRequestDto requestDto = HttpRequestParser.parse(bufferedInputStream);
-
-        assertAll(
-            () -> assertThat(requestDto.getRequestMethod()).isEqualTo(method.toString()),
-            () -> assertThat(requestDto.getRequestUrl()).isEqualTo("/index.html"),
-            () -> assertThat(requestDto.getRequestProtocol()).isEqualTo("HTTP/1.1")
-        );
-    }
-
+    @DisplayName("Parsing된 값을 HttpRequest 값으로 Request Method, Url, Protocol, Version, Params를 가져옵니다.")
     @Test
-    @DisplayName("Query String을 파싱한다.")
-    void parseRequestLine() throws IOException {
+    void constructor() throws IOException {
         final String request = String.join("\r\n",
             "GET /users?userId=javajigi&password=password&name=JaeSung HTTP/1.1 ",
             "Host: localhost:8080 ",
@@ -60,9 +35,10 @@ public class HttpRequestParserTest {
         HttpRequest httpRequest = httpRequestFactory.createHttpInstance(requestDto);
 
         assertAll(
-            () -> assertThat(httpRequest.getParams()).containsKey("userId"),
-            () -> assertThat(httpRequest.getParams()).containsKey("password"),
-            () -> assertThat(httpRequest.getParams()).containsKey("name"),
+            () -> assertThat(httpRequest.getRequestMethod()).isEqualTo("GET"),
+            () -> assertThat(httpRequest.getRequestUrl()).isEqualTo("/users"),
+            () -> assertThat(httpRequest.getProtocol()).isEqualTo("HTTP"),
+            () -> assertThat(httpRequest.getVersion()).isEqualTo("1.1"),
             () -> assertThat(httpRequest.getParams()).containsValues("javajigi", "password",
                 "JaeSung")
         );

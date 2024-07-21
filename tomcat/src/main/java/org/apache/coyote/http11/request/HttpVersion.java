@@ -10,6 +10,10 @@ public class HttpVersion {
         this.version = version;
     }
 
+    public String getVersion() {
+        return version;
+    }
+
     @Override
     public String toString() {
         return "HttpVersion{" +
