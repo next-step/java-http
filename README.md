@@ -88,5 +88,5 @@
   - [] 404 일 경우 null 반환 확인
   - [x] resource static 디렉토리 허용으로 변경하기
   - [] readAllBytes 의 OOM 이슈로 제거하기
-  - [] ContentType 에 대한 enum 생성하기
+  - [x] ContentType 에 대한 enum 생성하기
   - [] null 반환하는 함수들 제거하기
