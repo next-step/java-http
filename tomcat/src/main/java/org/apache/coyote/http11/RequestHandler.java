@@ -6,5 +6,5 @@ import org.apache.coyote.http11.response.HttpResponse;
 
 
 public interface RequestHandler {
-    HttpResponse service(HttpRequest httpRequest) throws Exception;
+    HttpResponse service(HttpRequest httpRequest);
 }

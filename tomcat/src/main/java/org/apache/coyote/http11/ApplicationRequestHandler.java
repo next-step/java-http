@@ -17,7 +17,7 @@ public class ApplicationRequestHandler implements RequestHandler {
     );
 
     @Override
-    public HttpResponse service(HttpRequest httpRequest) throws Exception {
+    public HttpResponse service(HttpRequest httpRequest){
         final var requestLine = httpRequest.getRequestLine();
 
         if ("/".equals(requestLine.getPath())) {
@@ -28,7 +28,11 @@ public class ApplicationRequestHandler implements RequestHandler {
         final var controller = SERVLET_MAPPING.get(requestLine.getPath());
         final var httpResponse = new HttpResponse(new StatusLine(requestLine.getHttpProtocol()), httpRequest.getRequestHeaders().host());
 
-        controller.service(httpRequest, httpResponse);
+        try {
+            controller.service(httpRequest, httpResponse);
+        } catch (Exception e) {
+            httpResponse.setError(e.getCause(), HttpStatusCode.INTERNAL_SERVER_ERROR);
+        }
 
         return httpResponse;
     }
