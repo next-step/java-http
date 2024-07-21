@@ -3,8 +3,11 @@ package org.apache.coyote.http11.controller;
 import java.util.List;
 import org.apache.coyote.http11.controller.strategy.RequestMethodStrategy;
 import org.apache.coyote.http11.request.HttpRequest;
+import org.apache.coyote.http11.response.ContentType;
 import org.apache.coyote.http11.response.Http11Response;
 import org.apache.coyote.http11.response.HttpResponse;
+import org.apache.coyote.http11.response.ProtocolVersion;
+import org.apache.coyote.http11.response.StatusCode;
 
 public class ControllerDefaultFactory implements ControllerFactory {
 
@@ -14,9 +17,10 @@ public class ControllerDefaultFactory implements ControllerFactory {
     @Override
     public HttpResponse serve(HttpRequest httpRequest) {
         String message = "Hello world!";
+
         return new Http11Response.HttpResponseBuilder()
-            .statusLine("1.1", "OK")
-            .responseHeader("text/html", message.getBytes().length)
+            .statusLine(ProtocolVersion.HTTP11.getVersion(), StatusCode.OK.getStatusCode())
+            .responseHeader(ContentType.html.getContentType(), message.getBytes().length)
             .messageBody(message.getBytes())
             .build();
     }

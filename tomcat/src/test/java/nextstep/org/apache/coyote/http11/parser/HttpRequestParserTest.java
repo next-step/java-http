@@ -4,9 +4,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 import java.io.BufferedInputStream;
+import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import org.apache.coyote.http11.parser.HttpRequestDto;
 import org.apache.coyote.http11.parser.HttpRequestParser;
 import org.apache.coyote.http11.request.HttpRequest;
@@ -31,9 +33,9 @@ public class HttpRequestParserTest {
             "Connection: keep-alive ",
             "");
         final InputStream inputStream = new ByteArrayInputStream(request.getBytes());
-        final InputStream bufferedInputStream = new BufferedInputStream(inputStream);
-
-        HttpRequestDto requestDto = HttpRequestParser.parse(bufferedInputStream);
+        final InputStreamReader bufferedInputStream = new InputStreamReader(inputStream);
+        final BufferedReader bufferedReader = new BufferedReader(bufferedInputStream);
+        HttpRequestDto requestDto = HttpRequestParser.parse(bufferedReader);
 
         assertAll(
             () -> assertThat(requestDto.getRequestMethod()).isEqualTo(method.toString()),
@@ -50,10 +52,12 @@ public class HttpRequestParserTest {
             "Host: localhost:8080 ",
             "Connection: keep-alive ",
             "");
-        final InputStream inputStream = new ByteArrayInputStream(request.getBytes());
-        final InputStream bufferedInputStream = new BufferedInputStream(inputStream);
 
-        HttpRequestDto requestDto = HttpRequestParser.parse(bufferedInputStream);
+        final InputStream inputStream = new ByteArrayInputStream(request.getBytes());
+        final InputStreamReader bufferedInputStream = new InputStreamReader(inputStream);
+        final BufferedReader bufferedReader = new BufferedReader(bufferedInputStream);
+
+        HttpRequestDto requestDto = HttpRequestParser.parse(bufferedReader);
         Http11RequestFactoryProvider factoryProvider = new Http11RequestFactoryProvider();
         HttpRequestFactory httpRequestFactory = factoryProvider.provideFactory(
             requestDto.requestMethod);

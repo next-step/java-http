@@ -3,8 +3,10 @@ package org.apache.coyote.http11.controller.strategy;
 import camp.nextstep.db.InMemoryUserRepository;
 import java.util.Map;
 import org.apache.coyote.http11.request.HttpRequest;
+import org.apache.coyote.http11.response.ContentType;
 import org.apache.coyote.http11.response.Http11Response;
 import org.apache.coyote.http11.response.HttpResponse;
+import org.apache.coyote.http11.response.ProtocolVersion;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,8 +26,8 @@ public class LoginGetStrategy implements RequestMethodStrategy {
             .orElseThrow(() -> new RuntimeException("Empty User 입니다.")).toString();
         log.info(userLog);
         return new Http11Response.HttpResponseBuilder()
-            .statusLine("1.1", "OK")
-            .responseHeader("text/html", userLog.getBytes().length)
+            .statusLine(ProtocolVersion.HTTP11.getVersion(), "OK")
+            .responseHeader(ContentType.html.getContentType(), userLog.getBytes().length)
             .messageBody(userLog.getBytes())
             .build();
     }
