@@ -3,6 +3,8 @@ package org.apache.coyote.http11;
 import camp.nextstep.exception.InvalidRequestException;
 import camp.nextstep.exception.UncheckedServletException;
 import camp.nextstep.http.ContentType;
+import camp.nextstep.http.HttpHeaders;
+import camp.nextstep.http.HttpRequest;
 import camp.nextstep.http.PathResolver;
 import camp.nextstep.http.RequestLine;
 import camp.nextstep.util.FileUtils;
@@ -13,6 +15,7 @@ import java.io.InputStreamReader;
 import java.net.Socket;
 import java.net.URL;
 import java.nio.file.Files;
+import java.util.StringJoiner;
 import org.apache.coyote.Processor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,17 +40,20 @@ public class Http11Processor implements Runnable, Processor {
 
   @Override
   public void process(final Socket connection) {
-    try (final var inputStream = connection.getInputStream(); final var outputStream = connection.getOutputStream(); final var bufferedInputStream = new BufferedReader(
-        new InputStreamReader(inputStream))) {
+    try (final var inputStream = connection.getInputStream();
+        final var outputStream = connection.getOutputStream();
+        final var bufferedInputStream = new BufferedReader(new InputStreamReader(inputStream))) {
 
       if (bufferedInputStream.lines() == null) {
         throw new InvalidRequestException("request가 null이거나 비어있습니다.");
       }
       var responseBody = "Hello world!";
 
-      RequestLine requestLine = RequestLine.parse(bufferedInputStream.readLine());
+      //HttpRequest parsing from InputStream
+      HttpRequest httpRequest = parseHttpRequest(bufferedInputStream);
 
-      PathResolver pathResolver = PathResolver.of(requestLine.getPath());
+      //handler 로 처리가능
+      PathResolver pathResolver = PathResolver.of(httpRequest.getRequestLine().getPath());
       String extension = FileUtils.getFileExtension(pathResolver.getFilePath());
 
       URL url = getClass().getClassLoader().getResource(staticPath + pathResolver.getFilePath());
@@ -66,4 +72,29 @@ public class Http11Processor implements Runnable, Processor {
       log.error(e.getMessage(), e);
     }
   }
+
+  private HttpRequest parseHttpRequest(final BufferedReader requestStream) throws IOException {
+    RequestLine requestLine = RequestLine.parse(requestStream.readLine());
+    String paseMessage = readRequestByLine(requestStream);
+    HttpHeaders requestHeader = new HttpHeaders(paseMessage);
+
+    return new HttpRequest(requestLine, requestHeader);
+
+  }
+
+  private String readRequestByLine(final BufferedReader requestStream) throws IOException {
+
+    StringJoiner stringJoiner = new StringJoiner("\r\n");
+
+    while (requestStream.ready()) {
+      final String line = requestStream.readLine();
+      if (line == null || line.isEmpty()) {
+        break;
+      }
+      stringJoiner.add(line);
+    }
+    return stringJoiner.toString();
+  }
+
+
 }

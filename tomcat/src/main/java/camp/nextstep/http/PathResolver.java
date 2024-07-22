@@ -11,13 +11,19 @@ public class PathResolver {
   private static final Logger log = LoggerFactory.getLogger(PathResolver.class);
 
   private final String filePath;
+  private final HttpHeaders httpHeader;
 
   public String getFilePath() {
     return filePath;
   }
 
+  public HttpHeaders getHttpHeader() {
+    return httpHeader;
+  }
+
   public PathResolver(String filePath) {
     this.filePath = filePath;
+    this.httpHeader = null;
   }
 
   public static PathResolver of(Path path) {
