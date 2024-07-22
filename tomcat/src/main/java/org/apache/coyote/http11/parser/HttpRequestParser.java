@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.List;
+import java.util.regex.Pattern;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -15,18 +16,16 @@ import org.slf4j.LoggerFactory;
  */
 public class HttpRequestParser {
 
-    public static final String SPACE = " ";
+    private static final Pattern DELIMITER = Pattern.compile(" ");
     private static final Logger log = LoggerFactory.getLogger(HttpRequestParser.class);
 
-    public static HttpRequestDto of(final InputStream inputStream) throws IOException {
-        String requestLine = parseMethodAndUrl(inputStream);
+    public static HttpRequestDto parse(final BufferedReader bufferedReader) throws IOException {
+        String requestLine = parseMethodAndUrl(bufferedReader);
         log.info(requestLine);
-        return HttpRequestDto.of(List.of(requestLine.split(SPACE)));
+        return HttpRequestDto.of(List.of(DELIMITER.split(requestLine)));
     }
 
-    private static String parseMethodAndUrl(final InputStream inputStream) throws IOException {
-        InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
-        BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
+    private static String parseMethodAndUrl(final BufferedReader bufferedReader) throws IOException {
 
         return bufferedReader.readLine().trim();
     }

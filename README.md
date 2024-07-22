@@ -50,7 +50,43 @@
 - [x] 요구사항 5 - 공통 요구사항
   - [x] HTTP REQUEST 클래스 설계
   - [x] HTTP REQUEST를 파싱하는 책임을 분리
-  - [] HTTP RESPONSE를 생성하는 책임을 분리
   - [x] 커스텀 예외 생성
-   
 
+## 2단계 요구사항 정리
+- [x] 리뷰 반영 
+  - [x] Response에 미구현된 것 확인
+  - [x] Review 질문 답변
+  - [x] GreetingController에 'index.html'에 suffix가 있어야 하는 이유
+  - [x] 동시성 문제 코멘트에 대한 정리
+  - [x] 상수 네이밍 확인 DELIMITER
+  - [x] STREAM 닫지 못한것 확인
+  - [x] String.SPLIT PATTERN 객체 생성 주입
+  - [x] 코드간 스타일 (상수 + 변수 개행)
+- [x] 요구사항 1 - GET /index.html 응답하기
+  - [x] Resource를 반환하는 기능 지원
+- [x] 요구사항 2 - GET CSS 지원하기
+  - [x] Request에 header 추가로 읽어오기 (Content-Type 추가)
+  - [x] Response에 header 추가하기 (Content-Type 추가)
+- [x] 요구사항 3 - GET QUERY 파싱하기
+  - [x] InMemoryUserRepository 사용해서 회원 조회
+- [x] 요구사항 4 - 공통 설계 요구사항
+  - [x] HTTP RESPONSE를 생성하는 책임을 분리 (Factory)
+  - [x] HTTP RESPONSE 도메인 객체 생성 + HEADER 추가
+  - [x] HTTP Request에 따른 Resource 맵핑 하는 책임을 가진 ControllerFactoryProvider 생성
+  - [x] ControllerFactoryProvider가 url 맵핑 리소스들을 스캐닝해와서 HttpResponse를 만드는 Factory와 연결한다. 
+  - [x] Factory가 RequestMethod에 따라 Strategy를 구성해서 Response를 반환합니다.
+  - [x] Response Test 생성
+  - [x] Request Test 생성
+
+- [] 피드백 반영
+  - [x] 홈페이지 접속 확인
+    - STREAM 닫지 못한것 확인 -> Stream을 Manual하게 닫아줌
+    - 해당 inputStream을 닫으면서, outputstream도 닫히는 이슈입니다. (try-with-resources로 같이 선언됨)
+    - Buffer를 바로 생성해서 Parser로 넘겨주어서 try-with-resources를 사용할 수 있게 변경하였습니다.
+  - [x] 사용하지 않는 커멘트 제거
+  - [x] log.error 제거하고 log.info로 변경하였습니다.
+  - [x] 404 일 경우 null 반환 확인
+  - [x] resource static 디렉토리 허용으로 변경하기
+  - [] readAllBytes 의 OOM 이슈로 제거하기
+  - [x] ContentType 에 대한 enum 생성하기
+  - [x] null 반환하는 함수들 제거하기

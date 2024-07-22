@@ -20,20 +20,20 @@ public abstract class HttpRequest {
         this.params = params;
     }
 
-    public RequestMethod getRequestMethod() {
-        return requestMethod;
+    public String getRequestMethod() {
+        return requestMethod.name();
     }
 
-    public RequestUrl getRequestUrl() {
-        return requestUrl;
+    public String getRequestUrl() {
+        return requestUrl.getRequestUrl();
     }
 
-    public RequestProtocol getProtocol() {
-        return protocol;
+    public String getProtocol() {
+        return protocol.getProtocol();
     }
 
-    public HttpVersion getVersion() {
-        return version;
+    public String getVersion() {
+        return version.getVersion();
     }
 
     public Map<String, String> getParams() {

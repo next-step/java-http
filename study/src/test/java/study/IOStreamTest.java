@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import java.io.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.Assertions.in;
 import static org.mockito.Mockito.*;
 
@@ -239,4 +240,43 @@ class IOStreamTest {
         }
     }
 
+    /**
+     * BufferedReader가_닫히면_InputStream이_닫힌다
+     */
+    @Test
+    void BufferedReader가_닫히면_InputStream이_닫힌다() throws IOException {
+
+        final InputStream inputStream = mock(InputStream.class);
+        final InputStreamReader streamReader = new InputStreamReader(inputStream);
+        final BufferedReader bufferedReader = new BufferedReader(streamReader);
+
+        final StringBuilder actual = new StringBuilder();
+
+        while (bufferedReader.ready()){
+            actual.append(bufferedReader.readLine()).append("\r\n");
+        }
+        bufferedReader.close();
+
+        verify(inputStream, atLeastOnce()).close();
+    }
+
+    @DisplayName("stream 객체만 닫았을때, 기반스트림은 닫히지 않는다.")
+    @Test
+    void InputStream이_닫히면_Reader가_닫힌다() throws IOException {
+
+        final String emoji = String.join("\r\n",
+            "😀😃😄😁😆😅😂🤣🥲☺️😊",
+            "😇🙂🙃😉😌😍🥰😘😗😙😚",
+            "😋😛😝😜🤪🤨🧐🤓😎🥸🤩",
+            "");
+        final InputStream inputStream = new ByteArrayInputStream(emoji.getBytes());
+        final InputStreamReader streamReader = new InputStreamReader(inputStream);
+        final BufferedReader bufferedReader = new BufferedReader(streamReader);
+
+        inputStream.close();
+
+        assertThat(streamReader.ready()).isEqualTo(true);
+    }
 }
+
+

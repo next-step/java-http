@@ -1,22 +1,29 @@
 package org.apache.coyote.http11;
 
 import camp.nextstep.exception.UncheckedServletException;
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.Socket;
 import org.apache.coyote.Processor;
+import org.apache.coyote.http11.controller.ControllerFactory;
+import org.apache.coyote.http11.controller.ControllerFactoryProvider;
 import org.apache.coyote.http11.parser.HttpRequestDto;
 import org.apache.coyote.http11.parser.HttpRequestParser;
 import org.apache.coyote.http11.request.HttpRequest;
-import org.apache.coyote.http11.request.factory.Http11FactoryProvider;
-import org.apache.coyote.http11.request.factory.HttpFactoryProvider;
+import org.apache.coyote.http11.request.factory.Http11RequestFactoryProvider;
 import org.apache.coyote.http11.request.factory.HttpRequestFactory;
+import org.apache.coyote.http11.request.factory.HttpRequestFactoryProvider;
+import org.apache.coyote.http11.response.HttpResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class Http11Processor implements Runnable, Processor {
 
     private static final Logger log = LoggerFactory.getLogger(Http11Processor.class);
-    private static final HttpFactoryProvider httpFactoryProvider = new Http11FactoryProvider();
+    private static final HttpRequestFactoryProvider httpRequestFactoryProvider = new Http11RequestFactoryProvider();
+    private static final ControllerFactoryProvider controllerFactoryProvider = new ControllerFactoryProvider();
+
     private final Socket connection;
 
     public Http11Processor(final Socket connection) {
@@ -31,22 +38,21 @@ public class Http11Processor implements Runnable, Processor {
 
     @Override
     public void process(final Socket connection) {
-        try (final var inputStream = connection.getInputStream();
+        try (BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
             final var outputStream = connection.getOutputStream()) {
-            HttpRequestDto httpRequestDto = HttpRequestParser.of(inputStream);
-            HttpRequestFactory httpRequestFactory = httpFactoryProvider.provideFactory(
+            HttpRequestDto httpRequestDto = HttpRequestParser.parse(bufferedReader);
+
+            HttpRequestFactory httpRequestFactory = httpRequestFactoryProvider.provideFactory(
                 httpRequestDto.requestMethod);
             HttpRequest httpRequest = httpRequestFactory.createHttpInstance(httpRequestDto);
+            log.info(httpRequest.toString());
 
-            final var responseBody = "Hello world!";
+            ControllerFactory controllerFactory = controllerFactoryProvider.provideFactory(
+                httpRequest.getRequestUrl());
+            HttpResponse httpResponse = controllerFactory.serve(httpRequest);
 
-            final var response = String.join("\r\n",
-                "HTTP/1.1 200 OK ",
-                "Content-Type: text/html;charset=utf-8 ",
-                "Content-Length: " + responseBody.getBytes().length + " ",
-                "",
-                responseBody);
-
+            log.info(httpResponse.toString());
+            String response = httpResponse.write();
             outputStream.write(response.getBytes());
             outputStream.flush();
         } catch (IOException | UncheckedServletException e) {
@@ -54,7 +60,4 @@ public class Http11Processor implements Runnable, Processor {
         }
     }
 
-    private void parseRequestLine() {
-
-    }
 }

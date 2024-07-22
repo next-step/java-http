@@ -1,24 +1,18 @@
-package org.apache.coyote.http11.request;
+package org.apache.coyote.http11.response;
 
 import java.util.Objects;
 
-public class HttpVersion {
+public class HttpResponseVersion {
 
     private final String version;
 
-    public HttpVersion(final String version) {
+    public HttpResponseVersion(final String version) {
         this.version = version;
-    }
-
-    public String getVersion() {
-        return version;
     }
 
     @Override
     public String toString() {
-        return "HttpVersion{" +
-            "version='" + version + '\'' +
-            '}';
+        return version;
     }
 
     @Override
@@ -29,7 +23,7 @@ public class HttpVersion {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        HttpVersion that = (HttpVersion) o;
+        HttpResponseVersion that = (HttpResponseVersion) o;
         return Objects.equals(version, that.version);
     }
 
