@@ -8,10 +8,8 @@ import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.RejectedExecutionException;
+import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class Connector implements Runnable {
 
@@ -19,12 +17,19 @@ public class Connector implements Runnable {
 
     private static final int DEFAULT_PORT = 8080;
     private static final int DEFAULT_ACCEPT_COUNT = 100;
-    private static final int MAX_THREADS = 250;
+    private static final int MAX_THREADS = 25;
 
     private final ServerSocket serverSocket;
     private boolean stopped;
-    private ExecutorService executorService = Executors.newFixedThreadPool(MAX_THREADS);
-    private LinkedBlockingQueue<Runnable> blockingQueue = new LinkedBlockingQueue<>(DEFAULT_ACCEPT_COUNT);
+    private BlockingQueue<Runnable> blockingQueue = new LinkedBlockingQueue<>(DEFAULT_ACCEPT_COUNT);
+    private ExecutorService executor = new ThreadPoolExecutor(
+            MAX_THREADS,
+            MAX_THREADS,
+            10000L,
+            TimeUnit.MILLISECONDS,
+            blockingQueue,
+            new ThreadPoolExecutor.AbortPolicy()
+    );
 
     public Connector() {
         this(DEFAULT_PORT, DEFAULT_ACCEPT_COUNT);
@@ -45,6 +50,10 @@ public class Connector implements Runnable {
         }
     }
 
+    public BlockingQueue<Runnable> getBlockingQueue() {
+        return blockingQueue;
+    }
+
     public void start() {
         var thread = new Thread(this);
         thread.setDaemon(true);
@@ -58,7 +67,6 @@ public class Connector implements Runnable {
         // 클라이언트가 연결될때까지 대기한다.
         while (!stopped) {
             connect();
-            reconnect();
         }
     }
 
@@ -70,31 +78,10 @@ public class Connector implements Runnable {
         }
     }
 
-    private void reconnect() {
-        var processor = blockingQueue.peek();
-        try {
-            executorService.execute(processor);
-            blockingQueue.poll();
-        } catch (RejectedExecutionException ex) {
-            ex.printStackTrace();
-        }
-    }
+    private AtomicInteger atomicInteger = new AtomicInteger(1);
 
     private void process(final Socket connection) {
-        if (connection == null) {
-            return;
-        }
-        var processor = new Http11Processor(connection);
-        try {
-            executorService.execute(processor);
-        } catch (RejectedExecutionException ex) {
-            ex.printStackTrace();
-            try {
-                blockingQueue.put(processor);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
+        executor.execute(new Http11Processor(connection));
     }
 
     public void stop() {

@@ -1,9 +1,6 @@
 package camp.nextstep.http.config;
 
-import camp.nextstep.http.controller.LoginController;
-import camp.nextstep.http.controller.RegisterController;
-import camp.nextstep.http.controller.ResourceController;
-import camp.nextstep.http.controller.RootController;
+import camp.nextstep.http.controller.*;
 import camp.nextstep.http.handler.*;
 import camp.nextstep.service.UserService;
 
@@ -16,6 +13,7 @@ public class ServerStartUpConfig {
     private LoginController loginController;
     private RegisterController registerController;
     private ResourceController resourceController;
+    private TestController testController;
     private RequestMappingHandler requestMappingHandler;
 
     public UserService getUserService() {
@@ -65,6 +63,13 @@ public class ServerStartUpConfig {
         return resourceController;
     }
 
+    public TestController getTestController() {
+        if (testController == null) {
+            testController = new TestController();
+        }
+        return testController;
+    }
+
     public RequestMappingHandler getHttpRequestHandlerContainer() {
         if (requestMappingHandler == null) {
             requestMappingHandler = new RequestMappingHandler(
@@ -72,6 +77,7 @@ public class ServerStartUpConfig {
                             getRootController(),
                             getLoginController(),
                             getRegisterController(),
+                            getTestController(),
                             getResourceController()
                     )
             );
