@@ -19,8 +19,8 @@ public class ControllerDefaultFactory implements ControllerFactory {
         String message = "Hello world!";
 
         return new Http11Response.HttpResponseBuilder()
-            .statusLine(ProtocolVersion.HTTP11.getVersion(), StatusCode.OK.getStatusCode())
-            .responseHeader(ContentType.html.getContentType(), message.getBytes().length)
+            .statusLine(ProtocolVersion.HTTP11.getVersion(), StatusCode.OK.name())
+            .responseHeader(ContentType.html.name(), message.getBytes().length)
             .messageBody(message.getBytes())
             .build();
     }

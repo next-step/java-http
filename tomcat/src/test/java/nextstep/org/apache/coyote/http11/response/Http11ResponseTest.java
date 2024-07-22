@@ -1,13 +1,14 @@
 package nextstep.org.apache.coyote.http11.response;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 import java.io.IOException;
-import org.apache.coyote.http11.request.RequestMethod;
+import org.apache.coyote.http11.response.ContentType;
 import org.apache.coyote.http11.response.Http11Response;
 import org.apache.coyote.http11.response.HttpResponse;
+import org.apache.coyote.http11.response.ProtocolVersion;
+import org.apache.coyote.http11.response.StatusCode;
 import org.apache.coyote.http11.response.StatusLine;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -20,8 +21,8 @@ class Http11ResponseTest {
         String message = "Hello world!";
 
         HttpResponse httpResponse = new Http11Response.HttpResponseBuilder()
-            .statusLine("1.1", "OK")
-            .responseHeader("text/html", message.getBytes().length)
+            .statusLine(ProtocolVersion.HTTP11.getVersion(), StatusCode.OK.name())
+            .responseHeader(ContentType.html.name(), message.getBytes().length)
             .messageBody(message.getBytes())
             .build();
 

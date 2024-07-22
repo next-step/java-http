@@ -29,7 +29,7 @@ public class Controller404Factory implements ControllerFactory {
 
             return new Http11Response.HttpResponseBuilder()
                 .statusLine(ProtocolVersion.HTTP11.getVersion(), StatusCode.NOTFOUND.name())
-                .responseHeader(ContentType.html.getContentType(), content.length)
+                .responseHeader(ContentType.html.name(), content.length)
                 .messageBody(content)
                 .build();
         } catch (IOException e) {

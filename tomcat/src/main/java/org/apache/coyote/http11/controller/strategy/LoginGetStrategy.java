@@ -28,7 +28,7 @@ public class LoginGetStrategy implements RequestMethodStrategy {
         log.info(userLog);
         return new Http11Response.HttpResponseBuilder()
             .statusLine(ProtocolVersion.HTTP11.getVersion(), "OK")
-            .responseHeader(ContentType.html.getContentType(), userLog.getBytes().length)
+            .responseHeader(ContentType.html.name(), userLog.getBytes().length)
             .messageBody(userLog.getBytes())
             .build();
     }

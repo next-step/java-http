@@ -35,17 +35,14 @@ public class ControllerResourceFactory implements ControllerFactory {
             final Path path = file.toPath();
             final byte[] content = Files.readAllBytes(path);
 
-            final String extension =
+            final ContentType extension =
                 Arrays.stream(ContentType.values())
                     .filter(ext -> file.getName().endsWith(ext.name()))
-                    .findAny()
-                        .map(ext -> ContentType
-                            .valueOf(ext.name())
-                            .getContentType())
-                        .orElseGet(() -> "*/*");
+                    .findFirst().orElseGet(() -> ContentType.all);
+
 
             return new Http11Response.HttpResponseBuilder()
-                .responseHeader(extension, content.length)
+                .responseHeader(extension.name(), content.length)
                 .statusLine(httpRequest.getVersion(), "OK")
                 .messageBody(content)
                 .build();

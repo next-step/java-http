@@ -8,6 +8,8 @@ public enum ProtocolVersion {
     private String version;
 
     ProtocolVersion(String http, String version) {
+        this.protocol = http;
+        this.version = version;
     }
 
     public String getProtocol() {

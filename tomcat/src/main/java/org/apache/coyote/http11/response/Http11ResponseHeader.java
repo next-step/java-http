@@ -4,11 +4,11 @@ import java.util.Objects;
 
 public class Http11ResponseHeader {
 
-    private final String contentType;
+    private final ContentType contentType;
     private final int contentLength;
 
     public Http11ResponseHeader(String contentType, int contentLength) {
-        this.contentType = contentType;
+        this.contentType = ContentType.valueOf(contentType);
         this.contentLength = contentLength;
     }
 
@@ -17,7 +17,7 @@ public class Http11ResponseHeader {
 
         return String.join("\r\n"
             , String.format(
-                "Content-Type: %s;charset=utf-8 ", contentType),
+                "Content-Type: %s ", contentType),
             String.format("Content-Length: %s ", contentLength)
         );
     }

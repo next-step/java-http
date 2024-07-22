@@ -35,7 +35,7 @@ public class IndexGetStrategy implements RequestMethodStrategy {
 
             return new Http11Response.HttpResponseBuilder()
                 .statusLine(ProtocolVersion.HTTP11.getVersion(), StatusCode.OK.name())
-                .responseHeader(ContentType.html.getContentType(), content.length)
+                .responseHeader(ContentType.html.name(), content.length)
                 .messageBody(content)
                 .build();
         } catch (IOException e) {

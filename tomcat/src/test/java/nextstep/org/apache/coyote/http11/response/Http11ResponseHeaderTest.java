@@ -13,7 +13,7 @@ class Http11ResponseHeaderTest {
 
     @DisplayName("HttpResponse는 Content-Type, Content-Length 헤더값을 가집니다.")
     @CsvSource(
-        "text/html, 152"
+        "html, 152"
     )
     @ParameterizedTest
     void getResponseHeader(String contentType, int responseBodySize) {

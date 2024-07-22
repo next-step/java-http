@@ -10,7 +10,8 @@ public enum ContentType {
     woff("application/font-woff"),
     woff2("application/font-woff2"),
     ico("image/avif"),
-    json("application/json");
+    json("application/json"),
+    all("*/*");
 
     private final String contentType;
 
@@ -24,8 +25,6 @@ public enum ContentType {
 
     @Override
     public String toString() {
-        return "ContentType{" +
-            "contentType='" + contentType + '\'' +
-            '}';
+        return contentType;
     }
 }
