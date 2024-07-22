@@ -1,22 +1,35 @@
 package camp.nextstep.http;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 
-/*이 객체의 요구사항은 뭘까? 어떤거를 테스트 하면 좋을까?  난  특정 분기값을 주었을때 좋은 불변 객체가 오면 좋겠다. => 여기서는 비즈니스 로직에서 값을 조합하는 역할을 하면 어떨까? */
 public class HttpHeaders {
 
-  private Map<String, String> httpHeader;
+  private final Map<String, String> headers;
 
-
-  public HttpHeaders(String httpHeader) {
-    Map<String, String> header = parseHttpHeader(httpHeader);
-    this.httpHeader = header;
-
+  public HttpHeaders() {
+    this.headers = new HashMap<>();
   }
 
-  private Map<String, String> parseHttpHeader(String httpHeader) {
-    return new HashMap<>();
+  public HttpHeaders(List<String> headers) {
+    this.headers = new HashMap<>();
+    headers.forEach(header -> {
+      String[] split = header.split(": ");
+      this.headers.put(split[0].toLowerCase(), split[1]);
+    });
+  }
+
+  public void add(String key, String value) {
+    headers.put(key.toLowerCase(), value);
+  }
+
+  public String get(String key) {
+    return headers.get(key.toLowerCase());
+  }
+
+  public boolean contains(String key) {
+    return headers.containsKey(key.toLowerCase());
   }
 }
