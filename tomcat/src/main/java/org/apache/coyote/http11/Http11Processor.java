@@ -58,7 +58,7 @@ public class Http11Processor implements Runnable, Processor {
   private HttpRequest parseHttpRequest(final BufferedReader requestStream) throws IOException {
     RequestLine requestLine = parseRequestLine(requestStream);
     HttpHeaders headers = parseHeaders(requestStream);
-    String body = parseBody(requestStream, headers);
+    HttpRequestBody body = parseRequestBody(requestStream, headers);
 
     return new HttpRequest(requestLine, headers, body);
   }
@@ -77,14 +77,16 @@ public class Http11Processor implements Runnable, Processor {
     return HttpHeaders.from(headerLines);
   }
 
-  private String parseBody(BufferedReader requestStream, HttpHeaders headers) throws IOException {
-    int contentLength = headers.getContentLength();
-    if (contentLength > 0) {
-      char[] body = new char[contentLength];
-      requestStream.read(body, 0, contentLength);
-      return new String(body);
+  private HttpRequestBody parseRequestBody(final BufferedReader inputReader,
+      final HttpHeaders requestHeaders) throws IOException {
+    if (requestHeaders.getContentLength() == 0) {
+      return new HttpRequestBody();
     }
-    return "";
+    int contentLength = requestHeaders.getContentLength();
+    char[] buffer = new char[contentLength];
+    inputReader.read(buffer, 0, contentLength);
+    String bodyContent = new String(buffer);
+    return HttpRequestBody.parse(bodyContent);
   }
 
 }

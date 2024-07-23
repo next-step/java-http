@@ -25,6 +25,14 @@ public class RequestLine {
     return version;
   }
 
+  public boolean isGetMethod() {
+    return httpMethod == HttpMethod.GET;
+  }
+
+  public boolean isPostMethod() {
+    return httpMethod == HttpMethod.POST;
+  }
+
   public static RequestLine parse(String request) {
 
     if (request == null || request.isEmpty()) {

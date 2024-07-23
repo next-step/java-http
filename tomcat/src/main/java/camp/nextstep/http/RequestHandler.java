@@ -15,6 +15,7 @@ public class RequestHandler {
 
   private static final Logger log = LoggerFactory.getLogger(RequestHandler.class);
   private static final String LOGIN_PATH = "/login";
+  private static final String REGISTER_PATH = "/register";
   private static final String INDEX_PATH = "/index.html";
   private static final String STATIC_PATH = "static/";
 
@@ -28,6 +29,10 @@ public class RequestHandler {
 
     if (urlPath.equals(LOGIN_PATH)) {
       return handleLoginRequest(path);
+    }
+
+    if (urlPath.equals(REGISTER_PATH)) {
+      return handleRegisterRequest(httpRequest);
     }
 
     return handleStaticFileRequest(urlPath);
@@ -44,6 +49,29 @@ public class RequestHandler {
     } catch (NoSuchElementException e) {
       return HttpResponse.redirect("/401.html");
     }
+  }
+
+  private HttpResponse handleRegisterRequest(HttpRequest httpRequest) {
+
+    if (httpRequest.getRequestLine().isGetMethod()) {
+      return handleStaticFileRequest("register.html");
+    }
+
+    if (httpRequest.getRequestLine().isPostMethod()) {
+      return handlePostRegisterRequest(httpRequest);
+    }
+
+    return HttpResponse.error(HttpStatus.NOT_FOUND, "Not found");
+  }
+
+  private HttpResponse handlePostRegisterRequest(HttpRequest httpRequest) {
+
+    final User user = new User(httpRequest.getRequestBody().getValue("account"),
+        httpRequest.getRequestBody().getValue("password"),
+        httpRequest.getRequestBody().getValue("email"));
+    InMemoryUserRepository.save(user);
+
+    return HttpResponse.redirect("/index.html");
   }
 
   private void checkUserInformation(String userId, String password) {

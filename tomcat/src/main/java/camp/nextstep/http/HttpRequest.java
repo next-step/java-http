@@ -1,12 +1,14 @@
 package camp.nextstep.http;
 
+import org.apache.coyote.http11.HttpRequestBody;
+
 public class HttpRequest {
 
   private final RequestLine requestLine;
   private final HttpHeaders headers;
-  private final String requestBody;
+  private final HttpRequestBody requestBody;
 
-  public HttpRequest(RequestLine requestLine, HttpHeaders headers, String requestBody) {
+  public HttpRequest(RequestLine requestLine, HttpHeaders headers, HttpRequestBody requestBody) {
     this.requestLine = requestLine;
     this.headers = headers;
     this.requestBody = requestBody;
@@ -20,7 +22,7 @@ public class HttpRequest {
     return headers;
   }
 
-  public String getRequestBody() {
+  public HttpRequestBody getRequestBody() {
     return requestBody;
   }
 }

@@ -26,7 +26,7 @@ public class HttpHeaders {
     return new HttpHeaders(headerMap);
   }
 
-  public String get(String key) {
+  public String getValueByKey(String key) {
     return headers.get(key);
   }
 
@@ -35,7 +35,7 @@ public class HttpHeaders {
   }
 
   public int getContentLength() {
-    String contentLength = get("Content-Length");
+    String contentLength = getValueByKey("Content-Length");
     return contentLength != null ? Integer.parseInt(contentLength) : 0;
   }
 
