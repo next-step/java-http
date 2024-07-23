@@ -108,16 +108,15 @@ class Http11ProcessorTest {
   }
 
   @Test
-  @DisplayName("로그인 성공시 HTTP Status Code 302를 반환하고, /index.html로 리다이렉트 한다.")
-  void loginSuccess() throws IOException {
+  @DisplayName("Get 로그인 성공시 HTTP Status Code 302를 반환하고, /index.html로 리다이렉트 한다.")
+  void loginSuccessGet() throws IOException {
     // given
     final String httpRequest = String.join("\r\n",
-        "POST /login HTTP/1.1 ",
+        "GET /login?account=gugu&password=password HTTP/1.1 ",
         "Connection: keep-alive",
         "Content-Length: 30",
         "",
-        "account=gugu&password=password");
-
+        "");
     final var socket = new StubSocket(httpRequest);
     final Http11Processor processor = new Http11Processor(socket);
 
@@ -126,23 +125,22 @@ class Http11ProcessorTest {
 
     // then
     var expected = String.join("\r\n",
-        "HTTP/1.1 302 Found ",
-        "Location: /index.html ",
+        "HTTP/1.1 302 Found",
+        "Location: /index.html",
         "",
         "");
     assertThat(socket.output()).isEqualTo(expected);
   }
 
   @Test
-  @DisplayName("로그인 실패시 HTTP Status Code 302를 반환하고, /index.html로 리다이렉트 한다.")
+  @DisplayName("로그인 실패시 HTTP Status Code 302를 반환하고, /401.html로 리다이렉트 한다.")
   void loginFailed() throws IOException {
     // given
     final String httpRequest = String.join("\r\n",
-        "POST /login HTTP/1.1 ",
+        "GET /login?account=gugu&password=wrong HTTP/1.1 ",
         "Connection: keep-alive",
-        "Content-Length: 33",
         "",
-        "account=gugu&password=wrongpassword");
+        "");
 
     final var socket = new StubSocket(httpRequest);
     final Http11Processor processor = new Http11Processor(socket);
@@ -152,8 +150,8 @@ class Http11ProcessorTest {
 
     // then
     var expected = String.join("\r\n",
-        "HTTP/1.1 302 Found ",
-        "Location: /index.html ",
+        "HTTP/1.1 302 Found",
+        "Location: /401.html",
         "",
         "");
     assertThat(socket.output()).isEqualTo(expected);
