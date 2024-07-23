@@ -6,6 +6,8 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 
 import camp.nextstep.db.InMemoryUserRepository;
 import camp.nextstep.exception.InvalidRequestException;
+import camp.nextstep.session.Session;
+import camp.nextstep.session.SessionManager;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
@@ -127,8 +129,8 @@ class Http11ProcessorTest {
 
     // then
     var expected = String.join("\r\n",
-        "HTTP/1.1 302 Found",
-        "Location: /index.html",
+        "HTTP/1.1 302 Found ",
+        "Location: /index.html ",
         "",
         "");
     assertThat(socket.output()).isEqualTo(expected);
@@ -252,14 +254,14 @@ class Http11ProcessorTest {
   }
 
   @Test
-  @DisplayName(" 로그인이 되어 있을 경우, set-cookie 에 session 정보를 반환하며 index.html 페이지로 이동한다. ")
-  void login() {
+  @DisplayName(" /login으로 GET 요청이 올 경우, Cookie가 이미 로그인 된 Session이면 index.html 페이지로 이동한다. ")
+  void isAlreadyLogin() {
     // given
     final String httpRequest = String.join("\r\n",
-        "GET / HTTP/1.1 ",
+        "GET /login HTTP/1.1 ",
         "Host: localhost:8080 ",
         "Connection: keep-alive ",
-        "Cookie: JSESSIONID=656cef62-e3c4-40bc-a8df-94732920ed46  ",
+        "Cookie: JSESSIONID=656cef62-e3c4-40bc-a8df-94732920ed46",
 
         "",
         "");
@@ -268,44 +270,17 @@ class Http11ProcessorTest {
     final Http11Processor processor = new Http11Processor(socket);
 
     // when
+    Session session = new Session("656cef62-e3c4-40bc-a8df-94732920ed46");
+    SessionManager.add(session);
     processor.process(socket);
 
     // then
-    final URL resource = getClass().getClassLoader().getResource("static/css/styles.css");
     var expected = String.join("\r\n",
-        "HTTP/1.1 302 Found ",
-        "Location: http://localhost:8080/index.html ",
+        "HTTP/1.1 302 Found",
+        "Location: /index.html",
         "",
         "");
 
     assertThat(socket.output()).isEqualTo(expected);
   }
-
-  @Test
-  @DisplayName(" 로그인 하지 않았을 경우, login.html 페이지로 이동한다. ")
-  void isLogin() {
-    // given
-    final String httpRequest = String.join("\r\n",
-        "GET / HTTP/1.1 ",
-        "Host: localhost:8080 ",
-        "Connection: keep-alive ",
-        "",
-        "");
-
-    final var socket = new StubSocket(httpRequest);
-    final Http11Processor processor = new Http11Processor(socket);
-
-    // when
-    processor.process(socket);
-
-    // then
-    var expected = String.join("\r\n",
-        "HTTP/1.1 302 Found ",
-        "Location: http://localhost:8080/login.html ",
-        "",
-        "");
-
-    assertThat(socket.output()).isEqualTo(expected);
-  }
-
 }
