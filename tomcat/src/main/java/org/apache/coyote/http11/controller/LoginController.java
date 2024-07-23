@@ -46,12 +46,9 @@ public class LoginController extends AbstractController {
 		final User user = InMemoryUserRepository.findByAccount(account).orElseThrow(NoSuchElementException::new);
 
 		if (user.checkPassword(password)) {
-			String uuid = UUID.randomUUID().toString();
-			request.addCookie(new Cookie("JSESSIONID", uuid));
-			Session session = new Session(uuid);
+			Session session = request.getSession();
 			session.setAttribute("user", user);
-			SessionManager.getInstance().add(session);
-
+			response.setSession(session.getId());
 			response.sendRedirect("/index.html");
 			return;
 		}

@@ -4,6 +4,8 @@ import jakarta.servlet.http.HttpSession;
 import org.apache.catalina.Manager;
 
 import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class SessionManager implements Manager {
@@ -33,6 +35,13 @@ public class SessionManager implements Manager {
     @Override
     public void remove(HttpSession session) {
         SESSIONS.remove(session.getId());
+    }
+
+    public Session computeIfAbsent(String id) {
+        final String sessionId = Optional.ofNullable(id)
+                .orElseGet(() -> UUID.randomUUID().toString());
+
+        return SESSIONS.computeIfAbsent(sessionId, Session::new);
     }
 
     private static class SingletonHelper {

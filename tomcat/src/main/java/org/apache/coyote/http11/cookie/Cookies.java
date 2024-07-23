@@ -1,8 +1,8 @@
 package org.apache.coyote.http11.cookie;
 
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class Cookies {
     private final List<Cookie> cookies;
@@ -40,14 +40,13 @@ public class Cookies {
     }
 
     public String getResponseCookies() {
-        String ResponseCookies = "Set-Cookie: " + cookies.stream()
-                .map(cookie -> cookie.getName() + "=" + cookie.getValue())
-                .reduce((cookie1, cookie2) -> cookie1 + "; " + cookie2)
-                .orElse("");
+        String ResponseCookies = cookies.stream()
+                .map(cookie -> String.format("%s=%s; ", cookie.getName(), cookie.getValue()))
+                .collect(Collectors.joining());
         if (ResponseCookies.isEmpty()) {
             return "";
         }
-        return ResponseCookies;
+        return "Set-Cookie: " + ResponseCookies + System.lineSeparator();
     }
 
     public String getJSessionId() {
@@ -64,5 +63,17 @@ public class Cookies {
 
     public boolean isNotEmpty() {
         return !isEmpty();
+    }
+
+    public String getSessionCookie() {
+        return cookies.stream()
+                .filter(cookie -> "JSESSIONID".equals(cookie.getName()))
+                .map(Cookie::getValue)
+                .findFirst()
+                .orElse(null);
+    }
+
+    public void addSessionCookie(String id) {
+        cookies.add(new Cookie("JSESSIONID", id));
     }
 }

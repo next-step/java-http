@@ -74,4 +74,8 @@ public class HttpResponse {
         }
         return new Resource(PATH_PREFIX + "/404.html");
     }
+
+    public void setSession(String id) {
+        headers.addSessionCookie(id);
+    }
 }
