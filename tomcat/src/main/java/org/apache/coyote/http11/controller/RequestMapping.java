@@ -5,6 +5,7 @@ import java.util.Map;
 public class RequestMapping {
 
 	private final Map<String, Controller> controllers;
+	private final Controller staticController = new StaticController();
 
 	public RequestMapping() {
 		controllers = Map.of(
@@ -16,7 +17,7 @@ public class RequestMapping {
 
 	public Controller getController(final String path) {
 		if(path.startsWith("/css")||path.startsWith("/js")||path.startsWith("/images")||path.startsWith("/fonts")||path.startsWith("/favicon.ico")) {
-			return new StaticController();
+			return staticController;
 		}
 
 		Controller controller = controllers.get(path);
