@@ -1,6 +1,5 @@
 package camp.nextstep.http;
 
-import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -13,11 +12,6 @@ public class HttpHeaders {
   public HttpHeaders(Map<String, String> headers) {
     this.headers = new LinkedHashMap<>(headers);
     this.httpCookie = new HttpCookie();
-  }
-
-  public HttpHeaders(Map<String, String> headers, HttpCookie cookie) {
-    this.headers = new LinkedHashMap<>(headers);
-    this.httpCookie = new HttpCookie(headers);
   }
 
   public void addCookie(HttpCookie cookie) {
@@ -37,6 +31,10 @@ public class HttpHeaders {
     return new HttpHeaders(headerMap);
   }
 
+  public boolean isCookieExisted() {
+    return headers.containsKey("Cookie");
+  }
+
   public String getValueByKey(String key) {
     return headers.get(key);
   }
@@ -50,22 +48,10 @@ public class HttpHeaders {
     return contentLength != null ? Integer.parseInt(contentLength) : 0;
   }
 
-  public String buildHeaders() {
-    StringBuilder sb = new StringBuilder();
-    for (Map.Entry<String, String> entry : headers.entrySet()) {
-      sb.append(entry.getKey()).append(": ").append(entry.getValue()).append("\r\n");
-    }
-    return sb.toString();
-  }
-
-  public Map<String, String> getHeaders() {
-    return Collections.unmodifiableMap(headers);
-  }
-
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    if (httpCookie != null) {
+    if (httpCookie != null && !httpCookie.getCookies().isEmpty()) {
       sb.append("Set-Cookie: ").append(httpCookie.toString()).append("\r\n");
     }
     for (Map.Entry<String, String> entry : headers.entrySet()) {

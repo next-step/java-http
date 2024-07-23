@@ -1,5 +1,6 @@
 package camp.nextstep.http;
 
+import camp.nextstep.session.Session;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -23,17 +24,27 @@ public class HttpCookie {
     return new LinkedHashMap<>(cookies);
   }
 
-  public void addCookie(String name, String value) {
-    this.cookies.put(name, value);
-  }
-
   public void addCookie(HttpCookie cookie) {
     this.cookies.putAll(cookie.getCookies());
   }
 
+  public HttpCookie(String cookieString) {
+    this.cookies = new LinkedHashMap<>();
+    String[] cookiePairs = cookieString.split(";");
+    for (String pair : cookiePairs) {
+      String[] keyValue = pair.trim().split("=", 2);
+      if (keyValue.length == 2) {
+        cookies.put(keyValue[0], keyValue[1]);
+      }
+    }
+  }
+
   public static HttpCookie of() {
     return new HttpCookie(Map.of(SESSION_COOKIE_KEY, UUID.randomUUID().toString()));
+  }
 
+  public static HttpCookie cookieSession(Session session) {
+    return new HttpCookie(Map.of(SESSION_COOKIE_KEY, session.getId()));
   }
 
   @Override

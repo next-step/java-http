@@ -2,6 +2,8 @@ package camp.nextstep.http;
 
 import camp.nextstep.db.InMemoryUserRepository;
 import camp.nextstep.model.User;
+import camp.nextstep.session.Session;
+import camp.nextstep.session.SessionManager;
 import camp.nextstep.util.FileUtils;
 import java.io.File;
 import java.io.IOException;
@@ -14,6 +16,7 @@ import org.slf4j.LoggerFactory;
 public class RequestHandler {
 
   private static final Logger log = LoggerFactory.getLogger(RequestHandler.class);
+  private static final String ROOT_PATH = "/";
   private static final String LOGIN_PATH = "/login";
   private static final String REGISTER_PATH = "/register";
   private static final String INDEX_PATH = "/index.html";
@@ -23,12 +26,16 @@ public class RequestHandler {
     Path path = httpRequest.getRequestLine().getPath();
     String urlPath = path.getUrlPath();
 
+    if (urlPath.equals(ROOT_PATH)) {
+      return handleStaticFileRequest("index.html");
+    }
+
     if (urlPath.equals(INDEX_PATH)) {
       return handleStaticFileRequest("index.html");
     }
 
     if (urlPath.equals(LOGIN_PATH)) {
-      return handleLoginRequest(path);
+      return handleLoginRequest(httpRequest);
     }
 
     if (urlPath.equals(REGISTER_PATH)) {
@@ -38,15 +45,27 @@ public class RequestHandler {
     return handleStaticFileRequest(urlPath);
   }
 
-  private HttpResponse handleLoginRequest(Path path) {
-    QueryString queryString = path.getQueryString();
+  private HttpResponse handleLoginRequest(HttpRequest httpRequest) {
+    QueryString queryString = httpRequest.getRequestLine().getPath().getQueryString();
     String userId = queryString.getValueByKey("account");
     String password = queryString.getValueByKey("password");
 
-    try {
-      checkUserInformation(userId, password);
+    if (httpRequest.getHeaders().isCookieExisted()) {
 
-      return HttpResponse.redirect(INDEX_PATH).addCookie(HttpCookie.of());
+      String sessionId = httpRequest.getHeaders().getValueByKey("Cookie").split("=")[1];
+      if (SessionManager.findSession(sessionId) == null) {
+        return HttpResponse.redirect("/401.html");
+      }
+      return HttpResponse.redirect(INDEX_PATH);
+    }
+
+    try {
+      User user = checkUserInformation(userId, password);
+      Session session = Session.createNewSession();
+      session.setAttribute("user", user);
+      SessionManager.add(session);
+
+      return HttpResponse.redirect(INDEX_PATH).addCookie(HttpCookie.cookieSession(session));
 
     } catch (NoSuchElementException e) {
       return HttpResponse.redirect("/401.html");
@@ -76,15 +95,20 @@ public class RequestHandler {
     return HttpResponse.redirect(INDEX_PATH);
   }
 
-  private void checkUserInformation(String userId, String password) {
+  private User checkUserInformation(String userId, String password) {
+
+    if (userId == null || password == null) {
+      throw new NoSuchElementException("사용자 정보가 올바르지 않습니다.");
+    }
+
     final User user = InMemoryUserRepository.findByAccount(userId)
         .orElseThrow(() -> new NoSuchElementException("사용자를 찾을 수 없습니다."));
 
     if (!user.checkPassword(password)) {
       throw new NoSuchElementException("잘못된 비밀번호입니다.");
     }
-
     log.info("User logged in: {}", user);
+    return user;
   }
 
   private HttpResponse handleStaticFileRequest(String filePath) {
