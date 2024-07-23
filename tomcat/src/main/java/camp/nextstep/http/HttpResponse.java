@@ -1,5 +1,7 @@
 package camp.nextstep.http;
 
+import java.util.Map;
+
 public class HttpResponse {
 
   private final HttpStatus status;
@@ -13,20 +15,17 @@ public class HttpResponse {
   }
 
   public static HttpResponse ok(String body, String contentType) {
-    HttpHeaders headers = new HttpHeaders();
-    headers.add("Content-Type", contentType + ";charset=utf-8");
+    HttpHeaders headers = new HttpHeaders(Map.of("Content-Type", contentType + ";charset=utf-8"));
     return new HttpResponse(HttpStatus.OK, headers, body.getBytes());
   }
 
   public static HttpResponse redirect(String location) {
-    HttpHeaders headers = new HttpHeaders();
-    headers.add("Location", location);
+    HttpHeaders headers = new HttpHeaders(Map.of("Location", location));
     return new HttpResponse(HttpStatus.FOUND, headers, new byte[0]);
   }
 
   public static HttpResponse error(HttpStatus status, String message) {
-    HttpHeaders headers = new HttpHeaders();
-    headers.add("Content-Type", "text/plain;charset=utf-8");
+    HttpHeaders headers = new HttpHeaders(Map.of("Content-Type", "text/plain;charset=utf-8"));
     return new HttpResponse(status, headers, message.getBytes());
   }
 

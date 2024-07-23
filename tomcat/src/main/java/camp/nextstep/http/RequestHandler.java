@@ -42,7 +42,7 @@ public class RequestHandler {
       checkUserInformation(userId, password);
       return HttpResponse.redirect("/index.html");
     } catch (NoSuchElementException e) {
-      return HttpResponse.error(HttpStatus.UNAUTHORIZED, "Invalid credentials");
+      return HttpResponse.redirect("/401.html");
     }
   }
 

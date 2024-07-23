@@ -56,35 +56,35 @@ public class Http11Processor implements Runnable, Processor {
   }
 
   private HttpRequest parseHttpRequest(final BufferedReader requestStream) throws IOException {
-    RequestLine requestLine = RequestLine.parse(requestStream.readLine());
+    RequestLine requestLine = parseRequestLine(requestStream);
+    HttpHeaders headers = parseHeaders(requestStream);
+    String body = parseBody(requestStream, headers);
 
+    return new HttpRequest(requestLine, headers, body);
+  }
+
+  private RequestLine parseRequestLine(BufferedReader requestStream) throws IOException {
+    String line = requestStream.readLine();
+    return RequestLine.parse(line);
+  }
+
+  private HttpHeaders parseHeaders(BufferedReader requestStream) throws IOException {
     List<String> headerLines = new ArrayList<>();
     String line;
     while ((line = requestStream.readLine()) != null && !line.isEmpty()) {
       headerLines.add(line);
     }
-
-    HttpHeaders headers = parseRequestHeader(requestStream);
-
-    StringBuilder requestBody = new StringBuilder();
-    while (requestStream.ready()) {
-      requestBody.append((char) requestStream.read());
-    }
-
-    return new HttpRequest(requestLine, headers, requestBody.toString());
+    return HttpHeaders.from(headerLines);
   }
 
-  private HttpHeaders parseRequestHeader(final BufferedReader inputReader) throws IOException {
-    final var requestHeaders = new ArrayList<String>();
-    while (inputReader.ready()) {
-      final var line = inputReader.readLine();
-      if (line.isEmpty()) {
-        break;
-      }
-      requestHeaders.add(line);
+  private String parseBody(BufferedReader requestStream, HttpHeaders headers) throws IOException {
+    int contentLength = headers.getContentLength();
+    if (contentLength > 0) {
+      char[] body = new char[contentLength];
+      requestStream.read(body, 0, contentLength);
+      return new String(body);
     }
-    return new HttpHeaders(requestHeaders);
+    return "";
   }
-
 
 }
