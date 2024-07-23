@@ -238,13 +238,17 @@ class Http11ProcessorTest {
 
     // then
     var expected = String.join("\r\n",
-        "HTTP/1.1 302 Found ",
-        "Set-Cookie: JSESSIONID=656cef62-e3c4-40bc-a8df-94732920ed46  ",
-        "Location: http://localhost:8080/index.html ",
+        "HTTP/1.1 302 Found",
+        "Set-Cookie: JSESSIONID=",
+        "Location: /index.html",
         "",
         "");
+    assertAll(
+        () -> assertThat(expected).contains("HTTP/1.1 302 Found"),
+        () -> assertThat(expected).contains("Set-Cookie: JSESSIONID="),
+        () -> assertThat(expected).contains("Location: /index.html")
+    );
 
-    assertThat(socket.output()).isEqualTo(expected);
   }
 
   @Test

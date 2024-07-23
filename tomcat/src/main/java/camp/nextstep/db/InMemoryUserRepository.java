@@ -19,7 +19,6 @@ public class InMemoryUserRepository {
   }
 
   public static Optional<User> findByAccount(String account) {
-    database.forEach((key, value) -> System.out.println("key: " + key + ", value: " + value));
     return Optional.ofNullable(database.get(account));
   }
 

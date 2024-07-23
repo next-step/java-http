@@ -19,6 +19,11 @@ public class HttpResponse {
     this.body = body;
   }
 
+  public HttpResponse addCookie(HttpCookie cookie) {
+    headers.addCookie(cookie);
+    return this;
+  }
+
   public static HttpResponse ok(String body, String contentType) {
     Map<String, String> headers = new LinkedHashMap<>();
     headers.put(CONTENT_TYPE, contentType + CHARSET_UTF8);
@@ -27,12 +32,11 @@ public class HttpResponse {
       return new HttpResponse(HttpStatus.OK,
           new HttpHeaders(Map.of(CONTENT_TYPE, contentType + CHARSET_UTF8)), new byte[0]);
     }
-    
+
     headers.put(CONTENT_LENGTH, String.valueOf(body.getBytes().length));
     return new HttpResponse(HttpStatus.OK, new HttpHeaders(headers), body.getBytes());
 
   }
-
 
   public static HttpResponse redirect(String location) {
     HttpHeaders headers = new HttpHeaders(Map.of(LOCATION, location));

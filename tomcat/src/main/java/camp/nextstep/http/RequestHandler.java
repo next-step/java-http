@@ -45,7 +45,9 @@ public class RequestHandler {
 
     try {
       checkUserInformation(userId, password);
-      return HttpResponse.redirect("/index.html");
+
+      return HttpResponse.redirect(INDEX_PATH).addCookie(HttpCookie.of());
+
     } catch (NoSuchElementException e) {
       return HttpResponse.redirect("/401.html");
     }
@@ -71,7 +73,7 @@ public class RequestHandler {
         httpRequest.getRequestBody().getValue("email"));
     InMemoryUserRepository.save(user);
 
-    return HttpResponse.redirect("/index.html");
+    return HttpResponse.redirect(INDEX_PATH);
   }
 
   private void checkUserInformation(String userId, String password) {

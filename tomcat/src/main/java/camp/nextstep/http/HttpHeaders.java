@@ -8,9 +8,20 @@ import java.util.Map;
 public class HttpHeaders {
 
   private final Map<String, String> headers;
+  private final HttpCookie httpCookie;
 
   public HttpHeaders(Map<String, String> headers) {
-    this.headers = Collections.unmodifiableMap(new LinkedHashMap<>(headers));
+    this.headers = new LinkedHashMap<>(headers);
+    this.httpCookie = new HttpCookie();
+  }
+
+  public HttpHeaders(Map<String, String> headers, HttpCookie cookie) {
+    this.headers = new LinkedHashMap<>(headers);
+    this.httpCookie = new HttpCookie(headers);
+  }
+
+  public void addCookie(HttpCookie cookie) {
+    httpCookie.addCookie(cookie);
   }
 
   public static HttpHeaders from(List<String> headerLines) {
@@ -54,9 +65,14 @@ public class HttpHeaders {
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
+    if (httpCookie != null) {
+      sb.append("Set-Cookie: ").append(httpCookie.toString()).append("\r\n");
+    }
     for (Map.Entry<String, String> entry : headers.entrySet()) {
       sb.append(entry.getKey()).append(": ").append(entry.getValue()).append("\r\n");
     }
+
     return sb.toString();
   }
+
 }
