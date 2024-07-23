@@ -1,5 +1,6 @@
 package org.apache.coyote.http11.response;
 
+import org.apache.coyote.http11.OutputStreamPrinter;
 import org.apache.coyote.http11.request.model.ContentType;
 
 import java.io.IOException;
@@ -38,8 +39,7 @@ public class HttpResponse {
                 "",
                 responseBody);
 
-        outputStream.write(response.getBytes());
-        outputStream.flush();
+        OutputStreamPrinter.print(outputStream, response);
     }
 
     public void forward(final String path) throws IOException {
@@ -53,16 +53,7 @@ public class HttpResponse {
                 "",
                 responseBody);
 
-        outputStream.write(response.getBytes());
-        outputStream.flush();
-    }
-
-    private Resource getResource(final String path) {
-        final var resource = new Resource(PATH_PREFIX + path);
-        if (resource.exists()) {
-            return resource;
-        }
-        return new Resource(PATH_PREFIX + "/404.html");
+        OutputStreamPrinter.print(outputStream, response);
     }
 
     public void sendRedirect(final String location) throws IOException {
@@ -73,7 +64,14 @@ public class HttpResponse {
                 "",
                 "");
 
-        outputStream.write(response.getBytes());
-        outputStream.flush();
+        OutputStreamPrinter.print(outputStream, response);
+    }
+
+    private Resource getResource(final String path) {
+        final var resource = new Resource(PATH_PREFIX + path);
+        if (resource.exists()) {
+            return resource;
+        }
+        return new Resource(PATH_PREFIX + "/404.html");
     }
 }
