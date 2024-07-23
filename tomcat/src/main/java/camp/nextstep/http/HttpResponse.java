@@ -1,9 +1,14 @@
 package camp.nextstep.http;
 
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class HttpResponse {
 
+  private static final String CONTENT_TYPE = "Content-Type";
+  private static final String CONTENT_LENGTH = "Content-Length";
+  private static final String LOCATION = "Location";
+  private static final String CHARSET_UTF8 = ";charset=utf-8";
   private final HttpStatus status;
   private final HttpHeaders headers;
   private final byte[] body;
@@ -15,17 +20,27 @@ public class HttpResponse {
   }
 
   public static HttpResponse ok(String body, String contentType) {
-    HttpHeaders headers = new HttpHeaders(Map.of("Content-Type", contentType + ";charset=utf-8"));
-    return new HttpResponse(HttpStatus.OK, headers, body.getBytes());
+    Map<String, String> headers = new LinkedHashMap<>();
+    headers.put(CONTENT_TYPE, contentType + CHARSET_UTF8);
+
+    if (body == null) {
+      return new HttpResponse(HttpStatus.OK,
+          new HttpHeaders(Map.of(CONTENT_TYPE, contentType + CHARSET_UTF8)), new byte[0]);
+    }
+    
+    headers.put(CONTENT_LENGTH, String.valueOf(body.getBytes().length));
+    return new HttpResponse(HttpStatus.OK, new HttpHeaders(headers), body.getBytes());
+
   }
 
+
   public static HttpResponse redirect(String location) {
-    HttpHeaders headers = new HttpHeaders(Map.of("Location", location));
+    HttpHeaders headers = new HttpHeaders(Map.of(LOCATION, location));
     return new HttpResponse(HttpStatus.FOUND, headers, new byte[0]);
   }
 
   public static HttpResponse error(HttpStatus status, String message) {
-    HttpHeaders headers = new HttpHeaders(Map.of("Content-Type", "text/plain;charset=utf-8"));
+    HttpHeaders headers = new HttpHeaders(Map.of(CONTENT_TYPE, "text/plain;charset=utf-8"));
     return new HttpResponse(status, headers, message.getBytes());
   }
 
