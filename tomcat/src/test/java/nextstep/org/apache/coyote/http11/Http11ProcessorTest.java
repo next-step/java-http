@@ -178,9 +178,9 @@ class Http11ProcessorTest {
     // then
     final URL resource = getClass().getClassLoader().getResource("static/register.html");
     var expected = String.join("\r\n",
-        "HTTP/1.1 200 OK ",
-        "Content-Type: text/html;charset=utf-8 ",
-        "Content-Length: 4319 ", // 운영체제 환경에 따라 다른 값이 나올 수 있음. 자신의 개발 환경에 맞춰 수정할 것.
+        "HTTP/1.1 200 OK",
+        "Content-Type: text/html;charset=utf-8",
+        "Content-Length: 4319", // 운영체제 환경에 따라 다른 값이 나올 수 있음. 자신의 개발 환경에 맞춰 수정할 것.
         "",
         new String(Files.readAllBytes(new File(resource.getFile()).toPath())));
 
@@ -198,7 +198,7 @@ class Http11ProcessorTest {
         "Content-Type: application/x-www-form-urlencoded",
         "Accept: */*",
         "",
-        "account=gugu&password=password&email=hkkang%40woowahan.com\n");
+        "account=gugu&password=password&email=hkkang%40woowahan.com");
 
     final var socket = new StubSocket(httpRequest);
     final Http11Processor processor = new Http11Processor(socket);
@@ -208,8 +208,10 @@ class Http11ProcessorTest {
 
     // then
     var expected = String.join("\r\n",
-        "HTTP/1.1 302 Found ",
-        "Location: /login.html ");
+        "HTTP/1.1 302 Found",
+        "Location: /index.html",
+        "",
+        "");
 
     assertAll(
         () -> assertThat(socket.output()).isEqualTo(expected),
