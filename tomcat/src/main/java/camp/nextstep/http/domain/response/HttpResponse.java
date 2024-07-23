@@ -1,5 +1,7 @@
 package camp.nextstep.http.domain.response;
 
+import camp.nextstep.http.enums.HttpStatus;
+
 import java.io.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -66,8 +68,7 @@ public class HttpResponse {
 
     public void badRequestResponseByString() {
         this.httpResponseStartLine = HttpResponseStartLine.createBadRequestStartLine();
-        String responseBody = "BAD REQUEST";
-        responseByString(responseBody);
+        responseByString(HttpStatus.BAD_REQUEST.getMessage());
     }
 
     public void responseByString(String responseBody) {
@@ -82,7 +83,6 @@ public class HttpResponse {
 
     public void internalServerErrorResponseByString() {
         this.httpResponseStartLine = HttpResponseStartLine.createBadRequestStartLine();
-        String responseBody = "BAD REQUEST";
-        responseByString(responseBody);
+        responseByString(HttpStatus.BAD_REQUEST.getMessage());
     }
 }

@@ -8,6 +8,8 @@ import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class Connector implements Runnable {
 
@@ -15,9 +17,19 @@ public class Connector implements Runnable {
 
     private static final int DEFAULT_PORT = 8080;
     private static final int DEFAULT_ACCEPT_COUNT = 100;
+    private static final int MAX_THREADS = 25;
 
     private final ServerSocket serverSocket;
     private boolean stopped;
+    private BlockingQueue<Runnable> blockingQueue = new LinkedBlockingQueue<>(DEFAULT_ACCEPT_COUNT);
+    private ExecutorService executor = new ThreadPoolExecutor(
+            MAX_THREADS,
+            MAX_THREADS,
+            10000L,
+            TimeUnit.MILLISECONDS,
+            blockingQueue,
+            new ThreadPoolExecutor.AbortPolicy()
+    );
 
     public Connector() {
         this(DEFAULT_PORT, DEFAULT_ACCEPT_COUNT);
@@ -36,6 +48,10 @@ public class Connector implements Runnable {
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
+    }
+
+    public BlockingQueue<Runnable> getBlockingQueue() {
+        return blockingQueue;
     }
 
     public void start() {
@@ -62,12 +78,10 @@ public class Connector implements Runnable {
         }
     }
 
+    private AtomicInteger atomicInteger = new AtomicInteger(1);
+
     private void process(final Socket connection) {
-        if (connection == null) {
-            return;
-        }
-        var processor = new Http11Processor(connection);
-        new Thread(processor).start();
+        executor.execute(new Http11Processor(connection));
     }
 
     public void stop() {

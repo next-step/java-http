@@ -15,7 +15,7 @@ public class RequestMappingKey {
     }
 
     public boolean isRequestMatch(HttpRequest httpRequest) {
-        Matcher matcher = urlPattern.matcher(httpRequest.getHttpStartLine().getPath().getUrlPath());
+        Matcher matcher = urlPattern.matcher(httpRequest.getUrlPath());
         return matcher.matches()
                 && httpMethod == httpRequest.getHttpStartLine().getMethod();
     }

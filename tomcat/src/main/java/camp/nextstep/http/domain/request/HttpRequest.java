@@ -39,6 +39,10 @@ public class HttpRequest {
         return httpHeader;
     }
 
+    public String getUrlPath() {
+        return this.getHttpStartLine().getPath().getUrlPath();
+    }
+
     public static HttpRequest createRequestLineByInputStream(InputStream inputStream) {
         try {
             BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
