@@ -2,6 +2,7 @@ package camp.nextstep.http;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 import camp.nextstep.exception.InvalidRequestException;
 import java.util.Map;
@@ -20,10 +21,11 @@ class RequestLineTest {
     final RequestLine requestLine = RequestLine.parse(request);
 
     // then
-    assertThat(requestLine.getHttpMethod()).isEqualTo(HttpMethod.GET);
-    assertThat(requestLine.getPath().getUrlPath()).isEqualTo("/users");
-    assertThat(requestLine.getProtocol()).isEqualTo("HTTP");
-    assertThat(requestLine.getVersion()).isEqualTo("1.1");
+    assertAll(
+        () -> assertThat(requestLine.getHttpMethod()).isEqualTo(HttpMethod.GET),
+        () -> assertThat(requestLine.getPath().getUrlPath()).isEqualTo("/users"),
+        () -> assertThat(requestLine.getProtocol()).isEqualTo("HTTP"),
+        () -> assertThat(requestLine.getVersion()).isEqualTo("1.1"));
   }
 
   @Test
@@ -36,10 +38,11 @@ class RequestLineTest {
     final RequestLine requestLine = RequestLine.parse(request);
 
     // then
-    assertThat(requestLine.getHttpMethod()).isEqualTo(HttpMethod.POST);
-    assertThat(requestLine.getPath().getUrlPath()).isEqualTo("/users");
-    assertThat(requestLine.getProtocol()).isEqualTo("HTTP");
-    assertThat(requestLine.getVersion()).isEqualTo("1.1");
+    assertAll(
+        () -> assertThat(requestLine.getHttpMethod()).isEqualTo(HttpMethod.POST),
+        () -> assertThat(requestLine.getPath().getUrlPath()).isEqualTo("/users"),
+        () -> assertThat(requestLine.getProtocol()).isEqualTo("HTTP"),
+        () -> assertThat(requestLine.getVersion()).isEqualTo("1.1"));
   }
 
   @Test
@@ -66,9 +69,10 @@ class RequestLineTest {
     final RequestLine requestLine = RequestLine.parse(request);
 
     // then
-    assertThat(requestLine.getHttpMethod()).isInstanceOf(HttpMethod.class);
-    assertThat(requestLine.getPath().getQueryString().getQueryString()).isEqualTo(
-        Map.of("userId", "javajigi", "password", "password", "name", "JaeSung"));
+    assertAll(
+        () -> assertThat(requestLine.getHttpMethod()).isInstanceOf(HttpMethod.class),
+        () -> assertThat(requestLine.getPath().getQueryString().getQueryString()).isEqualTo(
+            Map.of("userId", "javajigi", "password", "password", "name", "JaeSung")));
   }
 
   @Test
@@ -81,9 +85,10 @@ class RequestLineTest {
     final RequestLine requestLine = RequestLine.parse(request);
 
     // then
-    assertThat(requestLine.getHttpMethod()).isInstanceOf(HttpMethod.class);
-    assertThat(requestLine.getPath().getQueryString().getQueryString()).isEqualTo(
-        Map.of("userId", "javajigi"));
+    assertAll(
+        () -> assertThat(requestLine.getHttpMethod()).isInstanceOf(HttpMethod.class),
+        () -> assertThat(requestLine.getPath().getQueryString().getQueryString()).isEqualTo(
+            Map.of("userId", "javajigi")));
   }
 
 }

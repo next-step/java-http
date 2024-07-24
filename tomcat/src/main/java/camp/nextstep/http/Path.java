@@ -5,8 +5,8 @@ import java.util.HashMap;
 public class Path {
 
   private static final String QUERY_STRING_INDICATOR = "?";
-
   private static final String QUERY_STRING_SEPARATOR = "\\?";
+
   private final String urlPath;
   private final QueryString queryString;
 
