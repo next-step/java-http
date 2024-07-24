@@ -1,5 +1,7 @@
 package org.apache.coyote.http11.request.model;
 
+import org.apache.coyote.http11.HttpMethod;
+
 public class RequestLine {
     private final HttpMethod httpMethod;
     private final Path path;
@@ -11,6 +13,10 @@ public class RequestLine {
         this.path = path;
         this.protocol = protocol;
         this.version = version;
+    }
+
+    public static RequestLine createRequestLineWithRedirectPath(RequestLine requestLine, String redirectPath) {
+        return new RequestLine(requestLine.getHttpMethod(), Path.createPathWithRedirectPath(requestLine.getPath(), redirectPath), requestLine.getProtocol(), requestLine.getVersion());
     }
 
     public HttpMethod getHttpMethod() {
@@ -39,5 +45,9 @@ public class RequestLine {
 
     public boolean hasRequestBody() {
         return HttpMethod.hasPostOrPutOrPatchMethod(httpMethod);
+    }
+
+    public String getExtension() {
+        return path.getExtension();
     }
 }

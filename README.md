@@ -112,7 +112,7 @@
 ### 4단계 - 리팩토링
 - [x] 요구사항 1 - HttpRequest 클래스 구현하기
   - Method, Path, protocol, version, headers, body를 가지고 있는 HttpRequest 클래스를 구현한다.
-- [ ] 요구사항 2 - HttpResponse 클래스 구현하기
+- [x] 요구사항 2 - HttpResponse 클래스 구현하기
   - protocol, statusCode, statusMessage, Headers를 가지고 있는 HttpResponse 클래스를 구현한다.
-- [ ] 요구사항 3 - Controller 인터페이스 추가하기
+- [x] 요구사항 3 - Controller 인터페이스 추가하기
   - HttpRequest를 받아서 Controller를 반환하는 RequestMapping을 구현한다.

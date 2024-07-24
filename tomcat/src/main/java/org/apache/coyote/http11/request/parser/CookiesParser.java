@@ -1,7 +1,7 @@
 package org.apache.coyote.http11.request.parser;
 
-import org.apache.coyote.http11.request.model.Cookie;
-import org.apache.coyote.http11.request.model.Cookies;
+import org.apache.coyote.http11.cookie.Cookie;
+import org.apache.coyote.http11.cookie.Cookies;
 
 import java.util.Arrays;
 import java.util.List;

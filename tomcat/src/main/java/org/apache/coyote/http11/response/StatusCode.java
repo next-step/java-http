@@ -32,4 +32,8 @@ public enum StatusCode {
 	public int getCode() {
 		return code;
 	}
+
+	public String getReason() {
+		return reason;
+	}
 }

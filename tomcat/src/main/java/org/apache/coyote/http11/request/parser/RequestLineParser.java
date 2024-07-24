@@ -1,6 +1,6 @@
 package org.apache.coyote.http11.request.parser;
 
-import org.apache.coyote.http11.request.model.HttpMethod;
+import org.apache.coyote.http11.HttpMethod;
 import org.apache.coyote.http11.request.model.Path;
 import org.apache.coyote.http11.request.model.QueryStrings;
 import org.apache.coyote.http11.request.model.RequestLine;
