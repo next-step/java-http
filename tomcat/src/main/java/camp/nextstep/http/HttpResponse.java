@@ -48,9 +48,14 @@ public class HttpResponse {
     return new HttpResponse(status, headers, message.getBytes());
   }
 
-  public static HttpResponse notFound(HttpStatus status, String message) {
+  public static HttpResponse notFound(String message) {
     HttpHeaders headers = new HttpHeaders(Map.of(CONTENT_TYPE, "text/plain;charset=utf-8"));
     return new HttpResponse(HttpStatus.NOT_FOUND, headers, message.getBytes());
+  }
+
+  public static HttpResponse notAllowedMethod() {
+    HttpHeaders headers = new HttpHeaders(Map.of(CONTENT_TYPE, "text/plain;charset=utf-8"));
+    return new HttpResponse(HttpStatus.NOT_FOUND, headers, "Method Not Allowed".getBytes());
   }
 
   public String buildResponse() {

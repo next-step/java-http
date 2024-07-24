@@ -15,17 +15,14 @@ public class AbstractController implements Controller {
     if (httpRequest.getRequestLine().isPostMethod()) {
       return doPost(httpRequest);
     }
-    throw new UnsupportedMethodException("지원하지 않는 HTTP Method 입니다.");
+    return HttpResponse.notAllowedMethod();
   }
 
   protected HttpResponse doPost(HttpRequest request) throws Exception { /* NOOP */
-    throw new UnsupportedMethodException(
-        "지원하지 않는 HTTP Method 입니다 : " + request.getRequestLine().getHttpMethod());
+    return HttpResponse.notAllowedMethod();
   }
 
   protected HttpResponse doGet(HttpRequest request) throws Exception { /* NOOP */
-
-    throw new UnsupportedMethodException(
-        "지원하지 않는 HTTP Method 입니다 : " + request.getRequestLine().getHttpMethod());
+    return HttpResponse.notAllowedMethod();
   }
 }
