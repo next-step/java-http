@@ -48,6 +48,11 @@ public class HttpResponse {
     return new HttpResponse(status, headers, message.getBytes());
   }
 
+  public static HttpResponse notFound(HttpStatus status, String message) {
+    HttpHeaders headers = new HttpHeaders(Map.of(CONTENT_TYPE, "text/plain;charset=utf-8"));
+    return new HttpResponse(HttpStatus.NOT_FOUND, headers, message.getBytes());
+  }
+
   public String buildResponse() {
     StringBuilder response = new StringBuilder();
     response.append(

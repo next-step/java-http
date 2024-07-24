@@ -22,27 +22,24 @@ public class RequestHandler {
   private static final String INDEX_PATH = "/index.html";
   private static final String STATIC_PATH = "static/";
 
+
+  private RequestMapping requestMapping = RequestMapping.create();
+
   public HttpResponse handleRequest(HttpRequest httpRequest) {
     Path path = httpRequest.getRequestLine().getPath();
     String urlPath = path.getUrlPath();
 
-    if (urlPath.equals(ROOT_PATH)) {
-      return handleStaticFileRequest("index.html");
-    }
 
-    if (urlPath.equals(INDEX_PATH)) {
-      return handleStaticFileRequest("index.html");
-    }
+    if(requestMapping.isRegisteredPath(urlPath)){
+      try {
+        return requestMapping.getController(urlPath).service(httpRequest);
+      } catch (Exception e) {
+        throw new RuntimeException(e);
+      }
 
-    if (urlPath.equals(LOGIN_PATH)) {
-      return handleLoginRequest(httpRequest);
     }
+    return HttpResponse.notFound(HttpStatus.NOT_FOUND, "Not found Path");
 
-    if (urlPath.equals(REGISTER_PATH)) {
-      return handleRegisterRequest(httpRequest);
-    }
-
-    return handleStaticFileRequest(urlPath);
   }
 
   private HttpResponse handleLoginRequest(HttpRequest httpRequest) {
