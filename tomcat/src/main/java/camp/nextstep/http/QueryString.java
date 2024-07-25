@@ -7,6 +7,7 @@ public class QueryString {
 
   private static final String PARAMETER_SEPARATOR = "&";
   private static final String KEY_VALUE_SEPARATOR = "=";
+
   private final Map<String, String> queryString;
 
   public QueryString(Map<String, String> queryStringMap) {

@@ -10,6 +10,7 @@ public class HttpRequestBody {
 
   private static final String PARAMETER_SEPARATOR = "&";
   private static final String KEY_VALUE_SEPARATOR = "=";
+
   private final Map<String, String> values;
 
   public HttpRequestBody() {

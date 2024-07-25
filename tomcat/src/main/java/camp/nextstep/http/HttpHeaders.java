@@ -19,16 +19,29 @@ public class HttpHeaders {
   }
 
   public static HttpHeaders from(List<String> headerLines) {
+    Map<String, String> headerMap = parseHeaderLines(headerLines);
+    return new HttpHeaders(headerMap);
+  }
+
+  private static Map<String, String> parseHeaderLines(List<String> headerLines) {
     Map<String, String> headerMap = new LinkedHashMap<>();
     for (String line : headerLines) {
       if (!line.isEmpty()) {
-        String[] parts = line.split(": ", 2);
-        if (parts.length == 2) {
-          headerMap.put(parts[0], parts[1]);
-        }
+        addHeaderToMap(headerMap, line);
       }
     }
-    return new HttpHeaders(headerMap);
+    return headerMap;
+  }
+
+  private static void addHeaderToMap(Map<String, String> headerMap, String headerLine) {
+    String[] parts = splitHeaderLine(headerLine);
+    if (parts.length == 2) {
+      headerMap.put(parts[0], parts[1]);
+    }
+  }
+
+  private static String[] splitHeaderLine(String headerLine) {
+    return headerLine.split(": ", 2);
   }
 
   public boolean isCookieExisted() {

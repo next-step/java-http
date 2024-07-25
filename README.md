@@ -36,23 +36,12 @@
 - git의 commit 단위는 앞 단계에서 README.md 파일에 정리한 기능 목록 단위로 추가한다.
 - AngularJS Commit Message Conventions 을 지킨다.
 
-## HTTP 서버 구현하기
+## 리팩터링
 
-### 요구사항 1 - HTTP Status Code 302
+### 요구사항 1 - HttpRequest 클래스 구현하기
 
-- [ ] 로그인 성공시 HTTP Status Code 302를 반환하고, /index.html로 리다이렉트 한다.
-- [ ] 로그인 실패시 HTTP Status Code 302를 반환하고, /401.html로 리다이렉트 한다.
+### 요구사항 2 - HttpResponse 클래스 구현하기
 
-### 요구사항 2 - POST 방식으로 회원가입
+### 요구사항 3 - Controller 인터페이스 추가하기
 
-- [ ] http://localhost:8080/register으로 접속하면 회원가입 페이지(register.html)를 보여준다.
-- [ ] 회원가입을 완료하면 index.html로 리다이렉트한다.
-
-### 요구사항 3 - Cookie에 JSESSIONID 값 저장하기
-
-- [ ] HTTP 응답 헤더에 Set-Cookie를 추가해 JSESSIONID 값을 반환한다.
-
-### 요구사항 4 - Session 구현하기
-
-- [ ] 로그인에 성공하면 Session 객체의 값으로 User 객체를 저장해보자.
-- [ ] 로그인된 상태에서 /login 페이지에 접근시 index.html 페이지로 리다이렉트 처리한다.
+- [x] 컨트롤러 인터페이스를 추가하고 각 분기에 있는 로직마다 AbstractController를 상속한 구현체로 만들어보자.
