@@ -1,6 +1,8 @@
 package org.apache.coyote.http11.response;
 
 import java.util.Objects;
+import org.apache.coyote.http11.response.header.Http11ResponseHeader;
+import org.apache.coyote.http11.response.statusline.StatusLine;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,7 +18,7 @@ public class Http11Response extends HttpResponse {
         private static final Logger log = LoggerFactory.getLogger(HttpResponseBuilder.class);
 
         private StatusLine statusLine;
-        private byte[] messageBody;
+        private MessageBody messageBody;
         private Http11ResponseHeader http11ResponseHeader;
 
         public HttpResponseBuilder() {
@@ -33,12 +35,19 @@ public class Http11Response extends HttpResponse {
 
         public Http11Response.HttpResponseBuilder responseHeader(String contentType,
             int responseBodySize) {
-            this.http11ResponseHeader = new Http11ResponseHeader(contentType, responseBodySize);
+            this.http11ResponseHeader = Http11ResponseHeader.HttpResponseHeaderBuilder
+                .builder()
+                .contentType(contentType)
+                .contentLength(responseBodySize)
+                .build();
             return this;
         }
-
+        public Http11Response.HttpResponseBuilder responseHeader(Http11ResponseHeader http11ResponseHeader) {
+            this.http11ResponseHeader = http11ResponseHeader;
+            return this;
+        }
         public Http11Response.HttpResponseBuilder messageBody(byte[] content) {
-            this.messageBody = content;
+            this.messageBody = new MessageBody(content);
             return this;
         }
 

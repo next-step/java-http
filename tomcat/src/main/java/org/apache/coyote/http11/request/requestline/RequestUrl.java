@@ -1,4 +1,4 @@
-package org.apache.coyote.http11.request;
+package org.apache.coyote.http11.request.requestline;
 
 import java.util.Collections;
 import java.util.Map;
@@ -7,7 +7,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-class RequestUrl {
+public class RequestUrl {
 
     private static final String QUESTION_MARK = "?";
     private static final int REQUEST_URL = 0;

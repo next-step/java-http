@@ -92,14 +92,13 @@
 
 
 ## 3단계 요구사항 정리
-- [] 요구사항 1 - HTTP Status Code 302
-  - [] 성공 케이스: 302 -> /index.html
-  - [] 실패 케이스: 401.html
-- [] 요구사항 2 - POST 방식으로 회원가입
-  - [] Post 되는것 확인하기
-  - [] Parser 에서 request body parse 하기
-  - [] User 생성하기
-  - [] Test 생성하기
+- [x] 요구사항 1 - HTTP Status Code 302
+  - [x] 성공 케이스: 302 -> /index.html
+  - [x] 실패 케이스: 401.html
+- [x] 요구사항 2 - POST 방식으로 회원가입
+  - [x] Post 되는것 확인하기
+  - [x] Parser 에서 request body parse 하기
+  - [x] User 생성하기
 - [] 요구사항 3 - Cookie에 JSESSIONID 값 저장하기
   - [] HTTP Request Header 구현하기
   - [] HTTP Request Cookie 구현하기

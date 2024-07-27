@@ -1,7 +1,16 @@
 package org.apache.coyote.http11.request;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import org.apache.coyote.http11.exception.RequestMethodNotFoundException;
+import org.apache.coyote.http11.request.header.Cookie;
+import org.apache.coyote.http11.request.requestline.RequestMethod;
+import org.apache.coyote.http11.request.requestline.RequestProtocol;
+import org.apache.coyote.http11.request.requestline.RequestUrl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -11,14 +20,21 @@ public class Http11Request extends HttpRequest {
 
     private Http11Request(final HttpRequestBuilder requestBuilder) {
         super(requestBuilder.requestMethod, requestBuilder.requestUrl, requestBuilder.protocol,
-            requestBuilder.protocol.getHttpVersion(), requestBuilder.requestUrl.getParams());
+            requestBuilder.protocol.getHttpVersion(), requestBuilder.requestUrl.getParams(),
+            requestBuilder.requestBody, requestBuilder.cookie);
     }
 
     public static class HttpRequestBuilder {
 
+        private static final Pattern DELIMITER = Pattern.compile("=");
+        private final static int KEY_INDEX = 0;
+        private final static int VALUE_INDEX = 1;
+
         private RequestMethod requestMethod;
         private RequestUrl requestUrl;
         private RequestProtocol protocol;
+        private RequestBody requestBody;
+        private Cookie cookie;
 
         private HttpRequestBuilder() {
         }
@@ -47,11 +63,31 @@ public class Http11Request extends HttpRequest {
             return this;
         }
 
+        public HttpRequestBuilder cookie(String cookie) {
+
+            Map<String, String> cookies = Arrays.stream(cookie
+                .split(";"))
+                .map(DELIMITER::split)
+                .collect(Collectors.toMap(words -> words[KEY_INDEX].trim(),
+                    words -> words[VALUE_INDEX].trim()));
+
+            this.cookie = new Cookie(cookies);
+
+            return this;
+        }
+
+        public HttpRequestBuilder requestBody(String requestBody) {
+            this.requestBody = new RequestBody(requestBody);
+
+            return this;
+        }
+
         public Http11Request build() {
             validate();
 
             return new Http11Request(this);
         }
+
 
         private void validate() {
             if (Objects.isNull(requestMethod) || Objects.isNull(requestUrl) || Objects.isNull(
