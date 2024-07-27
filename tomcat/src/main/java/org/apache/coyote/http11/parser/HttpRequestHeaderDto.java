@@ -20,9 +20,9 @@ public class HttpRequestHeaderDto {
 
     public static HttpRequestHeaderDto of(List<String> requestHeader) {
         Map<String, String> requestHeaders = requestHeader
-            .stream()
-            .map(line -> DELIMITER.split(line))
-            .collect(Collectors.toMap(words -> words[KEY_INDEX].trim(), words -> words[VALUE_INDEX].trim()));
+                .stream()
+                .map(line -> DELIMITER.split(line))
+                .collect(Collectors.toMap(words -> words[KEY_INDEX].trim(), words -> words[VALUE_INDEX].trim()));
 
         return new HttpRequestHeaderDto(requestHeaders);
     }

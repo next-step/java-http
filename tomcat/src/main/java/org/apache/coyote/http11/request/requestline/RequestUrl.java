@@ -25,9 +25,9 @@ public class RequestUrl {
             String[] urlAndParams = QUESTION_MARK_REGEX.split(requestUrl);
             this.requestUrl = urlAndParams[REQUEST_URL];
             this.params = AMPERSAND.splitAsStream(urlAndParams[REQEUST_PARAMS])
-                .map(KEYVALUE::matcher)
-                .filter(Matcher::find)
-                .collect(Collectors.toUnmodifiableMap(m -> m.group(1), m -> m.group(2)));
+                    .map(KEYVALUE::matcher)
+                    .filter(Matcher::find)
+                    .collect(Collectors.toUnmodifiableMap(m -> m.group(1), m -> m.group(2)));
             return;
         }
 
@@ -46,9 +46,9 @@ public class RequestUrl {
     @Override
     public String toString() {
         return "RequestUrl{" +
-            "requestUrl='" + requestUrl + '\'' +
-            ", params=" + params +
-            '}';
+                "requestUrl='" + requestUrl + '\'' +
+                ", params=" + params +
+                '}';
     }
 
     @Override
@@ -61,7 +61,7 @@ public class RequestUrl {
         }
         RequestUrl that = (RequestUrl) o;
         return Objects.equals(requestUrl, that.requestUrl) && Objects.equals(params,
-            that.params);
+                that.params);
     }
 
     @Override

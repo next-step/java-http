@@ -3,10 +3,6 @@ package camp.nextstep.controller.strategy;
 import camp.nextstep.controller.session.Session;
 import camp.nextstep.controller.session.SessionManager;
 import camp.nextstep.db.InMemoryUserRepository;
-
-import java.util.Map;
-import java.util.UUID;
-
 import camp.nextstep.model.User;
 import org.apache.coyote.http11.exception.UnAuthorizedException;
 import org.apache.coyote.http11.request.HttpRequest;
@@ -19,6 +15,9 @@ import org.apache.coyote.http11.response.header.Http11ResponseHeader.HttpRespons
 import org.apache.coyote.http11.response.statusline.ProtocolVersion;
 import org.apache.coyote.http11.response.statusline.StatusCode;
 
+import java.util.Map;
+import java.util.UUID;
+
 public class LoginGetStrategy implements RequestMethodStrategy {
 
     public static final String INDEX_HTML = "/index.html";
@@ -29,8 +28,8 @@ public class LoginGetStrategy implements RequestMethodStrategy {
     @Override
     public boolean matched(HttpRequest httpRequest) {
         return httpRequest.getRequestMethod()
-            .equals(RequestMethod.GET.name())
-            && !httpRequest.getParams().isEmpty();
+                .equals(RequestMethod.GET.name())
+                && !httpRequest.getParams().isEmpty();
     }
 
     @Override
@@ -44,15 +43,15 @@ public class LoginGetStrategy implements RequestMethodStrategy {
                 .orElseGet(() -> Map.of("JSESSIONID", startSession(user).getId()));
 
         Http11ResponseHeader responseHeader = HttpResponseHeaderBuilder.builder()
-            .contentType(ContentType.html.name())
-            .location(INDEX_HTML)
-            .cookie(session)
-            .build();
+                .contentType(ContentType.html.name())
+                .location(INDEX_HTML)
+                .cookie(session)
+                .build();
 
         return new Http11Response.HttpResponseBuilder()
-            .statusLine(ProtocolVersion.HTTP11.getVersion(), StatusCode.FOUND.name())
-            .responseHeader(responseHeader)
-            .build();
+                .statusLine(ProtocolVersion.HTTP11.getVersion(), StatusCode.FOUND.name())
+                .responseHeader(responseHeader)
+                .build();
     }
 
     private User login(Map<String, String> userParams) {
@@ -64,7 +63,7 @@ public class LoginGetStrategy implements RequestMethodStrategy {
         return user;
     }
 
-    private Session startSession(User user){
+    private Session startSession(User user) {
         final Session session = new Session(UUID.randomUUID(), user);
         SessionManager.add(session);
         return session;

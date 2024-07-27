@@ -17,8 +17,8 @@ public class HttpVersion {
     @Override
     public String toString() {
         return "HttpVersion{" +
-            "version='" + version + '\'' +
-            '}';
+                "version='" + version + '\'' +
+                '}';
     }
 
     @Override

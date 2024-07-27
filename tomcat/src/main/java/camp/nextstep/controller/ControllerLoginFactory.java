@@ -1,12 +1,13 @@
 package camp.nextstep.controller;
 
-import java.util.List;
 import camp.nextstep.controller.strategy.NotFoundStrategy;
 import camp.nextstep.controller.strategy.RequestMethodStrategy;
 import camp.nextstep.controller.strategy.UnauthorizedStrategy;
 import org.apache.coyote.http11.exception.UnAuthorizedException;
 import org.apache.coyote.http11.request.HttpRequest;
 import org.apache.coyote.http11.response.HttpResponse;
+
+import java.util.List;
 
 public class ControllerLoginFactory implements ControllerFactory {
 
@@ -20,13 +21,13 @@ public class ControllerLoginFactory implements ControllerFactory {
     @Override
     public HttpResponse serve(HttpRequest httpRequest) {
         RequestMethodStrategy requestMethodStrategy = requestMethods.stream()
-            .filter(method -> method.matched(httpRequest))
-            .findFirst()
-            .orElseGet(NotFoundStrategy::new);
+                .filter(method -> method.matched(httpRequest))
+                .findFirst()
+                .orElseGet(NotFoundStrategy::new);
 
-        try{
+        try {
             return requestMethodStrategy.serve(httpRequest);
-        } catch (UnAuthorizedException e){
+        } catch (UnAuthorizedException e) {
             return redirectStrategy.serve(httpRequest);
         }
 

@@ -15,7 +15,7 @@ public class StatusLine {
 
     private void validate(String version, String statusCode) {
         if (Objects.isNull(version) || version.isEmpty() || Objects.isNull(statusCode)
-            || statusCode.isEmpty()) {
+                || statusCode.isEmpty()) {
             throw new IllegalStateException("response Status의 값이 비어있습니다.");
         }
     }
@@ -35,7 +35,7 @@ public class StatusLine {
         }
         StatusLine that = (StatusLine) o;
         return Objects.equals(httpResponseProtocol, that.httpResponseProtocol)
-            && statusCode == that.statusCode;
+                && statusCode == that.statusCode;
     }
 
     @Override

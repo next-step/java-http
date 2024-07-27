@@ -1,7 +1,8 @@
 package org.apache.coyote.http11.response.statusline;
 
-import java.util.Objects;
 import org.apache.coyote.http11.exception.RequestProtocolInvalidException;
+
+import java.util.Objects;
 
 public class HttpResponseProtocol {
 
@@ -46,7 +47,7 @@ public class HttpResponseProtocol {
         }
         HttpResponseProtocol that = (HttpResponseProtocol) o;
         return Objects.equals(httpVersion, that.httpVersion) && Objects.equals(
-            protocol, that.protocol);
+                protocol, that.protocol);
     }
 
     @Override

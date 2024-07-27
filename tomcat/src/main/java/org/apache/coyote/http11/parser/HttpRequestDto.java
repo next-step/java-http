@@ -1,10 +1,10 @@
 package org.apache.coyote.http11.parser;
 
+import org.apache.coyote.http11.exception.MalformedRequestlLineException;
+
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import org.apache.coyote.http11.exception.MalformedRequestlLineException;
 
 public class HttpRequestDto {
 
@@ -20,7 +20,7 @@ public class HttpRequestDto {
     public final String requestBody;
 
     private HttpRequestDto(final String requestMethod, final String requestUrl,
-        final String requestProtocol, final HttpRequestHeaderDto requestHeader, String requestBody) {
+                           final String requestProtocol, final HttpRequestHeaderDto requestHeader, String requestBody) {
         this.requestMethod = requestMethod;
         this.requestUrl = requestUrl;
         this.requestProtocol = requestProtocol;
@@ -39,7 +39,7 @@ public class HttpRequestDto {
 
     private static void validate(List<String> requestLine) {
         if (Objects.isNull(requestLine) || requestLine.isEmpty()
-            || requestLine.size() != REQUEST_LINE_LENGTH) {
+                || requestLine.size() != REQUEST_LINE_LENGTH) {
             throw new MalformedRequestlLineException("HTTP Request의 형태가 비정상적입니다.");
         }
     }

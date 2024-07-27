@@ -1,11 +1,5 @@
 package org.apache.coyote.http11.request;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 import org.apache.coyote.http11.exception.RequestMethodNotFoundException;
 import org.apache.coyote.http11.request.header.Cookie;
 import org.apache.coyote.http11.request.requestline.RequestMethod;
@@ -14,14 +8,20 @@ import org.apache.coyote.http11.request.requestline.RequestUrl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Arrays;
+import java.util.Map;
+import java.util.Objects;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+
 public class Http11Request extends HttpRequest {
 
     private static final Logger log = LoggerFactory.getLogger(Http11Request.class);
 
     private Http11Request(final HttpRequestBuilder requestBuilder) {
         super(requestBuilder.requestMethod, requestBuilder.requestUrl, requestBuilder.protocol,
-            requestBuilder.protocol.getHttpVersion(), requestBuilder.requestUrl.getParams(),
-            requestBuilder.requestBody, requestBuilder.cookie);
+                requestBuilder.protocol.getHttpVersion(), requestBuilder.requestUrl.getParams(),
+                requestBuilder.requestBody, requestBuilder.cookie);
     }
 
     public static class HttpRequestBuilder {
@@ -66,10 +66,10 @@ public class Http11Request extends HttpRequest {
         public HttpRequestBuilder cookie(String cookie) {
 
             Map<String, String> cookies = Arrays.stream(cookie
-                .split(";"))
-                .map(DELIMITER::split)
-                .collect(Collectors.toMap(words -> words[KEY_INDEX].trim(),
-                    words -> words[VALUE_INDEX].trim()));
+                            .split(";"))
+                    .map(DELIMITER::split)
+                    .collect(Collectors.toMap(words -> words[KEY_INDEX].trim(),
+                            words -> words[VALUE_INDEX].trim()));
 
             this.cookie = new Cookie(cookies);
 
@@ -91,11 +91,11 @@ public class Http11Request extends HttpRequest {
 
         private void validate() {
             if (Objects.isNull(requestMethod) || Objects.isNull(requestUrl) || Objects.isNull(
-                protocol)) {
+                    protocol)) {
                 log.error("Http11Request{" +
-                    "requestMethod=" + requestMethod +
-                    ", requestUrl=" + requestUrl +
-                    ", protocol=" + protocol
+                        "requestMethod=" + requestMethod +
+                        ", requestUrl=" + requestUrl +
+                        ", protocol=" + protocol
                 );
                 throw new IllegalStateException("빌더: HttpRequest의 필드값이 할당되지 않았습니다.");
             }

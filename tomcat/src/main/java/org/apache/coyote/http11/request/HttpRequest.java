@@ -1,14 +1,14 @@
 package org.apache.coyote.http11.request;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
 import org.apache.coyote.http11.request.header.Cookie;
 import org.apache.coyote.http11.request.requestline.HttpVersion;
 import org.apache.coyote.http11.request.requestline.RequestMethod;
 import org.apache.coyote.http11.request.requestline.RequestProtocol;
 import org.apache.coyote.http11.request.requestline.RequestUrl;
+
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 
 public abstract class HttpRequest {
 
@@ -21,7 +21,7 @@ public abstract class HttpRequest {
     final Cookie cookie;
 
     public HttpRequest(RequestMethod requestMethod, RequestUrl requestUrl, RequestProtocol protocol,
-        HttpVersion version, Map<String, String> params, RequestBody requestBody, Cookie cookie) {
+                       HttpVersion version, Map<String, String> params, RequestBody requestBody, Cookie cookie) {
         this.requestMethod = requestMethod;
         this.requestUrl = requestUrl;
         this.protocol = protocol;
@@ -65,13 +65,13 @@ public abstract class HttpRequest {
     @Override
     public String toString() {
         return "HttpRequest{" +
-            "requestMethod=" + requestMethod +
-            ", requestUrl=" + requestUrl +
-            ", protocol=" + protocol +
-            ", version=" + version +
-            ", params=" + params +
-            ", requestBody=" + requestBody +
-            '}';
+                "requestMethod=" + requestMethod +
+                ", requestUrl=" + requestUrl +
+                ", protocol=" + protocol +
+                ", version=" + version +
+                ", params=" + params +
+                ", requestBody=" + requestBody +
+                '}';
     }
 
     @Override
@@ -84,9 +84,9 @@ public abstract class HttpRequest {
         }
         HttpRequest that = (HttpRequest) o;
         return requestMethod == that.requestMethod && Objects.equals(requestUrl,
-            that.requestUrl) && Objects.equals(protocol, that.protocol)
-            && Objects.equals(version, that.version) && Objects.equals(params,
-            that.params) && Objects.equals(requestBody, that.requestBody);
+                that.requestUrl) && Objects.equals(protocol, that.protocol)
+                && Objects.equals(version, that.version) && Objects.equals(params,
+                that.params) && Objects.equals(requestBody, that.requestBody);
     }
 
     @Override

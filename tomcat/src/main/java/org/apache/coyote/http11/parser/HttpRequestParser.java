@@ -1,13 +1,14 @@
 package org.apache.coyote.http11.parser;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.regex.Pattern;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * InputStream에 대한 Parsing을 진행합니다.
@@ -34,12 +35,12 @@ public class HttpRequestParser {
     }
 
     private static String parseMethodAndUrl(final BufferedReader bufferedReader)
-        throws IOException {
+            throws IOException {
         return bufferedReader.readLine().trim();
     }
 
     private static List<String> parseHeader(final BufferedReader bufferedReader)
-        throws IOException {
+            throws IOException {
 
         String header = bufferedReader.readLine();
         List<String> headers = new ArrayList<>();
@@ -53,7 +54,7 @@ public class HttpRequestParser {
     }
 
     private static String parseBody(final BufferedReader bufferedReader, int contentLength)
-        throws IOException {
+            throws IOException {
 
         char[] buffer = new char[contentLength];
         bufferedReader.read(buffer, 0, contentLength);

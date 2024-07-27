@@ -13,9 +13,9 @@ public class Http11RequestPostFactory implements HttpRequestFactory {
     @Override
     public HttpRequest createHttpInstance(HttpRequestDto httpRequestDto) {
         HttpRequestBuilder requestBuilder = Http11Request.HttpRequestBuilder.builder()
-            .requestMethod(httpRequestDto.getRequestMethod())
-            .requestUrl(httpRequestDto.getRequestUrl())
-            .requestProtocol(httpRequestDto.getRequestProtocol())
+                .requestMethod(httpRequestDto.getRequestMethod())
+                .requestUrl(httpRequestDto.getRequestUrl())
+                .requestProtocol(httpRequestDto.getRequestProtocol())
                 .requestBody(httpRequestDto.getRequestBody());
 
         httpRequestDto.getCookie().ifPresent(requestBuilder::cookie);

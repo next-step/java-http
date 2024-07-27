@@ -1,16 +1,16 @@
 package org.apache.coyote.http11.request.requestline;
 
+import org.apache.coyote.http11.exception.RequestProtocolInvalidException;
+
 import java.util.Objects;
 import java.util.regex.Pattern;
-import org.apache.coyote.http11.exception.RequestProtocolInvalidException;
 
 public class RequestProtocol {
 
+    public static final int LENGTH = 2;
     private static final int PROTOCOL_NAME = 0;
     private static final int PROTOCOL_VERSION = 1;
     private static final Pattern DELIMITER = Pattern.compile("/");
-    public static final int LENGTH = 2;
-
     public final HttpVersion httpVersion;
     public final String protocol;
 
@@ -43,9 +43,9 @@ public class RequestProtocol {
     @Override
     public String toString() {
         return "RequestProtocol{" +
-            "httpVersion=" + httpVersion +
-            ", protocol='" + protocol + '\'' +
-            '}';
+                "httpVersion=" + httpVersion +
+                ", protocol='" + protocol + '\'' +
+                '}';
     }
 
     @Override
@@ -58,7 +58,7 @@ public class RequestProtocol {
         }
         RequestProtocol that = (RequestProtocol) o;
         return Objects.equals(httpVersion, that.httpVersion) && Objects.equals(
-            protocol, that.protocol);
+                protocol, that.protocol);
     }
 
     @Override

@@ -14,8 +14,8 @@ public class SetCookie {
     @Override
     public String toString() {
         return String.format("Set-Cookie: %s ", cookies.keySet().stream()
-            .map(key -> key + "=" + cookies.get(key))
-            .collect(Collectors.joining(";")));
+                .map(key -> key + "=" + cookies.get(key))
+                .collect(Collectors.joining(";")));
 
     }
 }

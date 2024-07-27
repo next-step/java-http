@@ -1,11 +1,12 @@
 package org.apache.coyote.http11.response.header;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 
 public class Http11ResponseHeader {
@@ -30,9 +31,9 @@ public class Http11ResponseHeader {
     @Override
     public String toString() {
         return Stream.of(contentType, contentLength, location, setCookie)
-            .filter(Objects::nonNull)
-            .map(Objects::toString)
-            .collect(Collectors.joining("\r\n"));
+                .filter(Objects::nonNull)
+                .map(Objects::toString)
+                .collect(Collectors.joining("\r\n"));
 
     }
 
@@ -46,7 +47,7 @@ public class Http11ResponseHeader {
         }
         Http11ResponseHeader that = (Http11ResponseHeader) o;
         return contentLength == that.contentLength && Objects.equals(contentType,
-            that.contentType);
+                that.contentType);
     }
 
     @Override
@@ -57,7 +58,7 @@ public class Http11ResponseHeader {
     public static class HttpResponseHeaderBuilder {
 
         private static final Logger log = LoggerFactory.getLogger(
-            HttpResponseHeaderBuilder.class);
+                HttpResponseHeaderBuilder.class);
 
         private ContentType contentType;
         private ContentLength contentLength;
@@ -89,7 +90,7 @@ public class Http11ResponseHeader {
             return this;
         }
 
-        public Http11ResponseHeader.HttpResponseHeaderBuilder cookie(Map<String, String> setCookie){
+        public Http11ResponseHeader.HttpResponseHeaderBuilder cookie(Map<String, String> setCookie) {
             if (setCookie.containsKey("JSESSIONID")) {
                 this.setCookie = new SetCookie(setCookie);
                 return this;
@@ -97,6 +98,7 @@ public class Http11ResponseHeader {
 
             return this;
         }
+
         public Http11ResponseHeader build() {
             validate();
 
@@ -106,7 +108,7 @@ public class Http11ResponseHeader {
         private void validate() {
             if (Objects.isNull(contentType)) {
                 log.error("Http11ResponseHeader{" +
-                    "contentType=" + contentType);
+                        "contentType=" + contentType);
                 throw new IllegalStateException("빌더: HttpResponseHeader의 필드값이 할당되지 않았습니다.");
             }
         }

@@ -10,7 +10,7 @@ public class Cookie {
     }
 
     public Map<String, String> getSession() {
-        if (cookies.containsKey("JSESSIONID")){
+        if (cookies.containsKey("JSESSIONID")) {
             return Map.of("JSESSIONID", cookies.get("JSESSIONID"));
         }
 
