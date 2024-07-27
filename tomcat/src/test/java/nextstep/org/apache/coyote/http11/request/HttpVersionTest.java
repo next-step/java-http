@@ -3,7 +3,7 @@ package nextstep.org.apache.coyote.http11.request;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
-import org.apache.coyote.http11.request.HttpVersion;
+import org.apache.coyote.http11.request.requestline.HttpVersion;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 

@@ -113,3 +113,4 @@
   - [] readAllBytes 의 OOM 이슈로 제거하기
   - [] OOM 을 하지 않는 구현에 대한 테스트 생성하기
   - [x] strategy -> factory provider GET 과 POST에 따라 재구성하기
+  - [x] 구성요소에 따른 패키지 분리하기

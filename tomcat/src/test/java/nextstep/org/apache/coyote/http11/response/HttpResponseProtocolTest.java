@@ -4,9 +4,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
-import org.apache.coyote.http11.request.RequestProtocol;
-import org.apache.coyote.http11.response.HttpResponseProtocol;
-import org.apache.coyote.http11.response.HttpResponseVersion;
+import org.apache.coyote.http11.response.statusline.HttpResponseProtocol;
+import org.apache.coyote.http11.response.statusline.HttpResponseVersion;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;

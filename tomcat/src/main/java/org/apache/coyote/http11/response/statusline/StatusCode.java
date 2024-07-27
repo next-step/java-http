@@ -1,8 +1,10 @@
-package org.apache.coyote.http11.response;
+package org.apache.coyote.http11.response.statusline;
 
 public enum StatusCode {
     OK("200"),
-    NOTFOUND("404");
+    NOTFOUND("404"),
+    FOUND("302"),
+    UNAUTHORIZED("302");
 
     private final String statusCode;
 

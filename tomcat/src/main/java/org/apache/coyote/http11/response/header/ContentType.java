@@ -1,4 +1,4 @@
-package org.apache.coyote.http11.response;
+package org.apache.coyote.http11.response.header;
 
 public enum ContentType {
     js("application/javascript;charset=utf-8"),
@@ -25,6 +25,6 @@ public enum ContentType {
 
     @Override
     public String toString() {
-        return contentType;
+        return String.format("Content-Type: %s ", contentType);
     }
 }

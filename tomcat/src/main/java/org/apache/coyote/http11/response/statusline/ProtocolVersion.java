@@ -1,4 +1,4 @@
-package org.apache.coyote.http11.response;
+package org.apache.coyote.http11.response.statusline;
 
 public enum ProtocolVersion {
     HTTP11("HTTP", "1.1"),
