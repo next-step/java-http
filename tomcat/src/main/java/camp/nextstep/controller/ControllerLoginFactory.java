@@ -1,14 +1,17 @@
-package org.apache.coyote.http11.controller;
+package camp.nextstep.controller;
 
 import java.util.List;
-import org.apache.coyote.http11.controller.strategy.NotFoundStrategy;
-import org.apache.coyote.http11.controller.strategy.RequestMethodStrategy;
+import camp.nextstep.controller.strategy.NotFoundStrategy;
+import camp.nextstep.controller.strategy.RequestMethodStrategy;
+import camp.nextstep.controller.strategy.UnauthorizedStrategy;
+import org.apache.coyote.http11.exception.UnAuthorizedException;
 import org.apache.coyote.http11.request.HttpRequest;
 import org.apache.coyote.http11.response.HttpResponse;
 
 public class ControllerLoginFactory implements ControllerFactory {
 
     private final List<RequestMethodStrategy> requestMethods;
+    private final UnauthorizedStrategy redirectStrategy = new UnauthorizedStrategy();
 
     public ControllerLoginFactory(List<RequestMethodStrategy> requestMethods) {
         this.requestMethods = requestMethods;
@@ -17,10 +20,15 @@ public class ControllerLoginFactory implements ControllerFactory {
     @Override
     public HttpResponse serve(HttpRequest httpRequest) {
         RequestMethodStrategy requestMethodStrategy = requestMethods.stream()
-            .filter(method -> method.matched(httpRequest.getRequestMethod()))
+            .filter(method -> method.matched(httpRequest))
             .findFirst()
             .orElseGet(NotFoundStrategy::new);
 
-        return requestMethodStrategy.serve(httpRequest);
+        try{
+            return requestMethodStrategy.serve(httpRequest);
+        } catch (UnAuthorizedException e){
+            return redirectStrategy.serve(httpRequest);
+        }
+
     }
 }

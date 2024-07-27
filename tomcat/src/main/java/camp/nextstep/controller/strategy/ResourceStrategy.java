@@ -1,4 +1,4 @@
-package org.apache.coyote.http11.controller;
+package camp.nextstep.controller.strategy;
 
 import java.io.File;
 import java.io.IOException;
@@ -9,18 +9,24 @@ import java.util.Arrays;
 import java.util.Objects;
 import org.apache.coyote.http11.exception.StaticResourceNotFoundException;
 import org.apache.coyote.http11.request.HttpRequest;
-import org.apache.coyote.http11.response.ContentType;
+import org.apache.coyote.http11.request.requestline.RequestMethod;
 import org.apache.coyote.http11.response.Http11Response;
 import org.apache.coyote.http11.response.HttpResponse;
+import org.apache.coyote.http11.response.header.ContentType;
+import org.apache.coyote.http11.response.header.Http11ResponseHeader;
 
-public class ControllerResourceFactory implements ControllerFactory {
+public class ResourceStrategy implements RequestMethodStrategy {
 
     public static final String ROOT_PATH = "/";
     private static final String BASE_DIR = "static";
     private static final String DEFAULT_URL = BASE_DIR + "/index.html";
+    public static final String PERIOD = ".";
 
-    public ControllerResourceFactory() {
-
+    @Override
+    public boolean matched(HttpRequest httpRequest) {
+        return httpRequest.getRequestMethod()
+            .equals(RequestMethod.GET.name())
+            && httpRequest.getParams().isEmpty();
     }
 
     @Override
@@ -40,9 +46,14 @@ public class ControllerResourceFactory implements ControllerFactory {
                     .filter(ext -> file.getName().endsWith(ext.name()))
                     .findFirst().orElseGet(() -> ContentType.all);
 
+            final Http11ResponseHeader http11ResponseHeader = Http11ResponseHeader.HttpResponseHeaderBuilder
+                .builder()
+                .contentLength(content.length)
+                .contentType(extension.name())
+                .build();
 
             return new Http11Response.HttpResponseBuilder()
-                .responseHeader(extension.name(), content.length)
+                .responseHeader(http11ResponseHeader)
                 .statusLine(httpRequest.getVersion(), "OK")
                 .messageBody(content)
                 .build();
@@ -62,8 +73,11 @@ public class ControllerResourceFactory implements ControllerFactory {
             url = DEFAULT_URL;
         }
 
+        if (!httpRequest.getRequestUrl().contains(PERIOD)) {
+            url = url + ".html";
+        }
+
         return url;
     }
+
 }
-
-

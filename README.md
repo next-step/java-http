@@ -78,7 +78,7 @@
   - [x] Response Test 생성
   - [x] Request Test 생성
 
-- [] 피드백 반영
+- [x] 피드백 반영
   - [x] 홈페이지 접속 확인
     - STREAM 닫지 못한것 확인 -> Stream을 Manual하게 닫아줌
     - 해당 inputStream을 닫으면서, outputstream도 닫히는 이슈입니다. (try-with-resources로 같이 선언됨)
@@ -87,6 +87,29 @@
   - [x] log.error 제거하고 log.info로 변경하였습니다.
   - [x] 404 일 경우 null 반환 확인
   - [x] resource static 디렉토리 허용으로 변경하기
-  - [] readAllBytes 의 OOM 이슈로 제거하기
   - [x] ContentType 에 대한 enum 생성하기
   - [x] null 반환하는 함수들 제거하기
+
+
+## 3단계 요구사항 정리
+- [] 요구사항 1 - HTTP Status Code 302
+  - [] 성공 케이스: 302 -> /index.html
+  - [] 실패 케이스: 401.html
+- [] 요구사항 2 - POST 방식으로 회원가입
+  - [] Post 되는것 확인하기
+  - [] Parser 에서 request body parse 하기
+  - [] User 생성하기
+  - [] Test 생성하기
+- [] 요구사항 3 - Cookie에 JSESSIONID 값 저장하기
+  - [] HTTP Request Header 구현하기
+  - [] HTTP Request Cookie 구현하기
+  - [] HTTP Response Cookie 구현하기
+  - [] 각각 테스트 하기
+- [] 요구사항 4 - Session 구현하기
+  - [] SessionManager 구현하기
+    - [] 로그인 성공시 Session 객체로 User 저장
+    - [] 이미 로그인시 /login 페이지는 index.html로 리다이렉트 처리한다.
+- [] 공통 요구사항
+  - [] readAllBytes 의 OOM 이슈로 제거하기
+  - [] OOM 을 하지 않는 구현에 대한 테스트 생성하기
+  - [x] strategy -> factory provider GET 과 POST에 따라 재구성하기
