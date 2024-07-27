@@ -1,5 +1,7 @@
 package camp.nextstep.model;
 
+import org.apache.coyote.http11.exception.UnAuthorizedException;
+
 public class User {
 
     private final Long id;
@@ -18,8 +20,10 @@ public class User {
         this(null, account, password, email);
     }
 
-    public boolean checkPassword(String password) {
-        return this.password.equals(password);
+    public void checkPassword(String password) {
+        if (!this.password.equals(password)) {
+            throw new UnAuthorizedException("password가 틀렸습니다.");
+        }
     }
 
     public String getAccount() {

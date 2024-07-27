@@ -1,17 +1,21 @@
 package org.apache.coyote.http11.response;
 
-import java.util.Arrays;
+import org.apache.coyote.http11.response.header.Http11ResponseHeader;
+import org.apache.coyote.http11.response.statusline.StatusLine;
+
 import java.util.Objects;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public abstract class HttpResponse {
 
     final StatusLine statusLine;
     final Http11ResponseHeader http11ResponseHeader;
-    final byte[] messageBody;
+    final MessageBody messageBody;
 
 
-    protected HttpResponse(final StatusLine statusLine, final byte[] messageBody,
-        Http11ResponseHeader http11ResponseHeader) {
+    protected HttpResponse(final StatusLine statusLine, final MessageBody messageBody,
+                           Http11ResponseHeader http11ResponseHeader) {
         this.statusLine = statusLine;
         this.http11ResponseHeader = http11ResponseHeader;
         this.messageBody = messageBody;
@@ -22,7 +26,7 @@ public abstract class HttpResponse {
     }
 
     public byte[] getMessageBody() {
-        return messageBody;
+        return messageBody.getMessageBody();
     }
 
     @Override
@@ -35,7 +39,7 @@ public abstract class HttpResponse {
         }
         HttpResponse that = (HttpResponse) o;
         return Objects.equals(statusLine, that.statusLine) && Objects.equals(
-            messageBody, that.messageBody);
+                messageBody, that.messageBody);
     }
 
     @Override
@@ -44,20 +48,17 @@ public abstract class HttpResponse {
     }
 
     public String write() {
-
-        return String.join("\r\n",
-            statusLine.toString(),
-            http11ResponseHeader.toString(),
-            "",
-            new String(messageBody));
+        return Stream.of(statusLine, http11ResponseHeader, "", messageBody)
+                .filter(Objects::nonNull)
+                .map(Objects::toString)
+                .collect(Collectors.joining("\r\n"));
     }
 
     @Override
     public String toString() {
         return "HttpResponse{" +
-            "statusLine=" + statusLine +
-            ", http11ResponseHeader=" + http11ResponseHeader +
-            ", messageBody=" + Arrays.toString(messageBody) +
-            '}';
+                "statusLine=" + statusLine +
+                ", http11ResponseHeader=" + http11ResponseHeader +
+                '}';
     }
 }

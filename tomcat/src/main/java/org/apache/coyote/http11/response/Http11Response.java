@@ -1,14 +1,17 @@
 package org.apache.coyote.http11.response;
 
-import java.util.Objects;
+import org.apache.coyote.http11.response.header.Http11ResponseHeader;
+import org.apache.coyote.http11.response.statusline.StatusLine;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.Objects;
 
 public class Http11Response extends HttpResponse {
 
     private Http11Response(final HttpResponseBuilder responseBuilder) {
         super(responseBuilder.statusLine, responseBuilder.messageBody,
-            responseBuilder.http11ResponseHeader);
+                responseBuilder.http11ResponseHeader);
     }
 
     public static class HttpResponseBuilder {
@@ -16,7 +19,7 @@ public class Http11Response extends HttpResponse {
         private static final Logger log = LoggerFactory.getLogger(HttpResponseBuilder.class);
 
         private StatusLine statusLine;
-        private byte[] messageBody;
+        private MessageBody messageBody;
         private Http11ResponseHeader http11ResponseHeader;
 
         public HttpResponseBuilder() {
@@ -32,13 +35,22 @@ public class Http11Response extends HttpResponse {
         }
 
         public Http11Response.HttpResponseBuilder responseHeader(String contentType,
-            int responseBodySize) {
-            this.http11ResponseHeader = new Http11ResponseHeader(contentType, responseBodySize);
+                                                                 int responseBodySize) {
+            this.http11ResponseHeader = Http11ResponseHeader.HttpResponseHeaderBuilder
+                    .builder()
+                    .contentType(contentType)
+                    .contentLength(responseBodySize)
+                    .build();
+            return this;
+        }
+
+        public Http11Response.HttpResponseBuilder responseHeader(Http11ResponseHeader http11ResponseHeader) {
+            this.http11ResponseHeader = http11ResponseHeader;
             return this;
         }
 
         public Http11Response.HttpResponseBuilder messageBody(byte[] content) {
-            this.messageBody = content;
+            this.messageBody = new MessageBody(content);
             return this;
         }
 
@@ -51,7 +63,7 @@ public class Http11Response extends HttpResponse {
         private void validate() {
             if (Objects.isNull(statusLine)) {
                 log.error("Http11Response{" +
-                    "statusLine=" + statusLine);
+                        "statusLine=" + statusLine);
                 throw new IllegalStateException("빌더: HttpResponse의 필드값이 할당되지 않았습니다.");
             }
         }

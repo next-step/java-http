@@ -3,7 +3,6 @@ package nextstep.org.apache.coyote.http11.parser;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
-import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -12,7 +11,7 @@ import java.io.InputStreamReader;
 import org.apache.coyote.http11.parser.HttpRequestDto;
 import org.apache.coyote.http11.parser.HttpRequestParser;
 import org.apache.coyote.http11.request.HttpRequest;
-import org.apache.coyote.http11.request.RequestMethod;
+import org.apache.coyote.http11.request.requestline.RequestMethod;
 import org.apache.coyote.http11.request.factory.Http11RequestFactoryProvider;
 import org.apache.coyote.http11.request.factory.HttpRequestFactory;
 import org.junit.jupiter.api.DisplayName;

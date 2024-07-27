@@ -3,9 +3,8 @@ package nextstep.org.apache.coyote.http11.response;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
-import org.apache.coyote.http11.response.Http11ResponseHeader;
+import org.apache.coyote.http11.response.header.Http11ResponseHeader;
 import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
