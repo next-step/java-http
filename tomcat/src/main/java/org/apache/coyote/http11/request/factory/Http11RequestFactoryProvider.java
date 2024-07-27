@@ -3,7 +3,7 @@ package org.apache.coyote.http11.request.factory;
 import java.util.HashMap;
 import java.util.Map;
 import org.apache.coyote.http11.exception.RequestMethodNotFoundException;
-import org.apache.coyote.http11.request.RequestMethod;
+import org.apache.coyote.http11.request.requestline.RequestMethod;
 
 public class Http11RequestFactoryProvider implements HttpRequestFactoryProvider {
 

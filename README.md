@@ -99,15 +99,15 @@
   - [x] Post 되는것 확인하기
   - [x] Parser 에서 request body parse 하기
   - [x] User 생성하기
-- [] 요구사항 3 - Cookie에 JSESSIONID 값 저장하기
-  - [] HTTP Request Header 구현하기
-  - [] HTTP Request Cookie 구현하기
-  - [] HTTP Response Cookie 구현하기
-  - [] 각각 테스트 하기
-- [] 요구사항 4 - Session 구현하기
-  - [] SessionManager 구현하기
-    - [] 로그인 성공시 Session 객체로 User 저장
-    - [] 이미 로그인시 /login 페이지는 index.html로 리다이렉트 처리한다.
+- [x] 요구사항 3 - Cookie에 JSESSIONID 값 저장하기
+  - [x] HTTP Request Header 구현하기
+  - [x] HTTP Request Cookie 구현하기
+  - [x] HTTP Response Cookie 구현하기
+  - [x] 각각 테스트 하기
+- [x] 요구사항 4 - Session 구현하기
+  - [x] SessionManager 구현하기
+    - [x] 로그인 성공시 Session 객체로 User 저장
+    - [x] 이미 로그인시 /login 페이지는 index.html로 리다이렉트 처리한다.
 - [] 공통 요구사항
   - [] readAllBytes 의 OOM 이슈로 제거하기
   - [] OOM 을 하지 않는 구현에 대한 테스트 생성하기
