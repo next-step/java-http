@@ -4,12 +4,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 import java.io.IOException;
-import org.apache.coyote.http11.response.ContentType;
+import org.apache.coyote.http11.response.header.ContentType;
 import org.apache.coyote.http11.response.Http11Response;
 import org.apache.coyote.http11.response.HttpResponse;
-import org.apache.coyote.http11.response.ProtocolVersion;
-import org.apache.coyote.http11.response.StatusCode;
-import org.apache.coyote.http11.response.StatusLine;
+import org.apache.coyote.http11.response.statusline.ProtocolVersion;
+import org.apache.coyote.http11.response.statusline.StatusCode;
+import org.apache.coyote.http11.response.statusline.StatusLine;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
