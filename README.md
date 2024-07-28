@@ -113,3 +113,20 @@
   - [] OOM 을 하지 않는 구현에 대한 테스트 생성하기
   - [x] strategy -> factory provider GET 과 POST에 따라 재구성하기
   - [x] 구성요소에 따른 패키지 분리하기
+
+## 4단계 요구사항 정리
+- [] 요구사항 1 - HttpRequest 클래스 구현하기 
+  - [] 테스트도 추가하기
+- [] 요구사항 2 - HttpResponse 클래스 구현하기
+  - [] 테스트도 추가하기
+- [] 요구사항 3 - Controller 인터페이스 추가하기
+  - [] Controller Interface 주입하기
+- [] 피드백 사항
+  - [] 사용되지 않는 코드 삭제
+  - [] 프로바이더 객체에서 구현체 정보 입력 -> Config 레이어 생성하기
+  - [] 팩토리 명명법 변경하기
+  - [] 블럭 생략 제거
+  - [] query parsing 책임 strategy에 있는 부분 변경하기
+  - [] 상수와 변수 개행
+  - [] Response Header 와 Response 생성로직 추상화
+  - [] queryString 에서 map으로 파싱하는 로직을 리팩토링
