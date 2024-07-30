@@ -127,6 +127,6 @@
   - [] 팩토리 명명법 변경하기
   - [] 블럭 생략 제거
   - [] query parsing 책임 strategy에 있는 부분 변경하기
-  - [] 상수와 변수 개행
-  - [] Response Header 와 Response 생성로직 추상화
+  - [x] 상수와 변수 개행
+  - [] Response Header 와 Response 생성로직 추상화 -> HTTP ENTITY
   - [] queryString 에서 map으로 파싱하는 로직을 리팩토링

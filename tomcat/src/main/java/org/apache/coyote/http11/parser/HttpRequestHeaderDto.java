@@ -12,6 +12,7 @@ public class HttpRequestHeaderDto {
     private static final int KEY_INDEX = 0;
     private static final int VALUE_INDEX = 1;
     private static final Pattern DELIMITER = Pattern.compile(":");
+
     public final Map<String, String> requestHeader;
 
     public HttpRequestHeaderDto(Map<String, String> requestHeader) {
