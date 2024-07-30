@@ -19,7 +19,7 @@ import java.util.Objects;
 public class ResourceStrategy implements RequestMethodStrategy {
 
     public static final String ROOT_PATH = "/";
-    public static final String PERIOD = ".";
+    public static final String DOT = ".";
     private static final String BASE_DIR = "static";
     private static final String DEFAULT_URL = BASE_DIR + "/index.html";
 
@@ -74,7 +74,7 @@ public class ResourceStrategy implements RequestMethodStrategy {
             url = DEFAULT_URL;
         }
 
-        if (!httpRequest.getRequestUrl().contains(PERIOD)) {
+        if (!httpRequest.getRequestUrl().contains(DOT)) {
             url = url + ".html";
         }
 

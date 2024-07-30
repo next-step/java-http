@@ -125,7 +125,7 @@
   - [] 사용되지 않는 코드 삭제
   - [] 프로바이더 객체에서 구현체 정보 입력 -> Config 레이어 생성하기
   - [] 팩토리 명명법 변경하기
-  - [] 블럭 생략 제거
+  - [x] 블럭 생략 제거
   - [] query parsing 책임 strategy에 있는 부분 변경하기
   - [x] 상수와 변수 개행
   - [] Response Header 와 Response 생성로직 추상화 -> HTTP ENTITY
