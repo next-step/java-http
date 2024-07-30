@@ -10,9 +10,9 @@ import org.apache.coyote.http11.response.header.Http11ResponseHeader.HttpRespons
 import org.apache.coyote.http11.response.statusline.ProtocolVersion;
 import org.apache.coyote.http11.response.statusline.StatusCode;
 
-public class ControllerDefaultFactory implements ControllerFactory {
+public class DefaultControllerFactory implements ControllerFactory {
 
-    public ControllerDefaultFactory() {
+    public DefaultControllerFactory() {
     }
 
     @Override

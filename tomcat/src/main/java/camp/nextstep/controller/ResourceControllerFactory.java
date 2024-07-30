@@ -5,16 +5,19 @@ import org.apache.coyote.controller.ControllerFactory;
 import org.apache.coyote.http11.request.HttpRequest;
 import org.apache.coyote.http11.response.HttpResponse;
 
-public class Controller404Factory implements ControllerFactory {
+public class ResourceControllerFactory implements ControllerFactory {
 
-    private final RequestMethodStrategy notFoundStrategy;
+    private final RequestMethodStrategy resourceStrategy;
 
-    public Controller404Factory(RequestMethodStrategy notFoundStrategy) {
-        this.notFoundStrategy = notFoundStrategy;
+    public ResourceControllerFactory(RequestMethodStrategy resourceStrategy) {
+        this.resourceStrategy = resourceStrategy;
     }
 
     @Override
     public HttpResponse serve(HttpRequest httpRequest) {
-        return notFoundStrategy.serve(httpRequest);
+        return resourceStrategy.serve(httpRequest);
     }
+
 }
+
+

@@ -1,12 +1,12 @@
 package camp.nextstep.config;
 
-import camp.nextstep.controller.Controller404Factory;
-import camp.nextstep.controller.ControllerDefaultFactory;
+import camp.nextstep.controller.NotFoundControllerFactory;
+import camp.nextstep.controller.DefaultControllerFactory;
 import org.apache.coyote.controller.ControllerFactory;
 import camp.nextstep.controller.ControllerFactoryProvider;
-import camp.nextstep.controller.ControllerLoginFactory;
-import camp.nextstep.controller.ControllerRegisterFactory;
-import camp.nextstep.controller.ControllerResourceFactory;
+import camp.nextstep.controller.LoginControllerFactory;
+import camp.nextstep.controller.RegisterControllerFactory;
+import camp.nextstep.controller.ResourceControllerFactory;
 import camp.nextstep.controller.strategy.IndexGetStrategy;
 import camp.nextstep.controller.strategy.LoginGetStrategy;
 import camp.nextstep.controller.strategy.NotFoundStrategy;
@@ -30,18 +30,18 @@ public class ControllerFactoryProviderConfig {
     public Map<String, ControllerFactory> createFactoryMap(){
         Map<String, ControllerFactory> factories = new HashMap<>();
 
-        factories.put("/", new ControllerDefaultFactory());
+        factories.put("/", new DefaultControllerFactory());
         factories.put("/login",
-            new ControllerLoginFactory(List.of(new ResourceStrategy(), new LoginGetStrategy())));
-        factories.put("/index", new ControllerLoginFactory(List.of(new IndexGetStrategy())));
-        factories.put("/register", new ControllerRegisterFactory(List.of(new ResourceStrategy(), new RegisterPostStrategy())));
+            new LoginControllerFactory(List.of(new ResourceStrategy(), new LoginGetStrategy())));
+        factories.put("/index", new LoginControllerFactory(List.of(new IndexGetStrategy())));
+        factories.put("/register", new RegisterControllerFactory(List.of(new ResourceStrategy(), new RegisterPostStrategy())));
         return factories;
     }
 
     public ControllerFactory createNotFoundFactory(){
-        return new Controller404Factory(new NotFoundStrategy());
+        return new NotFoundControllerFactory(new NotFoundStrategy());
     }
     public ControllerFactory createResourceFactory(){
-        return new ControllerResourceFactory(new ResourceStrategy());
+        return new ResourceControllerFactory(new ResourceStrategy());
     }
 }
