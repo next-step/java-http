@@ -54,5 +54,6 @@ public class IndexGetStrategy implements RequestMethodStrategy {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+
     }
 }
