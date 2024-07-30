@@ -3,6 +3,7 @@ package org.apache.coyote.http11.request;
 import java.util.Objects;
 
 public class RequestBody {
+
     private final String requestBody;
 
     public RequestBody(String requestBody) {

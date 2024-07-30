@@ -11,6 +11,7 @@ public class RequestProtocol {
     private static final int PROTOCOL_NAME = 0;
     private static final int PROTOCOL_VERSION = 1;
     private static final Pattern DELIMITER = Pattern.compile("/");
+
     public final HttpVersion httpVersion;
     public final String protocol;
 
