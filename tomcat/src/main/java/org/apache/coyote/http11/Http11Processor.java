@@ -1,9 +1,13 @@
 package org.apache.coyote.http11;
 
-import camp.nextstep.controller.ControllerFactory;
-import camp.nextstep.controller.ControllerFactoryProvider;
 import camp.nextstep.exception.UncheckedServletException;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.Socket;
 import org.apache.coyote.Processor;
+import org.apache.coyote.controller.ControllerFactory;
+import org.apache.coyote.controller.ControllerProvider;
 import org.apache.coyote.http11.parser.HttpRequestDto;
 import org.apache.coyote.http11.parser.HttpRequestParser;
 import org.apache.coyote.http11.request.HttpRequest;
@@ -14,21 +18,18 @@ import org.apache.coyote.http11.response.HttpResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.Socket;
-
 public class Http11Processor implements Runnable, Processor {
 
     private static final Logger log = LoggerFactory.getLogger(Http11Processor.class);
     private static final HttpRequestFactoryProvider httpRequestFactoryProvider = new Http11RequestFactoryProvider();
-    private static final ControllerFactoryProvider controllerFactoryProvider = new ControllerFactoryProvider();
+
+    private final ControllerProvider controllerFactoryProvider;
 
     private final Socket connection;
 
-    public Http11Processor(final Socket connection) {
+    public Http11Processor(final Socket connection, ControllerProvider controllerFactoryProvider) {
         this.connection = connection;
+        this.controllerFactoryProvider = controllerFactoryProvider;
     }
 
     @Override

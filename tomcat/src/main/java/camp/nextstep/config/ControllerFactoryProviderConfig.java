@@ -1,0 +1,47 @@
+package camp.nextstep.config;
+
+import camp.nextstep.controller.Controller404Factory;
+import camp.nextstep.controller.ControllerDefaultFactory;
+import org.apache.coyote.controller.ControllerFactory;
+import camp.nextstep.controller.ControllerFactoryProvider;
+import camp.nextstep.controller.ControllerLoginFactory;
+import camp.nextstep.controller.ControllerRegisterFactory;
+import camp.nextstep.controller.ControllerResourceFactory;
+import camp.nextstep.controller.strategy.IndexGetStrategy;
+import camp.nextstep.controller.strategy.LoginGetStrategy;
+import camp.nextstep.controller.strategy.NotFoundStrategy;
+import camp.nextstep.controller.strategy.RegisterPostStrategy;
+import camp.nextstep.controller.strategy.ResourceStrategy;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+@Configuration
+public class ControllerFactoryProviderConfig {
+
+    public ControllerFactoryProvider createDefaultFactoryProvider(){
+        ControllerFactory notFoundFactory = createNotFoundFactory();
+        ControllerFactory resourceFacotry = createResourceFactory();
+        Map<String, ControllerFactory> factories = createFactoryMap();
+
+        return new ControllerFactoryProvider(notFoundFactory, resourceFacotry, factories);
+    }
+
+    public Map<String, ControllerFactory> createFactoryMap(){
+        Map<String, ControllerFactory> factories = new HashMap<>();
+
+        factories.put("/", new ControllerDefaultFactory());
+        factories.put("/login",
+            new ControllerLoginFactory(List.of(new ResourceStrategy(), new LoginGetStrategy())));
+        factories.put("/index", new ControllerLoginFactory(List.of(new IndexGetStrategy())));
+        factories.put("/register", new ControllerRegisterFactory(List.of(new ResourceStrategy(), new RegisterPostStrategy())));
+        return factories;
+    }
+
+    public ControllerFactory createNotFoundFactory(){
+        return new Controller404Factory(new NotFoundStrategy());
+    }
+    public ControllerFactory createResourceFactory(){
+        return new ControllerResourceFactory(new ResourceStrategy());
+    }
+}

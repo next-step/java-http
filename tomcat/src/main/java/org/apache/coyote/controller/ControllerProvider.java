@@ -1,4 +1,4 @@
-package camp.nextstep.controller;
+package org.apache.coyote.controller;
 
 public interface ControllerProvider {
 
