@@ -4,13 +4,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
+import org.apache.coyote.http11.MapUtil;
 
 public class HttpRequestHeaderDto {
 
     public static final String CONTENT_LENGTH = "Content-Length";
-    private static final int KEY_INDEX = 0;
-    private static final int VALUE_INDEX = 1;
     private static final Pattern DELIMITER = Pattern.compile(":");
 
     public final Map<String, String> requestHeader;
@@ -20,10 +18,7 @@ public class HttpRequestHeaderDto {
     }
 
     public static HttpRequestHeaderDto of(List<String> requestHeader) {
-        Map<String, String> requestHeaders = requestHeader
-                .stream()
-                .map(line -> DELIMITER.split(line))
-                .collect(Collectors.toMap(words -> words[KEY_INDEX].trim(), words -> words[VALUE_INDEX].trim()));
+        Map<String, String> requestHeaders = MapUtil.parseToMap(requestHeader.toArray(new String[0]), DELIMITER);
 
         return new HttpRequestHeaderDto(requestHeaders);
     }
