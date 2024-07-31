@@ -7,7 +7,7 @@ import java.io.InputStreamReader;
 import java.net.Socket;
 import org.apache.coyote.Processor;
 import org.apache.coyote.controller.ControllerFactory;
-import org.apache.coyote.controller.ControllerProvider;
+import org.apache.coyote.controller.RequestMapping;
 import org.apache.coyote.http11.parser.HttpRequestDto;
 import org.apache.coyote.http11.parser.HttpRequestParser;
 import org.apache.coyote.http11.request.HttpRequest;
@@ -23,11 +23,11 @@ public class Http11Processor implements Runnable, Processor {
     private static final Logger log = LoggerFactory.getLogger(Http11Processor.class);
     private static final HttpRequestFactoryProvider httpRequestFactoryProvider = new Http11RequestFactoryProvider();
 
-    private final ControllerProvider controllerFactoryProvider;
+    private final RequestMapping controllerFactoryProvider;
 
     private final Socket connection;
 
-    public Http11Processor(final Socket connection, ControllerProvider controllerFactoryProvider) {
+    public Http11Processor(final Socket connection, RequestMapping controllerFactoryProvider) {
         this.connection = connection;
         this.controllerFactoryProvider = controllerFactoryProvider;
     }
@@ -49,7 +49,7 @@ public class Http11Processor implements Runnable, Processor {
             HttpRequest httpRequest = httpRequestFactory.createHttpInstance(httpRequestDto);
             log.info(httpRequest.toString());
 
-            ControllerFactory controllerFactory = controllerFactoryProvider.provideFactory(
+            ControllerFactory controllerFactory = controllerFactoryProvider.getController(
                     httpRequest.getRequestUrl());
             HttpResponse httpResponse = controllerFactory.serve(httpRequest);
 

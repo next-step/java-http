@@ -115,13 +115,13 @@
   - [x] 구성요소에 따른 패키지 분리하기
 
 ## 4단계 요구사항 정리
-- [] 요구사항 1 - HttpRequest 클래스 구현하기 
-  - [] 테스트도 추가하기
-- [] 요구사항 2 - HttpResponse 클래스 구현하기
-  - [] 테스트도 추가하기
-- [] 요구사항 3 - Controller 인터페이스 추가하기
-  - [] Controller Interface 주입하기
-- [] 피드백 사항
+- [x] 요구사항 1 - HttpRequest 클래스 구현하기 
+  - [x] 테스트도 추가하기
+- [x] 요구사항 2 - HttpResponse 클래스 구현하기
+  - [x] 테스트도 추가하기
+- [x] 요구사항 3 - Controller 인터페이스 추가하기
+  - [x] Controller Interface 주입하기
+- [x] 피드백 사항
   - [x] 사용되지 않는 코드 삭제
   - [x] 프로바이더 객체에서 구현체 정보 입력 -> Config 레이어 생성하기 및 Tomcat에 provider 건네주기 (의존성 분리)
   - [x] 팩토리 명명법 변경하기

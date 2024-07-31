@@ -3,7 +3,7 @@ package camp.nextstep.config;
 import camp.nextstep.controller.NotFoundControllerFactory;
 import camp.nextstep.controller.DefaultControllerFactory;
 import org.apache.coyote.controller.ControllerFactory;
-import camp.nextstep.controller.ControllerFactoryProvider;
+import camp.nextstep.controller.RequestMapping;
 import camp.nextstep.controller.LoginControllerFactory;
 import camp.nextstep.controller.RegisterControllerFactory;
 import camp.nextstep.controller.ResourceControllerFactory;
@@ -19,12 +19,12 @@ import java.util.Map;
 @Configuration
 public class ControllerFactoryProviderConfig {
 
-    public ControllerFactoryProvider createDefaultFactoryProvider(){
+    public RequestMapping createDefaultFactoryProvider(){
         ControllerFactory notFoundFactory = createNotFoundFactory();
         ControllerFactory resourceFacotry = createResourceFactory();
         Map<String, ControllerFactory> factories = createFactoryMap();
 
-        return new ControllerFactoryProvider(notFoundFactory, resourceFacotry, factories);
+        return new RequestMapping(notFoundFactory, resourceFacotry, factories);
     }
 
     public Map<String, ControllerFactory> createFactoryMap(){

@@ -33,6 +33,7 @@ public class HttpRequestParser {
         HttpRequestHeaderDto requestHeaders = HttpRequestHeaderDto.of(headers);
 
         String body = parseBody(bufferedReader, requestHeaders.getContentLength());
+
         Map<String,String> requestBody = MapUtil.parseToMap(body.split("&"), BODY_DELIMITER);
         return HttpRequestDto.of(List.of(DELIMITER.split(requestLine)), requestHeaders, requestBody);
     }
