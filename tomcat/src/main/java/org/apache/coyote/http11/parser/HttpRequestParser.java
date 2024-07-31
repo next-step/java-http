@@ -1,14 +1,15 @@
 package org.apache.coyote.http11.parser;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.regex.Pattern;
+import org.apache.coyote.http11.MapUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * InputStream에 대한 Parsing을 진행합니다.
@@ -19,6 +20,8 @@ public class HttpRequestParser {
 
     private static final Pattern DELIMITER = Pattern.compile(" ");
     private static final Logger log = LoggerFactory.getLogger(HttpRequestParser.class);
+    private static final Pattern BODY_DELIMITER = Pattern.compile("=");
+    private static final String AMPERSEND = "&";
 
     public static HttpRequestDto parse(final BufferedReader bufferedReader) throws IOException {
         String requestLine = parseMethodAndUrl(bufferedReader);
@@ -30,8 +33,8 @@ public class HttpRequestParser {
         HttpRequestHeaderDto requestHeaders = HttpRequestHeaderDto.of(headers);
 
         String body = parseBody(bufferedReader, requestHeaders.getContentLength());
-
-        return HttpRequestDto.of(List.of(DELIMITER.split(requestLine)), requestHeaders, body);
+        Map<String,String> requestBody = MapUtil.parseToMap(body.split("&"), BODY_DELIMITER);
+        return HttpRequestDto.of(List.of(DELIMITER.split(requestLine)), requestHeaders, requestBody);
     }
 
     private static String parseMethodAndUrl(final BufferedReader bufferedReader)

@@ -76,7 +76,7 @@ public class Http11Request extends HttpRequest {
             return this;
         }
 
-        public HttpRequestBuilder requestBody(String requestBody) {
+        public HttpRequestBuilder requestBody(Map<String, String> requestBody) {
             this.requestBody = new RequestBody(requestBody);
 
             return this;
