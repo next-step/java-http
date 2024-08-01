@@ -1,5 +1,6 @@
 package camp.nextstep.controller;
 
+import java.util.stream.Stream;
 import org.apache.coyote.controller.ControllerFactory;
 import org.apache.coyote.http11.request.HttpRequest;
 import org.apache.coyote.http11.response.Http11Response;
@@ -27,7 +28,7 @@ public class DefaultControllerFactory implements ControllerFactory {
         return new Http11Response.HttpResponseBuilder()
             .statusLine(ProtocolVersion.HTTP11.getVersion(), StatusCode.OK.name())
             .responseHeader(responseHeader)
-            .messageBody(message.getBytes())
+            .messageBody(Stream.of(message))
             .build();
     }
 }

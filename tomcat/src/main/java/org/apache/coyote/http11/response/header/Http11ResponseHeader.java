@@ -1,5 +1,6 @@
 package org.apache.coyote.http11.response.header;
 
+import java.util.Arrays;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -12,7 +13,7 @@ import java.util.stream.Stream;
 public class Http11ResponseHeader {
 
     private final ContentType contentType;
-    private final ContentLength contentLength;
+    private ContentLength contentLength;
     private Location location;
     private SetCookie setCookie;
 
@@ -26,6 +27,10 @@ public class Http11ResponseHeader {
         this.contentLength = builder.contentLength;
         this.location = builder.location;
         this.setCookie = builder.setCookie;
+    }
+
+    public void setContentLength(ContentLength contentLength) {
+        this.contentLength = contentLength;
     }
 
     @Override
@@ -72,9 +77,12 @@ public class Http11ResponseHeader {
             return new Http11ResponseHeader.HttpResponseHeaderBuilder();
         }
 
-        public Http11ResponseHeader.HttpResponseHeaderBuilder contentType(String contentType) {
-
-            this.contentType = ContentType.valueOf(contentType);
+        public Http11ResponseHeader.HttpResponseHeaderBuilder contentType(String filename) {
+            final ContentType extension =
+                Arrays.stream(ContentType.values())
+                    .filter(ext -> filename.endsWith(ext.name()))
+                    .findFirst().orElseGet(() -> ContentType.all);
+            this.contentType = extension;
             return this;
         }
 

@@ -1,11 +1,12 @@
 package org.apache.coyote.http11.response;
 
+import java.util.Objects;
+import java.util.stream.Stream;
+import org.apache.coyote.http11.response.header.ContentLength;
 import org.apache.coyote.http11.response.header.Http11ResponseHeader;
 import org.apache.coyote.http11.response.statusline.StatusLine;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.Objects;
 
 public class Http11Response extends HttpResponse {
 
@@ -49,8 +50,9 @@ public class Http11Response extends HttpResponse {
             return this;
         }
 
-        public Http11Response.HttpResponseBuilder messageBody(byte[] content) {
+        public Http11Response.HttpResponseBuilder messageBody(Stream<String> content) {
             this.messageBody = new MessageBody(content);
+            this.http11ResponseHeader.setContentLength(new ContentLength(this.messageBody.getContentLength()));
             return this;
         }
 

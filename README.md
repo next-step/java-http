@@ -108,9 +108,9 @@
   - [x] SessionManager 구현하기
     - [x] 로그인 성공시 Session 객체로 User 저장
     - [x] 이미 로그인시 /login 페이지는 index.html로 리다이렉트 처리한다.
-- [] 공통 요구사항
-  - [] readAllBytes 의 OOM 이슈로 제거하기
-  - [] OOM 을 하지 않는 구현에 대한 테스트 생성하기
+- [x] 공통 요구사항
+  - [x] readAllBytes 의 OOM 이슈로 제거하기
+  - [x] OOM 을 하지 않는 구현에 대한 테스트 생성하기
   - [x] strategy -> factory provider GET 과 POST에 따라 재구성하기
   - [x] 구성요소에 따른 패키지 분리하기
 
@@ -130,5 +130,13 @@
   - [x] 상수와 변수 개행
   - [x] Response Header 와 Response 생성로직 추상화 -> HTTP ENTITY
   - [x] queryString 에서 map으로 파싱하는 로직을 리팩토링
-
+- [] 추가 피드백 사항
+  - [] set-cookie 일차함수로 리팩토링
+  - [] ControllerConfig 
+  - [] 인터페이스 이름과 구현체 같은 이름 제거
+  - [] Matcher의 matches, find 다른점 확인
+  - [] HttpResponse의 빌더 사용해서 축약적 사용생성
+  - [] factories 예외 컨트롤러?? 확장성 제한됨
+  - [] Respone에서 HttpEntity 상속 혹은 위임
+  - [x] 반복되는 로직은 메서드 추출 (HttpEntity)
 

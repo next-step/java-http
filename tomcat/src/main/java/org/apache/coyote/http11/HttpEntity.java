@@ -4,9 +4,8 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.Arrays;
 import java.util.Objects;
+import java.util.stream.Stream;
 import org.apache.coyote.http11.exception.StaticResourceNotFoundException;
 import org.apache.coyote.http11.response.Http11Response;
 import org.apache.coyote.http11.response.HttpResponse;
@@ -36,50 +35,31 @@ public class HttpEntity {
     }
 
     public static HttpResponse resource(String version, String url){
-        try {
-            final URL resource = HttpEntity.class
-                .getClassLoader()
-                .getResource(url);
-            final File file = new File(Objects.requireNonNull(resource).getFile());
-            final Path path = file.toPath();
-            final byte[] content = Files.readAllBytes(path);
+        File file = getFile(url);
 
-            final ContentType extension =
-                Arrays.stream(ContentType.values())
-                    .filter(ext -> file.getName().endsWith(ext.name()))
-                    .findFirst().orElseGet(() -> ContentType.all);
+        try (Stream<String> content = Files.lines(file.toPath())){
 
             final Http11ResponseHeader http11ResponseHeader = Http11ResponseHeader.HttpResponseHeaderBuilder
                 .builder()
-                .contentLength(content.length)
-                .contentType(extension.name())
+                .contentType(file.getName())
                 .build();
 
             return new Http11Response.HttpResponseBuilder()
-                .responseHeader(http11ResponseHeader)
                 .statusLine(version, StatusCode.OK.name())
+                .responseHeader(http11ResponseHeader)
                 .messageBody(content)
                 .build();
-
         } catch (IOException e) {
             throw new StaticResourceNotFoundException("Static Resource가 없습니다.");
         }
     }
 
     public static HttpResponse unauthorized(){
-        try {
-
-            final URL resource = HttpEntity.class
-                .getClassLoader()
-                .getResource(UNAUTHOIRZED);
-
-            final File file = new File(Objects.requireNonNull(resource).getFile());
-            final Path path = file.toPath();
-            final byte[] content = Files.readAllBytes(path);
+        File file = getFile(UNAUTHOIRZED);
+        try (Stream<String> content = Files.lines(file.toPath())){
 
             final Http11ResponseHeader http11ResponseHeader = Http11ResponseHeader.HttpResponseHeaderBuilder
                 .builder()
-                .contentLength(content.length)
                 .contentType(ContentType.html.name())
                 .build();
 
@@ -96,17 +76,11 @@ public class HttpEntity {
     }
 
     public static HttpResponse notfound(){
-        try {
-            final URL resource = HttpEntity.class
-                .getClassLoader()
-                .getResource(NOTFOUND);
-            final File file = new File(Objects.requireNonNull(resource).getFile());
-            final Path path = file.toPath();
-            final byte[] content = Files.readAllBytes(path);
+        File file = getFile(NOTFOUND);
+        try (Stream<String> content = Files.lines(file.toPath())){
 
             Http11ResponseHeader responseHeader = HttpResponseHeaderBuilder.builder()
                 .contentType(ContentType.html.name())
-                .contentLength(content.length)
                 .build();
 
             return new Http11Response.HttpResponseBuilder()
@@ -119,4 +93,10 @@ public class HttpEntity {
         }
     }
 
+    private static File getFile(String url){
+        final URL resource = HttpEntity.class
+            .getClassLoader()
+            .getResource(url);
+        return new File(Objects.requireNonNull(resource).getFile());
+    }
 }
