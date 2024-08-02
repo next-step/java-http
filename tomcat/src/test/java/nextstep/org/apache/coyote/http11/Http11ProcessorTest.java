@@ -3,7 +3,7 @@ package nextstep.org.apache.coyote.http11;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import camp.nextstep.config.ControllerFactoryProviderConfig;
-import camp.nextstep.controller.RequestMapping;
+import camp.nextstep.controller.ControllerRequestMapping;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
@@ -18,7 +18,7 @@ class Http11ProcessorTest {
     void process() {
         // given
         final var socket = new StubSocket();
-        final RequestMapping controllerProvider = new ControllerFactoryProviderConfig().createDefaultFactoryProvider();
+        final ControllerRequestMapping controllerProvider = new ControllerFactoryProviderConfig().createDefaultFactoryProvider();
         final var processor = new Http11Processor(socket, controllerProvider);
 
         // when
@@ -47,7 +47,7 @@ class Http11ProcessorTest {
             "");
 
         final var socket = new StubSocket(httpRequest);
-        final RequestMapping controllerProvider = new ControllerFactoryProviderConfig().createDefaultFactoryProvider();
+        final ControllerRequestMapping controllerProvider = new ControllerFactoryProviderConfig().createDefaultFactoryProvider();
         final Http11Processor processor = new Http11Processor(socket, controllerProvider);
 
         // when
@@ -76,7 +76,7 @@ class Http11ProcessorTest {
             "");
 
         final var socket = new StubSocket(httpRequest);
-        final RequestMapping controllerProvider = new ControllerFactoryProviderConfig().createDefaultFactoryProvider();
+        final ControllerRequestMapping controllerProvider = new ControllerFactoryProviderConfig().createDefaultFactoryProvider();
         final Http11Processor processor = new Http11Processor(socket, controllerProvider);
 
         // when

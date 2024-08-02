@@ -4,8 +4,9 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.regex.Pattern;
 import org.apache.coyote.controller.ControllerFactory;
+import org.apache.coyote.controller.RequestMapping;
 
-public class RequestMapping implements org.apache.coyote.controller.RequestMapping {
+public class ControllerRequestMapping implements RequestMapping {
 
     private static final Pattern STATIC = Pattern.compile(".*\\..*");
 
@@ -13,7 +14,7 @@ public class RequestMapping implements org.apache.coyote.controller.RequestMappi
     private final ControllerFactory notFoundFactory;
     private final ControllerFactory resourceFacotry;
 
-    public RequestMapping(ControllerFactory notFoundFactory,
+    public ControllerRequestMapping(ControllerFactory notFoundFactory,
         ControllerFactory resourceFacotry, Map<String, ControllerFactory> factories) {
         this.notFoundFactory = notFoundFactory;
         this.resourceFacotry = resourceFacotry;

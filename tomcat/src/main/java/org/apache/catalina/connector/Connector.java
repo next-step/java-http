@@ -1,6 +1,6 @@
 package org.apache.catalina.connector;
 
-import camp.nextstep.controller.RequestMapping;
+import camp.nextstep.controller.ControllerRequestMapping;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.net.ServerSocket;
@@ -18,13 +18,13 @@ public class Connector implements Runnable {
 
     private final ServerSocket serverSocket;
     private boolean stopped;
-    private final RequestMapping requestMapping;
+    private final ControllerRequestMapping requestMapping;
 
-    public Connector(RequestMapping requestMapping) {
+    public Connector(ControllerRequestMapping requestMapping) {
         this(DEFAULT_PORT, DEFAULT_ACCEPT_COUNT, requestMapping);
     }
 
-    public Connector(final int port, final int acceptCount, final RequestMapping requestMapping) {
+    public Connector(final int port, final int acceptCount, final ControllerRequestMapping requestMapping) {
         this.serverSocket = createServerSocket(port, acceptCount);
         this.stopped = false;
         this.requestMapping = requestMapping;
