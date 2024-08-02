@@ -139,4 +139,5 @@
   - [] factories 예외 컨트롤러?? 확장성 제한됨
   - [] Respone에서 HttpEntity 상속 혹은 위임
   - [x] 반복되는 로직은 메서드 추출 (HttpEntity)
+  - [] readAllBytes 의 OOM 이슈로 제거하기 -> 여전히 HEAP에 파일을 읽어서 올리게 되는데 INPUTSTREAM -> OUTPUTSTREAM 으로 이전하는 과정에서 CONTENT-LENGTH 측정 실패 
 
