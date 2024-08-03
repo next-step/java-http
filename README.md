@@ -132,7 +132,7 @@
   - [x] queryString 에서 map으로 파싱하는 로직을 리팩토링
 - [] 추가 피드백 사항
   - [x] set-cookie 일차함수로 리팩토링
-  - [] ControllerConfig 
+  - [x] ControllerConfig 가 n번 불렸을때, n개의 객체가 계속 재생성 되는 이슈
   - [x] 인터페이스 이름과 구현체 같은 이름 제거
   - [] Matcher의 matches, find 다른점 확인
   - [] HttpResponse의 빌더 사용해서 축약적 사용생성
