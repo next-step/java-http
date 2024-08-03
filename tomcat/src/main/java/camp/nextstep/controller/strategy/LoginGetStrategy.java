@@ -4,13 +4,14 @@ import camp.nextstep.controller.session.Session;
 import camp.nextstep.controller.session.SessionManager;
 import camp.nextstep.db.InMemoryUserRepository;
 import camp.nextstep.model.User;
-import java.util.Map;
-import java.util.UUID;
 import org.apache.coyote.http11.HttpEntity;
 import org.apache.coyote.http11.exception.UnAuthorizedException;
 import org.apache.coyote.http11.request.HttpRequest;
 import org.apache.coyote.http11.request.requestline.RequestMethod;
 import org.apache.coyote.http11.response.HttpResponse;
+
+import java.util.Map;
+import java.util.UUID;
 
 public class LoginGetStrategy implements RequestMethodStrategy {
 
@@ -35,7 +36,7 @@ public class LoginGetStrategy implements RequestMethodStrategy {
         Map<String, String> session = httpRequest
                 .getSession()
                 .orElseGet(() -> Map.of("JSESSIONID", startSession(user).getId()));
-        return HttpEntity.redirect(INDEX_HTML);
+        return HttpEntity.redirect(INDEX_HTML, session);
     }
 
     private User login(Map<String, String> userParams) {

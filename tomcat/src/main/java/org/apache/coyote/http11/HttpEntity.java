@@ -1,19 +1,22 @@
 package org.apache.coyote.http11;
 
-import java.io.File;
-import java.io.IOException;
-import java.net.URL;
-import java.nio.file.Files;
-import java.util.Objects;
-import java.util.stream.Stream;
 import org.apache.coyote.http11.exception.StaticResourceNotFoundException;
 import org.apache.coyote.http11.response.Http11Response;
 import org.apache.coyote.http11.response.HttpResponse;
 import org.apache.coyote.http11.response.header.ContentType;
 import org.apache.coyote.http11.response.header.Http11ResponseHeader;
 import org.apache.coyote.http11.response.header.Http11ResponseHeader.HttpResponseHeaderBuilder;
+import org.apache.coyote.http11.response.header.SetCookieAdd;
 import org.apache.coyote.http11.response.statusline.ProtocolVersion;
 import org.apache.coyote.http11.response.statusline.StatusCode;
+
+import java.io.File;
+import java.io.IOException;
+import java.net.URL;
+import java.nio.file.Files;
+import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Stream;
 
 public class HttpEntity {
 
@@ -24,9 +27,24 @@ public class HttpEntity {
 
     public static HttpResponse redirect(String redirectPath){
         Http11ResponseHeader responseHeader = HttpResponseHeaderBuilder.builder()
+                .contentType(ContentType.html.name())
+                .location(redirectPath)
+                .build();
+
+        return new Http11Response.HttpResponseBuilder()
+                .statusLine(ProtocolVersion.HTTP11.getVersion(), StatusCode.FOUND.name())
+                .responseHeader(responseHeader)
+                .build();
+    }
+
+    public static HttpResponse redirect(String redirectPath, Map<String, String> session){
+        Http11ResponseHeader responseHeader = HttpResponseHeaderBuilder.builder()
             .contentType(ContentType.html.name())
             .location(redirectPath)
             .build();
+
+        SetCookieAdd sessionAdder = new SetCookieAdd();
+        sessionAdder.add(responseHeader, session);
 
         return new Http11Response.HttpResponseBuilder()
             .statusLine(ProtocolVersion.HTTP11.getVersion(), StatusCode.FOUND.name())

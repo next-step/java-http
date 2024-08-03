@@ -131,13 +131,35 @@
   - [x] Response Header 와 Response 생성로직 추상화 -> HTTP ENTITY
   - [x] queryString 에서 map으로 파싱하는 로직을 리팩토링
 - [] 추가 피드백 사항
-  - [] set-cookie 일차함수로 리팩토링
+  - [x] set-cookie 일차함수로 리팩토링
   - [] ControllerConfig 
-  - [] 인터페이스 이름과 구현체 같은 이름 제거
+  - [x] 인터페이스 이름과 구현체 같은 이름 제거
   - [] Matcher의 matches, find 다른점 확인
   - [] HttpResponse의 빌더 사용해서 축약적 사용생성
   - [] factories 예외 컨트롤러?? 확장성 제한됨
-  - [] Respone에서 HttpEntity 상속 혹은 위임
+  - [] Response에서 HttpEntity 상속 혹은 위임
   - [x] 반복되는 로직은 메서드 추출 (HttpEntity)
+
   - [] readAllBytes 의 OOM 이슈로 제거하기 -> 여전히 HEAP에 파일을 읽어서 올리게 되는데 INPUTSTREAM -> OUTPUTSTREAM 으로 이전하는 과정에서 CONTENT-LENGTH 측정 실패 
 
+
+톰캣에선 다음과 같이 Response에서 write 할때, content-length를 측정하는것같은데 output stream 을 write 할때,
+@Functional Interface 로 contentLength를 업데이트 해줄려고했음. -> 아쉽지만 실패하였음
+
+
+    public void doWrite(ByteBuffer chunk) throws IOException {
+    int len = chunk.remaining();
+    outputBuffer.doWrite(chunk);
+    contentWritten += len - chunk.remaining();
+    }
+
+        public long getBytesWritten(boolean flush) {
+        if (flush) {
+            try {
+                outputBuffer.flush();
+            } catch (IOException ioe) {
+                // Ignore - the client has probably closed the connection
+            }
+        }
+        return getCoyoteResponse().getBytesWritten(flush);
+    }

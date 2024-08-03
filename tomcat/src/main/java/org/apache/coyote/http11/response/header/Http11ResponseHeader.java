@@ -1,9 +1,9 @@
 package org.apache.coyote.http11.response.header;
 
-import java.util.Arrays;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Arrays;
 import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -31,6 +31,10 @@ public class Http11ResponseHeader {
 
     public void setContentLength(ContentLength contentLength) {
         this.contentLength = contentLength;
+    }
+
+    public void addCookie(String key, String value) {
+        setCookie.addCookie(key, value);
     }
 
     @Override

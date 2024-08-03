@@ -11,6 +11,9 @@ public class SetCookie {
         this.cookies = cookies;
     }
 
+    public void addCookie(String key, String value){
+        cookies.put(key, value);
+    }
     @Override
     public String toString() {
         return String.format("Set-Cookie: %s ", cookies.keySet().stream()

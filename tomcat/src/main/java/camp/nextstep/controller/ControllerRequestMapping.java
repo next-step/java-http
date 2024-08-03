@@ -19,7 +19,6 @@ public class ControllerRequestMapping implements RequestMapping {
         this.notFoundFactory = notFoundFactory;
         this.resourceFacotry = resourceFacotry;
         this.factories = factories;
-
     }
 
     @Override
