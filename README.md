@@ -130,11 +130,14 @@
   - [x] 상수와 변수 개행
   - [x] Response Header 와 Response 생성로직 추상화 -> HTTP ENTITY
   - [x] queryString 에서 map으로 파싱하는 로직을 리팩토링
-- [] 추가 피드백 사항
+- [x] 추가 피드백 사항
   - [x] set-cookie 일차함수로 리팩토링
   - [x] ControllerConfig 가 n번 불렸을때, n개의 객체가 계속 재생성 되는 이슈
   - [x] 인터페이스 이름과 구현체 같은 이름 제거
-  - [] Matcher의 matches, find 다른점 확인
+  - [x] Matcher의 matches, find 다른점 확인
+    - matches는 전체의 String에서 regex 패턴을 매칭합니다.
+    - 그와 별개로 find는 Substring 에서 Matching 을 확인합니다. -> /sdagagdex.dsifjas/index 
+      - 이 경우에 find는 /index와 매칭이 됩니다.
   - [x] HttpResponse의 빌더 사용해서 축약적 사용생성
   - [x] factories 예외 컨트롤러?? 확장성 제한됨
   - [x] Response에서 HttpEntity 흡수
