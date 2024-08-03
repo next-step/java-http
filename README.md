@@ -135,9 +135,9 @@
   - [x] ControllerConfig 가 n번 불렸을때, n개의 객체가 계속 재생성 되는 이슈
   - [x] 인터페이스 이름과 구현체 같은 이름 제거
   - [] Matcher의 matches, find 다른점 확인
-  - [] HttpResponse의 빌더 사용해서 축약적 사용생성
+  - [x] HttpResponse의 빌더 사용해서 축약적 사용생성
   - [] factories 예외 컨트롤러?? 확장성 제한됨
-  - [] Response에서 HttpEntity 상속 혹은 위임
+  - [x] Response에서 HttpEntity 흡수
   - [x] 반복되는 로직은 메서드 추출 (HttpEntity)
 
   - [] readAllBytes 의 OOM 이슈로 제거하기 -> 여전히 HEAP에 파일을 읽어서 올리게 되는데 INPUTSTREAM -> OUTPUTSTREAM 으로 이전하는 과정에서 CONTENT-LENGTH 측정 실패 
