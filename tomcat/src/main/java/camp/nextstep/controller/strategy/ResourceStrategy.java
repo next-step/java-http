@@ -1,8 +1,8 @@
 package camp.nextstep.controller.strategy;
 
-import org.apache.coyote.http11.HttpEntity;
 import org.apache.coyote.http11.request.HttpRequest;
 import org.apache.coyote.http11.request.requestline.RequestMethod;
+import org.apache.coyote.http11.response.Http11Response;
 import org.apache.coyote.http11.response.HttpResponse;
 
 public class ResourceStrategy implements RequestMethodStrategy {
@@ -23,7 +23,7 @@ public class ResourceStrategy implements RequestMethodStrategy {
     public HttpResponse serve(HttpRequest httpRequest) {
         String url = addStaticDir(httpRequest);
 
-        return HttpEntity.resource(httpRequest.getVersion(), url);
+        return Http11Response.resource(httpRequest.getVersion(), url);
     }
 
     private String addStaticDir(HttpRequest httpRequest) {

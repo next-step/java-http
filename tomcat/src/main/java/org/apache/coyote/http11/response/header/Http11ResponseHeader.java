@@ -26,7 +26,6 @@ public class Http11ResponseHeader {
         this.contentType = builder.contentType;
         this.contentLength = builder.contentLength;
         this.location = builder.location;
-        this.setCookie = builder.setCookie;
     }
 
     public void setContentLength(ContentLength contentLength) {
@@ -34,7 +33,12 @@ public class Http11ResponseHeader {
     }
 
     public void addCookie(String key, String value) {
-        setCookie.addCookie(key, value);
+        if (Objects.nonNull(setCookie)) {
+            setCookie.addCookie(key, value);
+            return;
+        }
+
+        setCookie = new SetCookie(Map.of(key, value));
     }
 
     @Override
@@ -72,7 +76,6 @@ public class Http11ResponseHeader {
         private ContentType contentType;
         private ContentLength contentLength;
         private Location location;
-        private SetCookie setCookie;
 
         public HttpResponseHeaderBuilder() {
         }
@@ -81,11 +84,18 @@ public class Http11ResponseHeader {
             return new Http11ResponseHeader.HttpResponseHeaderBuilder();
         }
 
+        public static Http11ResponseHeader http() {
+            return HttpResponseHeaderBuilder
+                    .builder()
+                    .contentType(ContentType.html.name())
+                    .build();
+        }
+
         public Http11ResponseHeader.HttpResponseHeaderBuilder contentType(String filename) {
             final ContentType extension =
-                Arrays.stream(ContentType.values())
-                    .filter(ext -> filename.endsWith(ext.name()))
-                    .findFirst().orElseGet(() -> ContentType.all);
+                    Arrays.stream(ContentType.values())
+                            .filter(ext -> filename.endsWith(ext.name()))
+                            .findFirst().orElseGet(() -> ContentType.all);
             this.contentType = extension;
             return this;
         }
@@ -99,15 +109,6 @@ public class Http11ResponseHeader {
         public Http11ResponseHeader.HttpResponseHeaderBuilder location(String location) {
 
             this.location = new Location(location);
-            return this;
-        }
-
-        public Http11ResponseHeader.HttpResponseHeaderBuilder cookie(Map<String, String> setCookie) {
-            if (setCookie.containsKey("JSESSIONID")) {
-                this.setCookie = new SetCookie(setCookie);
-                return this;
-            }
-
             return this;
         }
 

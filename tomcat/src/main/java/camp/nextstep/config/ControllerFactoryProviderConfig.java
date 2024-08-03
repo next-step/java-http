@@ -22,7 +22,7 @@ public class ControllerFactoryProviderConfig {
         ControllerFactory resourceFacotry = createResourceFactory();
         Map<String, ControllerFactory> factories = createFactoryMap();
 
-        ControllerRequestMapping mapping = new ControllerRequestMapping(notFoundFactory, resourceFacotry, factories)
+        ControllerRequestMapping mapping = new ControllerRequestMapping(notFoundFactory, resourceFacotry, factories);
         cache.put("factoryProvider", mapping);
 
         return mapping;
