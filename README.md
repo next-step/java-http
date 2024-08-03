@@ -136,7 +136,7 @@
   - [x] 인터페이스 이름과 구현체 같은 이름 제거
   - [] Matcher의 matches, find 다른점 확인
   - [x] HttpResponse의 빌더 사용해서 축약적 사용생성
-  - [] factories 예외 컨트롤러?? 확장성 제한됨
+  - [x] factories 예외 컨트롤러?? 확장성 제한됨
   - [x] Response에서 HttpEntity 흡수
   - [x] 반복되는 로직은 메서드 추출 (HttpEntity)
 

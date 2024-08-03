@@ -11,19 +11,20 @@ import java.util.Map;
 @Configuration
 public class ControllerFactoryProviderConfig {
 
-    public static final Map<String, ControllerRequestMapping> cache = new HashMap<>();
+    public static final String STATIC = "static";
+    public static final String NOTFOUND = "notfound";
+    private static final Map<String, ControllerRequestMapping> cache = new HashMap<>();
+    private static final String FACTORY_PROVIDER = "factoryProvider";
 
     public ControllerRequestMapping createDefaultFactoryProvider() {
-        if (cache.containsKey("factoryProvider")) {
-            return cache.get("factoryProvider");
+        if (cache.containsKey(FACTORY_PROVIDER)) {
+            return cache.get(FACTORY_PROVIDER);
         }
 
-        ControllerFactory notFoundFactory = createNotFoundFactory();
-        ControllerFactory resourceFacotry = createResourceFactory();
         Map<String, ControllerFactory> factories = createFactoryMap();
 
-        ControllerRequestMapping mapping = new ControllerRequestMapping(notFoundFactory, resourceFacotry, factories);
-        cache.put("factoryProvider", mapping);
+        ControllerRequestMapping mapping = new ControllerRequestMapping(factories);
+        cache.put(FACTORY_PROVIDER, mapping);
 
         return mapping;
     }
@@ -31,6 +32,8 @@ public class ControllerFactoryProviderConfig {
     public Map<String, ControllerFactory> createFactoryMap() {
         Map<String, ControllerFactory> factories = new HashMap<>();
 
+        factories.put(STATIC, new ResourceControllerFactory(new ResourceStrategy()));
+        factories.put(NOTFOUND, new NotFoundControllerFactory(new NotFoundStrategy()));
         factories.put("/", new DefaultControllerFactory());
         factories.put("/login",
                 new LoginControllerFactory(List.of(new ResourceStrategy(), new LoginGetStrategy())));
@@ -39,11 +42,4 @@ public class ControllerFactoryProviderConfig {
         return factories;
     }
 
-    public ControllerFactory createNotFoundFactory() {
-        return new NotFoundControllerFactory(new NotFoundStrategy());
-    }
-
-    public ControllerFactory createResourceFactory() {
-        return new ResourceControllerFactory(new ResourceStrategy());
-    }
 }
