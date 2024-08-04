@@ -132,6 +132,9 @@
   - [x] queryString 에서 map으로 파싱하는 로직을 리팩토링
 - [x] 추가 피드백 사항
   - [x] set-cookie 일차함수로 리팩토링
+    - consumer로 strategy 패턴을 구현할 수 있음
+    - template 패턴을 구현할 수 있음
+    - supplier로 lazy evaluator로 content-length 같은 값을 설정할 수 있음
   - [x] ControllerConfig 가 n번 불렸을때, n개의 객체가 계속 재생성 되는 이슈
   - [x] 인터페이스 이름과 구현체 같은 이름 제거
   - [x] Matcher의 matches, find 다른점 확인
@@ -166,3 +169,27 @@
         }
         return getCoyoteResponse().getBytesWritten(flush);
     }
+
+
+## 5 단계 요구사항 정리
+- [x] 요구사항 1 - Executors로 Thread Pool 적용
+  - acceptCount 와 maxThreads 는 각각 어떤 설정인가?
+  - 최대 ThreadPool 크기는 250, 모든 Thread Busy일때, 100명까지 대기상태로 만들려면?
+- [x] 요구사항 2 - 동시성 컬렉션 사용하기
+  - SessionManager 클래스에서 Session 컬렉션의 스레드 안정성과 원자성을 보장하자
+- [x] 공통 요구사항
+  - 쓰레드풀 이해
+    - 대상 작업이 독립적인 작업 수행해야한다.
+    - 어떻게 10개의 스레드가 풀을 만들까?
+      - Executor로 ThreadPoolExecutor로 생성한다. (생성자)
+    - 어떻게 풀에서 쓰레드를 하나 할당할까?
+      - execute로 pool의 할당가능한 thread 확인후에 add worker로 task에 대한 Worker 객체를 만들고 태스크를 할당한다.
+    - 쓰레드가 없을때, 태스크는 어떻게 될까?
+      - WorkerQueue에 밀린 태스크를 넣는다. (execute)
+    - future에 대한 값은?
+      - ExecutorService 에서 Submit을 하게 되면 Callable인 FutureTask에 execute를 해준다.
+  - newFixedThreadPool 소스 분석
+    - Interface ScheduledExectuorService 를 구현한 ScheduledThreadPoolExecutor이 있습니다.
+    - Executors 에서 newFixedThreadPool이라는 것으로 ThreadPoolExecutor으로 ThreadPool을 생성합니다.
+    - ThreadPoolExecutor는 poolSize, maximumPoolSize, keepAliveTime, unit, workQueue를 받습니다.
+  
