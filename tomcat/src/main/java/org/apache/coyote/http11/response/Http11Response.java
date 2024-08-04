@@ -1,15 +1,5 @@
 package org.apache.coyote.http11.response;
 
-import org.apache.coyote.http11.exception.StaticResourceNotFoundException;
-import org.apache.coyote.http11.response.header.ContentLength;
-import org.apache.coyote.http11.response.header.ContentType;
-import org.apache.coyote.http11.response.header.Http11ResponseHeader;
-import org.apache.coyote.http11.response.header.SetCookieAdd;
-import org.apache.coyote.http11.response.statusline.StatusCode;
-import org.apache.coyote.http11.response.statusline.StatusLine;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
@@ -17,6 +7,16 @@ import java.nio.file.Files;
 import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Stream;
+import org.apache.coyote.http11.exception.StaticResourceNotFoundException;
+import org.apache.coyote.http11.response.header.ContentLength;
+import org.apache.coyote.http11.response.header.ContentType;
+import org.apache.coyote.http11.response.header.Http11ResponseHeader;
+import org.apache.coyote.http11.response.header.SetCookieAdd;
+import org.apache.coyote.http11.response.header.SetCookieConsumer;
+import org.apache.coyote.http11.response.statusline.StatusCode;
+import org.apache.coyote.http11.response.statusline.StatusLine;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Http11Response extends HttpResponse {
 
@@ -47,7 +47,7 @@ public class Http11Response extends HttpResponse {
                 .location(redirectPath)
                 .build();
 
-        SetCookieAdd sessionAdder = new SetCookieAdd();
+        SetCookieConsumer<Http11ResponseHeader> sessionAdder = new SetCookieAdd();
         sessionAdder.add(responseHeader, session);
 
         return new Http11Response.HttpResponseBuilder()
