@@ -1,15 +1,17 @@
 package org.apache.coyote.http11.request;
 
+import java.util.Map;
 import java.util.Objects;
 
 public class RequestBody {
-    private final String requestBody;
 
-    public RequestBody(String requestBody) {
+    private final Map<String, String> requestBody;
+
+    public RequestBody(Map<String, String> requestBody) {
         this.requestBody = requestBody;
     }
 
-    public String getRequestBody() {
+    public Map<String, String> getRequestBody() {
         return requestBody;
     }
 

@@ -9,11 +9,6 @@ import org.apache.coyote.http11.request.HttpRequest;
 import org.apache.coyote.http11.request.requestline.RequestMethod;
 import org.apache.coyote.http11.response.Http11Response;
 import org.apache.coyote.http11.response.HttpResponse;
-import org.apache.coyote.http11.response.header.ContentType;
-import org.apache.coyote.http11.response.header.Http11ResponseHeader;
-import org.apache.coyote.http11.response.header.Http11ResponseHeader.HttpResponseHeaderBuilder;
-import org.apache.coyote.http11.response.statusline.ProtocolVersion;
-import org.apache.coyote.http11.response.statusline.StatusCode;
 
 import java.util.Map;
 import java.util.UUID;
@@ -41,17 +36,7 @@ public class LoginGetStrategy implements RequestMethodStrategy {
         Map<String, String> session = httpRequest
                 .getSession()
                 .orElseGet(() -> Map.of("JSESSIONID", startSession(user).getId()));
-
-        Http11ResponseHeader responseHeader = HttpResponseHeaderBuilder.builder()
-                .contentType(ContentType.html.name())
-                .location(INDEX_HTML)
-                .cookie(session)
-                .build();
-
-        return new Http11Response.HttpResponseBuilder()
-                .statusLine(ProtocolVersion.HTTP11.getVersion(), StatusCode.FOUND.name())
-                .responseHeader(responseHeader)
-                .build();
+        return Http11Response.redirect(INDEX_HTML, session);
     }
 
     private User login(Map<String, String> userParams) {

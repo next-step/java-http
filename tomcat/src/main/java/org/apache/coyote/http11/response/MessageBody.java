@@ -1,10 +1,13 @@
 package org.apache.coyote.http11.response;
 
-public class MessageBody {
-    final byte[] messageBody;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
-    public MessageBody(byte[] messageBody) {
-        this.messageBody = messageBody;
+public class MessageBody {
+    final String messageBody;
+
+    public MessageBody(Stream<String> messageBody) {
+        this.messageBody = messageBody.collect(Collectors.joining("\r\n"));
     }
 
     @Override
@@ -13,6 +16,10 @@ public class MessageBody {
     }
 
     public byte[] getMessageBody() {
-        return messageBody;
+        return messageBody.getBytes();
+    }
+
+    public int getContentLength(){
+        return messageBody.getBytes().length;
     }
 }

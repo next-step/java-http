@@ -2,6 +2,8 @@ package nextstep.org.apache.coyote.http11;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import camp.nextstep.config.ControllerFactoryProviderConfig;
+import camp.nextstep.controller.ControllerRequestMapping;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
@@ -16,7 +18,8 @@ class Http11ProcessorTest {
     void process() {
         // given
         final var socket = new StubSocket();
-        final var processor = new Http11Processor(socket);
+        final ControllerRequestMapping controllerProvider = new ControllerFactoryProviderConfig().createDefaultFactoryProvider();
+        final var processor = new Http11Processor(socket, controllerProvider);
 
         // when
         processor.process(socket);
@@ -27,7 +30,8 @@ class Http11ProcessorTest {
             "Content-Type: text/html;charset=utf-8 ",
             "Content-Length: 12 ",
             "",
-            "Hello world!");
+            "Hello world!",
+            "");
 
         assertThat(socket.output()).isEqualTo(expected);
     }
@@ -43,7 +47,8 @@ class Http11ProcessorTest {
             "");
 
         final var socket = new StubSocket(httpRequest);
-        final Http11Processor processor = new Http11Processor(socket);
+        final ControllerRequestMapping controllerProvider = new ControllerFactoryProviderConfig().createDefaultFactoryProvider();
+        final Http11Processor processor = new Http11Processor(socket, controllerProvider);
 
         // when
         processor.process(socket);
@@ -53,7 +58,7 @@ class Http11ProcessorTest {
         var expected = String.join("\r\n",
             "HTTP/1.1 200 OK ",
             "Content-Type: text/html;charset=utf-8 ",
-            "Content-Length: 5564 ", // 운영체제 환경에 따라 다른 값이 나올 수 있음. 자신의 개발 환경에 맞춰 수정할 것.
+            "Content-Length: 5668 ", // 운영체제 환경에 따라 다른 값이 나올 수 있음. 자신의 개발 환경에 맞춰 수정할 것.
             "",
             new String(Files.readAllBytes(new File(resource.getFile()).toPath())));
 
@@ -71,7 +76,8 @@ class Http11ProcessorTest {
             "");
 
         final var socket = new StubSocket(httpRequest);
-        final Http11Processor processor = new Http11Processor(socket);
+        final ControllerRequestMapping controllerProvider = new ControllerFactoryProviderConfig().createDefaultFactoryProvider();
+        final Http11Processor processor = new Http11Processor(socket, controllerProvider);
 
         // when
         processor.process(socket);

@@ -1,14 +1,15 @@
 package camp.nextstep.controller;
 
 import camp.nextstep.controller.strategy.RequestMethodStrategy;
+import org.apache.coyote.controller.ControllerFactory;
 import org.apache.coyote.http11.request.HttpRequest;
 import org.apache.coyote.http11.response.HttpResponse;
 
-public class Controller404Factory implements ControllerFactory {
+public class NotFoundControllerFactory implements ControllerFactory {
 
     private final RequestMethodStrategy notFoundStrategy;
 
-    public Controller404Factory(RequestMethodStrategy notFoundStrategy) {
+    public NotFoundControllerFactory(RequestMethodStrategy notFoundStrategy) {
         this.notFoundStrategy = notFoundStrategy;
     }
 

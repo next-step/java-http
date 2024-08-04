@@ -1,10 +1,10 @@
 package org.apache.coyote.http11.parser;
 
-import org.apache.coyote.http11.exception.MalformedRequestlLineException;
-
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import org.apache.coyote.http11.exception.MalformedRequestlLineException;
 
 public class HttpRequestDto {
 
@@ -17,10 +17,10 @@ public class HttpRequestDto {
     public final String requestUrl;
     public final String requestProtocol;
     public final HttpRequestHeaderDto requestHeader;
-    public final String requestBody;
+    public final Map<String, String> requestBody;
 
     private HttpRequestDto(final String requestMethod, final String requestUrl,
-                           final String requestProtocol, final HttpRequestHeaderDto requestHeader, String requestBody) {
+                           final String requestProtocol, final HttpRequestHeaderDto requestHeader, Map<String, String> requestBody) {
         this.requestMethod = requestMethod;
         this.requestUrl = requestUrl;
         this.requestProtocol = requestProtocol;
@@ -28,7 +28,7 @@ public class HttpRequestDto {
         this.requestBody = requestBody;
     }
 
-    public static HttpRequestDto of(List<String> requestLine, HttpRequestHeaderDto requestHeaders, String requestBody) {
+    public static HttpRequestDto of(List<String> requestLine, HttpRequestHeaderDto requestHeaders, Map<String, String> requestBody) {
         validate(requestLine);
         String method = requestLine.get(METHOD_INDEX);
         String requestUrl = requestLine.get(URL_INDEX);
@@ -56,7 +56,7 @@ public class HttpRequestDto {
         return requestProtocol;
     }
 
-    public String getRequestBody() {
+    public Map<String, String> getRequestBody() {
         return requestBody;
     }
 

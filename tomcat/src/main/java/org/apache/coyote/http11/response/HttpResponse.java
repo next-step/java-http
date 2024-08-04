@@ -51,7 +51,7 @@ public abstract class HttpResponse {
         return Stream.of(statusLine, http11ResponseHeader, "", messageBody)
                 .filter(Objects::nonNull)
                 .map(Objects::toString)
-                .collect(Collectors.joining("\r\n"));
+                .collect(Collectors.joining("\r\n", "", "\r\n"));
     }
 
     @Override

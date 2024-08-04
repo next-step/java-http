@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 import java.io.IOException;
+import java.util.stream.Stream;
 import org.apache.coyote.http11.response.header.ContentType;
 import org.apache.coyote.http11.response.Http11Response;
 import org.apache.coyote.http11.response.HttpResponse;
@@ -23,7 +24,7 @@ class Http11ResponseTest {
         HttpResponse httpResponse = new Http11Response.HttpResponseBuilder()
             .statusLine(ProtocolVersion.HTTP11.getVersion(), StatusCode.OK.name())
             .responseHeader(ContentType.html.name(), message.getBytes().length)
-            .messageBody(message.getBytes())
+            .messageBody(Stream.of(message))
             .build();
 
         assertAll(

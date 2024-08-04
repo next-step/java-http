@@ -108,8 +108,61 @@
   - [x] SessionManager 구현하기
     - [x] 로그인 성공시 Session 객체로 User 저장
     - [x] 이미 로그인시 /login 페이지는 index.html로 리다이렉트 처리한다.
-- [] 공통 요구사항
-  - [] readAllBytes 의 OOM 이슈로 제거하기
-  - [] OOM 을 하지 않는 구현에 대한 테스트 생성하기
+- [x] 공통 요구사항
+  - [x] readAllBytes 의 OOM 이슈로 제거하기
+  - [x] OOM 을 하지 않는 구현에 대한 테스트 생성하기
   - [x] strategy -> factory provider GET 과 POST에 따라 재구성하기
   - [x] 구성요소에 따른 패키지 분리하기
+
+## 4단계 요구사항 정리
+- [x] 요구사항 1 - HttpRequest 클래스 구현하기 
+  - [x] 테스트도 추가하기
+- [x] 요구사항 2 - HttpResponse 클래스 구현하기
+  - [x] 테스트도 추가하기
+- [x] 요구사항 3 - Controller 인터페이스 추가하기
+  - [x] Controller Interface 주입하기
+- [x] 피드백 사항
+  - [x] 사용되지 않는 코드 삭제
+  - [x] 프로바이더 객체에서 구현체 정보 입력 -> Config 레이어 생성하기 및 Tomcat에 provider 건네주기 (의존성 분리)
+  - [x] 팩토리 명명법 변경하기
+  - [x] 블럭 생략 제거
+  - [x] query parsing 책임 strategy에 있는 부분 변경하기
+  - [x] 상수와 변수 개행
+  - [x] Response Header 와 Response 생성로직 추상화 -> HTTP ENTITY
+  - [x] queryString 에서 map으로 파싱하는 로직을 리팩토링
+- [x] 추가 피드백 사항
+  - [x] set-cookie 일차함수로 리팩토링
+  - [x] ControllerConfig 가 n번 불렸을때, n개의 객체가 계속 재생성 되는 이슈
+  - [x] 인터페이스 이름과 구현체 같은 이름 제거
+  - [x] Matcher의 matches, find 다른점 확인
+    - matches는 전체의 String에서 regex 패턴을 매칭합니다.
+    - 그와 별개로 find는 Substring 에서 Matching 을 확인합니다. -> /sdagagdex.dsifjas/index 
+      - 이 경우에 find는 /index와 매칭이 됩니다.
+  - [x] HttpResponse의 빌더 사용해서 축약적 사용생성
+  - [x] factories 예외 컨트롤러?? 확장성 제한됨
+  - [x] Response에서 HttpEntity 흡수
+  - [x] 반복되는 로직은 메서드 추출 (HttpEntity)
+
+  - [] readAllBytes 의 OOM 이슈로 제거하기 -> 여전히 HEAP에 파일을 읽어서 올리게 되는데 INPUTSTREAM -> OUTPUTSTREAM 으로 이전하는 과정에서 CONTENT-LENGTH 측정 실패 
+
+
+톰캣에선 다음과 같이 Response에서 write 할때, content-length를 측정하는것같은데 output stream 을 write 할때,
+@Functional Interface 로 contentLength를 업데이트 해줄려고했음. -> 아쉽지만 실패하였음
+
+
+    public void doWrite(ByteBuffer chunk) throws IOException {
+    int len = chunk.remaining();
+    outputBuffer.doWrite(chunk);
+    contentWritten += len - chunk.remaining();
+    }
+
+        public long getBytesWritten(boolean flush) {
+        if (flush) {
+            try {
+                outputBuffer.flush();
+            } catch (IOException ioe) {
+                // Ignore - the client has probably closed the connection
+            }
+        }
+        return getCoyoteResponse().getBytesWritten(flush);
+    }

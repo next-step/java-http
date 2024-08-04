@@ -6,6 +6,7 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class Session {
+
     private final UUID uuid;
     private final Map<String, Object> values = new ConcurrentHashMap<>();
 
@@ -29,8 +30,12 @@ public class Session {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         Session session = (Session) o;
         return Objects.equals(uuid, session.uuid) && Objects.equals(values, session.values);
     }

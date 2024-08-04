@@ -1,9 +1,9 @@
 package org.apache.coyote.http11;
 
-import camp.nextstep.controller.ControllerFactory;
-import camp.nextstep.controller.ControllerFactoryProvider;
 import camp.nextstep.exception.UncheckedServletException;
 import org.apache.coyote.Processor;
+import org.apache.coyote.controller.ControllerFactory;
+import org.apache.coyote.controller.RequestMapping;
 import org.apache.coyote.http11.parser.HttpRequestDto;
 import org.apache.coyote.http11.parser.HttpRequestParser;
 import org.apache.coyote.http11.request.HttpRequest;
@@ -15,20 +15,23 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.net.Socket;
 
 public class Http11Processor implements Runnable, Processor {
 
     private static final Logger log = LoggerFactory.getLogger(Http11Processor.class);
     private static final HttpRequestFactoryProvider httpRequestFactoryProvider = new Http11RequestFactoryProvider();
-    private static final ControllerFactoryProvider controllerFactoryProvider = new ControllerFactoryProvider();
 
+    private final RequestMapping controllerFactoryProvider;
     private final Socket connection;
 
-    public Http11Processor(final Socket connection) {
+    public Http11Processor(final Socket connection, RequestMapping controllerFactoryProvider) {
         this.connection = connection;
+        this.controllerFactoryProvider = controllerFactoryProvider;
     }
 
     @Override
@@ -40,7 +43,7 @@ public class Http11Processor implements Runnable, Processor {
     @Override
     public void process(final Socket connection) {
         try (BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-             final var outputStream = connection.getOutputStream()) {
+             BufferedWriter outputStream = new BufferedWriter(new OutputStreamWriter(connection.getOutputStream()))) {
             HttpRequestDto httpRequestDto = HttpRequestParser.parse(bufferedReader);
 
             HttpRequestFactory httpRequestFactory = httpRequestFactoryProvider.provideFactory(
@@ -48,13 +51,13 @@ public class Http11Processor implements Runnable, Processor {
             HttpRequest httpRequest = httpRequestFactory.createHttpInstance(httpRequestDto);
             log.info(httpRequest.toString());
 
-            ControllerFactory controllerFactory = controllerFactoryProvider.provideFactory(
+            ControllerFactory controllerFactory = controllerFactoryProvider.getController(
                     httpRequest.getRequestUrl());
             HttpResponse httpResponse = controllerFactory.serve(httpRequest);
 
             log.info(httpResponse.toString());
             String response = httpResponse.write();
-            outputStream.write(response.getBytes());
+            outputStream.write(response);
             outputStream.flush();
         } catch (IOException | UncheckedServletException e) {
             log.error(e.getMessage(), e);

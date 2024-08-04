@@ -1,5 +1,6 @@
 package nextstep.org.apache.coyote.http11.parser;
 
+import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
@@ -8,6 +9,9 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.stream.IntStream;
+
+import camp.nextstep.config.ControllerFactoryProviderConfig;
 import org.apache.coyote.http11.parser.HttpRequestDto;
 import org.apache.coyote.http11.parser.HttpRequestParser;
 import org.apache.coyote.http11.request.HttpRequest;
@@ -61,6 +65,9 @@ public class HttpRequestParserTest {
         HttpRequestFactory httpRequestFactory = factoryProvider.provideFactory(
             requestDto.requestMethod);
         HttpRequest httpRequest = httpRequestFactory.createHttpInstance(requestDto);
+
+
+        ControllerFactoryProviderConfig config = new ControllerFactoryProviderConfig();
 
         assertAll(
             () -> assertThat(httpRequest.getParams()).containsKey("userId"),
