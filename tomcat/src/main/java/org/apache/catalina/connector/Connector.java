@@ -5,6 +5,10 @@ import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 import org.apache.coyote.http11.Http11Processor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,20 +18,26 @@ public class Connector implements Runnable {
     private static final Logger log = LoggerFactory.getLogger(Connector.class);
 
     private static final int DEFAULT_PORT = 8080;
-    private static final int DEFAULT_ACCEPT_COUNT = 100;
+    private static final int DEFAULT_ACCEPT_COUNT = 100; // 요청 대기 QUEUE 사이즈(DEFAULT_THREAD_QUEUE_SIZE)
+    private static final int DEFAULT_THREAD_POOL_SIZE = 150; // THREAD POOL 에 생성된 최소 THREAD 개수
+    private static final int DEFAULT_MAXIMUM_POOL_SIZE = 250; // THREAD POOL 에 생성될 수 있는 최대 THREAD 개수
 
     private final ServerSocket serverSocket;
     private boolean stopped;
     private final ControllerRequestMapping requestMapping;
+    private final ExecutorService executorService;
 
     public Connector(ControllerRequestMapping requestMapping) {
         this(DEFAULT_PORT, DEFAULT_ACCEPT_COUNT, requestMapping);
     }
 
     public Connector(final int port, final int acceptCount, final ControllerRequestMapping requestMapping) {
-        this.serverSocket = createServerSocket(port, acceptCount);
+        this.serverSocket = createServerSocket(port, acceptCount); // 여기의 acceptCount는 소켓에 대한 queue라고 생각하면 된다.
         this.stopped = false;
         this.requestMapping = requestMapping;
+        this.executorService = new ThreadPoolExecutor(DEFAULT_THREAD_POOL_SIZE,
+            DEFAULT_MAXIMUM_POOL_SIZE, 100, TimeUnit.MILLISECONDS,
+            new LinkedBlockingQueue<>(DEFAULT_ACCEPT_COUNT));
     }
 
     private ServerSocket createServerSocket(final int port, final int acceptCount) {
@@ -69,7 +79,7 @@ public class Connector implements Runnable {
             return;
         }
         var processor = new Http11Processor(connection, requestMapping);
-        new Thread(processor).start();
+        this.executorService.execute(processor);
     }
 
     public void stop() {
