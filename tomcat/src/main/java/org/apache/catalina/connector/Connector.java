@@ -36,7 +36,7 @@ public class Connector implements Runnable {
         this.stopped = false;
         this.requestMapping = requestMapping;
         this.executorService = new ThreadPoolExecutor(DEFAULT_THREAD_POOL_SIZE,
-            DEFAULT_MAXIMUM_POOL_SIZE, 0, TimeUnit.SECONDS,
+            DEFAULT_MAXIMUM_POOL_SIZE, 100, TimeUnit.MILLISECONDS,
             new LinkedBlockingQueue<>(DEFAULT_ACCEPT_COUNT));
     }
 
@@ -79,7 +79,7 @@ public class Connector implements Runnable {
             return;
         }
         var processor = new Http11Processor(connection, requestMapping);
-        this.executorService.submit(processor);
+        this.executorService.execute(processor);
     }
 
     public void stop() {
